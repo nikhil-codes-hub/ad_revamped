@@ -9,7 +9,26 @@
 
 ## Installation Options
 
-### Option 1: Standard Installation
+### Option 1: Clean Virtual Environment (Recommended)
+
+Create an isolated environment to avoid dependency conflicts:
+
+```bash
+# Create and activate virtual environment
+python -m venv assisted_discovery_env
+source assisted_discovery_env/bin/activate  # On Windows: assisted_discovery_env\Scripts\activate
+
+# Upgrade pip and install backend dependencies
+pip install --upgrade pip setuptools wheel
+cd backend
+pip install -r requirements-working.txt
+
+# Install frontend dependencies
+cd ../frontend
+pip install -r requirements.txt
+```
+
+### Option 2: Standard Installation
 
 ```bash
 # Backend dependencies
@@ -21,7 +40,7 @@ cd ../frontend
 pip install -r requirements.txt
 ```
 
-### Option 2: Conda Environment (Recommended)
+### Option 3: Conda Environment
 
 If you're using Anaconda/Miniconda and encounter lxml build issues:
 
@@ -37,6 +56,17 @@ pip install -r requirements-conda.txt
 cd ../frontend
 pip install -r requirements.txt
 ```
+
+### ⚠️ Dependency Conflicts
+
+If you encounter dependency conflicts in existing conda environments (common with LangChain, LlamaIndex, etc.), **use Option 1 (Clean Virtual Environment)**. The conflicts arise from:
+
+- Pydantic version mismatches (2.5.0 vs 2.7.4+)
+- OpenAI SDK version conflicts (1.3.5 vs 1.86.0+)
+- NumPy version incompatibilities (2.2.6 vs <2.0)
+- HttpX version mismatches
+
+The clean virtual environment ensures no conflicts with existing ML packages.
 
 ## Environment Setup
 
@@ -95,15 +125,23 @@ python -c "import streamlit; print('✅ Frontend OK')"
 
 ## Quick Start
 
-1. **Start Backend API:**
+1. **Activate Virtual Environment (if using Option 1):**
+```bash
+source assisted_discovery_env/bin/activate  # On Windows: assisted_discovery_env\Scripts\activate
+```
+
+2. **Start Backend API:**
 ```bash
 cd backend
 python -m app.main
 ```
 Access at: http://localhost:8000
 
-2. **Start Frontend UI:**
+3. **Start Frontend UI (in new terminal):**
 ```bash
+# Activate environment first if using Option 1
+source assisted_discovery_env/bin/activate
+
 cd frontend
 streamlit run streamlit_ui/main.py
 ```
