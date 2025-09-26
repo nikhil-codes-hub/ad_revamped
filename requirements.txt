@@ -1,0 +1,5 @@
+lxml>=4.9
+SQLAlchemy>=2.0
+pymysql>=1.1
+python-dotenv>=1.0
+cryptography>=43.0

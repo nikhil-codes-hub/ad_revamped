@@ -1,0 +1,26 @@
+{
+    "ids": {
+        "PassengerID": "T1"
+    },
+    "refs": {},
+    "attrs": [
+        "PassengerID"
+    ],
+    "snippet": "<Passenger PassengerID=\"T1\"><PTC>ADT</PTC><Birthdate>1990-**-**</Birthdate></Passenger>",
+    "children": [
+        "PTC",
+        "Birthdate",
+        "Individual",
+        "IdentityDocument",
+        "ContactInfoRef"
+    ],
+    "node_type": "Passenger",
+    "pii_masked": true,
+    "code_values": {
+        "PTC": "ADT"
+    },
+    "message_root": "OrderViewRS",
+    "node_ordinal": 1,
+    "section_path": "/OrderViewRS/Response/DataLists/PassengerList",
+    "spec_version": "17.2"
+}

@@ -1,0 +1,124 @@
+# AssistedDiscovery - .gitignore
+# CRITICAL: Never commit secrets, keys, or sensitive data
+
+# Environment files with secrets
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Virtual environments
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Upload directories
+uploads/
+temp_uploads/
+
+# Streamlit
+.streamlit/
+
+# API Keys and Secrets (NEVER COMMIT THESE!)
+*key*
+*secret*
+*token*
+*password*
+*credential*
+api_keys.py
+secrets.py
+config_secrets.py
+
+# XML test files (may contain PII)
+test_data/*.xml
+sample_data/*.xml
+*.xml
+
+# Model files
+*.pkl
+*.joblib
+models/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
