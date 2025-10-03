@@ -2,7 +2,6 @@
 AssistedDiscovery FastAPI Application
 
 Main application entry point for the AssistedDiscovery system.
-Provides deterministic, token-efficient extraction and pattern learning over airline NDC XMLs.
 """
 
 from fastapi import FastAPI, HTTPException
@@ -23,7 +22,7 @@ def create_application() -> FastAPI:
 
     application = FastAPI(
         title="AssistedDiscovery API",
-        description="Deterministic, token-efficient extraction and pattern learning over airline NDC XMLs",
+        description="AssistedDiscovery API",
         version="1.0.0",
         docs_url="/docs",
         redoc_url="/redoc",

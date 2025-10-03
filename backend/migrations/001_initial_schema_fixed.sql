@@ -1,17 +1,13 @@
--- AssistedDiscovery Initial Database Schema
+-- AssistedDiscovery Initial Database Schema - MySQL 9.4 Compatible
 -- Based on enhanced design document specifications
--- MySQL implementation with future CouchDB migration consideration
-
--- Create database (run separately if needed)
--- CREATE DATABASE assisted_discovery CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
--- USE assisted_discovery;
+-- Fixed for MySQL 9.4 TEXT column constraints
 
 -- Target paths configuration table
 CREATE TABLE ndc_target_paths (
     id INT PRIMARY KEY AUTO_INCREMENT,
     spec_version VARCHAR(10) NOT NULL COMMENT 'NDC specification version (e.g., 17.2)',
     message_root VARCHAR(100) NOT NULL COMMENT 'Root element name (e.g., OrderViewRS)',
-    path_local TEXT NOT NULL COMMENT 'Local-name path for targeting',
+    path_local VARCHAR(500) NOT NULL COMMENT 'Local-name path for targeting',
     extractor_key VARCHAR(50) NOT NULL COMMENT 'template or generic_llm',
     is_required BOOLEAN DEFAULT FALSE COMMENT 'Whether this section is required',
     importance ENUM('critical', 'high', 'medium', 'low') DEFAULT 'medium' COMMENT 'Section importance level',
@@ -31,10 +27,10 @@ CREATE TABLE ndc_path_aliases (
     id INT PRIMARY KEY AUTO_INCREMENT,
     from_spec_version VARCHAR(10) NOT NULL COMMENT 'Source NDC version',
     from_message_root VARCHAR(100) NOT NULL COMMENT 'Source message type',
-    from_path_local TEXT NOT NULL COMMENT 'Source path',
+    from_path_local VARCHAR(500) NOT NULL COMMENT 'Source path',
     to_spec_version VARCHAR(10) NOT NULL COMMENT 'Target NDC version',
     to_message_root VARCHAR(100) NOT NULL COMMENT 'Target message type',
-    to_path_local TEXT NOT NULL COMMENT 'Target path',
+    to_path_local VARCHAR(500) NOT NULL COMMENT 'Target path',
     is_bidirectional BOOLEAN DEFAULT FALSE COMMENT 'Whether alias works both ways',
     reason VARCHAR(255) COMMENT 'Reason for the alias (e.g., minor version compatibility)',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -167,8 +163,8 @@ SELECT
     AVG(pm.confidence) as avg_confidence
 FROM runs r
 LEFT JOIN node_facts nf ON r.id = nf.run_id
-LEFT JOIN patterns p ON r.id = p.created_at AND r.kind = 'discovery'  -- Only for discovery runs
-LEFT JOIN pattern_matches pm ON r.id = pm.run_id AND r.kind = 'identify'  -- Only for identify runs
+LEFT JOIN patterns p ON r.spec_version = p.spec_version AND r.message_root = p.message_root AND r.kind = 'discovery'
+LEFT JOIN pattern_matches pm ON r.id = pm.run_id AND r.kind = 'identify'
 GROUP BY r.id, r.kind, r.status, r.spec_version, r.message_root, r.filename, r.started_at, r.finished_at;
 
 -- Create view for pattern coverage analysis

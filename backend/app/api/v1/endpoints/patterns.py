@@ -6,10 +6,14 @@ Handles retrieval and querying of discovered patterns.
 
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session
 import structlog
 
 from app.models.schemas import PatternResponse
 from app.core.logging import get_logger
+from app.services.database import get_db_session
+from app.services.pattern_generator import create_pattern_generator
+from app.models.database import Pattern
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -23,6 +27,7 @@ async def list_patterns(
     limit: int = Query(default=50, ge=1, le=200, description="Maximum number of patterns to return"),
     offset: int = Query(default=0, ge=0, description="Number of patterns to skip for pagination"),
     min_confidence: Optional[float] = Query(None, ge=0.0, le=1.0, description="Minimum times_seen count"),
+    db: Session = Depends(get_db_session)
 ) -> List[PatternResponse]:
     """
     List discovered patterns with filtering and pagination.
@@ -41,33 +46,44 @@ async def list_patterns(
                 limit=limit,
                 offset=offset)
 
-    # TODO: Implement pattern listing
-    # 1. Query database with filters and pagination
-    # 2. Apply sorting (by times_seen DESC, created_at DESC)
-    # 3. Return formatted results
+    query = db.query(Pattern)
 
-    # Placeholder response
+    # Apply filters
+    if message_root:
+        query = query.filter(Pattern.message_root == message_root)
+    if section_path:
+        query = query.filter(Pattern.section_path.like(f'%{section_path}%'))
+    if spec_version:
+        query = query.filter(Pattern.spec_version == spec_version)
+    if min_confidence:
+        query = query.filter(Pattern.times_seen >= int(min_confidence))
+
+    # Sort by times_seen (most common first)
+    query = query.order_by(Pattern.times_seen.desc(), Pattern.created_at.desc())
+
+    # Pagination
+    query = query.offset(offset).limit(limit)
+
+    patterns = query.all()
+
+    logger.info(f"Retrieved {len(patterns)} patterns")
+
     return [
         PatternResponse(
-            id=1,
-            spec_version="17.2",
-            message_root="OrderViewRS",
-            section_path="/OrderViewRS/Response/Order/BookingReferences",
-            selector_xpath="./BookingReference[ID]",
-            decision_rule={
-                "must_have_children": ["ID"],
-                "optional_children": ["AirlineID", "OtherID"],
-                "attrs": {}
-            },
-            signature_hash="a1b2c3d4e5f6",
-            times_seen=15,
-            created_by_model="gpt-4-turbo-preview",
-            examples=[
-                {"node_type": "BookingReference", "snippet": "<BookingReference ID=ABC123>"}
-            ],
-            created_at="2025-09-26T10:30:00Z",
-            last_seen_at="2025-09-26T11:45:00Z"
+            id=p.id,
+            spec_version=p.spec_version,
+            message_root=p.message_root,
+            section_path=p.section_path,
+            selector_xpath=p.selector_xpath,
+            decision_rule=p.decision_rule,
+            signature_hash=p.signature_hash,
+            times_seen=p.times_seen,
+            created_by_model=p.created_by_model,
+            examples=p.examples or [],
+            created_at=p.created_at.isoformat() if p.created_at else None,
+            last_seen_at=p.last_seen_at.isoformat() if p.last_seen_at else None
         )
+        for p in patterns
     ]
 
 
@@ -167,4 +183,51 @@ async def get_coverage_stats(
         "overall_coverage": 85.2,
         "patterns_by_section": {},
         "generated_at": "2025-09-26T11:45:00Z"
+    }
+
+
+@router.post("/generate")
+async def generate_patterns(
+    run_id: Optional[str] = Query(None, description="Generate patterns from specific run"),
+    spec_version: Optional[str] = Query(None, description="Generate patterns for specific version"),
+    message_root: Optional[str] = Query(None, description="Generate patterns for specific message type"),
+    db: Session = Depends(get_db_session)
+):
+    """
+    Manually trigger pattern generation.
+
+    - **run_id**: Generate patterns from a specific discovery run
+    - **spec_version**: Generate patterns from all runs of a specific version
+    - **message_root**: Generate patterns from all runs of a specific message type
+    - If no parameters: Generate patterns from ALL NodeFacts
+    """
+    logger.info("Manual pattern generation triggered",
+                run_id=run_id,
+                spec_version=spec_version,
+                message_root=message_root)
+
+    pattern_generator = create_pattern_generator(db)
+
+    if run_id:
+        # Generate from specific run
+        results = pattern_generator.generate_patterns_from_run(run_id)
+    else:
+        # Generate from all runs (with optional filters)
+        results = pattern_generator.generate_patterns_from_all_runs(
+            spec_version=spec_version,
+            message_root=message_root
+        )
+
+    logger.info("Pattern generation completed", results=results)
+
+    return {
+        "success": results.get('success', False),
+        "message": "Pattern generation completed",
+        "statistics": {
+            "node_facts_analyzed": results.get('node_facts_analyzed', 0),
+            "pattern_groups": results.get('pattern_groups', 0),
+            "patterns_created": results.get('patterns_created', 0),
+            "patterns_updated": results.get('patterns_updated', 0)
+        },
+        "errors": results.get('errors', [])
     }

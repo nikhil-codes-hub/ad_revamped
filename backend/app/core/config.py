@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     """Application settings with environment variable support."""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file="../.env",
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore"
@@ -51,8 +51,14 @@ class Settings(BaseSettings):
     AZURE_API_VERSION: str = Field(default="2025-01-01-preview", description="Azure OpenAI API version")
     MODEL_DEPLOYMENT_NAME: str = Field(default="gpt-4o", description="Primary model deployment name")
     FALLBACK_MODEL_DEPLOYMENT_NAME: str = Field(default="gpt-4o-mini", description="Fallback model deployment name")
+
+    # LLM Configuration - OpenAI (fallback)
+    OPENAI_API_KEY: str = Field(default="", description="OpenAI API key")
+    LLM_MODEL: str = Field(default="gpt-4o-mini", description="OpenAI model name")
+    LLM_PROVIDER: str = Field(default="azure", description="LLM provider: azure or openai")
+
     MAX_TOKENS_PER_REQUEST: int = Field(default=4000, description="Maximum tokens per LLM request")
-    LLM_TEMPERATURE: float = Field(default=0.0, description="LLM temperature for deterministic outputs")
+    LLM_TEMPERATURE: float = Field(default=0.1, description="LLM temperature for consistent outputs")
     LLM_TOP_P: float = Field(default=0.0, description="LLM top_p for deterministic outputs")
 
     # XML Processing

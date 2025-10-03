@@ -1,0 +1,43 @@
+You are an expert NDC XML analyst. Extract structured facts from this XML section.
+
+XML Section Path: {section_path}
+XML Content:
+```xml
+{xml_content}
+```
+
+Extract ALL relevant facts as JSON objects. For each fact found, create an object with:
+
+{{
+  "node_type": "descriptive name (e.g., 'ContactInfo', 'BaggageAllowance', 'Passenger', 'FlightSegment')",
+  "node_ordinal": 1,
+  "attributes": {{
+    "field_name": "extracted_value",
+    "another_field": "another_value"
+  }},
+  "children": ["list", "of", "child", "element", "names"],
+  "refs": {{
+    "reference_type": "reference_value"
+  }},
+  "snippet": "brief XML snippet showing this fact",
+  "confidence": 0.95
+}}
+
+EXTRACTION RULES:
+1. Extract passenger information (names, IDs, PTC codes, birth dates)
+2. Extract contact details (emails, phones, addresses)
+3. Extract baggage allowances and restrictions
+4. Extract flight segments (routes, dates, flight numbers)
+5. Extract service information and preferences
+6. Extract pricing and fare details
+7. Extract booking references and confirmation codes
+8. Extract any ID references between elements
+
+IMPORTANT:
+- Return ONLY valid JSON array
+- Include confidence score (0.0-1.0) for each fact
+- Mask PII: replace sensitive data with patterns like "****@****.com" for emails, "****-**-**" for dates
+- Be thorough but accurate
+- If no facts found, return empty array []
+
+Response must be valid JSON array: [{{fact1}}, {{fact2}}, ...]

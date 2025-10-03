@@ -7,8 +7,12 @@ Handles retrieval and querying of extracted node facts.
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
 import structlog
+import json
+from sqlalchemy.orm import Session
 
 from app.models.schemas import NodeFactResponse
+from app.models.database import NodeFact
+from app.services.database import get_db_session
 from app.core.logging import get_logger
 
 router = APIRouter()
@@ -23,14 +27,15 @@ async def list_node_facts(
     spec_version: Optional[str] = Query(None, description="Filter by NDC version"),
     message_root: Optional[str] = Query(None, description="Filter by message root"),
     limit: int = Query(default=50, ge=1, le=200, description="Maximum node facts to return"),
-    offset: int = Query(default=0, ge=0, description="Number of node facts to skip for pagination")
+    offset: int = Query(default=0, ge=0, description="Number of node facts to skip for pagination"),
+    db: Session = Depends(get_db_session)
 ) -> List[NodeFactResponse]:
     """
     List extracted node facts with filtering and pagination.
 
     - **run_id**: Filter by specific processing run
     - **section_path**: Filter by XML section path
-    - **node_type**: Filter by node type (e.g., 'Passenger', 'BookingReference')
+    - **node_type**: Filter by node type (e.g., 'ContactInfo', 'BaggageAllowance')
     - **spec_version**: Filter by NDC version
     - **message_root**: Filter by message type
     - **limit**: Maximum facts to return (1-200)
@@ -43,35 +48,47 @@ async def list_node_facts(
                 limit=limit,
                 offset=offset)
 
-    # TODO: Implement node facts listing
-    # 1. Query database with filters and pagination
-    # 2. Apply sorting (by created_at DESC)
-    # 3. Ensure PII masking is preserved
-    # 4. Return formatted results
+    # Build query with filters
+    query = db.query(NodeFact).order_by(NodeFact.created_at.desc())
 
-    # Placeholder response
-    return [
-        NodeFactResponse(
-            id=1,
-            run_id=run_id or "run_001",
-            spec_version="17.2",
-            message_root="OrderViewRS",
-            section_path="/OrderViewRS/Response/DataLists/PassengerList",
-            node_type="Passenger",
-            node_ordinal=1,
-            fact_json={
-                "children": ["PTC", "Birthdate", "Individual", "ContactInfoRef"],
-                "attrs": ["PassengerID"],
-                "code_values": {"PTC": "ADT"},
-                "ids": {"PassengerID": "T1"},
-                "refs": {},
-                "snippet": "<Passenger PassengerID=T1> PTC=ADT Birthdate=1990-**-**",
-                "values": {"PTC": "ADT", "Birthdate": "1990-**-**", "Gender": "Male"}
-            },
-            pii_masked=True,
-            created_at="2025-09-26T11:30:00Z"
-        )
-    ]
+    if run_id:
+        query = query.filter(NodeFact.run_id == run_id)
+    if section_path:
+        query = query.filter(NodeFact.section_path.ilike(f"%{section_path}%"))
+    if node_type:
+        query = query.filter(NodeFact.node_type == node_type)
+    if spec_version:
+        query = query.filter(NodeFact.spec_version == spec_version)
+    if message_root:
+        query = query.filter(NodeFact.message_root == message_root)
+
+    # Apply pagination
+    node_facts = query.offset(offset).limit(limit).all()
+
+    # Convert to response format
+    results = []
+    for nf in node_facts:
+        # Parse fact_json from string to dict
+        try:
+            fact_json = json.loads(nf.fact_json) if isinstance(nf.fact_json, str) else nf.fact_json
+        except (json.JSONDecodeError, TypeError):
+            fact_json = {}
+
+        results.append(NodeFactResponse(
+            id=nf.id,
+            run_id=nf.run_id,
+            spec_version=nf.spec_version,
+            message_root=nf.message_root,
+            section_path=nf.section_path,
+            node_type=nf.node_type,
+            node_ordinal=nf.node_ordinal,
+            fact_json=fact_json,
+            pii_masked=bool(nf.pii_masked),
+            created_at=nf.created_at.isoformat() if nf.created_at else ""
+        ))
+
+    logger.info(f"Retrieved {len(results)} node facts")
+    return results
 
 
 @router.get("/{node_fact_id}", response_model=NodeFactResponse)

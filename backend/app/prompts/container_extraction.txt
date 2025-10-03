@@ -1,0 +1,101 @@
+You are an expert NDC XML analyst. Extract structured facts from this CONTAINER XML section with BUSINESS INTELLIGENCE.
+
+XML Section Path: {section_path}
+Container Element: {element_name}
+Contains: {child_count} child elements ({repeating_tag}: {max_repetition} instances)
+
+XML Content:
+```xml
+{xml_content}
+```
+
+This is a CONTAINER element (collection/list). Extract it as ONE container fact with nested children AND business intelligence:
+
+{{
+  "node_type": "{element_name}",
+  "node_ordinal": 1,
+  "attributes": {{
+    "child_count": {child_count},
+    "summary": "brief description of what this container holds"
+  }},
+  "business_intelligence": {{
+    // For PassengerList/PaxList: count by PTC (ADT/CHD/INF)
+    // For other lists: relevant business aggregations
+    "type_breakdown": {{"ADT": 2, "CHD": 1, "INF": 1}},
+    "total_items": {child_count},
+    "has_references": true/false
+  }},
+  "relationships": [
+    // Extract relationships between items (e.g., adult-infant)
+    {{"type": "infant_parent", "parent": "PAX1", "child": "PAX1.1"}},
+    {{"type": "contact_reference", "passenger": "PAX1", "contact": "CI1PAX1"}}
+  ],
+  "children": [
+    {{
+      "node_type": "{repeating_tag}",
+      "ordinal": 1,
+      "attributes": {{
+        // ALL key attributes from child element
+        "id": "PAX1",  // PassengerID, PaxID, or similar
+        "type": "ADT",  // PTC code if applicable
+        "name": "MR JOHN DOE",  // Constructed full name if applicable
+        // ... other relevant attributes
+      }},
+      "references": {{
+        // Extract ALL reference elements (InfantRef, ContactInfoRef, PassengerRef, etc.)
+        "contact_info": ["CI1PAX1"],
+        "infant": ["PAX1.1"],
+        "parent": null,  // For infant: who is the parent
+        "services": [],  // Referenced services
+        "other": {{}}  // Any other refs
+      }},
+      "snippet": "brief XML snippet"
+    }},
+    {{
+      "node_type": "{repeating_tag}",
+      "ordinal": 2,
+      "attributes": {{"similar structure"}},
+      "references": {{"similar structure"}},
+      "snippet": "brief XML snippet"
+    }}
+    // ... include ALL children
+  ],
+  "refs": {{
+    "any_id_references": "reference_values"
+  }},
+  "snippet": "brief container snippet",
+  "confidence": 0.95
+}}
+
+IMPORTANT RULES:
+1. Extract ONE container fact (not multiple facts)
+2. Include ALL children in the "children" array
+3. Each child MUST have: node_type, ordinal, attributes, references, snippet
+4. Extract key attributes from each child (IDs, codes, values)
+5. Extract ALL reference elements: look for elements ending with "Ref", "RefID", "ID" that point to other nodes
+6. Build business_intelligence object with relevant aggregations:
+   - For PassengerList/PaxList: count ADT/CHD/INF from PTC values
+   - For BaggageAllowanceList: count by TypeCode (Checked/CarryOn)
+   - For ContactInfoList: count by ContactType
+   - For ServiceList: count by service type
+7. Extract relationships array:
+   - InfantRef → {{"type": "infant_parent", "parent": "parent_id", "child": "infant_id"}}
+   - ContactInfoRef → {{"type": "contact_reference", "passenger": "pax_id", "contact": "contact_id"}}
+   - PaxRefID (in 21.3) → {{"type": "infant_parent", "parent": "adult_id", "child": "infant_id"}}
+8. Handle version differences:
+   - 17.2/18.1: PassengerList, Passenger, InfantRef, ContactInfoRef
+   - 21.3: PaxList, Pax, PaxRefID (infant→adult reference)
+9. Mask PII in attributes: "****@****.com" for emails, "****-**-**" for dates, "****" for names
+10. Include confidence score (0.0-1.0)
+11. Return ONLY valid JSON array with ONE container fact: [{{container_fact}}]
+12. Be thorough - include all children, don't truncate
+
+SPECIAL EXTRACTION PATTERNS:
+- PassengerID / PaxID → extract to attributes.id
+- PTC → extract to attributes.type (ADT/CHD/INF)
+- GivenName + Surname → combine to attributes.name
+- InfantRef / PaxRefID → extract to references.infant or references.parent
+- ContactInfoRef → extract to references.contact_info
+- All *Ref / *RefID elements → extract to references.other
+
+Response must be valid JSON array: [{{container_fact}}]

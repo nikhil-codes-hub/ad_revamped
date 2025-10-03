@@ -1,7 +1,4 @@
 # AssistedDiscovery
-
-Deterministic, token-efficient extraction and pattern learning over airline NDC XMLs to power discovery of reusable business patterns and identification/classification in new files.
-
 ## 🏗️ Architecture
 
 - **Backend**: FastAPI with Python
