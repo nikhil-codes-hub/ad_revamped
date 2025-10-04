@@ -27,6 +27,8 @@ logger = logging.getLogger(__name__)
 async def create_run(
     kind: str = Query(..., regex="^(discovery|identify)$", description="Type of run: discovery or identify"),
     file: UploadFile = File(...),
+    target_version: Optional[str] = Query(None, description="Target NDC version for identify (e.g., 18.1)"),
+    target_message_root: Optional[str] = Query(None, description="Target message root for identify (e.g., OrderViewRS)"),
     db: Session = Depends(get_db_session)
 ) -> RunResponse:
     """
@@ -34,6 +36,8 @@ async def create_run(
 
     - **kind**: Type of run - 'discovery' for pattern learning, 'identify' for pattern matching
     - **file**: XML file to process (OrderViewRS format)
+    - **target_version**: (Identify only) Specific NDC version to match against
+    - **target_message_root**: (Identify only) Specific message root to match against
     """
     logger.info(f"Creating new {kind} run: {file.filename}")
 
@@ -60,7 +64,11 @@ async def create_run(
                 results = workflow.run_discovery(temp_file_path)
             elif kind == "identify":
                 workflow = create_identify_workflow(db)
-                results = workflow.run_identify(temp_file_path)
+                results = workflow.run_identify(
+                    temp_file_path,
+                    target_version=target_version,
+                    target_message_root=target_message_root
+                )
             else:
                 raise HTTPException(status_code=400, detail=f"Invalid run kind: {kind}")
 

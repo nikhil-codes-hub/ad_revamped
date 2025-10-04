@@ -32,11 +32,17 @@ def check_api_health() -> bool:
         return False
 
 
-def upload_file_for_run(file, run_kind: str) -> Optional[Dict[str, Any]]:
+def upload_file_for_run(file, run_kind: str, target_version: Optional[str] = None, target_message_root: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """Upload file and create a new run."""
     try:
         files = {"file": (file.name, file.getvalue(), "application/xml")}
         params = {"kind": run_kind}
+
+        # Add optional filters for identify runs
+        if target_version:
+            params["target_version"] = target_version
+        if target_message_root:
+            params["target_message_root"] = target_message_root
 
         response = requests.post(
             f"{API_BASE_URL}/runs/",
@@ -374,16 +380,36 @@ def show_identify_page():
         uploaded_file = st.file_uploader("Choose an NDC XML file", type=['xml'], key="identify_upload")
 
         if uploaded_file:
-            col1, col2, col3 = st.columns(3)
+            # Get available patterns to populate filters
+            all_patterns = get_patterns(limit=200)
+            available_versions = sorted(set(p.get('spec_version', '') for p in all_patterns if p.get('spec_version')))
+            available_msg_roots = sorted(set(p.get('message_root', '') for p in all_patterns if p.get('message_root')))
+
+            col1, col2 = st.columns(2)
             with col1:
                 st.write(f"**Filename:** {uploaded_file.name}")
-            with col2:
                 st.write(f"**Size:** {uploaded_file.size:,} bytes")
-            with col3:
-                if st.button("Start Identify", type="primary", key="start_identify"):
+            with col2:
+                st.write("**Match Against:**")
+                target_version = st.selectbox(
+                    "🏷️ NDC Version:",
+                    options=["Auto-detect (from XML)"] + available_versions,
+                    key="identify_target_version"
+                )
+                target_msg_root = st.selectbox(
+                    "📋 Message Root:",
+                    options=["Auto-detect (from XML)"] + available_msg_roots,
+                    key="identify_target_msg_root"
+                )
+
+            if st.button("Start Identify", type="primary", key="start_identify"):
                     import time
                     progress_bar = st.progress(0)
                     status_text = st.empty()
+
+                    # Prepare filter parameters
+                    filter_version = None if target_version == "Auto-detect (from XML)" else target_version
+                    filter_msg_root = None if target_msg_root == "Auto-detect (from XML)" else target_msg_root
 
                     status_text.text("📤 Uploading XML file to backend...")
                     progress_bar.progress(5)
@@ -393,7 +419,12 @@ def show_identify_page():
                     progress_bar.progress(10)
                     time.sleep(0.2)
 
-                    result = upload_file_for_run(uploaded_file, "identify")
+                    result = upload_file_for_run(
+                        uploaded_file,
+                        "identify",
+                        target_version=filter_version,
+                        target_message_root=filter_msg_root
+                    )
 
                     if result:
                         status_text.text("📋 Parsing XML structure...")
@@ -508,6 +539,8 @@ def show_identify_run_details(run_id: str):
             match_table.append({
                 "Node Type": node_fact.get('node_type'),
                 "Section Path": node_fact.get('section_path'),
+                "Pattern Version": pattern.get('spec_version', 'N/A') if pattern else "N/A",
+                "Pattern Message": pattern.get('message_root', 'N/A') if pattern else "N/A",
                 "Pattern Section": pattern['section_path'] if pattern else "N/A",
                 "Times Seen": pattern['times_seen'] if pattern else 0,
                 "Confidence": f"{match.get('confidence', 0):.1%}",

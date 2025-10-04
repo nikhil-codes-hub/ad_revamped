@@ -201,7 +201,10 @@ class IdentifyWorkflow:
 
         self.db_session.add(pattern_match)
 
-    def run_identify(self, xml_file_path: str) -> Dict[str, Any]:
+    def run_identify(self,
+                     xml_file_path: str,
+                     target_version: Optional[str] = None,
+                     target_message_root: Optional[str] = None) -> Dict[str, Any]:
         """
         Run identify workflow on new XML file.
 
@@ -211,6 +214,8 @@ class IdentifyWorkflow:
 
         Args:
             xml_file_path: Path to XML file to identify
+            target_version: Optional specific NDC version to match against (e.g., "18.1")
+            target_message_root: Optional specific message root to match against (e.g., "OrderViewRS")
 
         Returns:
             Dict with identification results
@@ -230,7 +235,13 @@ class IdentifyWorkflow:
         spec_version = version_info.spec_version
         message_root = version_info.message_root
 
+        # Use target filters if provided, otherwise use detected version
+        match_version = target_version if target_version else spec_version
+        match_message_root = target_message_root if target_message_root else message_root
+
         logger.info(f"Detected version: {spec_version}/{message_root}")
+        if target_version or target_message_root:
+            logger.info(f"Matching against: {match_version}/{match_message_root}")
 
         # PHASE 1: Extract NodeFacts (reuse Discovery workflow but mark as IDENTIFY run)
         logger.info("Phase 1: Extracting NodeFacts from XML")
@@ -288,7 +299,7 @@ class IdentifyWorkflow:
         new_patterns_count = 0
 
         for nf in node_facts:
-            matches = self.match_node_fact_to_patterns(nf, spec_version, message_root)
+            matches = self.match_node_fact_to_patterns(nf, match_version, match_message_root)
 
             if matches:
                 # Use best match
