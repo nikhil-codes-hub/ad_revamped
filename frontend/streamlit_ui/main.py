@@ -1180,7 +1180,7 @@ def show_node_manager_page():
             st.write("**Source Configuration**")
             source_version = st.text_input("Source Version", value="18.1", placeholder="e.g., 18.1")
             source_message = st.text_input("Source Message Root", value="OrderViewRS", placeholder="e.g., OrderViewRS")
-            source_airline = st.text_input("Source Airline (optional)", placeholder="Leave empty for all")
+            source_airline = st.text_input("Source Airline (optional)", placeholder="Leave empty to auto-detect", help="Leave empty to use global configs or first available airline (e.g., SQ)")
 
         with col2:
             st.write("**Target Versions**")
@@ -1223,14 +1223,16 @@ def show_node_manager_page():
                     with col_c:
                         st.metric("Skipped (already exist)", result['skipped'])
 
-                    st.info(f"📋 Copied from **{result['source_version']}** to: {', '.join(result['target_versions'])}")
+                    # Show which airline was used
+                    airline_info = f" (Airline: {source_airline})" if source_airline else " (auto-detected)"
+                    st.info(f"📋 Copied from **{result['source_version']}{airline_info}** to: {', '.join(result['target_versions'])}")
 
                     if result.get('errors'):
                         st.warning("Some errors occurred:")
                         for error in result['errors']:
                             st.text(error)
                 else:
-                    st.error("Failed to copy configurations. Make sure source configurations exist.")
+                    st.error("Failed to copy configurations. Please check:\n- Source version and message root are correct\n- Configurations exist for the source version")
 
 
 # ========== MAIN APP ==========

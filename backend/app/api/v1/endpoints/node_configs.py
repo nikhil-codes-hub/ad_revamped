@@ -315,23 +315,42 @@ async def copy_configurations_to_versions(
     logger.info(f"Copying configs from {source_spec_version}/{source_message_root} to versions: {target_versions}")
 
     # Get source configurations
-    source_configs = db.query(NodeConfiguration).filter(
+    source_configs_query = db.query(NodeConfiguration).filter(
         NodeConfiguration.spec_version == source_spec_version,
         NodeConfiguration.message_root == source_message_root
     )
 
     if source_airline_code:
-        source_configs = source_configs.filter(NodeConfiguration.airline_code == source_airline_code)
+        # Specific airline requested
+        source_configs_query = source_configs_query.filter(NodeConfiguration.airline_code == source_airline_code)
+        source_configs = source_configs_query.all()
+
+        if not source_configs:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No configurations found for {source_spec_version}/{source_message_root}/{source_airline_code}"
+            )
     else:
-        source_configs = source_configs.filter(NodeConfiguration.airline_code == None)
+        # No airline specified - try to find configs intelligently
+        # Priority 1: Global configs (airline_code = NULL)
+        global_configs = source_configs_query.filter(NodeConfiguration.airline_code == None).all()
 
-    source_configs = source_configs.all()
-
-    if not source_configs:
-        raise HTTPException(
-            status_code=404,
-            detail=f"No configurations found for {source_spec_version}/{source_message_root}"
-        )
+        if global_configs:
+            source_configs = global_configs
+            logger.info(f"Using {len(global_configs)} global configurations (airline_code=NULL)")
+        else:
+            # Priority 2: Get configs from first available airline
+            all_configs = source_configs_query.all()
+            if all_configs:
+                # Group by airline and pick first
+                first_airline = all_configs[0].airline_code
+                source_configs = [c for c in all_configs if c.airline_code == first_airline]
+                logger.info(f"Using {len(source_configs)} configurations from airline: {first_airline}")
+            else:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"No configurations found for {source_spec_version}/{source_message_root}"
+                )
 
     created_count = 0
     skipped_count = 0
