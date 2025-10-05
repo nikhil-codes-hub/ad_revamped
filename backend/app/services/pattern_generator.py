@@ -13,8 +13,9 @@ from datetime import datetime
 from collections import defaultdict
 from sqlalchemy.orm import Session
 
-from app.models.database import NodeFact, Pattern
+from app.models.database import NodeFact, Pattern, Run
 from app.core.config import settings
+from app.services.llm_extractor import get_llm_extractor
 
 logger = logging.getLogger(__name__)
 
@@ -41,11 +42,13 @@ class PatternGenerator:
         """Extract required attributes from a NodeFact."""
         attributes = fact_json.get('attributes', {})
 
-        # Filter out summary/description fields, keep structural fields
+        # Filter out metadata fields added during extraction - these are NOT real XML attributes
+        METADATA_FIELDS = {'summary', 'description', 'notes', 'child_count', 'confidence', 'node_ordinal'}
+
         required = []
         for key in sorted(attributes.keys()):
             # Skip metadata/descriptive fields
-            if key not in ['summary', 'description', 'notes']:
+            if key not in METADATA_FIELDS:
                 required.append(key)
 
         return required
@@ -124,9 +127,15 @@ class PatternGenerator:
                 "child_names": sorted(set(children))
             }
 
-    def _extract_reference_patterns(self, fact_json: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _extract_reference_patterns(self, fact_json: Dict[str, Any],
+                                   expected_references: List[str] = None) -> List[Dict[str, Any]]:
         """
-        Extract reference patterns from fact.
+        Extract reference patterns from fact using BA-defined expected references.
+
+        Args:
+            fact_json: NodeFact JSON data
+            expected_references: BA-defined list of expected reference types
+                               (e.g., ['infant_parent', 'segment_reference'])
 
         Returns list of reference patterns like:
         [
@@ -160,19 +169,25 @@ class PatternGenerator:
                         'reference': ref
                     })
 
-        # Extract reference fields from children
-        children = fact_json.get('children', [])
-        if children and isinstance(children[0], dict):
-            reference_fields = set()
-            for child in children:
-                refs = child.get('references', {})
-                reference_fields.update(refs.keys())
+        # ONLY extract child_references if BA has defined expected_references
+        # This fixes the issue where child_references was applied to ALL nodes
+        if expected_references and len(expected_references) > 0:
+            children = fact_json.get('children', [])
+            if children and isinstance(children[0], dict):
+                reference_fields = set()
+                for child in children:
+                    refs = child.get('references', {})
+                    # Only include references that match BA-defined expected types
+                    for ref_key in refs.keys():
+                        if any(exp_ref in ref_key for exp_ref in expected_references):
+                            reference_fields.add(ref_key)
 
-            if reference_fields:
-                patterns.append({
-                    'type': 'child_references',
-                    'fields': sorted(list(reference_fields))
-                })
+                if reference_fields:
+                    patterns.append({
+                        'type': 'child_references',
+                        'fields': sorted(list(reference_fields)),
+                        'expected_by_ba': expected_references
+                    })
 
         return patterns
 
@@ -209,12 +224,14 @@ class PatternGenerator:
 
         return schema
 
-    def generate_decision_rule(self, facts_group: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def generate_decision_rule(self, facts_group: List[Dict[str, Any]],
+                              expected_references: List[str] = None) -> Dict[str, Any]:
         """
         Generate decision rule from a group of similar NodeFacts.
 
         Args:
             facts_group: List of fact_json dicts from similar NodeFacts
+            expected_references: BA-defined expected reference types
 
         Returns:
             Decision rule dict
@@ -239,8 +256,8 @@ class PatternGenerator:
             template.get('children', [])
         )
 
-        # Reference patterns
-        reference_patterns = self._extract_reference_patterns(template)
+        # Reference patterns - use BA-defined expected references
+        reference_patterns = self._extract_reference_patterns(template, expected_references)
 
         # Business intelligence schema
         bi_schema = self._extract_bi_schema(template)
@@ -292,9 +309,64 @@ class PatternGenerator:
         # Example: ./PassengerList or ./BaggageAllowanceList
         return f"./{node_type}"
 
+    def _generate_pattern_description(self, decision_rule: Dict[str, Any],
+                                     section_path: str) -> Optional[str]:
+        """
+        Generate human-readable description of pattern using LLM.
+
+        Args:
+            decision_rule: The pattern decision rule
+            section_path: XML section path
+
+        Returns:
+            Short description string (1-2 sentences) or None if LLM unavailable
+        """
+        try:
+            llm_extractor = get_llm_extractor()
+            if not llm_extractor.client:
+                logger.debug("LLM client not available for description generation")
+                return None
+
+            # Create a concise prompt for description generation
+            node_type = decision_rule.get('node_type', 'Unknown')
+            must_have = decision_rule.get('must_have_attributes', [])
+            child_structure = decision_rule.get('child_structure', {})
+            reference_patterns = decision_rule.get('reference_patterns', [])
+
+            prompt = f"""Generate a concise 1-2 sentence description of this XML node pattern for business analysts.
+
+Node Type: {node_type}
+Section Path: {section_path}
+Required Attributes: {', '.join(must_have) if must_have else 'None'}
+Has Children: {child_structure.get('has_children', False)}
+Child Types: {', '.join(child_structure.get('child_types', [])) if child_structure.get('child_types') else 'None'}
+Reference Types: {', '.join([p.get('type', '') for p in reference_patterns]) if reference_patterns else 'None'}
+
+Description (1-2 sentences, focus on business purpose):"""
+
+            # Use LLM to generate description
+            response = llm_extractor.client.messages.create(
+                model=settings.LLM_MODEL,
+                max_tokens=150,
+                temperature=0.3,
+                messages=[{
+                    "role": "user",
+                    "content": prompt
+                }]
+            )
+
+            description = response.content[0].text.strip()
+            logger.debug(f"Generated description for {node_type}: {description}")
+            return description
+
+        except Exception as e:
+            logger.warning(f"Failed to generate pattern description: {e}")
+            return None
+
     def find_or_create_pattern(self,
                                spec_version: str,
                                message_root: str,
+                               airline_code: str,
                                section_path: str,
                                decision_rule: Dict[str, Any],
                                example_node_fact_id: int) -> Pattern:
@@ -311,10 +383,11 @@ class PatternGenerator:
             section_path
         )
 
-        # Check if pattern already exists
+        # Check if pattern already exists (including airline_code)
         existing = self.db_session.query(Pattern).filter(
             Pattern.spec_version == spec_version,
             Pattern.message_root == message_root,
+            Pattern.airline_code == airline_code,
             Pattern.signature_hash == signature_hash
         ).first()
 
@@ -342,12 +415,17 @@ class PatternGenerator:
                 decision_rule.get('node_type', 'Unknown')
             )
 
+            # Generate LLM-powered description
+            description = self._generate_pattern_description(decision_rule, section_path)
+
             new_pattern = Pattern(
                 spec_version=spec_version,
                 message_root=message_root,
+                airline_code=airline_code,
                 section_path=self._normalize_path(section_path),
                 selector_xpath=selector_xpath,
                 decision_rule=decision_rule,
+                description=description,  # Add generated description
                 signature_hash=signature_hash,
                 times_seen=1,
                 created_by_model=settings.LLM_MODEL,
@@ -361,22 +439,41 @@ class PatternGenerator:
 
             self.db_session.add(new_pattern)
 
+            airline_info = f" - {airline_code}" if airline_code else ""
+            desc_info = f" - {description[:50]}..." if description else ""
             logger.info(f"Created new pattern: {signature_hash} for "
-                       f"{spec_version}/{message_root}/{section_path}")
+                       f"{spec_version}/{message_root}{airline_info}/{section_path}{desc_info}")
 
             return new_pattern
 
-    def generate_patterns_from_run(self, run_id: str) -> Dict[str, Any]:
+    def generate_patterns_from_run(self, run_id: str,
+                                  node_configs: Dict[str, Dict] = None) -> Dict[str, Any]:
         """
         Generate patterns from all NodeFacts in a run.
 
         Args:
             run_id: Discovery run ID
+            node_configs: Dict mapping section_path -> config with expected_references
 
         Returns:
             Statistics about pattern generation
         """
         logger.info(f"Generating patterns from run: {run_id}")
+
+        # Get the Run to extract airline_code
+        run = self.db_session.query(Run).filter(Run.id == run_id).first()
+        if not run:
+            logger.warning(f"Run not found: {run_id}")
+            return {
+                'run_id': run_id,
+                'node_facts_analyzed': 0,
+                'patterns_created': 0,
+                'patterns_updated': 0,
+                'errors': []
+            }
+
+        airline_code = run.airline_code
+        node_configs = node_configs or {}
 
         # Get all NodeFacts from this run
         node_facts = self.db_session.query(NodeFact).filter(
@@ -420,13 +517,22 @@ class PatternGenerator:
                 # Extract fact_json from each NodeFact
                 fact_jsons = [f['fact_json'] for f in facts]
 
-                # Generate decision rule
-                decision_rule = self.generate_decision_rule(fact_jsons)
+                # Get expected references from NodeConfiguration (BA-defined)
+                expected_references = []
+                for config_path, config in node_configs.items():
+                    if config_path in section_path:
+                        expected_references = config.get('expected_references', [])
+                        logger.debug(f"Using BA-defined references for {section_path}: {expected_references}")
+                        break
+
+                # Generate decision rule with BA-defined references
+                decision_rule = self.generate_decision_rule(fact_jsons, expected_references)
 
                 # Find or create pattern
                 pattern = self.find_or_create_pattern(
                     spec_version=spec_version,
                     message_root=message_root,
+                    airline_code=airline_code,
                     section_path=section_path,
                     decision_rule=decision_rule,
                     example_node_fact_id=facts[0]['id']  # Use first fact as example

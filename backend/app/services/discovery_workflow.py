@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 
 from app.core.config import settings
-from app.models.database import Run, RunKind, RunStatus, NodeFact, NdcTargetPath
+from app.models.database import Run, RunKind, RunStatus, NodeFact, NdcTargetPath, NodeConfiguration
 from app.services.xml_parser import XmlStreamingParser, create_parser_for_version, XmlSubtree, detect_ndc_version_fast
 from app.services.template_extractor import template_extractor
 from app.services.llm_extractor import get_llm_extractor
@@ -66,6 +66,89 @@ class DiscoveryWorkflow:
 
         return target_paths
 
+    def _get_node_configurations(self, spec_version: str = None,
+                                 message_root: str = None,
+                                 airline_code: str = None) -> Dict[str, Dict]:
+        """
+        Get node configurations from database.
+
+        Returns dict mapping section_path -> config dict with enabled status and expected_references.
+        """
+        query = self.db_session.query(NodeConfiguration).filter(
+            NodeConfiguration.enabled == True  # Only get enabled configs
+        )
+
+        if spec_version:
+            query = query.filter(NodeConfiguration.spec_version == spec_version)
+        if message_root:
+            query = query.filter(NodeConfiguration.message_root == message_root)
+
+        # Get both airline-specific and global configs (NULL airline_code)
+        if airline_code:
+            query = query.filter(
+                (NodeConfiguration.airline_code == airline_code) |
+                (NodeConfiguration.airline_code == None)
+            )
+        else:
+            query = query.filter(NodeConfiguration.airline_code == None)
+
+        configs = {}
+        for config in query.all():
+            configs[config.section_path] = {
+                'id': config.id,
+                'node_type': config.node_type,
+                'enabled': config.enabled,
+                'expected_references': config.expected_references or [],
+                'ba_remarks': config.ba_remarks
+            }
+
+        return configs
+
+    def _convert_node_configs_to_target_paths(self, node_configs: Dict[str, Dict]) -> List[Dict]:
+        """
+        Convert node configurations to target_paths format for XML parser.
+
+        Args:
+            node_configs: Dict mapping section_path -> config
+
+        Returns:
+            List of target path dicts compatible with XmlStreamingParser
+        """
+        target_paths = []
+        for section_path, config in node_configs.items():
+            # Convert to parser format
+            target_paths.append({
+                'id': config['id'],
+                'spec_version': None,  # Will be set by parser
+                'message_root': None,  # Will be set by parser
+                'path_local': f"/{section_path}",  # Add leading slash for parser
+                'extractor_key': 'llm',  # Use LLM extraction by default
+                'is_required': False,
+                'importance': 'medium',
+                'notes': config.get('ba_remarks', '')
+            })
+
+        return target_paths
+
+    def _should_extract_node(self, section_path: str, node_configs: Dict[str, Dict]) -> bool:
+        """
+        Check if a node should be extracted based on NodeConfiguration.
+
+        If no configuration exists, default to extracting (backward compatibility).
+        If configuration exists, respect the enabled flag.
+        """
+        if not node_configs:
+            # No configs loaded - extract everything (backward compatibility)
+            return True
+
+        # Check if this path has a configuration
+        for config_path, config in node_configs.items():
+            if config_path in section_path:
+                return config['enabled']
+
+        # No matching config - default to extract
+        return True
+
     def _create_run_record(self, file_path: str, file_hash: str, file_size: int) -> str:
         """Create a new run record in database."""
         run_id = str(uuid.uuid4())
@@ -92,15 +175,21 @@ class DiscoveryWorkflow:
         logger.info(f"Created discovery run: {run_id}")
         return run_id
 
-    def _update_run_version_info(self, run_id: str, spec_version: str, message_root: str):
-        """Update run with detected version information."""
+    def _update_run_version_info(self, run_id: str, spec_version: str, message_root: str,
+                                 airline_code: str = None, airline_name: str = None):
+        """Update run with detected version and airline information."""
         run = self.db_session.query(Run).filter(Run.id == run_id).first()
         if run:
             run.spec_version = spec_version
             run.message_root = message_root
+            if airline_code:
+                run.airline_code = airline_code
+            if airline_name:
+                run.airline_name = airline_name
             run.status = RunStatus.IN_PROGRESS
             self.db_session.commit()
-            logger.info(f"Updated run {run_id} with version: {spec_version}/{message_root}")
+            airline_info = f" - Airline: {airline_code}" if airline_code else ""
+            logger.info(f"Updated run {run_id} with version: {spec_version}/{message_root}{airline_info}")
 
     def _update_run_status(self, run_id: str, status: RunStatus, error_details: str = None):
         """Update run status."""
@@ -251,6 +340,7 @@ class DiscoveryWorkflow:
             version_info = detect_ndc_version_fast(xml_file_path)
 
             target_paths = []
+            node_configs = {}
             optimization_strategy = None
 
             if version_info and version_info.spec_version and version_info.message_root:
@@ -261,17 +351,31 @@ class DiscoveryWorkflow:
                 self._update_run_version_info(
                     run_id,
                     version_info.spec_version,
-                    version_info.message_root
+                    version_info.message_root,
+                    airline_code=version_info.airline_code,
+                    airline_name=version_info.airline_name
                 )
 
-                # Load only version-specific target paths
-                target_paths = self._get_target_paths_from_db(
-                    version_info.spec_version,
-                    version_info.message_root
+                # PRIORITY 1: Try to load node configurations (BA-defined extraction rules)
+                node_configs = self._get_node_configurations(
+                    spec_version=version_info.spec_version,
+                    message_root=version_info.message_root,
+                    airline_code=version_info.airline_code
                 )
 
-                optimization_strategy = "targeted_paths"
-                logger.info(f"Loaded {len(target_paths)} version-specific target paths")
+                if node_configs:
+                    # Use node configurations as primary target paths
+                    target_paths = self._convert_node_configs_to_target_paths(node_configs)
+                    optimization_strategy = "node_configurations"
+                    logger.info(f"Using {len(target_paths)} BA-configured target paths")
+                else:
+                    # PRIORITY 2: Fallback to ndc_target_paths table
+                    target_paths = self._get_target_paths_from_db(
+                        version_info.spec_version,
+                        version_info.message_root
+                    )
+                    optimization_strategy = "ndc_target_paths"
+                    logger.info(f"Using {len(target_paths)} database target paths (no node configs found)")
 
             else:
                 # FALLBACK: Version detection failed
@@ -317,6 +421,7 @@ class DiscoveryWorkflow:
             subtrees_processed = 0
             total_facts_extracted = 0
             version_updated_during_processing = False
+            nodes_skipped_by_config = 0
 
             for subtree in parser.parse_stream(xml_file_path):
                 # Handle version info if not detected in Phase 1
@@ -331,7 +436,9 @@ class DiscoveryWorkflow:
                     self._update_run_version_info(
                         run_id,
                         parser.version_info.spec_version,
-                        parser.version_info.message_root
+                        parser.version_info.message_root,
+                        airline_code=parser.version_info.airline_code,
+                        airline_name=parser.version_info.airline_name
                     )
                     version_updated_during_processing = True
                     version_info = parser.version_info
@@ -348,6 +455,14 @@ class DiscoveryWorkflow:
                         break
 
                 if matching_target:
+                    # Only apply node config filtering when using ndc_target_paths strategy
+                    # (node_configurations strategy already filters to enabled nodes)
+                    if optimization_strategy == "ndc_target_paths":
+                        if not self._should_extract_node(subtree.path, node_configs):
+                            logger.info(f"Skipping node {subtree.path} - disabled by NodeConfiguration")
+                            nodes_skipped_by_config += 1
+                            continue
+
                     extractor_key = matching_target.get('extractor_key', 'generic_llm')
                     facts_stored = 0
 
@@ -410,6 +525,8 @@ class DiscoveryWorkflow:
             workflow_results.update({
                 'subtrees_processed': subtrees_processed,
                 'node_facts_extracted': total_facts_extracted,
+                'nodes_skipped_by_config': nodes_skipped_by_config,
+                'node_configs_loaded': len(node_configs),
                 'finished_at': datetime.utcnow().isoformat(),
                 'status': 'completed',
                 'optimization_used': optimization_strategy,
@@ -417,7 +534,9 @@ class DiscoveryWorkflow:
                 'version_info': {
                     'spec_version': version_info.spec_version if version_info else None,
                     'message_root': version_info.message_root if version_info else None,
-                    'namespace_uri': version_info.namespace_uri if version_info else None
+                    'namespace_uri': version_info.namespace_uri if version_info else None,
+                    'airline_code': version_info.airline_code if version_info else None,
+                    'airline_name': version_info.airline_name if version_info else None
                 }
             })
 
@@ -427,14 +546,20 @@ class DiscoveryWorkflow:
             logger.info(f"Optimized discovery workflow completed: {run_id} - "
                        f"Strategy: {optimization_strategy}, "
                        f"Paths loaded: {len(target_paths)}, "
-                       f"Subtrees: {subtrees_processed}, Facts: {total_facts_extracted}")
+                       f"Node configs: {len(node_configs)}, "
+                       f"Subtrees: {subtrees_processed}, "
+                       f"Facts: {total_facts_extracted}, "
+                       f"Skipped by config: {nodes_skipped_by_config}")
 
             # PHASE 3: Pattern Generation (if NodeFacts were extracted)
             if total_facts_extracted > 0:
                 logger.info(f"Phase 3: Generating patterns from {total_facts_extracted} NodeFacts")
                 try:
                     pattern_generator = create_pattern_generator(self.db_session)
-                    pattern_results = pattern_generator.generate_patterns_from_run(run_id)
+                    pattern_results = pattern_generator.generate_patterns_from_run(
+                        run_id,
+                        node_configs=node_configs  # Pass node configs for BA-defined references
+                    )
 
                     workflow_results['pattern_generation'] = pattern_results
 
@@ -480,6 +605,8 @@ class DiscoveryWorkflow:
             'status': run.status,
             'spec_version': run.spec_version,
             'message_root': run.message_root,
+            'airline_code': run.airline_code,
+            'airline_name': run.airline_name,
             'filename': run.filename,
             'file_size_bytes': run.file_size_bytes,
             'started_at': run.started_at.isoformat() if run.started_at else None,

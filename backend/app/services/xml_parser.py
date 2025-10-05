@@ -52,6 +52,8 @@ class NdcVersionInfo:
     message_root: Optional[str] = None
     namespace_uri: Optional[str] = None
     schema_location: Optional[str] = None
+    airline_code: Optional[str] = None
+    airline_name: Optional[str] = None
 
 
 class PathTrieNode:
@@ -216,6 +218,67 @@ class XmlStreamingParser:
 
         return bool(self.version_info.spec_version and self.version_info.message_root)
 
+    def _extract_airline_info(self, element: etree.Element) -> bool:
+        """Extract airline information from root element. Returns True if found."""
+
+        # Strategy 1: Check Order/@Owner attribute
+        order_elem = element.find('.//{*}Order')
+        if order_elem is not None:
+            owner = order_elem.get('Owner')
+            if owner:
+                self.version_info.airline_code = owner
+                logger.info(f"Detected airline from Order/@Owner: {owner}")
+                return True
+
+        # Strategy 2: Check OwnerCode element
+        owner_code_elem = element.find('.//{*}OwnerCode')
+        if owner_code_elem is not None and owner_code_elem.text:
+            self.version_info.airline_code = owner_code_elem.text.strip()
+            logger.info(f"Detected airline from OwnerCode: {self.version_info.airline_code}")
+            return True
+
+        # Strategy 3: Check BookingReference/AirlineID
+        airline_id_elem = element.find('.//{*}BookingReference/{*}AirlineID')
+        if airline_id_elem is not None:
+            airline_code = airline_id_elem.text.strip() if airline_id_elem.text else None
+            airline_name = airline_id_elem.get('Name')
+
+            if airline_code:
+                self.version_info.airline_code = airline_code
+                if airline_name:
+                    self.version_info.airline_name = airline_name
+                logger.info(f"Detected airline from BookingReference/AirlineID: {airline_code} ({airline_name or 'N/A'})")
+                return True
+
+        # Strategy 4: Check PaxSegment/MarketingCarrierInfo
+        marketing_carrier = element.find('.//{*}PaxSegment/{*}MarketingCarrierInfo')
+        if marketing_carrier is not None:
+            carrier_code_elem = marketing_carrier.find('{*}CarrierDesigCode')
+            carrier_name_elem = marketing_carrier.find('{*}CarrierName')
+
+            if carrier_code_elem is not None and carrier_code_elem.text:
+                self.version_info.airline_code = carrier_code_elem.text.strip()
+                if carrier_name_elem is not None and carrier_name_elem.text:
+                    self.version_info.airline_name = carrier_name_elem.text.strip()
+                logger.info(f"Detected airline from MarketingCarrierInfo: {self.version_info.airline_code} ({self.version_info.airline_name or 'N/A'})")
+                return True
+
+        # Strategy 5: Check PaxSegment/OperatingCarrierInfo (fallback)
+        operating_carrier = element.find('.//{*}PaxSegment/{*}OperatingCarrierInfo')
+        if operating_carrier is not None:
+            carrier_code_elem = operating_carrier.find('{*}CarrierDesigCode')
+            carrier_name_elem = operating_carrier.find('{*}CarrierName')
+
+            if carrier_code_elem is not None and carrier_code_elem.text:
+                self.version_info.airline_code = carrier_code_elem.text.strip()
+                if carrier_name_elem is not None and carrier_name_elem.text:
+                    self.version_info.airline_name = carrier_name_elem.text.strip()
+                logger.info(f"Detected airline from OperatingCarrierInfo: {self.version_info.airline_code} ({self.version_info.airline_name or 'N/A'})")
+                return True
+
+        logger.warning("No airline information detected in XML")
+        return False
+
     def _build_element_path(self, element_stack: List[str]) -> str:
         """Build element path from stack."""
         return '/' + '/'.join(element_stack) if element_stack else '/'
@@ -312,6 +375,7 @@ class XmlStreamingParser:
                     # Detect version info from root element
                     if len(element_stack) == 1 and not version_detected:
                         version_detected = self._extract_version_info(element)
+                        # Note: Airline detection happens in detect_ndc_version_fast() before streaming
 
                 elif event == 'end':
                     if element_stack:
@@ -412,17 +476,22 @@ def detect_ndc_version_fast(xml_file_path: str) -> Optional[NdcVersionInfo]:
     logger.info(f"Fast version detection: {xml_file_path}")
 
     try:
-        # Use iterparse to get just the root element
-        context = etree.iterparse(xml_file_path, events=('start',))
-        event, root_element = next(context)
+        # Parse the XML to get the full tree (needed for airline detection in nested elements)
+        # Use XMLParser with recover=True to handle malformed XML (like unescaped & characters)
+        parser = etree.XMLParser(recover=True)
+        tree = etree.parse(xml_file_path, parser)
+        root_element = tree.getroot()
 
         # Create temporary parser to use existing version detection logic
         temp_parser = XmlStreamingParser([])  # Empty target paths for detection only
         version_detected = temp_parser._extract_version_info(root_element)
+        # Also extract airline information
+        temp_parser._extract_airline_info(root_element)
 
         if version_detected:
             logger.info(f"Fast detection successful: {temp_parser.version_info.spec_version}/"
-                       f"{temp_parser.version_info.message_root}")
+                       f"{temp_parser.version_info.message_root} - "
+                       f"Airline: {temp_parser.version_info.airline_code or 'N/A'}")
             return temp_parser.version_info
         else:
             logger.warning(f"Fast version detection failed for: {xml_file_path}")

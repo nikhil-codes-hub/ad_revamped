@@ -73,6 +73,7 @@ async def list_patterns(
             id=p.id,
             spec_version=p.spec_version,
             message_root=p.message_root,
+            airline_code=p.airline_code,
             section_path=p.section_path,
             selector_xpath=p.selector_xpath,
             decision_rule=p.decision_rule,

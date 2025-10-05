@@ -421,6 +421,58 @@ class LLMNodeFactsExtractor:
         finally:
             new_loop.close()
 
+    async def generate_explanation_async(self, prompt: str) -> str:
+        """
+        Generate a text explanation using LLM.
+
+        Args:
+            prompt: The prompt to send to the LLM
+
+        Returns:
+            The LLM's text response
+        """
+        if not self.client:
+            raise ValueError("LLM client not initialized")
+
+        try:
+            response = await self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.3,  # Lower temperature for more consistent explanations
+                max_tokens=300  # Limit to keep explanations concise
+            )
+
+            return response.choices[0].message.content
+
+        except Exception as e:
+            logger.error(f"LLM explanation generation failed: {e}")
+            raise
+
+    def generate_explanation(self, prompt: str) -> str:
+        """Synchronous wrapper for generate_explanation_async."""
+        try:
+            # Try to get the current running loop
+            loop = asyncio.get_running_loop()
+            # If we're in a running loop, we need to create a task
+            import concurrent.futures
+
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(self._run_explanation_in_new_loop, prompt)
+                return future.result()
+
+        except RuntimeError:
+            # No event loop running, create new one
+            return asyncio.run(self.generate_explanation_async(prompt))
+
+    def _run_explanation_in_new_loop(self, prompt: str) -> str:
+        """Run explanation generation in a new event loop."""
+        new_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(new_loop)
+        try:
+            return new_loop.run_until_complete(self.generate_explanation_async(prompt))
+        finally:
+            new_loop.close()
+
 
 # Global instance
 llm_extractor = LLMNodeFactsExtractor()

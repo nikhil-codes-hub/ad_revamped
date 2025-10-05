@@ -29,6 +29,7 @@ async def create_run(
     file: UploadFile = File(...),
     target_version: Optional[str] = Query(None, description="Target NDC version for identify (e.g., 18.1)"),
     target_message_root: Optional[str] = Query(None, description="Target message root for identify (e.g., OrderViewRS)"),
+    target_airline_code: Optional[str] = Query(None, description="Target airline code for identify (e.g., SQ, AF)"),
     db: Session = Depends(get_db_session)
 ) -> RunResponse:
     """
@@ -38,6 +39,7 @@ async def create_run(
     - **file**: XML file to process (OrderViewRS format)
     - **target_version**: (Identify only) Specific NDC version to match against
     - **target_message_root**: (Identify only) Specific message root to match against
+    - **target_airline_code**: (Identify only) Specific airline code to match against
     """
     logger.info(f"Creating new {kind} run: {file.filename}")
 
@@ -67,7 +69,8 @@ async def create_run(
                 results = workflow.run_identify(
                     temp_file_path,
                     target_version=target_version,
-                    target_message_root=target_message_root
+                    target_message_root=target_message_root,
+                    target_airline_code=target_airline_code
                 )
             else:
                 raise HTTPException(status_code=400, detail=f"Invalid run kind: {kind}")
@@ -92,6 +95,8 @@ async def create_run(
                 subtrees_processed=results.get('subtrees_processed', 0),
                 spec_version=results.get('version_info', {}).get('spec_version') if results.get('version_info') else None,
                 message_root=results.get('version_info', {}).get('message_root') if results.get('version_info') else None,
+                airline_code=results.get('version_info', {}).get('airline_code') if results.get('version_info') else None,
+                airline_name=results.get('version_info', {}).get('airline_name') if results.get('version_info') else None,
                 error_details=results.get('error_details')
             )
 
@@ -146,6 +151,8 @@ async def get_run_status(run_id: str, db: Session = Depends(get_db_session)) -> 
         duration_seconds=run_summary['duration_seconds'],
         spec_version=run_summary['spec_version'],
         message_root=run_summary['message_root'],
+        airline_code=run_summary.get('airline_code'),
+        airline_name=run_summary.get('airline_name'),
         error_details=run_summary['error_details']
     )
 

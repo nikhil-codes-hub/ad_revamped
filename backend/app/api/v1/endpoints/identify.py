@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.services.database import get_db_session
 from app.models.database import Run, PatternMatch, NodeFact, Pattern, RunKind
+from app.services.llm_extractor import get_llm_extractor
 import logging
 
 router = APIRouter()
@@ -71,6 +72,10 @@ async def get_identify_matches(
         if match.pattern_id:
             pattern = db.query(Pattern).filter(Pattern.id == match.pattern_id).first()
 
+        # Extract quick explanation from match metadata
+        match_metadata = match.match_metadata or {}
+        quick_explanation = match_metadata.get('quick_explanation', '')
+
         result = {
             "match_id": match.id,
             "node_fact": {
@@ -84,11 +89,13 @@ async def get_identify_matches(
                 "section_path": pattern.section_path if pattern else None,
                 "spec_version": pattern.spec_version if pattern else None,
                 "message_root": pattern.message_root if pattern else None,
+                "airline_code": pattern.airline_code if pattern else None,
                 "decision_rule": pattern.decision_rule if pattern else {},
                 "times_seen": pattern.times_seen if pattern else 0
             } if pattern else None,
             "confidence": match.confidence,
             "verdict": match.verdict,
+            "quick_explanation": quick_explanation,
             "matched_at": match.created_at.isoformat() if match.created_at else None
         }
 
@@ -223,3 +230,202 @@ async def get_new_patterns(
         "new_patterns_count": len(results),
         "new_patterns": results
     }
+
+
+@router.post("/matches/{match_id}/explain")
+async def generate_detailed_explanation(
+    match_id: int,
+    db: Session = Depends(get_db_session)
+):
+    """
+    Generate detailed LLM-powered explanation for a pattern match.
+
+    Uses caching - only generates once, then stores in match_metadata.
+    """
+    logger.info(f"Generating detailed explanation for match: {match_id}")
+
+    # Get the pattern match
+    match = db.query(PatternMatch).filter(PatternMatch.id == match_id).first()
+    if not match:
+        raise HTTPException(status_code=404, detail="Pattern match not found")
+
+    # Check if explanation already exists (cache)
+    match_metadata = match.match_metadata or {}
+    if 'detailed_explanation' in match_metadata:
+        logger.info(f"Using cached explanation for match {match_id}")
+        return {
+            "match_id": match_id,
+            "detailed_explanation": match_metadata['detailed_explanation'],
+            "cached": True
+        }
+
+    # Get associated NodeFact and Pattern
+    node_fact = db.query(NodeFact).filter(NodeFact.id == match.node_fact_id).first()
+    if not node_fact:
+        raise HTTPException(status_code=404, detail="NodeFact not found")
+
+    pattern = None
+    if match.pattern_id:
+        pattern = db.query(Pattern).filter(Pattern.id == match.pattern_id).first()
+
+    # Generate detailed explanation using LLM
+    try:
+        llm = get_llm_extractor()
+
+        # Build context for LLM
+        node_structure = node_fact.fact_json
+        pattern_rule = pattern.decision_rule if pattern else None
+
+        if pattern:
+            # Determine if this is a mismatch
+            is_mismatch = match.confidence < 0.95
+
+            if is_mismatch:
+                # Extract business-relevant differences only
+                expected_type = pattern_rule.get('node_type', 'Unknown')
+                actual_type = node_structure.get('node_type', 'Unknown')
+
+                expected_attrs = set(pattern_rule.get('must_have_attributes', []))
+
+                # Filter out metadata fields added during extraction (not real XML attributes)
+                METADATA_FIELDS = {'summary', 'child_count', 'confidence', 'node_ordinal'}
+                all_actual_attrs = set(node_structure.get('attributes', {}).keys())
+                actual_attrs = all_actual_attrs - METADATA_FIELDS
+
+                missing_attrs = expected_attrs - actual_attrs
+                extra_attrs = actual_attrs - expected_attrs - set(pattern_rule.get('optional_attributes', []))
+
+                expected_children = pattern_rule.get('child_structure', {})
+                actual_children = node_structure.get('children', [])
+
+                expected_child_types = set(expected_children.get('child_types', []))
+                actual_child_types = set(child.get('node_type', '') for child in actual_children) if actual_children else set()
+                missing_child_types = expected_child_types - actual_child_types
+                extra_child_types = actual_child_types - expected_child_types
+
+                # Get reference patterns with details
+                expected_refs = pattern_rule.get('reference_patterns', [])
+                actual_refs = node_structure.get('relationships', [])
+
+                # Extract relationship types for comparison
+                expected_ref_types = set(ref.get('type', '') for ref in expected_refs)
+                actual_ref_types = set(ref.get('type', '') for ref in actual_refs)
+                missing_ref_types = expected_ref_types - actual_ref_types
+                extra_ref_types = actual_ref_types - expected_ref_types
+
+                # For child_references, extract the specific fields
+                expected_fields_detail = ""
+                for ref in expected_refs:
+                    if ref.get('type') == 'child_references' and 'fields' in ref:
+                        expected_fields_detail = f"\n  Expected reference fields in child elements: {', '.join(ref['fields'])}"
+
+                # Build detailed relationship info
+                relationship_details = ""
+                relationship_glossary = ""
+                if missing_ref_types or extra_ref_types or (expected_ref_types and not actual_ref_types):
+                    # Build glossary for relationship types
+                    unique_refs = expected_ref_types | actual_ref_types
+                    if unique_refs:
+                        relationship_glossary = "\n**What these relationships mean**:\n"
+                        ref_meanings = {
+                            'infant_parent': 'Links infant passengers to their accompanying adult guardian',
+                            'segment_reference': 'Links passenger journeys to specific flight segments',
+                            'pax_reference': 'Links data elements (baggage, services) to specific passengers',
+                            'baggage_reference': 'Links baggage items to passenger records',
+                            'journey_reference': 'Links segments to passenger journey records',
+                            'service_reference': 'Links ancillary services to passengers or segments',
+                            'child_references': 'Reference fields expected within child elements (e.g., InfantRef, ContactRef within each PaxSegment). NOTE: This may indicate the pattern was trained on XML with optional references that your XML doesn\'t have.'
+                        }
+                        for ref_type in unique_refs:
+                            if ref_type in ref_meanings:
+                                relationship_glossary += f"• {ref_type}: {ref_meanings[ref_type]}\n"
+                            else:
+                                relationship_glossary += f"• {ref_type}: Links related data elements\n"
+
+                    relationship_details = f"\n**Relationship/Reference Differences**:\n"
+                    if expected_ref_types:
+                        relationship_details += f"• Expected: {', '.join(expected_ref_types)}{expected_fields_detail}\n"
+                    if actual_ref_types:
+                        relationship_details += f"• Found: {', '.join(actual_ref_types)}\n"
+                    else:
+                        relationship_details += f"• Found: None\n"
+                    if missing_ref_types:
+                        relationship_details += f"• Missing: {', '.join(missing_ref_types)}\n"
+
+                # Get a small XML snippet from the actual data for illustration
+                xml_snippet = node_structure.get('snippet', '')
+                if xml_snippet and len(xml_snippet) > 500:
+                    xml_snippet = xml_snippet[:500] + '...'
+
+                prompt = f"""You are a validator for airline {pattern.airline_code or 'N/A'} data.
+
+**Element**: {actual_type}
+**Confidence**: {match.confidence * 100:.0f}%
+{relationship_glossary if relationship_glossary else ""}
+
+**Specific Differences Found**:
+{f"• Missing required fields: {', '.join(missing_attrs)}" if missing_attrs else ""}
+{f"• Extra unexpected fields: {', '.join(extra_attrs)}" if extra_attrs else ""}
+{f"• Expected child elements: {', '.join(expected_child_types)} but found: {', '.join(actual_child_types)}" if expected_child_types != actual_child_types else ""}
+{relationship_details if relationship_details else ""}
+
+**Current XML structure**:
+```xml
+{xml_snippet}
+```
+
+Using the specific differences listed above, provide a clear explanation:
+
+1. Explain what the missing relationship/fields mean using the glossary
+2. State the specific difference (expected vs found). If "child_references" is missing, list the SPECIFIC expected fields shown above
+3. IMPORTANT:
+   - Use ONLY the actual XML structure shown above
+   - If the expected fields are reference fields (like "infant", "contact_info"), explain these are OPTIONAL reference fields that were in the training data but may not be required
+   - Do NOT invent fake XML elements like <ParentReference>
+   - Only suggest adding elements if they are standard NDC elements that are actually missing
+
+Keep it concise - 3-5 sentences maximum.
+IMPORTANT: For "child_references", note that this often indicates the pattern was trained on XML with optional references. The current XML may be valid even without them.
+"""
+            else:
+                # Perfect match - keep it simple
+                prompt = f"""You are a validator checking airline data.
+
+**Data Element**: {node_structure.get('node_type', 'Unknown')} for airline {pattern.airline_code or 'N/A'}
+
+This matches perfectly. Write 1 sentence: "This [what it represents] matches the expected format. No action needed."
+"""
+        else:
+            # New pattern case
+            prompt = f"""You are a validator checking airline data.
+
+**New Data Element**: {node_structure.get('node_type', 'Unknown')}
+
+This data structure has NEVER been seen before in our pattern library.
+
+Explain in 2-3 sentences:
+1. What this likely represents based on the element name
+2. Why it might have appeared (e.g., new airline-specific extension, API version change, new NDC feature)
+
+Be factual and concise. Format as a paragraph, NOT bullet points.
+"""
+
+        # Call LLM
+        detailed_explanation = llm.generate_explanation(prompt)
+
+        # Store in match_metadata (cache for future requests)
+        match_metadata['detailed_explanation'] = detailed_explanation
+        match.match_metadata = match_metadata
+        db.commit()
+
+        logger.info(f"Generated and cached explanation for match {match_id}")
+
+        return {
+            "match_id": match_id,
+            "detailed_explanation": detailed_explanation,
+            "cached": False
+        }
+
+    except Exception as e:
+        logger.error(f"Error generating explanation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate explanation: {str(e)}")
