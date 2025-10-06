@@ -1,0 +1,1217 @@
+<OrderViewRS xmlns="http://www.iata.org/IATA/EDIST/2017.2" PrimaryLangID="en" Version="5.000" xmlns:ns2="http://www.iberia.com/IATA/NDC/SecurePayment/2017.2">
+	<Document>
+		<ReferenceVersion>5.000</ReferenceVersion>
+	</Document>
+	<Party>
+		<Sender>
+			<TravelAgencySender>
+				<Name>Amadeus TEST ES</Name>
+				<Contacts>
+					<Contact>
+						<EmailContact>
+							<Address>ALTEANDC_TEST@AMADEUS.COM</Address>
+						</EmailContact>
+						<PhoneContact>
+							<Number>34915820100</Number>
+						</PhoneContact>
+					</Contact>
+				</Contacts>
+				<IATA_Number>00019073</IATA_Number>
+				<AgencyID>MAD1A27QC</AgencyID>
+			</TravelAgencySender>
+		</Sender>
+	</Party>
+	<Success/>
+	<Response>
+		<Order OrderID="IBc182b957a0dc48f98831acd2f690d3f0OC" Owner="IB">
+			<BookingReferences>
+				<BookingReference>
+					<ID>JP60D</ID>
+					<AirlineID>IB</AirlineID>
+				</BookingReference>
+			</BookingReferences>
+			<TotalOrderPrice>
+				<DetailCurrencyPrice>
+					<Total Code="EUR">587.86</Total>
+					<Taxes>
+						<Total Code="EUR">213.86</Total>
+					</Taxes>
+				</DetailCurrencyPrice>
+			</TotalOrderPrice>
+			<TimeLimits>
+				<PaymentTimeLimit DateTime="2024-12-24T22:59:59.000Z"/>
+			</TimeLimits>
+			<OrderItems>
+				<OrderItem OrderItemID="IBc182b957a0dc48f98831acd2f690d3f0OC_01">
+					<PriceDetail>
+						<TotalAmount>
+							<SimpleCurrencyPrice Code="EUR">182.02</SimpleCurrencyPrice>
+						</TotalAmount>
+						<BaseAmount Code="EUR">117.00</BaseAmount>
+						<Taxes>
+							<Total Code="EUR">65.02</Total>
+							<Breakdown>
+								<Tax>
+									<Amount Code="EUR">14.63</Amount>
+									<Nation>ES</Nation>
+									<TaxCode>JD</TaxCode>
+									<TaxType>003</TaxType>
+									<Description>Spain Departure Charge</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">0.63</Amount>
+									<Nation>ES</Nation>
+									<TaxCode>OG</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Spain Aviation Safety And Security Fee</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">3.54</Amount>
+									<Nation>ES</Nation>
+									<TaxCode>QV</TaxCode>
+									<TaxType>003</TaxType>
+									<Description>Spain Security Tax</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">10.75</Amount>
+									<Nation>AT</Nation>
+									<TaxCode>AT</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Austria Passenger Security Charge</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">12.00</Amount>
+									<Nation>AT</Nation>
+									<TaxCode>QD</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Austria Air Transport Levy Domestic</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">23.47</Amount>
+									<Nation>AT</Nation>
+									<TaxCode>ZY</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Austria Passenger Service Charge</Description>
+								</Tax>
+							</Breakdown>
+						</Taxes>
+					</PriceDetail>
+					<Service ServiceID="FLIGHT_IB079120250206_PAX1" ServiceStatus="HK">
+						<PassengerRef>PAX1</PassengerRef>
+						<SegmentRef>IB079120250206</SegmentRef>
+					</Service>
+					<Service ServiceID="FLIGHT_IB079220250318_PAX1" ServiceStatus="HK">
+						<PassengerRef>PAX1</PassengerRef>
+						<SegmentRef>IB079220250318</SegmentRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079120250206-PAX1-CA" ServiceStatus="HK">
+						<PassengerRef>PAX1</PassengerRef>
+						<ServiceRef>FLIGHT_IB079120250206_PAX1</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079120250206">BAGSERVICE-CA-1</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079220250318-PAX1-CA" ServiceStatus="HK">
+						<PassengerRef>PAX1</PassengerRef>
+						<ServiceRef>FLIGHT_IB079220250318_PAX1</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079220250318">BAGSERVICE-CA-1</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079120250206-PAX1-CH" ServiceStatus="HK">
+						<PassengerRef>PAX1</PassengerRef>
+						<ServiceRef>FLIGHT_IB079120250206_PAX1</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079120250206">BAGSERVICE-CH-1</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079220250318-PAX1-CH" ServiceStatus="HK">
+						<PassengerRef>PAX1</PassengerRef>
+						<ServiceRef>FLIGHT_IB079220250318_PAX1</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079220250318">BAGSERVICE-CH-1</ServiceDefinitionRef>
+					</Service>
+					<TimeLimits>
+						<PriceGuaranteeTimeLimits Timestamp="2024-12-24T22:59:59.000Z"/>
+					</TimeLimits>
+					<FareDetail>
+						<PassengerRefs>PAX1</PassengerRefs>
+						<Price>
+							<TotalAmount>
+								<SimpleCurrencyPrice Code="EUR">182.02</SimpleCurrencyPrice>
+							</TotalAmount>
+							<BaseAmount Code="EUR">117.00</BaseAmount>
+							<Taxes>
+								<Total Code="EUR">65.02</Total>
+								<Breakdown>
+									<Tax>
+										<Amount Code="EUR">14.63</Amount>
+										<Nation>ES</Nation>
+										<TaxCode>JD</TaxCode>
+										<TaxType>003</TaxType>
+										<Description>Spain Departure Charge</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">0.63</Amount>
+										<Nation>ES</Nation>
+										<TaxCode>OG</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Spain Aviation Safety And Security Fee</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">3.54</Amount>
+										<Nation>ES</Nation>
+										<TaxCode>QV</TaxCode>
+										<TaxType>003</TaxType>
+										<Description>Spain Security Tax</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">10.75</Amount>
+										<Nation>AT</Nation>
+										<TaxCode>AT</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Austria Passenger Security Charge</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">12.00</Amount>
+										<Nation>AT</Nation>
+										<TaxCode>QD</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Austria Air Transport Levy Domestic</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">23.47</Amount>
+										<Nation>AT</Nation>
+										<TaxCode>ZY</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Austria Passenger Service Charge</Description>
+									</Tax>
+								</Breakdown>
+							</Taxes>
+						</Price>
+						<FareComponent>
+							<FareBasis>
+								<FareBasisCode>
+									<Code>QZNNANB4</Code>
+								</FareBasisCode>
+								<RBD>Q</RBD>
+								<CabinType>
+									<CabinTypeCode xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">5</CabinTypeCode>
+									<CabinTypeName xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="true" RefundableInd="false" refs="PenaltyRule01 PenaltyRule02 PenaltyRule03 PenaltyRule04 PenaltyRule05">
+									<Details>
+										<Detail refs="RULEMETADATAKEY_2">
+											<Type>Cancel</Type>
+										</Detail>
+										<Detail refs="RULEMETADATAKEY_3">
+											<Type>Change</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+							</FareRules>
+							<PriceClassRef>BASICHTiqZA4er2V</PriceClassRef>
+							<SegmentRefs>IB079120250206</SegmentRefs>
+						</FareComponent>
+						<FareComponent>
+							<FareBasis>
+								<FareBasisCode>
+									<Code>QZNNANB4</Code>
+								</FareBasisCode>
+								<RBD>Q</RBD>
+								<CabinType>
+									<CabinTypeCode xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">5</CabinTypeCode>
+									<CabinTypeName xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="true" RefundableInd="false" refs="PenaltyRule01 PenaltyRule02 PenaltyRule03 PenaltyRule04 PenaltyRule05">
+									<Details>
+										<Detail refs="RULEMETADATAKEY_2">
+											<Type>Cancel</Type>
+										</Detail>
+										<Detail refs="RULEMETADATAKEY_3">
+											<Type>Change</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+							</FareRules>
+							<PriceClassRef>BASICHTiqZA4er2V</PriceClassRef>
+							<SegmentRefs>IB079220250318</SegmentRefs>
+						</FareComponent>
+					</FareDetail>
+				</OrderItem>
+				<OrderItem OrderItemID="IBc182b957a0dc48f98831acd2f690d3f0OC_02">
+					<PriceDetail>
+						<TotalAmount>
+							<SimpleCurrencyPrice Code="EUR">182.02</SimpleCurrencyPrice>
+						</TotalAmount>
+						<BaseAmount Code="EUR">117.00</BaseAmount>
+						<Taxes>
+							<Total Code="EUR">65.02</Total>
+							<Breakdown>
+								<Tax>
+									<Amount Code="EUR">14.63</Amount>
+									<Nation>ES</Nation>
+									<TaxCode>JD</TaxCode>
+									<TaxType>003</TaxType>
+									<Description>Spain Departure Charge</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">0.63</Amount>
+									<Nation>ES</Nation>
+									<TaxCode>OG</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Spain Aviation Safety And Security Fee</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">3.54</Amount>
+									<Nation>ES</Nation>
+									<TaxCode>QV</TaxCode>
+									<TaxType>003</TaxType>
+									<Description>Spain Security Tax</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">10.75</Amount>
+									<Nation>AT</Nation>
+									<TaxCode>AT</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Austria Passenger Security Charge</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">12.00</Amount>
+									<Nation>AT</Nation>
+									<TaxCode>QD</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Austria Air Transport Levy Domestic</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">23.47</Amount>
+									<Nation>AT</Nation>
+									<TaxCode>ZY</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Austria Passenger Service Charge</Description>
+								</Tax>
+							</Breakdown>
+						</Taxes>
+					</PriceDetail>
+					<Service ServiceID="FLIGHT_IB079120250206_PAX2" ServiceStatus="HK">
+						<PassengerRef>PAX2</PassengerRef>
+						<SegmentRef>IB079120250206</SegmentRef>
+					</Service>
+					<Service ServiceID="FLIGHT_IB079220250318_PAX2" ServiceStatus="HK">
+						<PassengerRef>PAX2</PassengerRef>
+						<SegmentRef>IB079220250318</SegmentRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079120250206-PAX2-CA" ServiceStatus="HK">
+						<PassengerRef>PAX2</PassengerRef>
+						<ServiceRef>FLIGHT_IB079120250206_PAX2</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079120250206">BAGSERVICE-CA-1</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079220250318-PAX2-CA" ServiceStatus="HK">
+						<PassengerRef>PAX2</PassengerRef>
+						<ServiceRef>FLIGHT_IB079220250318_PAX2</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079220250318">BAGSERVICE-CA-1</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079120250206-PAX2-CH" ServiceStatus="HK">
+						<PassengerRef>PAX2</PassengerRef>
+						<ServiceRef>FLIGHT_IB079120250206_PAX2</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079120250206">BAGSERVICE-CH-1</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079220250318-PAX2-CH" ServiceStatus="HK">
+						<PassengerRef>PAX2</PassengerRef>
+						<ServiceRef>FLIGHT_IB079220250318_PAX2</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079220250318">BAGSERVICE-CH-1</ServiceDefinitionRef>
+					</Service>
+					<TimeLimits>
+						<PriceGuaranteeTimeLimits Timestamp="2024-12-24T22:59:59.000Z"/>
+					</TimeLimits>
+					<FareDetail>
+						<PassengerRefs>PAX2</PassengerRefs>
+						<Price>
+							<TotalAmount>
+								<SimpleCurrencyPrice Code="EUR">182.02</SimpleCurrencyPrice>
+							</TotalAmount>
+							<BaseAmount Code="EUR">117.00</BaseAmount>
+							<Taxes>
+								<Total Code="EUR">65.02</Total>
+								<Breakdown>
+									<Tax>
+										<Amount Code="EUR">14.63</Amount>
+										<Nation>ES</Nation>
+										<TaxCode>JD</TaxCode>
+										<TaxType>003</TaxType>
+										<Description>Spain Departure Charge</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">0.63</Amount>
+										<Nation>ES</Nation>
+										<TaxCode>OG</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Spain Aviation Safety And Security Fee</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">3.54</Amount>
+										<Nation>ES</Nation>
+										<TaxCode>QV</TaxCode>
+										<TaxType>003</TaxType>
+										<Description>Spain Security Tax</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">10.75</Amount>
+										<Nation>AT</Nation>
+										<TaxCode>AT</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Austria Passenger Security Charge</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">12.00</Amount>
+										<Nation>AT</Nation>
+										<TaxCode>QD</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Austria Air Transport Levy Domestic</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">23.47</Amount>
+										<Nation>AT</Nation>
+										<TaxCode>ZY</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Austria Passenger Service Charge</Description>
+									</Tax>
+								</Breakdown>
+							</Taxes>
+						</Price>
+						<FareComponent>
+							<FareBasis>
+								<FareBasisCode>
+									<Code>QZNNANB4</Code>
+								</FareBasisCode>
+								<RBD>Q</RBD>
+								<CabinType>
+									<CabinTypeCode xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">5</CabinTypeCode>
+									<CabinTypeName xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="true" RefundableInd="false" refs="PenaltyRule01 PenaltyRule02 PenaltyRule03 PenaltyRule04 PenaltyRule05">
+									<Details>
+										<Detail refs="RULEMETADATAKEY_2">
+											<Type>Cancel</Type>
+										</Detail>
+										<Detail refs="RULEMETADATAKEY_3">
+											<Type>Change</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+							</FareRules>
+							<PriceClassRef>BASICHTiqZA4er2V</PriceClassRef>
+							<SegmentRefs>IB079120250206</SegmentRefs>
+						</FareComponent>
+						<FareComponent>
+							<FareBasis>
+								<FareBasisCode>
+									<Code>QZNNANB4</Code>
+								</FareBasisCode>
+								<RBD>Q</RBD>
+								<CabinType>
+									<CabinTypeCode xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">5</CabinTypeCode>
+									<CabinTypeName xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="true" RefundableInd="false" refs="PenaltyRule01 PenaltyRule02 PenaltyRule03 PenaltyRule04 PenaltyRule05">
+									<Details>
+										<Detail refs="RULEMETADATAKEY_2">
+											<Type>Cancel</Type>
+										</Detail>
+										<Detail refs="RULEMETADATAKEY_3">
+											<Type>Change</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+							</FareRules>
+							<PriceClassRef>BASICHTiqZA4er2V</PriceClassRef>
+							<SegmentRefs>IB079220250318</SegmentRefs>
+						</FareComponent>
+					</FareDetail>
+				</OrderItem>
+				<OrderItem OrderItemID="IBc182b957a0dc48f98831acd2f690d3f0OC_03">
+					<PriceDetail>
+						<TotalAmount>
+							<SimpleCurrencyPrice Code="EUR">182.02</SimpleCurrencyPrice>
+						</TotalAmount>
+						<BaseAmount Code="EUR">117.00</BaseAmount>
+						<Taxes>
+							<Total Code="EUR">65.02</Total>
+							<Breakdown>
+								<Tax>
+									<Amount Code="EUR">14.63</Amount>
+									<Nation>ES</Nation>
+									<TaxCode>JD</TaxCode>
+									<TaxType>003</TaxType>
+									<Description>Spain Departure Charge</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">0.63</Amount>
+									<Nation>ES</Nation>
+									<TaxCode>OG</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Spain Aviation Safety And Security Fee</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">3.54</Amount>
+									<Nation>ES</Nation>
+									<TaxCode>QV</TaxCode>
+									<TaxType>003</TaxType>
+									<Description>Spain Security Tax</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">10.75</Amount>
+									<Nation>AT</Nation>
+									<TaxCode>AT</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Austria Passenger Security Charge</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">12.00</Amount>
+									<Nation>AT</Nation>
+									<TaxCode>QD</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Austria Air Transport Levy Domestic</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">23.47</Amount>
+									<Nation>AT</Nation>
+									<TaxCode>ZY</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Austria Passenger Service Charge</Description>
+								</Tax>
+							</Breakdown>
+						</Taxes>
+					</PriceDetail>
+					<Service ServiceID="FLIGHT_IB079120250206_PAX3" ServiceStatus="HK">
+						<PassengerRef>PAX3</PassengerRef>
+						<SegmentRef>IB079120250206</SegmentRef>
+					</Service>
+					<Service ServiceID="FLIGHT_IB079220250318_PAX3" ServiceStatus="HK">
+						<PassengerRef>PAX3</PassengerRef>
+						<SegmentRef>IB079220250318</SegmentRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079120250206-PAX3-CA" ServiceStatus="HK">
+						<PassengerRef>PAX3</PassengerRef>
+						<ServiceRef>FLIGHT_IB079120250206_PAX3</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079120250206">BAGSERVICE-CA-1</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079220250318-PAX3-CA" ServiceStatus="HK">
+						<PassengerRef>PAX3</PassengerRef>
+						<ServiceRef>FLIGHT_IB079220250318_PAX3</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079220250318">BAGSERVICE-CA-1</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079120250206-PAX3-CH" ServiceStatus="HK">
+						<PassengerRef>PAX3</PassengerRef>
+						<ServiceRef>FLIGHT_IB079120250206_PAX3</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079120250206">BAGSERVICE-CH-1</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079220250318-PAX3-CH" ServiceStatus="HK">
+						<PassengerRef>PAX3</PassengerRef>
+						<ServiceRef>FLIGHT_IB079220250318_PAX3</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079220250318">BAGSERVICE-CH-1</ServiceDefinitionRef>
+					</Service>
+					<TimeLimits>
+						<PriceGuaranteeTimeLimits Timestamp="2024-12-24T22:59:59.000Z"/>
+					</TimeLimits>
+					<FareDetail>
+						<PassengerRefs>PAX3</PassengerRefs>
+						<Price>
+							<TotalAmount>
+								<SimpleCurrencyPrice Code="EUR">182.02</SimpleCurrencyPrice>
+							</TotalAmount>
+							<BaseAmount Code="EUR">117.00</BaseAmount>
+							<Taxes>
+								<Total Code="EUR">65.02</Total>
+								<Breakdown>
+									<Tax>
+										<Amount Code="EUR">14.63</Amount>
+										<Nation>ES</Nation>
+										<TaxCode>JD</TaxCode>
+										<TaxType>003</TaxType>
+										<Description>Spain Departure Charge</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">0.63</Amount>
+										<Nation>ES</Nation>
+										<TaxCode>OG</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Spain Aviation Safety And Security Fee</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">3.54</Amount>
+										<Nation>ES</Nation>
+										<TaxCode>QV</TaxCode>
+										<TaxType>003</TaxType>
+										<Description>Spain Security Tax</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">10.75</Amount>
+										<Nation>AT</Nation>
+										<TaxCode>AT</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Austria Passenger Security Charge</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">12.00</Amount>
+										<Nation>AT</Nation>
+										<TaxCode>QD</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Austria Air Transport Levy Domestic</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">23.47</Amount>
+										<Nation>AT</Nation>
+										<TaxCode>ZY</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Austria Passenger Service Charge</Description>
+									</Tax>
+								</Breakdown>
+							</Taxes>
+						</Price>
+						<FareComponent>
+							<FareBasis>
+								<FareBasisCode>
+									<Code>QZNNANB4</Code>
+								</FareBasisCode>
+								<RBD>Q</RBD>
+								<CabinType>
+									<CabinTypeCode xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">5</CabinTypeCode>
+									<CabinTypeName xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<TicketDesig>CH</TicketDesig>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="true" RefundableInd="false" refs="PenaltyRule01 PenaltyRule02 PenaltyRule03 PenaltyRule04 PenaltyRule05">
+									<Details>
+										<Detail refs="RULEMETADATAKEY_2">
+											<Type>Cancel</Type>
+										</Detail>
+										<Detail refs="RULEMETADATAKEY_3">
+											<Type>Change</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+							</FareRules>
+							<PriceClassRef>BASICHTiqZA4er2V</PriceClassRef>
+							<SegmentRefs>IB079120250206</SegmentRefs>
+						</FareComponent>
+						<FareComponent>
+							<FareBasis>
+								<FareBasisCode>
+									<Code>QZNNANB4</Code>
+								</FareBasisCode>
+								<RBD>Q</RBD>
+								<CabinType>
+									<CabinTypeCode xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">5</CabinTypeCode>
+									<CabinTypeName xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<TicketDesig>CH</TicketDesig>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="true" RefundableInd="false" refs="PenaltyRule01 PenaltyRule02 PenaltyRule03 PenaltyRule04 PenaltyRule05">
+									<Details>
+										<Detail refs="RULEMETADATAKEY_2">
+											<Type>Cancel</Type>
+										</Detail>
+										<Detail refs="RULEMETADATAKEY_3">
+											<Type>Change</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+							</FareRules>
+							<PriceClassRef>BASICHTiqZA4er2V</PriceClassRef>
+							<SegmentRefs>IB079220250318</SegmentRefs>
+						</FareComponent>
+					</FareDetail>
+				</OrderItem>
+				<OrderItem OrderItemID="IBc182b957a0dc48f98831acd2f690d3f0OC_04">
+					<PriceDetail>
+						<TotalAmount>
+							<SimpleCurrencyPrice Code="EUR">41.80</SimpleCurrencyPrice>
+						</TotalAmount>
+						<BaseAmount Code="EUR">23.00</BaseAmount>
+						<Taxes>
+							<Total Code="EUR">18.80</Total>
+							<Breakdown>
+								<Tax>
+									<Amount Code="EUR">14.63</Amount>
+									<Nation>ES</Nation>
+									<TaxCode>JD</TaxCode>
+									<TaxType>003</TaxType>
+									<Description>Spain Departure Charge</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">0.63</Amount>
+									<Nation>ES</Nation>
+									<TaxCode>OG</TaxCode>
+									<TaxType>001</TaxType>
+									<Description>Spain Aviation Safety And Security Fee</Description>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">3.54</Amount>
+									<Nation>ES</Nation>
+									<TaxCode>QV</TaxCode>
+									<TaxType>003</TaxType>
+									<Description>Spain Security Tax</Description>
+								</Tax>
+							</Breakdown>
+						</Taxes>
+					</PriceDetail>
+					<Service ServiceID="FLIGHT_IB079120250206_PAX1.1" ServiceStatus="HK">
+						<PassengerRef>PAX1.1</PassengerRef>
+						<SegmentRef>IB079120250206</SegmentRef>
+					</Service>
+					<Service ServiceID="FLIGHT_IB079220250318_PAX1.1" ServiceStatus="HK">
+						<PassengerRef>PAX1.1</PassengerRef>
+						<SegmentRef>IB079220250318</SegmentRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079120250206-PAX1.1-CA" ServiceStatus="HK">
+						<PassengerRef>PAX1.1</PassengerRef>
+						<ServiceRef>FLIGHT_IB079120250206_PAX1.1</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079120250206">BAGSERVICE-CA-1</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079220250318-PAX1.1-CA" ServiceStatus="HK">
+						<PassengerRef>PAX1.1</PassengerRef>
+						<ServiceRef>FLIGHT_IB079220250318_PAX1.1</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079220250318">BAGSERVICE-CA-1</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079120250206-PAX1.1-CH" ServiceStatus="HK">
+						<PassengerRef>PAX1.1</PassengerRef>
+						<ServiceRef>FLIGHT_IB079120250206_PAX1.1</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079120250206">BAGSERVICE-CH-1</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAG_SERVICE-IB079220250318-PAX1.1-CH" ServiceStatus="HK">
+						<PassengerRef>PAX1.1</PassengerRef>
+						<ServiceRef>FLIGHT_IB079220250318_PAX1.1</ServiceRef>
+						<ServiceDefinitionRef SegmentRef="IB079220250318">BAGSERVICE-CH-1</ServiceDefinitionRef>
+					</Service>
+					<TimeLimits>
+						<PriceGuaranteeTimeLimits Timestamp="2024-12-24T22:59:59.000Z"/>
+					</TimeLimits>
+					<FareDetail>
+						<PassengerRefs>PAX1.1</PassengerRefs>
+						<Price>
+							<TotalAmount>
+								<SimpleCurrencyPrice Code="EUR">41.80</SimpleCurrencyPrice>
+							</TotalAmount>
+							<BaseAmount Code="EUR">23.00</BaseAmount>
+							<Taxes>
+								<Total Code="EUR">18.80</Total>
+								<Breakdown>
+									<Tax>
+										<Amount Code="EUR">14.63</Amount>
+										<Nation>ES</Nation>
+										<TaxCode>JD</TaxCode>
+										<TaxType>003</TaxType>
+										<Description>Spain Departure Charge</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">0.63</Amount>
+										<Nation>ES</Nation>
+										<TaxCode>OG</TaxCode>
+										<TaxType>001</TaxType>
+										<Description>Spain Aviation Safety And Security Fee</Description>
+									</Tax>
+									<Tax>
+										<Amount Code="EUR">3.54</Amount>
+										<Nation>ES</Nation>
+										<TaxCode>QV</TaxCode>
+										<TaxType>003</TaxType>
+										<Description>Spain Security Tax</Description>
+									</Tax>
+								</Breakdown>
+							</Taxes>
+						</Price>
+						<FareComponent>
+							<FareBasis>
+								<FareBasisCode>
+									<Code>QZNNANB4</Code>
+								</FareBasisCode>
+								<RBD>Q</RBD>
+								<CabinType>
+									<CabinTypeCode xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">5</CabinTypeCode>
+									<CabinTypeName xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<TicketDesig>IN</TicketDesig>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="true" RefundableInd="false" refs="PenaltyRule01 PenaltyRule02 PenaltyRule03 PenaltyRule04 PenaltyRule05">
+									<Details>
+										<Detail refs="RULEMETADATAKEY_2">
+											<Type>Cancel</Type>
+										</Detail>
+										<Detail refs="RULEMETADATAKEY_3">
+											<Type>Change</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+							</FareRules>
+							<PriceClassRef>BASICHTiqZA4er2V</PriceClassRef>
+							<SegmentRefs>IB079120250206</SegmentRefs>
+						</FareComponent>
+						<FareComponent>
+							<FareBasis>
+								<FareBasisCode>
+									<Code>QZNNANB4</Code>
+								</FareBasisCode>
+								<RBD>Q</RBD>
+								<CabinType>
+									<CabinTypeCode xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">5</CabinTypeCode>
+									<CabinTypeName xmlns:ns3="http://www.iberia.com/IATA/NDC/CommissionExtension/2017.2">Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<TicketDesig>IN</TicketDesig>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="true" RefundableInd="false" refs="PenaltyRule01 PenaltyRule02 PenaltyRule03 PenaltyRule04 PenaltyRule05">
+									<Details>
+										<Detail refs="RULEMETADATAKEY_2">
+											<Type>Cancel</Type>
+										</Detail>
+										<Detail refs="RULEMETADATAKEY_3">
+											<Type>Change</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+							</FareRules>
+							<PriceClassRef>BASICHTiqZA4er2V</PriceClassRef>
+							<SegmentRefs>IB079220250318</SegmentRefs>
+						</FareComponent>
+					</FareDetail>
+				</OrderItem>
+			</OrderItems>
+		</Order>
+		<DataLists>
+			<PassengerList>
+				<Passenger PassengerID="PAX1">
+					<PTC>ADT</PTC>
+					<Birthdate>1992-06-01</Birthdate>
+					<Individual>
+						<Gender>Male</Gender>
+						<NameTitle>MR</NameTitle>
+						<GivenName>ACBRED</GivenName>
+						<Surname>NDCX</Surname>
+					</Individual>
+					<ContactInfoRef>CI1PAX1</ContactInfoRef>
+					<InfantRef>PAX1.1</InfantRef>
+				</Passenger>
+				<Passenger PassengerID="PAX1.1">
+					<PTC>INF</PTC>
+					<Birthdate>2023-09-29</Birthdate>
+					<Individual>
+						<Gender>Female</Gender>
+						<GivenName>FXDSAL</GivenName>
+						<Surname>NDCX</Surname>
+					</Individual>
+				</Passenger>
+				<Passenger PassengerID="PAX2">
+					<PTC>ADT</PTC>
+					<Birthdate>1994-01-19</Birthdate>
+					<Individual>
+						<Gender>Male</Gender>
+						<NameTitle>MR</NameTitle>
+						<GivenName>ADVDNF</GivenName>
+						<Surname>NDCX</Surname>
+					</Individual>
+					<ContactInfoRef>CI1PAX2</ContactInfoRef>
+				</Passenger>
+				<Passenger PassengerID="PAX3">
+					<PTC>CHD</PTC>
+					<Birthdate>2015-07-10</Birthdate>
+					<Individual>
+						<Gender>Male</Gender>
+						<NameTitle>MR</NameTitle>
+						<GivenName>CCBYHT</GivenName>
+						<Surname>NDCX</Surname>
+					</Individual>
+					<ContactInfoRef>CI1PAX3</ContactInfoRef>
+				</Passenger>
+			</PassengerList>
+			<ContactList>
+				<ContactInformation ContactID="CI1PAX1">
+					<ContactType>not_send_mail</ContactType>
+					<ContactProvided>
+						<EmailAddress>
+							<EmailAddressValue>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressValue>
+						</EmailAddress>
+					</ContactProvided>
+					<ContactProvided>
+						<Phone>
+							<Label>mobile</Label>
+							<PhoneNumber>33251915249</PhoneNumber>
+						</Phone>
+					</ContactProvided>
+				</ContactInformation>
+				<ContactInformation ContactID="CI1PAX2">
+					<ContactType>not_send_mail</ContactType>
+					<ContactProvided>
+						<EmailAddress>
+							<EmailAddressValue>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressValue>
+						</EmailAddress>
+					</ContactProvided>
+					<ContactProvided>
+						<Phone>
+							<Label>mobile</Label>
+							<PhoneNumber>33251915249</PhoneNumber>
+						</Phone>
+					</ContactProvided>
+				</ContactInformation>
+				<ContactInformation ContactID="CI1PAX3">
+					<ContactType>not_send_mail</ContactType>
+					<ContactProvided>
+						<EmailAddress>
+							<EmailAddressValue>NAME_SURNAME_CHD@MYMAIL.COM</EmailAddressValue>
+						</EmailAddress>
+					</ContactProvided>
+					<ContactProvided>
+						<Phone>
+							<Label>mobile</Label>
+							<PhoneNumber>33492992557</PhoneNumber>
+						</Phone>
+					</ContactProvided>
+				</ContactInformation>
+			</ContactList>
+			<BaggageAllowanceList>
+				<BaggageAllowance BaggageAllowanceID="HANDBAGALLOWANCE_01">
+					<BaggageCategory>CarryOn</BaggageCategory>
+					<PieceAllowance refs="Media-CarryOn-Baggage">
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>2</TotalQuantity>
+						<BagType>CARRY ON BAGGAGE</BagType>
+						<PieceMeasurements Quantity="2"/>
+					</PieceAllowance>
+				</BaggageAllowance>
+				<BaggageAllowance BaggageAllowanceID="CHECKEDBAGALLOWANCE_1">
+					<BaggageCategory>Checked</BaggageCategory>
+					<PieceAllowance refs="Media-Checked-Baggage">
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>0</TotalQuantity>
+						<BagType>BAG UP TO 23 KG AND 158 LCM</BagType>
+						<Descriptions>
+							<Description>
+								<Text>Up to 50 lb/23 kg</Text>
+							</Description>
+							<Description>
+								<Text>Up to 62 li/158 lcm</Text>
+							</Description>
+						</Descriptions>
+						<PieceMeasurements Quantity="0"/>
+					</PieceAllowance>
+				</BaggageAllowance>
+			</BaggageAllowanceList>
+			<FareList>
+				<FareGroup ListKey="QZNNANB4">
+					<Fare>
+						<FareCode>70J</FareCode>
+					</Fare>
+					<FareBasisCode>
+						<Code>QZNNANB4</Code>
+					</FareBasisCode>
+				</FareGroup>
+			</FareList>
+			<FlightSegmentList>
+				<FlightSegment SegmentKey="IB079120250206">
+					<Departure>
+						<AirportCode>MAD</AirportCode>
+						<Date>2025-02-06</Date>
+						<Time>08:40</Time>
+						<AirportName>Madrid Adolfo Suarez-Barajas</AirportName>
+						<Terminal>
+							<Name>4</Name>
+						</Terminal>
+					</Departure>
+					<Arrival>
+						<AirportCode>VIE</AirportCode>
+						<Date>2025-02-06</Date>
+						<Time>11:40</Time>
+						<ChangeOfDay>0</ChangeOfDay>
+						<AirportName>Vienna Schwechat International</AirportName>
+						<Terminal>
+							<Name>3</Name>
+						</Terminal>
+					</Arrival>
+					<MarketingCarrier>
+						<AirlineID>IB</AirlineID>
+						<Name>Iberia</Name>
+						<FlightNumber>0791</FlightNumber>
+					</MarketingCarrier>
+					<OperatingCarrier>
+						<AirlineID>IB</AirlineID>
+						<Name>Iberia</Name>
+						<FlightNumber>0791</FlightNumber>
+						<Disclosures>
+							<Description>
+								<Text>IB</Text>
+							</Description>
+						</Disclosures>
+					</OperatingCarrier>
+					<Equipment>
+						<AircraftCode>320</AircraftCode>
+						<Name>Airbus A320</Name>
+					</Equipment>
+					<FlightDetail>
+						<FlightDuration>
+							<Value>PT3H</Value>
+						</FlightDuration>
+					</FlightDetail>
+				</FlightSegment>
+				<FlightSegment SegmentKey="IB079220250318">
+					<Departure>
+						<AirportCode>VIE</AirportCode>
+						<Date>2025-03-18</Date>
+						<Time>12:20</Time>
+						<AirportName>Vienna Schwechat International</AirportName>
+						<Terminal>
+							<Name>1</Name>
+						</Terminal>
+					</Departure>
+					<Arrival>
+						<AirportCode>MAD</AirportCode>
+						<Date>2025-03-18</Date>
+						<Time>15:30</Time>
+						<ChangeOfDay>0</ChangeOfDay>
+						<AirportName>Madrid Adolfo Suarez-Barajas</AirportName>
+						<Terminal>
+							<Name>4</Name>
+						</Terminal>
+					</Arrival>
+					<MarketingCarrier>
+						<AirlineID>IB</AirlineID>
+						<Name>Iberia</Name>
+						<FlightNumber>0792</FlightNumber>
+					</MarketingCarrier>
+					<OperatingCarrier>
+						<AirlineID>IB</AirlineID>
+						<Name>Iberia</Name>
+						<FlightNumber>0792</FlightNumber>
+						<Disclosures>
+							<Description>
+								<Text>IB</Text>
+							</Description>
+						</Disclosures>
+					</OperatingCarrier>
+					<Equipment>
+						<AircraftCode>320</AircraftCode>
+						<Name>Airbus A320</Name>
+					</Equipment>
+					<FlightDetail>
+						<FlightDuration>
+							<Value>PT3H10M</Value>
+						</FlightDuration>
+					</FlightDetail>
+				</FlightSegment>
+			</FlightSegmentList>
+			<FlightList>
+				<Flight FlightKey="MADVIE20250206084000">
+					<Journey>
+						<Time>PT3H</Time>
+					</Journey>
+					<SegmentReferences>IB079120250206</SegmentReferences>
+				</Flight>
+				<Flight FlightKey="VIEMAD20250318122000">
+					<Journey>
+						<Time>PT3H10M</Time>
+					</Journey>
+					<SegmentReferences>IB079220250318</SegmentReferences>
+				</Flight>
+			</FlightList>
+			<OriginDestinationList>
+				<OriginDestination OriginDestinationKey="OD1">
+					<DepartureCode>MAD</DepartureCode>
+					<ArrivalCode>VIE</ArrivalCode>
+					<FlightReferences>MADVIE20250206084000</FlightReferences>
+				</OriginDestination>
+				<OriginDestination OriginDestinationKey="OD2">
+					<DepartureCode>VIE</DepartureCode>
+					<ArrivalCode>MAD</ArrivalCode>
+					<FlightReferences>VIEMAD20250318122000</FlightReferences>
+				</OriginDestination>
+			</OriginDestinationList>
+			<MediaList>
+				<Media ListKey="Legal-Information">
+					<MediaLink>http://www.iberia.com/gb/legal-information/?language=en</MediaLink>
+				</Media>
+				<Media ListKey="Cabin-features">
+					<MediaLink>https://www.iberia.com/es/a-new-concept-in-flying/</MediaLink>
+				</Media>
+				<Media ListKey="Media-CarryOn-Baggage">
+					<MediaLink>https://www.iberia.com/es/luggage/hand-luggage/</MediaLink>
+				</Media>
+				<Media ListKey="Media-Checked-Baggage">
+					<MediaLink>https://www.iberia.com/es/luggage/allowance-in-hold/</MediaLink>
+				</Media>
+			</MediaList>
+			<PenaltyList>
+				<Penalty ObjectKey="PenaltyRule01" RefundableInd="false">
+					<Details>
+						<Detail>
+							<Type>Cancel</Type>
+							<Application>1</Application>
+						</Detail>
+					</Details>
+				</Penalty>
+				<Penalty ObjectKey="PenaltyRule02" RefundableInd="false">
+					<Details>
+						<Detail>
+							<Type>Cancel</Type>
+							<Application>2</Application>
+						</Detail>
+					</Details>
+				</Penalty>
+				<Penalty ObjectKey="PenaltyRule03" RefundableInd="false">
+					<Details>
+						<Detail>
+							<Type>Cancel</Type>
+							<Application>3</Application>
+						</Detail>
+					</Details>
+				</Penalty>
+				<Penalty ObjectKey="PenaltyRule04">
+					<Details>
+						<Detail>
+							<Type>Change</Type>
+							<Application>2</Application>
+							<Amounts>
+								<Amount>
+									<CurrencyAmountValue Code="EUR">65.00</CurrencyAmountValue>
+									<AmountApplication>maxPrice</AmountApplication>
+								</Amount>
+								<Amount>
+									<CurrencyAmountValue Code="EUR">65.00</CurrencyAmountValue>
+									<AmountApplication>minPrice</AmountApplication>
+								</Amount>
+							</Amounts>
+						</Detail>
+					</Details>
+				</Penalty>
+				<Penalty ObjectKey="PenaltyRule05">
+					<Details>
+						<Detail>
+							<Type>Change</Type>
+							<Application>3</Application>
+							<Amounts>
+								<Amount>
+									<CurrencyAmountValue Code="EUR">65.00</CurrencyAmountValue>
+									<AmountApplication>maxPrice</AmountApplication>
+								</Amount>
+								<Amount>
+									<CurrencyAmountValue Code="EUR">65.00</CurrencyAmountValue>
+									<AmountApplication>minPrice</AmountApplication>
+								</Amount>
+							</Amounts>
+						</Detail>
+					</Details>
+				</Penalty>
+			</PenaltyList>
+			<PriceClassList>
+				<PriceClass PriceClassID="BASICHTiqZA4er2V">
+					<Name>BASIC</Name>
+					<Code>BASIC</Code>
+					<Descriptions>
+						<Description ObjectKey="CFFIB210EG210EGBASIC050">
+							<Text>BF/SE/050/BS//STANDARD SEAT SELECTION/CHARGE</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASICIB5">
+							<Text>BF/SE/IB5///XL SEAT SELECTION/CHARGE</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASIC05Z">
+							<Text>BF/SE/05Z/Premium//EMERGENCY SEAT SELECTION/CHARGE</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASICIB3">
+							<Text>BF/SE/IB3///FRONT SEAT SELECTION/CHARGE</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASICIB4">
+							<Text>BF/SE/IB4///STD SEAT SEL 24H BEFORE DEPART/CHARGE</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASIC0B3">
+							<Text>ML//0B3///MEAL/DISPLAYED-BUT-NOT-OFFERED</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASICIC3">
+							<Text>ML//IC3///SNACK OR DRINK/CHARGE</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASIC0BX">
+							<Text>LG//0BX///LOUNGE ACCESS/DISPLAYED-BUT-NOT-OFFERED</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASIC0LW">
+							<Text>TS/SY/0LW/Priority//PRIORITY SECURITY/DISPLAYED-BUT-NOT-OFFERED</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASIC0LF">
+							<Text>TS/PY/0LF///PRIORITY BAGGAGE/DISPLAYED-BUT-NOT-OFFERED</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASIC0G6">
+							<Text>TS/PR/0G6///PRIORITY BOARDING GROUP 1/DISPLAYED-BUT-NOT-OFFERED</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASICIC2">
+							<Text>TS/PR/IC2///PRIORITY BOARDING GROUP 2/DISPLAYED-BUT-NOT-OFFERED</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASIC03P">
+							<Text>TS/PO/03P///PRIORITY CHECK IN/DISPLAYED-BUT-NOT-OFFERED</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASIC09A">
+							<Text>TS/DE/09A/WW/LV/WIFI CONNECTION/CHARGE</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASICIB0">
+							<Text>BF//IB0///AVIOS/FREE</Text>
+						</Description>
+						<Description ObjectKey="CFFIB210EG210EGBASICIB1">
+							<Text>BF//IB1///AVIOS ELITE/FREE</Text>
+						</Description>
+					</Descriptions>
+				</PriceClass>
+			</PriceClassList>
+			<ServiceDefinitionList>
+				<ServiceDefinition ServiceDefinitionID="BAGSERVICE-CA-1">
+					<Name>CarryOnBag</Name>
+					<BaggageAllowanceRef>HANDBAGALLOWANCE_01</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Carry On Bag</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+				<ServiceDefinition ServiceDefinitionID="BAGSERVICE-CH-1">
+					<Name>CheckedBag</Name>
+					<BaggageAllowanceRef>CHECKEDBAGALLOWANCE_1</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Checked Bag</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+			</ServiceDefinitionList>
+		</DataLists>
+		<Metadata>
+			<Other>
+				<OtherMetadata>
+					<CurrencyMetadatas>
+						<CurrencyMetadata MetadataKey="EUR">
+							<Decimals>2</Decimals>
+							<Name>Euro</Name>
+						</CurrencyMetadata>
+					</CurrencyMetadatas>
+				</OtherMetadata>
+				<OtherMetadata>
+					<RuleMetadatas>
+						<RuleMetadata MetadataKey="RULEMETADATAKEY_2">
+							<RuleID>Cancel</RuleID>
+							<Values>
+								<Value>
+									<Instruction>Not Allowed</Instruction>
+								</Value>
+							</Values>
+						</RuleMetadata>
+						<RuleMetadata MetadataKey="RULEMETADATAKEY_3">
+							<RuleID>Change</RuleID>
+							<Values>
+								<Value>
+									<Instruction>Allowed</Instruction>
+								</Value>
+							</Values>
+						</RuleMetadata>
+					</RuleMetadatas>
+				</OtherMetadata>
+			</Other>
+		</Metadata>
+	</Response>
+</OrderViewRS>

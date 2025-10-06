@@ -1,0 +1,1023 @@
+<ns4:IATA_OrderViewRS xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns:ns3="http://www.iata.org/IATA/2015/EASD/00/AMA_AugmentationPoint" xmlns:ns4="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<ns4:Response>
+		<DataLists>
+			<BaggageAllowanceList>
+				<BaggageAllowance>
+					<ApplicablePartyText>Traveler</ApplicablePartyText>
+					<BaggageAllowanceID>FBA1</BaggageAllowanceID>
+					<TypeCode>Checked</TypeCode>
+					<WeightAllowance>
+						<MaximumWeightMeasure>30</MaximumWeightMeasure>
+						<TotalMaximumWeightMeasure>30</TotalMaximumWeightMeasure>
+						<WeightUnitOfMeasurement>KGM</WeightUnitOfMeasurement>
+					</WeightAllowance>
+				</BaggageAllowance>
+			</BaggageAllowanceList>
+			<ContactInfoList>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX2_1</ContactInfoID>
+					<ContactPurposeText>NTF</ContactPurposeText>
+					<EmailAddress>
+						<ContactTypeText>OTH</ContactTypeText>
+						<EmailAddressText>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressText>
+					</EmailAddress>
+					<IndividualRefID>PAX2</IndividualRefID>
+					<Phone>
+						<ContactTypeText>OTH</ContactTypeText>
+						<CountryDialingCode>33</CountryDialingCode>
+						<PhoneNumber>432352554</PhoneNumber>
+					</Phone>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX2_2</ContactInfoID>
+					<ContactPurposeText>700</ContactPurposeText>
+					<IndividualRefID>PAX2</IndividualRefID>
+					<PostalAddress>
+						<CityName>NICE</CityName>
+						<ContactTypeText>OTH</ContactTypeText>
+						<CountryCode>FRA</CountryCode>
+						<PostalCode>75043</PostalCode>
+						<StreetText>75 RUE GDVCBY</StreetText>
+					</PostalAddress>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX2_3</ContactInfoID>
+					<ContactPurposeText>703</ContactPurposeText>
+					<IndividualRefID>PAX2</IndividualRefID>
+					<PostalAddress>
+						<CityName>ATLANTA</CityName>
+						<ContactTypeText>OTH</ContactTypeText>
+						<CountryCode>USA</CountryCode>
+						<PostalCode>60590</PostalCode>
+						<StreetText>53 AV VREDFR</StreetText>
+					</PostalAddress>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX3_1</ContactInfoID>
+					<ContactPurposeText>NTF</ContactPurposeText>
+					<EmailAddress>
+						<ContactTypeText>OTH</ContactTypeText>
+						<EmailAddressText>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressText>
+					</EmailAddress>
+					<IndividualRefID>PAX3</IndividualRefID>
+					<Phone>
+						<ContactTypeText>OTH</ContactTypeText>
+						<CountryDialingCode>33</CountryDialingCode>
+						<PhoneNumber>432352554</PhoneNumber>
+					</Phone>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX3_2</ContactInfoID>
+					<ContactPurposeText>700</ContactPurposeText>
+					<IndividualRefID>PAX3</IndividualRefID>
+					<PostalAddress>
+						<CityName>NICE</CityName>
+						<ContactTypeText>OTH</ContactTypeText>
+						<CountryCode>FRA</CountryCode>
+						<PostalCode>75132</PostalCode>
+						<StreetText>88 RUE FVREDF</StreetText>
+					</PostalAddress>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX3_3</ContactInfoID>
+					<ContactPurposeText>703</ContactPurposeText>
+					<IndividualRefID>PAX3</IndividualRefID>
+					<PostalAddress>
+						<CityName>ATLANTA</CityName>
+						<ContactTypeText>OTH</ContactTypeText>
+						<CountryCode>USA</CountryCode>
+						<PostalCode>57947</PostalCode>
+						<StreetText>58 AV EDFRGT</StreetText>
+					</PostalAddress>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX4_1</ContactInfoID>
+					<ContactPurposeText>NTF</ContactPurposeText>
+					<EmailAddress>
+						<ContactTypeText>OTH</ContactTypeText>
+						<EmailAddressText>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressText>
+					</EmailAddress>
+					<IndividualRefID>PAX4</IndividualRefID>
+					<Phone>
+						<ContactTypeText>OTH</ContactTypeText>
+						<CountryDialingCode>33</CountryDialingCode>
+						<PhoneNumber>432352554</PhoneNumber>
+					</Phone>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX4_2</ContactInfoID>
+					<ContactPurposeText>700</ContactPurposeText>
+					<IndividualRefID>PAX4</IndividualRefID>
+					<PostalAddress>
+						<CityName>NICE</CityName>
+						<ContactTypeText>OTH</ContactTypeText>
+						<CountryCode>FRA</CountryCode>
+						<PostalCode>75105</PostalCode>
+						<StreetText>70 RUE HTEGDV</StreetText>
+					</PostalAddress>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX4_3</ContactInfoID>
+					<ContactPurposeText>703</ContactPurposeText>
+					<IndividualRefID>PAX4</IndividualRefID>
+					<PostalAddress>
+						<CityName>ATLANTA</CityName>
+						<ContactTypeText>OTH</ContactTypeText>
+						<CountryCode>USA</CountryCode>
+						<PostalCode>61115</PostalCode>
+						<StreetText>54 AV VCBYJK</StreetText>
+					</PostalAddress>
+				</ContactInfo>
+			</ContactInfoList>
+			<DatedMarketingSegmentList>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-10-05T05:55:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>LHR</IATA_LocationCode>
+						<TerminalName>2</TerminalName>
+					</Arrival>
+					<CarrierDesigCode>SQ</CarrierDesigCode>
+					<CarrierName>SINGAPORE AIRLINES</CarrierName>
+					<DatedMarketingSegmentId>DMS1</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>DOS1</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2025-10-04T23:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SIN</IATA_LocationCode>
+						<TerminalName>3</TerminalName>
+					</Dep>
+					<MarketingCarrierFlightNumberText>322</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+			</DatedMarketingSegmentList>
+			<DatedOperatingLegList>
+				<DatedOperatingLeg>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-10-05T05:55:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>LHR</IATA_LocationCode>
+					</Arrival>
+					<DatedOperatingLegID>LEG1</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2025-10-04T23:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SIN</IATA_LocationCode>
+					</Dep>
+					<IATA_AircraftType>
+						<IATA_AircraftTypeCode>388</IATA_AircraftTypeCode>
+					</IATA_AircraftType>
+				</DatedOperatingLeg>
+			</DatedOperatingLegList>
+			<DatedOperatingSegmentList>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>SQ</CarrierDesigCode>
+					<CarrierName>SINGAPORE AIRLINES</CarrierName>
+					<DatedOperatingLegRefID>LEG1</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>DOS1</DatedOperatingSegmentId>
+					<DisclosureRefID>DIS1</DisclosureRefID>
+				</DatedOperatingSegment>
+			</DatedOperatingSegmentList>
+			<DisclosureList>
+				<Disclosure>
+					<Desc>
+						<DescText>SINGAPORE AIRLINES</DescText>
+					</Desc>
+					<DisclosureID>DIS1</DisclosureID>
+				</Disclosure>
+			</DisclosureList>
+			<OriginDestList>
+				<OriginDest>
+					<DestCode>LHR</DestCode>
+					<OriginCode>SIN</OriginCode>
+					<OriginDestID>OND1</OriginDestID>
+					<PaxJourneyRefID>FLT1</PaxJourneyRefID>
+				</OriginDest>
+			</OriginDestList>
+			<PaxJourneyList>
+				<PaxJourney>
+					<Duration>PT13H55M</Duration>
+					<PaxJourneyID>FLT1</PaxJourneyID>
+					<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<Pax>
+					<IdentityDoc>
+						<Birthdate>1991-11-01</Birthdate>
+						<CitizenshipCountryCode>FR</CitizenshipCountryCode>
+						<ExpiryDate>2034-05-19</ExpiryDate>
+						<GenderCode>M</GenderCode>
+						<GivenName>AFVHGL</GivenName>
+						<IdentityDocID>PA4991691</IdentityDocID>
+						<IdentityDocTypeCode>PT</IdentityDocTypeCode>
+						<IssuingCountryCode>FR</IssuingCountryCode>
+						<Surname>NDCX</Surname>
+					</IdentityDoc>
+					<Individual>
+						<Birthdate>1991-11-01</Birthdate>
+						<GenderCode>M</GenderCode>
+						<GivenName>AFVHGL</GivenName>
+						<IndividualID>PAX2</IndividualID>
+						<Surname>NDCX</Surname>
+						<TitleName>MR</TitleName>
+					</Individual>
+					<PaxID>PAX2</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+				<Pax>
+					<IdentityDoc>
+						<Birthdate>1993-08-20</Birthdate>
+						<CitizenshipCountryCode>FR</CitizenshipCountryCode>
+						<ExpiryDate>2031-06-25</ExpiryDate>
+						<GenderCode>F</GenderCode>
+						<GivenName>ARGJKL</GivenName>
+						<IdentityDocID>PA3346811</IdentityDocID>
+						<IdentityDocTypeCode>PT</IdentityDocTypeCode>
+						<IssuingCountryCode>FR</IssuingCountryCode>
+						<Surname>NDCX</Surname>
+					</IdentityDoc>
+					<Individual>
+						<Birthdate>1993-08-20</Birthdate>
+						<GenderCode>F</GenderCode>
+						<GivenName>ARGJKL</GivenName>
+						<IndividualID>PAX3</IndividualID>
+						<Surname>NDCX</Surname>
+						<TitleName>MRS</TitleName>
+					</Individual>
+					<PaxID>PAX3</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+				<Pax>
+					<IdentityDoc>
+						<Birthdate>1988-07-31</Birthdate>
+						<CitizenshipCountryCode>FR</CitizenshipCountryCode>
+						<ExpiryDate>2031-10-19</ExpiryDate>
+						<GenderCode>F</GenderCode>
+						<GivenName>AYJHGL</GivenName>
+						<IdentityDocID>PA5097495</IdentityDocID>
+						<IdentityDocTypeCode>PT</IdentityDocTypeCode>
+						<IssuingCountryCode>FR</IssuingCountryCode>
+						<Surname>NDCX</Surname>
+					</IdentityDoc>
+					<Individual>
+						<Birthdate>1988-07-31</Birthdate>
+						<GenderCode>F</GenderCode>
+						<GivenName>AYJHGL</GivenName>
+						<IndividualID>PAX4</IndividualID>
+						<Surname>NDCX</Surname>
+						<TitleName>MS</TitleName>
+					</Individual>
+					<PaxID>PAX4</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<DatedMarketingSegmentRefId>DMS1</DatedMarketingSegmentRefId>
+					<MarketingCarrierRBD_Code>E</MarketingCarrierRBD_Code>
+					<PaxSegmentID>SEG1</PaxSegmentID>
+				</PaxSegment>
+			</PaxSegmentList>
+			<PriceClassList>
+				<PriceClass>
+					<Code>FF21</Code>
+					<Desc>
+						<DescText>Earn KrisFlyer miles - 50%</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Upgrade with miles - Allowed</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Cabin baggage - 1 piece Up to 7kg each. Sum of length, width and height of each piece should not exceed 115cm.</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Check-in baggage - 30</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Booking cancellation fee - USD 50-100</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Booking no-show fee - USD 100</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Booking change fee - Complimentary</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Seat Selection - Complimentary (Forward Zone and Standard Seats)</DescText>
+					</Desc>
+					<Name>Economy Flexi</Name>
+					<PriceClassID>FF21</PriceClassID>
+				</PriceClass>
+			</PriceClassList>
+			<ServiceDefinitionList>
+				<ServiceDefinition>
+					<Desc>
+						<DescText>Bag allowances</DescText>
+					</Desc>
+					<Name>Bag allowances</Name>
+					<OwnerCode>SQ</OwnerCode>
+					<ServiceDefinitionAssociation>
+						<BaggageAllowanceRef>
+							<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+						</BaggageAllowanceRef>
+					</ServiceDefinitionAssociation>
+					<ServiceDefinitionID>BAGALLOW_1</ServiceDefinitionID>
+				</ServiceDefinition>
+			</ServiceDefinitionList>
+		</DataLists>
+		<Order>
+			<OrderID>SQ618EBU2UT00</OrderID>
+			<OrderItem>
+				<Commission>
+					<Percentage>0.00</Percentage>
+				</Commission>
+				<FareDetail>
+					<FareCalculationInfo>
+						<AddlInfoText>FC-SIN SQ LON1409.75NUC1409.75END ROE1.27753</AddlInfoText>
+						<PricingCodeText>F</PricingCodeText>
+					</FareCalculationInfo>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>ECONOMY</CabinTypeName>
+						</CabinType>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="SGD">260.00</Amount>
+								<MaximumAmount CurCode="SGD">260.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">260.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="SGD">130.00</Amount>
+								<MaximumAmount CurCode="SGD">130.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">130.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="SGD">130.00</Amount>
+								<MaximumAmount CurCode="SGD">130.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="SGD">130.00</Amount>
+								<MaximumAmount CurCode="SGD">130.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">130.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="SGD">0.00</Amount>
+								<MaximumAmount CurCode="SGD">0.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="SGD">0.00</Amount>
+								<MaximumAmount CurCode="SGD">0.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<FareBasisCode>E12SGO</FareBasisCode>
+						<NegotiatedCode>749</NegotiatedCode>
+						<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						<PriceClassRefID>FF21</PriceClassRefID>
+						<RBD>
+							<RBD_Code>E</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>PAX2</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="SGD">1801.00</BaseAmount>
+						<TaxSummary>
+							<Tax>
+								<AddlTaxCode>DE</AddlTaxCode>
+								<Amount CurCode="SGD">10.80</Amount>
+								<TaxCode>L7</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>AE</AddlTaxCode>
+								<Amount CurCode="SGD">8.00</Amount>
+								<TaxCode>OP</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>AD</AddlTaxCode>
+								<Amount CurCode="SGD">46.40</Amount>
+								<TaxCode>SG</TaxCode>
+							</Tax>
+							<TotalTaxAmount CurCode="SGD">65.20</TotalTaxAmount>
+						</TaxSummary>
+						<TotalAmount CurCode="SGD">1866.20</TotalAmount>
+					</Price>
+				</FareDetail>
+				<FareDetail>
+					<FareCalculationInfo>
+						<AddlInfoText>FC-SIN SQ LON1409.75NUC1409.75END ROE1.27753</AddlInfoText>
+						<PricingCodeText>F</PricingCodeText>
+					</FareCalculationInfo>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>ECONOMY</CabinTypeName>
+						</CabinType>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="SGD">260.00</Amount>
+								<MaximumAmount CurCode="SGD">260.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">260.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="SGD">130.00</Amount>
+								<MaximumAmount CurCode="SGD">130.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">130.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="SGD">130.00</Amount>
+								<MaximumAmount CurCode="SGD">130.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="SGD">130.00</Amount>
+								<MaximumAmount CurCode="SGD">130.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">130.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="SGD">0.00</Amount>
+								<MaximumAmount CurCode="SGD">0.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="SGD">0.00</Amount>
+								<MaximumAmount CurCode="SGD">0.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<FareBasisCode>E12SGO</FareBasisCode>
+						<NegotiatedCode>749</NegotiatedCode>
+						<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						<PriceClassRefID>FF21</PriceClassRefID>
+						<RBD>
+							<RBD_Code>E</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>PAX3</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="SGD">1801.00</BaseAmount>
+						<TaxSummary>
+							<Tax>
+								<AddlTaxCode>DE</AddlTaxCode>
+								<Amount CurCode="SGD">10.80</Amount>
+								<TaxCode>L7</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>AE</AddlTaxCode>
+								<Amount CurCode="SGD">8.00</Amount>
+								<TaxCode>OP</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>AD</AddlTaxCode>
+								<Amount CurCode="SGD">46.40</Amount>
+								<TaxCode>SG</TaxCode>
+							</Tax>
+							<TotalTaxAmount CurCode="SGD">65.20</TotalTaxAmount>
+						</TaxSummary>
+						<TotalAmount CurCode="SGD">1866.20</TotalAmount>
+					</Price>
+				</FareDetail>
+				<FareDetail>
+					<FareCalculationInfo>
+						<AddlInfoText>FC-SIN SQ LON1409.75NUC1409.75END ROE1.27753</AddlInfoText>
+						<PricingCodeText>F</PricingCodeText>
+					</FareCalculationInfo>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>ECONOMY</CabinTypeName>
+						</CabinType>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="SGD">260.00</Amount>
+								<MaximumAmount CurCode="SGD">260.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">260.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="SGD">130.00</Amount>
+								<MaximumAmount CurCode="SGD">130.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">130.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="SGD">130.00</Amount>
+								<MaximumAmount CurCode="SGD">130.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="SGD">130.00</Amount>
+								<MaximumAmount CurCode="SGD">130.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">130.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="SGD">0.00</Amount>
+								<MaximumAmount CurCode="SGD">0.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="SGD">0.00</Amount>
+								<MaximumAmount CurCode="SGD">0.00</MaximumAmount>
+								<MinimumAmount CurCode="SGD">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<FareBasisCode>E12SGO</FareBasisCode>
+						<NegotiatedCode>749</NegotiatedCode>
+						<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						<PriceClassRefID>FF21</PriceClassRefID>
+						<RBD>
+							<RBD_Code>E</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>PAX4</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="SGD">1801.00</BaseAmount>
+						<TaxSummary>
+							<Tax>
+								<AddlTaxCode>DE</AddlTaxCode>
+								<Amount CurCode="SGD">10.80</Amount>
+								<TaxCode>L7</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>AE</AddlTaxCode>
+								<Amount CurCode="SGD">8.00</Amount>
+								<TaxCode>OP</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>AD</AddlTaxCode>
+								<Amount CurCode="SGD">46.40</Amount>
+								<TaxCode>SG</TaxCode>
+							</Tax>
+							<TotalTaxAmount CurCode="SGD">65.20</TotalTaxAmount>
+						</TaxSummary>
+						<TotalAmount CurCode="SGD">1866.20</TotalAmount>
+					</Price>
+				</FareDetail>
+				<OrderItemID>SQ618EBU2UT00_AIR-1</OrderItemID>
+				<OwnerCode>SQ</OwnerCode>
+				<Price>
+					<BaseAmount CurCode="SGD">5403.00</BaseAmount>
+					<TaxSummary>
+						<Tax>
+							<Amount CurCode="SGD">24.00</Amount>
+							<TaxCode>OP</TaxCode>
+						</Tax>
+						<Tax>
+							<Amount CurCode="SGD">139.20</Amount>
+							<TaxCode>SG</TaxCode>
+						</Tax>
+						<Tax>
+							<Amount CurCode="SGD">32.40</Amount>
+							<TaxCode>L7</TaxCode>
+						</Tax>
+						<TotalTaxAmount CurCode="SGD">195.60</TotalTaxAmount>
+					</TaxSummary>
+					<TotalAmount CurCode="SGD">5598.60</TotalAmount>
+				</Price>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>SQ</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>EBU2UT</BookingID>
+					</BookingRef>
+					<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<ServiceDefinitionRef>
+							<OrderFlightAssociations>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderFlightAssociations>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OrderServiceAssociation>
+					<PaxRefID>PAX2</PaxRefID>
+					<ServiceID>SEG1_PAX2</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>SQ</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>EBU2UT</BookingID>
+					</BookingRef>
+					<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<ServiceDefinitionRef>
+							<OrderFlightAssociations>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderFlightAssociations>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OrderServiceAssociation>
+					<PaxRefID>PAX3</PaxRefID>
+					<ServiceID>SEG1_PAX3</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>SQ</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>EBU2UT</BookingID>
+					</BookingRef>
+					<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<ServiceDefinitionRef>
+							<OrderFlightAssociations>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderFlightAssociations>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OrderServiceAssociation>
+					<PaxRefID>PAX4</PaxRefID>
+					<ServiceID>SEG1_PAX4</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<StatusCode>ACTIVE</StatusCode>
+			</OrderItem>
+			<OwnerCode>SQ</OwnerCode>
+			<StatusCode>OPENED</StatusCode>
+			<TotalPrice>
+				<BaseAmount CurCode="SGD">5403.00</BaseAmount>
+				<TaxSummary>
+					<TotalTaxAmount CurCode="SGD">195.60</TotalTaxAmount>
+				</TaxSummary>
+				<TotalAmount CurCode="SGD">5598.60</TotalAmount>
+			</TotalPrice>
+		</Order>
+		<TicketDocInfo>
+			<BookletQty>1</BookletQty>
+			<EndorsementText>NO CHNG FEE /REFUND FEE APPLY /NO SHOW FEE APPLY</EndorsementText>
+			<IssueInfo>
+				<IssueDate>2025-08-18</IssueDate>
+				<IssuingCarrier>
+					<AirlineDesigCode>SQ</AirlineDesigCode>
+				</IssuingCarrier>
+			</IssueInfo>
+			<OriginalIssueInfo>
+				<IssueDate>2025-08-18</IssueDate>
+				<IssuingCarrier>
+					<AirlineDesigCode>SQ</AirlineDesigCode>
+				</IssuingCarrier>
+			</OriginalIssueInfo>
+			<PaxRefID>PAX2</PaxRefID>
+			<Ticket>
+				<Coupon>
+					<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+					<CouponNumber>1</CouponNumber>
+					<CouponStatusCode>I</CouponStatusCode>
+					<CurrentCouponFlightInfoRef>
+						<CurrentAirlinePaxSegmentRef>
+							<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						</CurrentAirlinePaxSegmentRef>
+					</CurrentCouponFlightInfoRef>
+					<FareBasisCode>E12SGO</FareBasisCode>
+				</Coupon>
+				<ReportingTypeCode>BSP</ReportingTypeCode>
+				<TicketDocTypeCode>T</TicketDocTypeCode>
+				<TicketNumber>6182461679426</TicketNumber>
+			</Ticket>
+		</TicketDocInfo>
+		<TicketDocInfo>
+			<BookletQty>1</BookletQty>
+			<EndorsementText>NO CHNG FEE /REFUND FEE APPLY /NO SHOW FEE APPLY</EndorsementText>
+			<IssueInfo>
+				<IssueDate>2025-08-18</IssueDate>
+				<IssuingCarrier>
+					<AirlineDesigCode>SQ</AirlineDesigCode>
+				</IssuingCarrier>
+			</IssueInfo>
+			<OriginalIssueInfo>
+				<IssueDate>2025-08-18</IssueDate>
+				<IssuingCarrier>
+					<AirlineDesigCode>SQ</AirlineDesigCode>
+				</IssuingCarrier>
+			</OriginalIssueInfo>
+			<PaxRefID>PAX3</PaxRefID>
+			<Ticket>
+				<Coupon>
+					<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+					<CouponNumber>1</CouponNumber>
+					<CouponStatusCode>I</CouponStatusCode>
+					<CurrentCouponFlightInfoRef>
+						<CurrentAirlinePaxSegmentRef>
+							<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						</CurrentAirlinePaxSegmentRef>
+					</CurrentCouponFlightInfoRef>
+					<FareBasisCode>E12SGO</FareBasisCode>
+				</Coupon>
+				<ReportingTypeCode>BSP</ReportingTypeCode>
+				<TicketDocTypeCode>T</TicketDocTypeCode>
+				<TicketNumber>6182461679427</TicketNumber>
+			</Ticket>
+		</TicketDocInfo>
+		<TicketDocInfo>
+			<BookletQty>1</BookletQty>
+			<EndorsementText>NO CHNG FEE /REFUND FEE APPLY /NO SHOW FEE APPLY</EndorsementText>
+			<IssueInfo>
+				<IssueDate>2025-08-18</IssueDate>
+				<IssuingCarrier>
+					<AirlineDesigCode>SQ</AirlineDesigCode>
+				</IssuingCarrier>
+			</IssueInfo>
+			<OriginalIssueInfo>
+				<IssueDate>2025-08-18</IssueDate>
+				<IssuingCarrier>
+					<AirlineDesigCode>SQ</AirlineDesigCode>
+				</IssuingCarrier>
+			</OriginalIssueInfo>
+			<PaxRefID>PAX4</PaxRefID>
+			<Ticket>
+				<Coupon>
+					<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+					<CouponNumber>1</CouponNumber>
+					<CouponStatusCode>I</CouponStatusCode>
+					<CurrentCouponFlightInfoRef>
+						<CurrentAirlinePaxSegmentRef>
+							<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						</CurrentAirlinePaxSegmentRef>
+					</CurrentCouponFlightInfoRef>
+					<FareBasisCode>E12SGO</FareBasisCode>
+				</Coupon>
+				<ReportingTypeCode>BSP</ReportingTypeCode>
+				<TicketDocTypeCode>T</TicketDocTypeCode>
+				<TicketNumber>6182461679428</TicketNumber>
+			</Ticket>
+		</TicketDocInfo>
+		<Warning>
+			<Code>911</Code>
+			<DescText>Travel Agency Contact Information has not been modified due to conflicting operations</DescText>
+			<LangCode>EN</LangCode>
+		</Warning>
+	</ns4:Response>
+	<ns4:DistributionChain>
+		<DistributionChainLink>
+			<ContactInfo>
+				<ContactInfoID>CTC_1</ContactInfoID>
+				<ContactPurposeText>OTH</ContactPurposeText>
+				<Phone>
+					<ContactTypeText>PRO</ContactTypeText>
+					<CountryDialingCode>65</CountryDialingCode>
+					<PhoneNumber>097230220</PhoneNumber>
+				</Phone>
+			</ContactInfo>
+			<Ordinal>1</Ordinal>
+			<OrgRole>Seller</OrgRole>
+			<ParticipatingOrg>
+				<OrgID>00222084</OrgID>
+			</ParticipatingOrg>
+		</DistributionChainLink>
+		<DistributionChainLink>
+			<Ordinal>2</Ordinal>
+			<OrgRole>Distributor</OrgRole>
+			<ParticipatingOrg>
+				<OrgID>1A</OrgID>
+			</ParticipatingOrg>
+		</DistributionChainLink>
+		<DistributionChainLink>
+			<Ordinal>3</Ordinal>
+			<OrgRole>Carrier</OrgRole>
+			<ParticipatingOrg>
+				<OrgID>SQ</OrgID>
+			</ParticipatingOrg>
+		</DistributionChainLink>
+	</ns4:DistributionChain>
+	<ns4:PayloadAttributes>
+		<CorrelationID>BV6G40AAVK5U1AD9C91BJMTXP0</CorrelationID>
+		<VersionNumber>21.3</VersionNumber>
+	</ns4:PayloadAttributes>
+	<ns4:PaymentFunctions>
+		<OrderAssociation>
+			<OrderItemRefID>SQ618EBU2UT00_AIR-1</OrderItemRefID>
+			<OrderRefID>SQ618EBU2UT00</OrderRefID>
+		</OrderAssociation>
+		<PaymentProcessingSummary>
+			<Amount CurCode="SGD">1866.20</Amount>
+			<PaymentCommitmentDateTime>2025-08-18T00:00:00Z</PaymentCommitmentDateTime>
+			<PaymentID>PAY1</PaymentID>
+			<PaymentProcessingSummaryPaymentMethod>
+				<SettlementPlan>
+					<PaymentTypeCode>CA</PaymentTypeCode>
+				</SettlementPlan>
+			</PaymentProcessingSummaryPaymentMethod>
+			<PaymentStatusCode>SUCCESSFUL</PaymentStatusCode>
+		</PaymentProcessingSummary>
+	</ns4:PaymentFunctions>
+	<ns4:PaymentFunctions>
+		<OrderAssociation>
+			<OrderItemRefID>SQ618EBU2UT00_AIR-1</OrderItemRefID>
+			<OrderRefID>SQ618EBU2UT00</OrderRefID>
+		</OrderAssociation>
+		<PaymentProcessingSummary>
+			<Amount CurCode="SGD">1866.20</Amount>
+			<PaymentCommitmentDateTime>2025-08-18T00:00:00Z</PaymentCommitmentDateTime>
+			<PaymentID>PAY2</PaymentID>
+			<PaymentProcessingSummaryPaymentMethod>
+				<SettlementPlan>
+					<PaymentTypeCode>CA</PaymentTypeCode>
+				</SettlementPlan>
+			</PaymentProcessingSummaryPaymentMethod>
+			<PaymentStatusCode>SUCCESSFUL</PaymentStatusCode>
+		</PaymentProcessingSummary>
+	</ns4:PaymentFunctions>
+	<ns4:PaymentFunctions>
+		<OrderAssociation>
+			<OrderItemRefID>SQ618EBU2UT00_AIR-1</OrderItemRefID>
+			<OrderRefID>SQ618EBU2UT00</OrderRefID>
+		</OrderAssociation>
+		<PaymentProcessingSummary>
+			<Amount CurCode="SGD">1866.20</Amount>
+			<PaymentCommitmentDateTime>2025-08-18T00:00:00Z</PaymentCommitmentDateTime>
+			<PaymentID>PAY3</PaymentID>
+			<PaymentProcessingSummaryPaymentMethod>
+				<SettlementPlan>
+					<PaymentTypeCode>CA</PaymentTypeCode>
+				</SettlementPlan>
+			</PaymentProcessingSummaryPaymentMethod>
+			<PaymentStatusCode>SUCCESSFUL</PaymentStatusCode>
+		</PaymentProcessingSummary>
+	</ns4:PaymentFunctions>
+</ns4:IATA_OrderViewRS>

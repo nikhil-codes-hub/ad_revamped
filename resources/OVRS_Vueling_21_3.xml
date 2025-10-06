@@ -1,0 +1,724 @@
+<IATA_OrderViewRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<Response>
+		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<ContactInfoList>
+				<ContactInfo>
+					<ContactInfoID>con-1</ContactInfoID>
+					<EmailAddress>
+						<EmailAddressText>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressText>
+					</EmailAddress>
+					<Phone>
+						<ContactTypeText>Home</ContactTypeText>
+						<PhoneNumber>33380306997</PhoneNumber>
+					</Phone>
+					<PostalAddress>
+						<CityName>NICE</CityName>
+						<CountryCode>FR</CountryCode>
+						<PostalCode>75050</PostalCode>
+						<StreetText>79 RUE AQCXDS</StreetText>
+					</PostalAddress>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>con-2</ContactInfoID>
+					<EmailAddress>
+						<EmailAddressText>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressText>
+					</EmailAddress>
+					<Phone>
+						<ContactTypeText>Home</ContactTypeText>
+						<PhoneNumber>33380306997</PhoneNumber>
+					</Phone>
+					<PostalAddress>
+						<CityName>NICE</CityName>
+						<CountryCode>FR</CountryCode>
+						<PostalCode>75041</PostalCode>
+						<StreetText>74 RUE VCBYJK</StreetText>
+					</PostalAddress>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>con-3</ContactInfoID>
+					<EmailAddress>
+						<EmailAddressText>NAME_SURNAME_CHD@MYMAIL.COM</EmailAddressText>
+					</EmailAddress>
+					<Phone>
+						<ContactTypeText>Home</ContactTypeText>
+						<PhoneNumber>33321892184</PhoneNumber>
+					</Phone>
+					<PostalAddress>
+						<CityName>NICE</CityName>
+						<CountryCode>FR</CountryCode>
+						<PostalCode>75077</PostalCode>
+						<StreetText>80 RUE DNFHTE</StreetText>
+					</PostalAddress>
+				</ContactInfo>
+			</ContactInfoList>
+			<DatedMarketingSegmentList>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-01-27T23:25:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>BCN</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>VY</CarrierDesigCode>
+					<DatedMarketingSegmentId>Mkt-seg0542686836</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>Opr-seg0542686836</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2025-01-27T21:35:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>CDG</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>8247</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-02-25T20:05:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>CDG</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>VY</CarrierDesigCode>
+					<DatedMarketingSegmentId>Mkt-seg1691118681</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>Opr-seg1691118681</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2025-02-25T18:05:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>BCN</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>8246</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+			</DatedMarketingSegmentList>
+			<DatedOperatingLegList>
+				<DatedOperatingLeg>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-01-27T23:25:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>BCN</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>321</CarrierAircraftTypeCode>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>seg0542686836-leg0</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2025-01-27T21:35:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>CDG</IATA_LocationCode>
+					</Dep>
+				</DatedOperatingLeg>
+				<DatedOperatingLeg>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-02-25T20:05:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>CDG</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>321</CarrierAircraftTypeCode>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>seg1691118681-leg0</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2025-02-25T18:05:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>BCN</IATA_LocationCode>
+					</Dep>
+				</DatedOperatingLeg>
+			</DatedOperatingLegList>
+			<DatedOperatingSegmentList>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>VY</CarrierDesigCode>
+					<DatedOperatingLegRefID>seg0542686836-leg0</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>Opr-seg0542686836</DatedOperatingSegmentId>
+					<Duration>PT1H50M</Duration>
+					<OperatingCarrierFlightNumberText>8247</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>VY</CarrierDesigCode>
+					<DatedOperatingLegRefID>seg1691118681-leg0</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>Opr-seg1691118681</DatedOperatingSegmentId>
+					<Duration>PT2H</Duration>
+					<OperatingCarrierFlightNumberText>8246</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+			</DatedOperatingSegmentList>
+			<PaxJourneyList>
+				<PaxJourney>
+					<PaxJourneyID>fl0542686836</PaxJourneyID>
+					<PaxSegmentRefID>seg0542686836</PaxSegmentRefID>
+				</PaxJourney>
+				<PaxJourney>
+					<PaxJourneyID>fl1691118681</PaxJourneyID>
+					<PaxSegmentRefID>seg1691118681</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<Pax>
+					<ContactInfoRefID>con-1</ContactInfoRefID>
+					<Individual>
+						<Birthdate>1993-01-04</Birthdate>
+						<GenderCode>F</GenderCode>
+						<GivenName>AAQDSA</GivenName>
+						<IndividualID>A174288793</IndividualID>
+						<Surname>NDCX</Surname>
+						<TitleName>MS</TitleName>
+					</Individual>
+					<PaxID>A174288793</PaxID>
+					<PTC>ADT</PTC>
+					<Remark>
+						<RemarkText>PAX1</RemarkText>
+					</Remark>
+					<ResidenceCountryCode>FR</ResidenceCountryCode>
+				</Pax>
+				<Pax>
+					<ContactInfoRefID>con-2</ContactInfoRefID>
+					<Individual>
+						<Birthdate>1996-09-12</Birthdate>
+						<GenderCode>F</GenderCode>
+						<GivenName>AGDYJK</GivenName>
+						<IndividualID>A174288794</IndividualID>
+						<Surname>NDCX</Surname>
+						<TitleName>MS</TitleName>
+					</Individual>
+					<PaxID>A174288794</PaxID>
+					<PTC>ADT</PTC>
+					<Remark>
+						<RemarkText>PAX2</RemarkText>
+					</Remark>
+					<ResidenceCountryCode>FR</ResidenceCountryCode>
+				</Pax>
+				<Pax>
+					<ContactInfoRefID>con-3</ContactInfoRefID>
+					<Individual>
+						<Birthdate>2014-06-27</Birthdate>
+						<GenderCode>F</GenderCode>
+						<GivenName>CEGDHG</GivenName>
+						<IndividualID>C174288795</IndividualID>
+						<Surname>NDCX</Surname>
+						<TitleName>MS</TitleName>
+					</Individual>
+					<PaxID>C174288795</PaxID>
+					<PTC>CHD</PTC>
+					<Remark>
+						<RemarkText>PAX3</RemarkText>
+					</Remark>
+					<ResidenceCountryCode>FR</ResidenceCountryCode>
+				</Pax>
+				<Pax>
+					<Individual>
+						<Birthdate>2023-10-24</Birthdate>
+						<GenderCode>F</GenderCode>
+						<GivenName>FCXDDF</GivenName>
+						<IndividualID>I174288793</IndividualID>
+						<Surname>NDCX</Surname>
+					</Individual>
+					<PaxID>I174288793</PaxID>
+					<PaxRefID>A174288793</PaxRefID>
+					<PTC>INF</PTC>
+					<Remark>
+						<RemarkText>PAX1.1</RemarkText>
+					</Remark>
+					<ResidenceCountryCode>FR</ResidenceCountryCode>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<CabinTypeAssociationChoice>
+						<SegmentCabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>Economy</CabinTypeName>
+						</SegmentCabinType>
+					</CabinTypeAssociationChoice>
+					<DatedMarketingSegmentRefId>Mkt-seg0542686836</DatedMarketingSegmentRefId>
+					<PaxSegmentID>seg0542686836</PaxSegmentID>
+				</PaxSegment>
+				<PaxSegment>
+					<CabinTypeAssociationChoice>
+						<SegmentCabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>Economy</CabinTypeName>
+						</SegmentCabinType>
+					</CabinTypeAssociationChoice>
+					<DatedMarketingSegmentRefId>Mkt-seg1691118681</DatedMarketingSegmentRefId>
+					<PaxSegmentID>seg1691118681</PaxSegmentID>
+				</PaxSegment>
+			</PaxSegmentList>
+			<PriceClassList>
+				<PriceClass>
+					<Code>BA</Code>
+					<Desc>
+						<DescText>Basic Economy</DescText>
+					</Desc>
+					<FareBasisCode>PQI3NDC1</FareBasisCode>
+					<Name>Basic</Name>
+					<PriceClassID>pc1110330651</PriceClassID>
+				</PriceClass>
+			</PriceClassList>
+		</DataLists>
+		<Order xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<OrderID>UCES8Z</OrderID>
+			<OrderItem>
+				<FareDetail>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>Economy</CabinTypeName>
+						</CabinType>
+						<FareBasisCode>PQI3NDC1</FareBasisCode>
+						<FareRule>
+							<Remark>
+								<RemarkText>Non-Refundable / Changes Restricted</RemarkText>
+							</Remark>
+						</FareRule>
+						<PaxSegmentRefID>seg0542686836</PaxSegmentRefID>
+						<PriceClassRefID>pc1110330651</PriceClassRefID>
+						<RBD>
+							<RBD_Code>PK</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>A174288793</PaxRefID>
+					<PaxRefID>A174288794</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="EUR">37.99</BaseAmount>
+						<Fee>
+							<Amount CurCode="EUR">33.61</Amount>
+							<DescText>JD added</DescText>
+							<DesigText>JD</DesigText>
+						</Fee>
+						<Surcharge>
+							<Breakdown>
+								<Amount CurCode="EUR">1.87</Amount>
+								<DesigText>Q</DesigText>
+							</Breakdown>
+							<TotalAmount CurCode="EUR">1.87</TotalAmount>
+						</Surcharge>
+						<TotalAmount CurCode="EUR">73.47</TotalAmount>
+					</Price>
+				</FareDetail>
+				<OrderItemID>UCES8Z-CDGBCN-VY8247-ADT-FLIGHT</OrderItemID>
+				<OwnerCode>VY</OwnerCode>
+				<PaymentTimeLimitDateTime>2024-12-23T11:47:40Z</PaymentTimeLimitDateTime>
+				<Price>
+					<BaseAmount CurCode="EUR">75.98</BaseAmount>
+					<Fee>
+						<Amount CurCode="EUR">67.22</Amount>
+						<DescText>JD added</DescText>
+						<DesigText>JD</DesigText>
+					</Fee>
+					<Surcharge>
+						<Breakdown>
+							<Amount CurCode="EUR">3.74</Amount>
+							<DesigText>Q</DesigText>
+						</Breakdown>
+						<TotalAmount CurCode="EUR">3.74</TotalAmount>
+					</Surcharge>
+					<TotalAmount CurCode="EUR">146.94</TotalAmount>
+				</Price>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>VY</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>UCES8Z</BookingID>
+						<BookingRefTypeCode>6</BookingRefTypeCode>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<PaxSegmentRef>
+							<PaxSegmentRefID>seg0542686836</PaxSegmentRefID>
+						</PaxSegmentRef>
+					</OrderServiceAssociation>
+					<PaxRefID>A174288793</PaxRefID>
+					<ServiceID>s-CDGBCN-VY8247-A174288793-FLT</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>VY</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>UCES8Z</BookingID>
+						<BookingRefTypeCode>6</BookingRefTypeCode>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<PaxSegmentRef>
+							<PaxSegmentRefID>seg0542686836</PaxSegmentRefID>
+						</PaxSegmentRef>
+					</OrderServiceAssociation>
+					<PaxRefID>A174288794</PaxRefID>
+					<ServiceID>s-CDGBCN-VY8247-A174288794-FLT</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<StatusCode>ACTIVE</StatusCode>
+			</OrderItem>
+			<OrderItem>
+				<FareDetail>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>Economy</CabinTypeName>
+						</CabinType>
+						<FareBasisCode>PQI3NDC1</FareBasisCode>
+						<FareRule>
+							<Remark>
+								<RemarkText>Non-Refundable / Changes Restricted</RemarkText>
+							</Remark>
+						</FareRule>
+						<PaxSegmentRefID>seg0542686836</PaxSegmentRefID>
+						<PriceClassRefID>pc1110330651</PriceClassRefID>
+						<RBD>
+							<RBD_Code>PK</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>C174288795</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="EUR">37.99</BaseAmount>
+						<Fee>
+							<Amount CurCode="EUR">33.61</Amount>
+							<DescText>JD added</DescText>
+							<DesigText>JD</DesigText>
+						</Fee>
+						<Surcharge>
+							<Breakdown>
+								<Amount CurCode="EUR">1.87</Amount>
+								<DesigText>Q</DesigText>
+							</Breakdown>
+							<TotalAmount CurCode="EUR">1.87</TotalAmount>
+						</Surcharge>
+						<TotalAmount CurCode="EUR">73.47</TotalAmount>
+					</Price>
+				</FareDetail>
+				<OrderItemID>UCES8Z-CDGBCN-VY8247-CHD-FLIGHT</OrderItemID>
+				<OwnerCode>VY</OwnerCode>
+				<PaymentTimeLimitDateTime>2024-12-23T11:47:40Z</PaymentTimeLimitDateTime>
+				<Price>
+					<BaseAmount CurCode="EUR">37.99</BaseAmount>
+					<Fee>
+						<Amount CurCode="EUR">33.61</Amount>
+						<DescText>JD added</DescText>
+						<DesigText>JD</DesigText>
+					</Fee>
+					<Surcharge>
+						<Breakdown>
+							<Amount CurCode="EUR">1.87</Amount>
+							<DesigText>Q</DesigText>
+						</Breakdown>
+						<TotalAmount CurCode="EUR">1.87</TotalAmount>
+					</Surcharge>
+					<TotalAmount CurCode="EUR">73.47</TotalAmount>
+				</Price>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>VY</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>UCES8Z</BookingID>
+						<BookingRefTypeCode>6</BookingRefTypeCode>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<PaxSegmentRef>
+							<PaxSegmentRefID>seg0542686836</PaxSegmentRefID>
+						</PaxSegmentRef>
+					</OrderServiceAssociation>
+					<PaxRefID>C174288795</PaxRefID>
+					<ServiceID>s-CDGBCN-VY8247-C174288795-FLT</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<StatusCode>ACTIVE</StatusCode>
+			</OrderItem>
+			<OrderItem>
+				<FareDetail>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>Economy</CabinTypeName>
+						</CabinType>
+						<FareBasisCode>PQI3NDC1</FareBasisCode>
+						<FareRule>
+							<Remark>
+								<RemarkText>Non-Refundable / Changes Restricted</RemarkText>
+							</Remark>
+						</FareRule>
+						<PaxSegmentRefID>seg0542686836</PaxSegmentRefID>
+						<PriceClassRefID>pc1110330651</PriceClassRefID>
+						<RBD>
+							<RBD_Code>PK</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>I174288793</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="EUR">31.99</BaseAmount>
+						<TotalAmount CurCode="EUR">31.99</TotalAmount>
+					</Price>
+				</FareDetail>
+				<OrderItemID>UCES8Z-CDGBCN-VY8247-INF-FLIGHT</OrderItemID>
+				<OwnerCode>VY</OwnerCode>
+				<PaymentTimeLimitDateTime>2024-12-23T11:47:40Z</PaymentTimeLimitDateTime>
+				<Price>
+					<BaseAmount CurCode="EUR">31.99</BaseAmount>
+					<TotalAmount CurCode="EUR">31.99</TotalAmount>
+				</Price>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>VY</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>UCES8Z</BookingID>
+						<BookingRefTypeCode>6</BookingRefTypeCode>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<PaxSegmentRef>
+							<PaxSegmentRefID>seg0542686836</PaxSegmentRefID>
+						</PaxSegmentRef>
+					</OrderServiceAssociation>
+					<PaxRefID>I174288793</PaxRefID>
+					<ServiceID>s-CDGBCN-VY8247-I174288793-FLT</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<StatusCode>ACTIVE</StatusCode>
+			</OrderItem>
+			<OrderItem>
+				<FareDetail>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>Economy</CabinTypeName>
+						</CabinType>
+						<FareBasisCode>PQI3NDC1</FareBasisCode>
+						<FareRule>
+							<Remark>
+								<RemarkText>Non-Refundable / Changes Restricted</RemarkText>
+							</Remark>
+						</FareRule>
+						<PaxSegmentRefID>seg1691118681</PaxSegmentRefID>
+						<PriceClassRefID>pc1110330651</PriceClassRefID>
+						<RBD>
+							<RBD_Code>PK</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>A174288793</PaxRefID>
+					<PaxRefID>A174288794</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="EUR">29.99</BaseAmount>
+						<Fee>
+							<Amount CurCode="EUR">17.84</Amount>
+							<DescText>JD added</DescText>
+							<DesigText>JD</DesigText>
+						</Fee>
+						<Surcharge>
+							<Breakdown>
+								<Amount CurCode="EUR">1.87</Amount>
+								<DesigText>Q</DesigText>
+							</Breakdown>
+							<TotalAmount CurCode="EUR">1.87</TotalAmount>
+						</Surcharge>
+						<TotalAmount CurCode="EUR">49.70</TotalAmount>
+					</Price>
+				</FareDetail>
+				<OrderItemID>UCES8Z-BCNCDG-VY8246-ADT-FLIGHT</OrderItemID>
+				<OwnerCode>VY</OwnerCode>
+				<PaymentTimeLimitDateTime>2024-12-23T11:47:40Z</PaymentTimeLimitDateTime>
+				<Price>
+					<BaseAmount CurCode="EUR">59.98</BaseAmount>
+					<Fee>
+						<Amount CurCode="EUR">35.68</Amount>
+						<DescText>JD added</DescText>
+						<DesigText>JD</DesigText>
+					</Fee>
+					<Surcharge>
+						<Breakdown>
+							<Amount CurCode="EUR">3.74</Amount>
+							<DesigText>Q</DesigText>
+						</Breakdown>
+						<TotalAmount CurCode="EUR">3.74</TotalAmount>
+					</Surcharge>
+					<TotalAmount CurCode="EUR">99.40</TotalAmount>
+				</Price>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>VY</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>UCES8Z</BookingID>
+						<BookingRefTypeCode>6</BookingRefTypeCode>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<PaxSegmentRef>
+							<PaxSegmentRefID>seg1691118681</PaxSegmentRefID>
+						</PaxSegmentRef>
+					</OrderServiceAssociation>
+					<PaxRefID>A174288793</PaxRefID>
+					<ServiceID>s-BCNCDG-VY8246-A174288793-FLT</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>VY</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>UCES8Z</BookingID>
+						<BookingRefTypeCode>6</BookingRefTypeCode>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<PaxSegmentRef>
+							<PaxSegmentRefID>seg1691118681</PaxSegmentRefID>
+						</PaxSegmentRef>
+					</OrderServiceAssociation>
+					<PaxRefID>A174288794</PaxRefID>
+					<ServiceID>s-BCNCDG-VY8246-A174288794-FLT</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<StatusCode>ACTIVE</StatusCode>
+			</OrderItem>
+			<OrderItem>
+				<FareDetail>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>Economy</CabinTypeName>
+						</CabinType>
+						<FareBasisCode>PQI3NDC1</FareBasisCode>
+						<FareRule>
+							<Remark>
+								<RemarkText>Non-Refundable / Changes Restricted</RemarkText>
+							</Remark>
+						</FareRule>
+						<PaxSegmentRefID>seg1691118681</PaxSegmentRefID>
+						<PriceClassRefID>pc1110330651</PriceClassRefID>
+						<RBD>
+							<RBD_Code>PK</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>C174288795</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="EUR">29.99</BaseAmount>
+						<Fee>
+							<Amount CurCode="EUR">17.84</Amount>
+							<DescText>JD added</DescText>
+							<DesigText>JD</DesigText>
+						</Fee>
+						<Surcharge>
+							<Breakdown>
+								<Amount CurCode="EUR">1.87</Amount>
+								<DesigText>Q</DesigText>
+							</Breakdown>
+							<TotalAmount CurCode="EUR">1.87</TotalAmount>
+						</Surcharge>
+						<TotalAmount CurCode="EUR">49.70</TotalAmount>
+					</Price>
+				</FareDetail>
+				<OrderItemID>UCES8Z-BCNCDG-VY8246-CHD-FLIGHT</OrderItemID>
+				<OwnerCode>VY</OwnerCode>
+				<PaymentTimeLimitDateTime>2024-12-23T11:47:40Z</PaymentTimeLimitDateTime>
+				<Price>
+					<BaseAmount CurCode="EUR">29.99</BaseAmount>
+					<Fee>
+						<Amount CurCode="EUR">17.84</Amount>
+						<DescText>JD added</DescText>
+						<DesigText>JD</DesigText>
+					</Fee>
+					<Surcharge>
+						<Breakdown>
+							<Amount CurCode="EUR">1.87</Amount>
+							<DesigText>Q</DesigText>
+						</Breakdown>
+						<TotalAmount CurCode="EUR">1.87</TotalAmount>
+					</Surcharge>
+					<TotalAmount CurCode="EUR">49.70</TotalAmount>
+				</Price>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>VY</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>UCES8Z</BookingID>
+						<BookingRefTypeCode>6</BookingRefTypeCode>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<PaxSegmentRef>
+							<PaxSegmentRefID>seg1691118681</PaxSegmentRefID>
+						</PaxSegmentRef>
+					</OrderServiceAssociation>
+					<PaxRefID>C174288795</PaxRefID>
+					<ServiceID>s-BCNCDG-VY8246-C174288795-FLT</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<StatusCode>ACTIVE</StatusCode>
+			</OrderItem>
+			<OrderItem>
+				<FareDetail>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>Economy</CabinTypeName>
+						</CabinType>
+						<FareBasisCode>PQI3NDC1</FareBasisCode>
+						<FareRule>
+							<Remark>
+								<RemarkText>Non-Refundable / Changes Restricted</RemarkText>
+							</Remark>
+						</FareRule>
+						<PaxSegmentRefID>seg1691118681</PaxSegmentRefID>
+						<PriceClassRefID>pc1110330651</PriceClassRefID>
+						<RBD>
+							<RBD_Code>PK</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>I174288793</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="EUR">24.41</BaseAmount>
+						<TotalAmount CurCode="EUR">24.41</TotalAmount>
+					</Price>
+				</FareDetail>
+				<OrderItemID>UCES8Z-BCNCDG-VY8246-INF-FLIGHT</OrderItemID>
+				<OwnerCode>VY</OwnerCode>
+				<PaymentTimeLimitDateTime>2024-12-23T11:47:40Z</PaymentTimeLimitDateTime>
+				<Price>
+					<BaseAmount CurCode="EUR">24.41</BaseAmount>
+					<TotalAmount CurCode="EUR">24.41</TotalAmount>
+				</Price>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>VY</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>UCES8Z</BookingID>
+						<BookingRefTypeCode>6</BookingRefTypeCode>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<PaxSegmentRef>
+							<PaxSegmentRefID>seg1691118681</PaxSegmentRefID>
+						</PaxSegmentRef>
+					</OrderServiceAssociation>
+					<PaxRefID>I174288793</PaxRefID>
+					<ServiceID>s-BCNCDG-VY8246-I174288793-FLT</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<StatusCode>ACTIVE</StatusCode>
+			</OrderItem>
+			<OwnerCode>VY</OwnerCode>
+			<StatusCode>OPENED</StatusCode>
+			<TotalPrice>
+				<TotalAmount CurCode="EUR">425.91</TotalAmount>
+			</TotalPrice>
+		</Order>
+		<Warning xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<DescText>Order is underpaid</DescText>
+			<LangCode>en</LangCode>
+			<TypeCode>OF2003</TypeCode>
+		</Warning>
+	</Response>
+	<PayloadAttributes>
+		<CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">8088f402-70dd-4ab7-9014-5c383aeaeb9a</CorrelationID>
+		<Timestamp xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">2024-12-23T10:47:41.3254528Z</Timestamp>
+		<VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">21.3</VersionNumber>
+	</PayloadAttributes>
+</IATA_OrderViewRS>

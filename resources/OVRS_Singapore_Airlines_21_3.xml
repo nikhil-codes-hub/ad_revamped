@@ -1,0 +1,1666 @@
+<ns4:IATA_OrderViewRS xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns:ns3="http://www.iata.org/IATA/2015/EASD/00/AMA_AugmentationPoint" xmlns:ns4="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<ns4:Response>
+		<DataLists>
+			<BaggageAllowanceList>
+				<BaggageAllowance>
+					<ApplicablePartyText>Traveler</ApplicablePartyText>
+					<BaggageAllowanceID>FBA1</BaggageAllowanceID>
+					<TypeCode>Checked</TypeCode>
+					<WeightAllowance>
+						<MaximumWeightMeasure>25</MaximumWeightMeasure>
+						<TotalMaximumWeightMeasure>25</TotalMaximumWeightMeasure>
+						<WeightUnitOfMeasurement>KGM</WeightUnitOfMeasurement>
+					</WeightAllowance>
+				</BaggageAllowance>
+				<BaggageAllowance>
+					<ApplicablePartyText>Traveler</ApplicablePartyText>
+					<BaggageAllowanceID>FBA2</BaggageAllowanceID>
+					<TypeCode>Checked</TypeCode>
+					<WeightAllowance>
+						<MaximumWeightMeasure>10</MaximumWeightMeasure>
+						<TotalMaximumWeightMeasure>10</TotalMaximumWeightMeasure>
+						<WeightUnitOfMeasurement>KGM</WeightUnitOfMeasurement>
+					</WeightAllowance>
+				</BaggageAllowance>
+			</BaggageAllowanceList>
+			<ContactInfoList>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX2_1</ContactInfoID>
+					<ContactPurposeText>OTH</ContactPurposeText>
+					<EmailAddress>
+						<ContactTypeText>OTH</ContactTypeText>
+						<EmailAddressText>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressText>
+					</EmailAddress>
+					<IndividualRefID>PAX2</IndividualRefID>
+					<Phone>
+						<ContactTypeText>OTH</ContactTypeText>
+						<CountryDialingCode>33</CountryDialingCode>
+						<PhoneNumber>561470855</PhoneNumber>
+					</Phone>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX4_1</ContactInfoID>
+					<ContactPurposeText>OTH</ContactPurposeText>
+					<EmailAddress>
+						<ContactTypeText>OTH</ContactTypeText>
+						<EmailAddressText>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressText>
+					</EmailAddress>
+					<IndividualRefID>PAX4</IndividualRefID>
+					<Phone>
+						<ContactTypeText>OTH</ContactTypeText>
+						<CountryDialingCode>33</CountryDialingCode>
+						<PhoneNumber>561470855</PhoneNumber>
+					</Phone>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX5_1</ContactInfoID>
+					<ContactPurposeText>OTH</ContactPurposeText>
+					<EmailAddress>
+						<ContactTypeText>OTH</ContactTypeText>
+						<EmailAddressText>NAME_SURNAME_CHD@MYMAIL.COM</EmailAddressText>
+					</EmailAddress>
+					<IndividualRefID>PAX5</IndividualRefID>
+					<Phone>
+						<ContactTypeText>OTH</ContactTypeText>
+						<CountryDialingCode>33</CountryDialingCode>
+						<PhoneNumber>513723573</PhoneNumber>
+					</Phone>
+				</ContactInfo>
+			</ContactInfoList>
+			<DatedMarketingSegmentList>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-02-07T11:50:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>MLE</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>SQ</CarrierDesigCode>
+					<CarrierName>SINGAPORE AIRLINES</CarrierName>
+					<DatedMarketingSegmentId>DMS1</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>DOS1</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2025-02-07T09:55:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SIN</IATA_LocationCode>
+						<TerminalName>2</TerminalName>
+					</Dep>
+					<MarketingCarrierFlightNumberText>432</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-03-25T07:15:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SIN</IATA_LocationCode>
+						<TerminalName>0</TerminalName>
+					</Arrival>
+					<CarrierDesigCode>SQ</CarrierDesigCode>
+					<CarrierName>SINGAPORE AIRLINES</CarrierName>
+					<DatedMarketingSegmentId>DMS2</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>DOS2</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2025-03-24T23:40:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>MLE</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>437</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+			</DatedMarketingSegmentList>
+			<DatedOperatingLegList>
+				<DatedOperatingLeg>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-02-07T11:50:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>MLE</IATA_LocationCode>
+					</Arrival>
+					<DatedOperatingLegID>LEG1</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2025-02-07T09:55:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SIN</IATA_LocationCode>
+					</Dep>
+					<IATA_AircraftType>
+						<IATA_AircraftTypeCode>359</IATA_AircraftTypeCode>
+					</IATA_AircraftType>
+				</DatedOperatingLeg>
+				<DatedOperatingLeg>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-03-25T07:15:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SIN</IATA_LocationCode>
+					</Arrival>
+					<DatedOperatingLegID>LEG2</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2025-03-24T23:40:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>MLE</IATA_LocationCode>
+					</Dep>
+					<IATA_AircraftType>
+						<IATA_AircraftTypeCode>359</IATA_AircraftTypeCode>
+					</IATA_AircraftType>
+				</DatedOperatingLeg>
+			</DatedOperatingLegList>
+			<DatedOperatingSegmentList>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>SQ</CarrierDesigCode>
+					<CarrierName>SINGAPORE AIRLINES</CarrierName>
+					<DatedOperatingLegRefID>LEG1</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>DOS1</DatedOperatingSegmentId>
+					<DisclosureRefID>DIS1</DisclosureRefID>
+				</DatedOperatingSegment>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>SQ</CarrierDesigCode>
+					<CarrierName>SINGAPORE AIRLINES</CarrierName>
+					<DatedOperatingLegRefID>LEG2</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>DOS2</DatedOperatingSegmentId>
+					<DisclosureRefID>DIS1</DisclosureRefID>
+				</DatedOperatingSegment>
+			</DatedOperatingSegmentList>
+			<DisclosureList>
+				<Disclosure>
+					<Desc>
+						<DescText>SINGAPORE AIRLINES</DescText>
+					</Desc>
+					<DisclosureID>DIS1</DisclosureID>
+				</Disclosure>
+			</DisclosureList>
+			<OriginDestList>
+				<OriginDest>
+					<DestCode>MLE</DestCode>
+					<OriginCode>SIN</OriginCode>
+					<OriginDestID>OND1</OriginDestID>
+					<PaxJourneyRefID>FLT1</PaxJourneyRefID>
+				</OriginDest>
+				<OriginDest>
+					<DestCode>SIN</DestCode>
+					<OriginCode>MLE</OriginCode>
+					<OriginDestID>OND2</OriginDestID>
+					<PaxJourneyRefID>FLT2</PaxJourneyRefID>
+				</OriginDest>
+			</OriginDestList>
+			<PaxJourneyList>
+				<PaxJourney>
+					<Duration>PT4H55M</Duration>
+					<PaxJourneyID>FLT1</PaxJourneyID>
+					<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+				</PaxJourney>
+				<PaxJourney>
+					<Duration>PT4H35M</Duration>
+					<PaxJourneyID>FLT2</PaxJourneyID>
+					<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<Pax>
+					<Individual>
+						<Birthdate>2023-09-24</Birthdate>
+						<GenderCode>F</GenderCode>
+						<GivenName>FBYJFH</GivenName>
+						<IndividualID>PAX3</IndividualID>
+						<Surname>NDCX</Surname>
+					</Individual>
+					<PaxID>PAX3</PaxID>
+					<PaxRefID>PAX2</PaxRefID>
+					<PTC>INF</PTC>
+				</Pax>
+				<Pax>
+					<Individual>
+						<Birthdate>1995-01-31</Birthdate>
+						<GenderCode>F</GenderCode>
+						<GivenName>AJUVCB</GivenName>
+						<IndividualID>PAX2</IndividualID>
+						<Surname>NDCX</Surname>
+						<TitleName>MRS</TitleName>
+					</Individual>
+					<PaxID>PAX2</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+				<Pax>
+					<Individual>
+						<Birthdate>1994-05-22</Birthdate>
+						<GenderCode>F</GenderCode>
+						<GivenName>AQCGDN</GivenName>
+						<IndividualID>PAX4</IndividualID>
+						<Surname>NDCX</Surname>
+						<TitleName>MRS</TitleName>
+					</Individual>
+					<PaxID>PAX4</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+				<Pax>
+					<Individual>
+						<Birthdate>2015-02-25</Birthdate>
+						<GenderCode>F</GenderCode>
+						<GivenName>CXDSGD</GivenName>
+						<IndividualID>PAX5</IndividualID>
+						<Surname>NDCX</Surname>
+						<TitleName>MS</TitleName>
+					</Individual>
+					<PaxID>PAX5</PaxID>
+					<PTC>CHD</PTC>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<DatedMarketingSegmentRefId>DMS1</DatedMarketingSegmentRefId>
+					<MarketingCarrierRBD_Code>N</MarketingCarrierRBD_Code>
+					<PaxSegmentID>SEG1</PaxSegmentID>
+				</PaxSegment>
+				<PaxSegment>
+					<DatedMarketingSegmentRefId>DMS2</DatedMarketingSegmentRefId>
+					<MarketingCarrierRBD_Code>N</MarketingCarrierRBD_Code>
+					<PaxSegmentID>SEG2</PaxSegmentID>
+				</PaxSegment>
+			</PaxSegmentList>
+			<PriceClassList>
+				<PriceClass>
+					<Code>FF41</Code>
+					<Desc>
+						<DescText>Award and upgrade - KrisFlyer Upgrade Awards on Singapore Airlines SilkAir: Not allowed. Star Alliance Upgrade Awards on Singapore Airlines: Not allowed.</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Cancellation - With payment of SGD 200, subject to currency conversion and your bank's exchange rate.</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Checked baggage - 25kg</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Earn miles - SINGAPORE AIRLINES  SILKAIR OPERATED FLIGHTS KrisFlyer: 50% of actual flown distance. Partner frequent flyer programmes: Accrual levels may differ on Singapore Airlines operated flights; not accruable on SilkAir operated flights. For ticket(s) partially paid for using KrisFlyer miles, the miles earned are proportionate to the amount paid using credit/debit card. These miles can only be credited to KrisFlyer membership accounts. FLIGHTS OPERATED BY OTHER AIRLINES
+KrisFlyer mileage accrual levels on flights operated by KrisFlyer partner airlines may differ. Codeshare flights operated by non-KrisFlyer partner airlines are not accruable to KrisFlyer. For details, visit http://www.singaporeair.com/en_UK/sg/ppsclub-krisflyer/earn-miles/earn-when-you-fly/</DescText>
+					</Desc>
+					<Desc>
+						<DescText>No show - SGD 130, subject to currency conversion and your bank's exchange rate. If the ticket is cancelled, no show fee will not apply and cancellation/refund conditions will apply.</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Changes - With payment of SGD 70 and any fare difference, subject to currency conversion and your bank's exchange rate.</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Seat selection - From USD 10</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Travel itinerary sequence - Fares are valid only if all flight coupons / sectors in the ticket are used in sequence. If passenger only commences his journey at any stopover or agreed stopping place, Carrier can recompute fares based on actual flight sequence used and passenger must pay any fare difference.</DescText>
+					</Desc>
+					<Name>Economy Value</Name>
+					<PriceClassID>FF41</PriceClassID>
+				</PriceClass>
+			</PriceClassList>
+			<ServiceDefinitionList>
+				<ServiceDefinition>
+					<Desc>
+						<DescText>Bag allowances</DescText>
+					</Desc>
+					<Name>Bag allowances</Name>
+					<OwnerCode>SQ</OwnerCode>
+					<ServiceDefinitionAssociation>
+						<BaggageAllowanceRef>
+							<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+						</BaggageAllowanceRef>
+					</ServiceDefinitionAssociation>
+					<ServiceDefinitionID>BAGALLOW_1</ServiceDefinitionID>
+				</ServiceDefinition>
+				<ServiceDefinition>
+					<Desc>
+						<DescText>Bag allowances</DescText>
+					</Desc>
+					<Name>Bag allowances</Name>
+					<OwnerCode>SQ</OwnerCode>
+					<ServiceDefinitionAssociation>
+						<BaggageAllowanceRef>
+							<BaggageAllowanceRefID>FBA2</BaggageAllowanceRefID>
+						</BaggageAllowanceRef>
+					</ServiceDefinitionAssociation>
+					<ServiceDefinitionID>BAGALLOW_2</ServiceDefinitionID>
+				</ServiceDefinition>
+			</ServiceDefinitionList>
+		</DataLists>
+		<Order>
+			<OrderID>SQ_6DZS4V</OrderID>
+			<OrderItem>
+				<CancelRestrictions>
+					<AllowedModificationInd>false</AllowedModificationInd>
+				</CancelRestrictions>
+				<ChangeRestrictions>
+					<AllowedModificationInd>false</AllowedModificationInd>
+				</ChangeRestrictions>
+				<FareDetail>
+					<FareCalculationInfo>
+						<AddlInfoText>FC-SIN SQ MLE Q7.55 272.04SQ SIN Q7.55 272.04NUC559.18END ROE1.323674</AddlInfoText>
+						<PricingCodeText>F</PricingCodeText>
+					</FareCalculationInfo>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>ECONOMY</CabinTypeName>
+						</CabinType>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure no show </DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">234.00</Amount>
+								<MaximumAmount CurCode="EUR">234.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">234.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">142.00</Amount>
+								<MaximumAmount CurCode="EUR">142.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">142.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">93.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">50.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<FareBasisCode>N16SGRPO</FareBasisCode>
+						<NegotiatedCode>749</NegotiatedCode>
+						<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						<PriceClassRefID>FF41</PriceClassRefID>
+						<RBD>
+							<RBD_Code>N</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>ECONOMY</CabinTypeName>
+						</CabinType>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted after departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">234.00</Amount>
+								<MaximumAmount CurCode="EUR">234.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">234.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">234.00</Amount>
+								<MaximumAmount CurCode="EUR">234.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">234.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted after departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">234.00</Amount>
+								<MaximumAmount CurCode="EUR">234.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">142.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">142.00</Amount>
+								<MaximumAmount CurCode="EUR">142.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">142.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted after departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted after departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">93.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">93.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">50.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted after departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted after departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">50.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<FareBasisCode>N16SGRPO</FareBasisCode>
+						<NegotiatedCode>749</NegotiatedCode>
+						<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+						<PriceClassRefID>FF41</PriceClassRefID>
+						<RBD>
+							<RBD_Code>N</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>PAX2</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="EUR">525.00</BaseAmount>
+						<TaxSummary>
+							<Tax>
+								<AddlTaxCode>DE</AddlTaxCode>
+								<Amount CurCode="EUR">7.66</Amount>
+								<TaxCode>L7</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>AE</AddlTaxCode>
+								<Amount CurCode="EUR">5.67</Amount>
+								<TaxCode>OP</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>AD</AddlTaxCode>
+								<Amount CurCode="EUR">32.88</Amount>
+								<TaxCode>SG</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>DP</AddlTaxCode>
+								<Amount CurCode="EUR">47.64</Amount>
+								<TaxCode>BQ</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>DE</AddlTaxCode>
+								<Amount CurCode="EUR">47.64</Amount>
+								<TaxCode>H9</TaxCode>
+							</Tax>
+							<TotalTaxAmount CurCode="EUR">141.49</TotalTaxAmount>
+						</TaxSummary>
+						<TotalAmount CurCode="EUR">666.49</TotalAmount>
+					</Price>
+				</FareDetail>
+				<FareDetail>
+					<FareCalculationInfo>
+						<AddlInfoText>FC-SIN SQ MLE Q7.55 272.04SQ SIN Q7.55 272.04NUC559.18END ROE1.323674</AddlInfoText>
+						<PricingCodeText>F</PricingCodeText>
+					</FareCalculationInfo>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>ECONOMY</CabinTypeName>
+						</CabinType>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure no show </DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">234.00</Amount>
+								<MaximumAmount CurCode="EUR">234.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">234.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">142.00</Amount>
+								<MaximumAmount CurCode="EUR">142.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">142.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">93.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">50.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<FareBasisCode>N16SGRPO</FareBasisCode>
+						<NegotiatedCode>749</NegotiatedCode>
+						<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						<PriceClassRefID>FF41</PriceClassRefID>
+						<RBD>
+							<RBD_Code>N</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>ECONOMY</CabinTypeName>
+						</CabinType>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted after departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">234.00</Amount>
+								<MaximumAmount CurCode="EUR">234.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">234.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">234.00</Amount>
+								<MaximumAmount CurCode="EUR">234.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">234.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted after departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">234.00</Amount>
+								<MaximumAmount CurCode="EUR">234.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">142.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">142.00</Amount>
+								<MaximumAmount CurCode="EUR">142.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">142.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted after departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted after departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">93.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">93.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">50.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted after departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted after departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">50.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<FareBasisCode>N16SGRPO</FareBasisCode>
+						<NegotiatedCode>749</NegotiatedCode>
+						<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+						<PriceClassRefID>FF41</PriceClassRefID>
+						<RBD>
+							<RBD_Code>N</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>PAX4</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="EUR">525.00</BaseAmount>
+						<TaxSummary>
+							<Tax>
+								<AddlTaxCode>DE</AddlTaxCode>
+								<Amount CurCode="EUR">7.66</Amount>
+								<TaxCode>L7</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>AE</AddlTaxCode>
+								<Amount CurCode="EUR">5.67</Amount>
+								<TaxCode>OP</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>AD</AddlTaxCode>
+								<Amount CurCode="EUR">32.88</Amount>
+								<TaxCode>SG</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>DP</AddlTaxCode>
+								<Amount CurCode="EUR">47.64</Amount>
+								<TaxCode>BQ</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>DE</AddlTaxCode>
+								<Amount CurCode="EUR">47.64</Amount>
+								<TaxCode>H9</TaxCode>
+							</Tax>
+							<TotalTaxAmount CurCode="EUR">141.49</TotalTaxAmount>
+						</TaxSummary>
+						<TotalAmount CurCode="EUR">666.49</TotalAmount>
+					</Price>
+				</FareDetail>
+				<FareDetail>
+					<FareCalculationInfo>
+						<AddlInfoText>FC-SIN SQ MLE Q7.55 204.03SQ SIN Q7.55 204.03NUC423.16END ROE1.323674</AddlInfoText>
+						<PricingCodeText>F</PricingCodeText>
+					</FareCalculationInfo>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>ECONOMY</CabinTypeName>
+						</CabinType>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure no show </DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">234.00</Amount>
+								<MaximumAmount CurCode="EUR">234.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">234.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">142.00</Amount>
+								<MaximumAmount CurCode="EUR">142.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">142.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">93.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">50.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<FareBasisCode>N16SGRPO</FareBasisCode>
+						<NegotiatedCode>749</NegotiatedCode>
+						<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						<PriceClassRefID>FF41</PriceClassRefID>
+						<RBD>
+							<RBD_Code>N</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>ECONOMY</CabinTypeName>
+						</CabinType>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure no show </DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">234.00</Amount>
+								<MaximumAmount CurCode="EUR">234.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">234.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted after departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">234.00</Amount>
+								<MaximumAmount CurCode="EUR">234.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">142.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">142.00</Amount>
+								<MaximumAmount CurCode="EUR">142.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">142.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted after departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted after departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">93.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">93.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">50.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted after departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted after departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">50.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<FareBasisCode>N16SGRPO</FareBasisCode>
+						<NegotiatedCode>749</NegotiatedCode>
+						<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+						<PriceClassRefID>FF41</PriceClassRefID>
+						<RBD>
+							<RBD_Code>N</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>PAX5</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="EUR">398.00</BaseAmount>
+						<TaxSummary>
+							<Tax>
+								<AddlTaxCode>DE</AddlTaxCode>
+								<Amount CurCode="EUR">7.66</Amount>
+								<TaxCode>L7</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>AE</AddlTaxCode>
+								<Amount CurCode="EUR">5.67</Amount>
+								<TaxCode>OP</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>AD</AddlTaxCode>
+								<Amount CurCode="EUR">32.88</Amount>
+								<TaxCode>SG</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>DP</AddlTaxCode>
+								<Amount CurCode="EUR">47.64</Amount>
+								<TaxCode>BQ</TaxCode>
+							</Tax>
+							<Tax>
+								<AddlTaxCode>DE</AddlTaxCode>
+								<Amount CurCode="EUR">47.64</Amount>
+								<TaxCode>H9</TaxCode>
+							</Tax>
+							<TotalTaxAmount CurCode="EUR">141.49</TotalTaxAmount>
+						</TaxSummary>
+						<TotalAmount CurCode="EUR">539.49</TotalAmount>
+					</Price>
+				</FareDetail>
+				<FareDetail>
+					<FareCalculationInfo>
+						<AddlInfoText>FC-SIN SQ MLE27.20SQ SIN27.20NUC54.40END ROE1.323674</AddlInfoText>
+						<PricingCodeText>F</PricingCodeText>
+					</FareCalculationInfo>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>ECONOMY</CabinTypeName>
+						</CabinType>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure no show </DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">0.00</Amount>
+								<MaximumAmount CurCode="EUR">0.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Refund not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">0.00</Amount>
+								<MaximumAmount CurCode="EUR">0.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure no show</DescText>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Reissue not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>false</AllowedModificationInd>
+							<DescText>Change not permitted after departure</DescText>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<FareBasisCode>N16SGRPO</FareBasisCode>
+						<NegotiatedCode>749</NegotiatedCode>
+						<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						<PriceClassRefID>FF41</PriceClassRefID>
+						<RBD>
+							<RBD_Code>N</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>ECONOMY</CabinTypeName>
+						</CabinType>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted after departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">0.00</Amount>
+								<MaximumAmount CurCode="EUR">0.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">0.00</Amount>
+								<MaximumAmount CurCode="EUR">0.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted after departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">0.00</Amount>
+								<MaximumAmount CurCode="EUR">0.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<CancelRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Refund permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">0.00</Amount>
+								<MaximumAmount CurCode="EUR">0.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</CancelRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted after departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted after departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure no show</DescText>
+							<Fee>
+								<Amount CurCode="EUR">93.00</Amount>
+								<MaximumAmount CurCode="EUR">93.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>No Show</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted after departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Reissue permitted before departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>Prior To Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<ChangeRestrictions>
+							<AllowedModificationInd>true</AllowedModificationInd>
+							<DescText>Change permitted after departure</DescText>
+							<Fee>
+								<Amount CurCode="EUR">50.00</Amount>
+								<MaximumAmount CurCode="EUR">50.00</MaximumAmount>
+								<MinimumAmount CurCode="EUR">0.00</MinimumAmount>
+							</Fee>
+							<JourneyStageCode>After Departure</JourneyStageCode>
+						</ChangeRestrictions>
+						<FareBasisCode>N16SGRPO</FareBasisCode>
+						<NegotiatedCode>749</NegotiatedCode>
+						<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+						<PriceClassRefID>FF41</PriceClassRefID>
+						<RBD>
+							<RBD_Code>N</RBD_Code>
+						</RBD>
+					</FareComponent>
+					<PaxRefID>PAX3</PaxRefID>
+					<Price>
+						<BaseAmount CurCode="EUR">51.00</BaseAmount>
+						<TaxSummary>
+							<Tax>
+								<AddlTaxCode>DE</AddlTaxCode>
+								<Amount CurCode="EUR">47.64</Amount>
+								<TaxCode>H9</TaxCode>
+							</Tax>
+							<TotalTaxAmount CurCode="EUR">47.64</TotalTaxAmount>
+						</TaxSummary>
+						<TotalAmount CurCode="EUR">98.64</TotalAmount>
+					</Price>
+				</FareDetail>
+				<OrderItemID>SQ_6DZS4V_AIR-1-2</OrderItemID>
+				<OwnerCode>SQ</OwnerCode>
+				<PaymentTimeLimitDateTime>2025-01-06T22:00:00.000Z</PaymentTimeLimitDateTime>
+				<Price>
+					<BaseAmount CurCode="EUR">1499.00</BaseAmount>
+					<TaxSummary>
+						<Tax>
+							<Amount CurCode="EUR">190.56</Amount>
+							<TaxCode>H9</TaxCode>
+						</Tax>
+						<Tax>
+							<Amount CurCode="EUR">17.01</Amount>
+							<TaxCode>OP</TaxCode>
+						</Tax>
+						<Tax>
+							<Amount CurCode="EUR">98.64</Amount>
+							<TaxCode>SG</TaxCode>
+						</Tax>
+						<Tax>
+							<Amount CurCode="EUR">22.98</Amount>
+							<TaxCode>L7</TaxCode>
+						</Tax>
+						<Tax>
+							<Amount CurCode="EUR">142.92</Amount>
+							<TaxCode>BQ</TaxCode>
+						</Tax>
+						<TotalTaxAmount CurCode="EUR">472.11</TotalTaxAmount>
+					</TaxSummary>
+					<TotalAmount CurCode="EUR">1971.11</TotalAmount>
+				</Price>
+				<PriceGuaranteeTimeLimitDateTime>2024-12-26T23:00:00Z</PriceGuaranteeTimeLimitDateTime>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>SQ</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>6DZS4V</BookingID>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<ServiceDefinitionRef>
+							<OrderFlightAssociations>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderFlightAssociations>
+							<ServiceDefinitionRefID>BAGALLOW_2</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OrderServiceAssociation>
+					<PaxRefID>PAX3</PaxRefID>
+					<ServiceID>SEG1_PAX3</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>SQ</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>6DZS4V</BookingID>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<ServiceDefinitionRef>
+							<OrderFlightAssociations>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderFlightAssociations>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OrderServiceAssociation>
+					<PaxRefID>PAX2</PaxRefID>
+					<ServiceID>SEG1_PAX2</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>SQ</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>6DZS4V</BookingID>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<ServiceDefinitionRef>
+							<OrderFlightAssociations>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderFlightAssociations>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OrderServiceAssociation>
+					<PaxRefID>PAX4</PaxRefID>
+					<ServiceID>SEG1_PAX4</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>SQ</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>6DZS4V</BookingID>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<ServiceDefinitionRef>
+							<OrderFlightAssociations>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderFlightAssociations>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OrderServiceAssociation>
+					<PaxRefID>PAX5</PaxRefID>
+					<ServiceID>SEG1_PAX5</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>SQ</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>6DZS4V</BookingID>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<ServiceDefinitionRef>
+							<OrderFlightAssociations>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderFlightAssociations>
+							<ServiceDefinitionRefID>BAGALLOW_2</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OrderServiceAssociation>
+					<PaxRefID>PAX3</PaxRefID>
+					<ServiceID>SEG2_PAX3</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>SQ</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>6DZS4V</BookingID>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<ServiceDefinitionRef>
+							<OrderFlightAssociations>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderFlightAssociations>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OrderServiceAssociation>
+					<PaxRefID>PAX2</PaxRefID>
+					<ServiceID>SEG2_PAX2</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>SQ</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>6DZS4V</BookingID>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<ServiceDefinitionRef>
+							<OrderFlightAssociations>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderFlightAssociations>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OrderServiceAssociation>
+					<PaxRefID>PAX4</PaxRefID>
+					<ServiceID>SEG2_PAX4</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<Service>
+					<BookingRef>
+						<BookingEntity>
+							<Carrier>
+								<AirlineDesigCode>SQ</AirlineDesigCode>
+							</Carrier>
+						</BookingEntity>
+						<BookingID>6DZS4V</BookingID>
+					</BookingRef>
+					<DeliveryStatusCode>CONFIRMED</DeliveryStatusCode>
+					<OrderServiceAssociation>
+						<ServiceDefinitionRef>
+							<OrderFlightAssociations>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderFlightAssociations>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OrderServiceAssociation>
+					<PaxRefID>PAX5</PaxRefID>
+					<ServiceID>SEG2_PAX5</ServiceID>
+					<StatusCode>CONFIRMED</StatusCode>
+				</Service>
+				<StatusCode>ACTIVE</StatusCode>
+			</OrderItem>
+			<OwnerCode>SQ</OwnerCode>
+			<StatusCode>OPENED</StatusCode>
+			<TotalPrice>
+				<BaseAmount CurCode="EUR">1499.00</BaseAmount>
+				<TaxSummary>
+					<TotalTaxAmount CurCode="EUR">472.11</TotalTaxAmount>
+				</TaxSummary>
+				<TotalAmount CurCode="EUR">1971.11</TotalAmount>
+			</TotalPrice>
+		</Order>
+	</ns4:Response>
+	<ns4:DistributionChain>
+		<DistributionChainLink>
+			<ContactInfo>
+				<ContactInfoID>CTC_1</ContactInfoID>
+				<ContactPurposeText>OTH</ContactPurposeText>
+				<EmailAddress>
+					<ContactTypeText>PRO</ContactTypeText>
+					<EmailAddressText>ALTEANDC_TEST@AMADEUS.COM</EmailAddressText>
+				</EmailAddress>
+				<Phone>
+					<ContactTypeText>PRO</ContactTypeText>
+					<PhoneNumber>33097230220</PhoneNumber>
+				</Phone>
+			</ContactInfo>
+			<Ordinal>1</Ordinal>
+			<OrgRole>Seller</OrgRole>
+			<ParticipatingOrg>
+				<OrgID>00022665</OrgID>
+			</ParticipatingOrg>
+		</DistributionChainLink>
+		<DistributionChainLink>
+			<Ordinal>2</Ordinal>
+			<OrgRole>Distributor</OrgRole>
+			<ParticipatingOrg>
+				<OrgID>1A</OrgID>
+			</ParticipatingOrg>
+		</DistributionChainLink>
+		<DistributionChainLink>
+			<Ordinal>3</Ordinal>
+			<OrgRole>Carrier</OrgRole>
+			<ParticipatingOrg>
+				<OrgID>SQ</OrgID>
+			</ParticipatingOrg>
+		</DistributionChainLink>
+	</ns4:DistributionChain>
+	<ns4:PayloadAttributes>
+		<CorrelationID>0J9WIQ6JR53R0NVMF3XSJZ$#F1</CorrelationID>
+		<VersionNumber>21.3</VersionNumber>
+	</ns4:PayloadAttributes>
+</ns4:IATA_OrderViewRS>

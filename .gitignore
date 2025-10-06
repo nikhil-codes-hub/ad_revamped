@@ -105,9 +105,11 @@ secrets.py
 config_secrets.py
 
 # XML test files (may contain PII)
-test_data/*.xml
-sample_data/*.xml
+# Exclude all XML files by default to prevent accidentally committing production data
 *.xml
+
+# But ALLOW sanitized test/example XMLs in resources directory
+!resources/**/*.xml
 
 # ML Model files (but NOT the app/models/ directory with ORM models!)
 *.pkl

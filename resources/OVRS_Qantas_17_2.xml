@@ -1,0 +1,2348 @@
+<OrderViewRS TransactionIdentifier="1168e50c67284006832a887f63be5907" Version="17.2">
+	<Document/>
+	<Party>
+		<Sender>
+			<AggregatorSender>
+				<AggregatorID>F1</AggregatorID>
+			</AggregatorSender>
+		</Sender>
+		<Recipient>
+			<TravelAgencyRecipient>
+				<Contacts>
+					<Contact>
+						<AddressContact>
+							<Street>CSS-Q&T-QPL/CSS-Q&T-QPT</Street>
+							<Street>WO13989353</Street>
+							<CityName>FR-06100-NICE</CityName>
+							<CountryCode>FR</CountryCode>
+						</AddressContact>
+						<EmailContact>
+							<Address>ALTEANDC_TEST@AMADEUS.COM</Address>
+						</EmailContact>
+						<PhoneContact>
+							<Number>33097230220</Number>
+						</PhoneContact>
+					</Contact>
+				</Contacts>
+				<PseudoCity Owner="1A">NCE1A27QC</PseudoCity>
+				<AgencyID>00022665</AgencyID>
+				<AgentUser>
+					<Name>00022665</Name>
+					<Contacts>
+						<Contact>
+							<AddressContact>
+								<Street>CSS-Q&T-QPL/CSS-Q&T-QPT</Street>
+								<Street>WO13989353</Street>
+								<CityName>FR-06100-NICE</CityName>
+								<CountryCode>FR</CountryCode>
+							</AddressContact>
+						</Contact>
+					</Contacts>
+					<PseudoCity Owner="1A">NCE1A27QC</PseudoCity>
+					<IATA_Number>00022665</IATA_Number>
+					<AgentUserID>xmluser001</AgentUserID>
+				</AgentUser>
+			</TravelAgencyRecipient>
+		</Recipient>
+	</Party>
+	<Success/>
+	<Warnings>
+		<Warning Owner="QF">Qantas Frequent Flyers could earn Qantas Points and Status Credits for this booking. <a href="https://www.qantas.com/fflyer/dyn/program/terms" target="_blank">Terms and conditions apply.</a>
+		</Warning>
+	</Warnings>
+	<Response>
+		<Order OrderID="QF081HE4MKXA6" Owner="QF">
+			<BookingReferences>
+				<BookingReference>
+					<ID>5E4MKX</ID>
+					<OtherID>F1</OtherID>
+				</BookingReference>
+				<BookingReference>
+					<ID>WSH2NL</ID>
+					<AirlineID Name="Qantas">QF</AirlineID>
+				</BookingReference>
+			</BookingReferences>
+			<TotalOrderPrice>
+				<DetailCurrencyPrice>
+					<Total Code="EUR">76836</Total>
+				</DetailCurrencyPrice>
+			</TotalOrderPrice>
+			<Status>
+				<StatusCode>702</StatusCode>
+			</Status>
+			<OrderItems>
+				<OrderItem OrderItemID="P88884816-B93A-4C0D-BB55y6yw7ls0lltz0-1-1" Timestamp="2024-12-23T10:35:00">
+					<PriceDetail>
+						<TotalAmount>
+							<DetailCurrencyPrice>
+								<Total Code="EUR">51224</Total>
+							</DetailCurrencyPrice>
+						</TotalAmount>
+						<BaseAmount Code="EUR">38200</BaseAmount>
+						<Surcharges>
+							<Surcharge>
+								<Total Code="EUR">7620</Total>
+							</Surcharge>
+						</Surcharges>
+						<Taxes>
+							<Total Code="EUR">13024</Total>
+						</Taxes>
+					</PriceDetail>
+					<Service ServiceID="BAGGAGESRV1-T1">
+						<PassengerRef>T1</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S5">BASRVACF3DDE0-CO</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV2-T1">
+						<PassengerRef>T1</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S4">BASRV780F4602</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV3-T1">
+						<PassengerRef>T1</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S5">BASRV8A5EF6C8</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV4-T1">
+						<PassengerRef>T1</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S4">BASRVF11D3A-CO</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV5-T2">
+						<PassengerRef>T2</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S5">BASRVACF3DDE0-CO</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV6-T2">
+						<PassengerRef>T2</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S4">BASRV780F4602</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV7-T2">
+						<PassengerRef>T2</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S5">BASRV8A5EF6C8</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV8-T2">
+						<PassengerRef>T2</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S4">BASRVF11D3A-CO</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="SRV1-T1-S4" ServiceStatus="HK">
+						<PassengerRef>T1</PassengerRef>
+						<SegmentRef>S4</SegmentRef>
+					</Service>
+					<Service ServiceID="SRV1-T1-S5" ServiceStatus="HK">
+						<PassengerRef>T1</PassengerRef>
+						<SegmentRef>S5</SegmentRef>
+					</Service>
+					<Service ServiceID="SRV1-T2-S4" ServiceStatus="HK">
+						<PassengerRef>T2</PassengerRef>
+						<SegmentRef>S4</SegmentRef>
+					</Service>
+					<Service ServiceID="SRV1-T2-S5" ServiceStatus="HK">
+						<PassengerRef>T2</PassengerRef>
+						<SegmentRef>S5</SegmentRef>
+					</Service>
+					<TimeLimits>
+						<PaymentTimeLimit Timestamp="2024-12-23T23:59:00"/>
+						<PriceGuaranteeTimeLimits Timestamp="2024-12-23T12:05:21"/>
+						<TicketingTimeLimits Timestamp="2024-12-23T23:59:00"/>
+					</TimeLimits>
+					<Penalty RefundableInd="false"/>
+					<FareDetail>
+						<FareIndicatorCode>4</FareIndicatorCode>
+						<PassengerRefs>T1 T2</PassengerRefs>
+						<Price>
+							<TotalAmount>
+								<DetailCurrencyPrice>
+									<Total Code="EUR">25612</Total>
+								</DetailCurrencyPrice>
+							</TotalAmount>
+							<BaseAmount Code="EUR">19100</BaseAmount>
+							<FareFiledIn>
+								<BaseAmount Code="AUD">31714</BaseAmount>
+								<ExchangeRate>0.60095310</ExchangeRate>
+							</FareFiledIn>
+							<Surcharges>
+								<Surcharge>
+									<Total Code="EUR">3810</Total>
+									<Breakdown>
+										<Fee>
+											<Amount Code="EUR">1905</Amount>
+											<LocalAmount Code="AUD">3171</LocalAmount>
+											<Designator>Q</Designator>
+										</Fee>
+										<Fee>
+											<Amount Code="EUR">1905</Amount>
+											<LocalAmount Code="AUD">3171</LocalAmount>
+											<Designator>Q</Designator>
+										</Fee>
+									</Breakdown>
+								</Surcharge>
+							</Surcharges>
+							<Taxes>
+								<Total Code="EUR">6512</Total>
+								<Breakdown>
+									<Tax RefundInd="true">
+										<Amount Code="EUR">1100</Amount>
+										<TaxCode>YR</TaxCode>
+										<CollectionPoint>
+											<CurrCode NumberOfDecimals="2">EUR</CurrCode>
+											<AirportAmount>1100</AirportAmount>
+											<AirportCode>SYD</AirportCode>
+										</CollectionPoint>
+										<LocalAmount Code="EUR">1100</LocalAmount>
+										<Description>YRI QF CARRIER IMPOSED MISC FEE</Description>
+									</Tax>
+									<Tax RefundInd="true">
+										<Amount Code="EUR">1100</Amount>
+										<TaxCode>YR</TaxCode>
+										<CollectionPoint>
+											<CurrCode NumberOfDecimals="2">EUR</CurrCode>
+											<AirportAmount>1100</AirportAmount>
+											<AirportCode>MEL</AirportCode>
+										</CollectionPoint>
+										<LocalAmount Code="EUR">1100</LocalAmount>
+										<Description>YRI QF CARRIER IMPOSED MISC FEE</Description>
+									</Tax>
+									<Tax RefundInd="true">
+										<Amount Code="EUR">1406</Amount>
+										<Nation>AU</Nation>
+										<TaxCode>QR</TaxCode>
+										<LocalAmount Code="AUD">2338</LocalAmount>
+										<Description>PASSENGER SERVICE CHARGE DOMESTIC DEPARTURE</Description>
+									</Tax>
+									<Tax RefundInd="true">
+										<Amount Code="EUR">1406</Amount>
+										<Nation>AU</Nation>
+										<TaxCode>QR</TaxCode>
+										<LocalAmount Code="AUD">2338</LocalAmount>
+										<Description>PASSENGER SERVICE CHARGE DOMESTIC ARRIVAL</Description>
+									</Tax>
+									<Tax RefundInd="true">
+										<Amount Code="EUR">1500</Amount>
+										<Nation>AU</Nation>
+										<TaxCode>WG</TaxCode>
+										<LocalAmount Code="AUD">2494</LocalAmount>
+										<Description>SAFETY AND SECURITY CHARGE  DEPARTURE</Description>
+									</Tax>
+								</Breakdown>
+							</Taxes>
+						</Price>
+						<FareComponent>
+							<Price>
+								<TotalAmount>
+									<DetailCurrencyPrice>
+										<Total Code="EUR">12785</Total>
+									</DetailCurrencyPrice>
+								</TotalAmount>
+								<BaseAmount Code="EUR">9529</BaseAmount>
+								<FareFiledIn>
+									<BaseAmount Code="AUD">12687</BaseAmount>
+								</FareFiledIn>
+								<Surcharges>
+									<Surcharge>
+										<Total Code="EUR">1905</Total>
+										<Breakdown>
+											<Fee>
+												<Amount Code="EUR">1905</Amount>
+												<LocalAmount Code="AUD">3171</LocalAmount>
+												<Designator>Q</Designator>
+											</Fee>
+										</Breakdown>
+									</Surcharge>
+								</Surcharges>
+								<Taxes>
+									<Total Code="EUR">3256</Total>
+									<Breakdown>
+										<Tax>
+											<Amount Code="EUR">1100</Amount>
+											<TaxCode>YR</TaxCode>
+											<CollectionPoint>
+												<CurrCode NumberOfDecimals="2">EUR</CurrCode>
+												<AirportAmount>1100</AirportAmount>
+												<AirportCode>SYD</AirportCode>
+											</CollectionPoint>
+											<LocalAmount Code="EUR">1100</LocalAmount>
+											<Description>YRI QF CARRIER IMPOSED MISC FEE</Description>
+										</Tax>
+										<Tax>
+											<Amount Code="EUR">776</Amount>
+											<Nation>AU</Nation>
+											<TaxCode>QR</TaxCode>
+											<LocalAmount Code="AUD">1290</LocalAmount>
+											<Description>PASSENGER SERVICE CHARGE DOMESTIC DEPARTURE</Description>
+										</Tax>
+										<Tax>
+											<Amount Code="EUR">630</Amount>
+											<Nation>AU</Nation>
+											<TaxCode>QR</TaxCode>
+											<LocalAmount Code="AUD">1048</LocalAmount>
+											<Description>PASSENGER SERVICE CHARGE DOMESTIC ARRIVAL</Description>
+										</Tax>
+										<Tax>
+											<Amount Code="EUR">750</Amount>
+											<Nation>AU</Nation>
+											<TaxCode>WG</TaxCode>
+											<LocalAmount Code="AUD">1247</LocalAmount>
+											<Description>SAFETY AND SECURITY CHARGE  DEPARTURE</Description>
+										</Tax>
+									</Breakdown>
+								</Taxes>
+							</Price>
+							<FareBasis>
+								<FareBasisCode refs="FG1">
+									<Code>EDQA</Code>
+								</FareBasisCode>
+								<RBD>E</RBD>
+								<CabinType>
+									<CabinTypeCode>Y</CabinTypeCode>
+									<CabinTypeName>Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="true" RefundableInd="false">
+									<Details>
+										<Detail>
+											<Type>Change</Type>
+											<Application>2</Application>
+											<Amounts>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9000</CurrencyAmountValue>
+													<AmountApplication>MAX</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9000</CurrencyAmountValue>
+													<AmountApplication>MIN</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+											</Amounts>
+										</Detail>
+										<Detail>
+											<Type>Change</Type>
+											<Application>3</Application>
+											<Amounts>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9900</CurrencyAmountValue>
+													<AmountApplication>MAX</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9900</CurrencyAmountValue>
+													<AmountApplication>MIN</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+											</Amounts>
+										</Detail>
+										<Detail refs="RM6DDDF35C">
+											<Type>Change</Type>
+										</Detail>
+										<Detail refs="RMDFB35062">
+											<Type>Cancel</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+								<Ticketing>
+									<Endorsements>
+										<Endorsement>NON-REF/NON-END</Endorsement>
+										<Endorsement>SPECIAL FARE CONDITIONS</Endorsement>
+									</Endorsements>
+								</Ticketing>
+							</FareRules>
+							<PriceClassRef>QFREDeDeal-1</PriceClassRef>
+							<SegmentRefs OFF_Point="MEL" ON_Point="SYD">S4</SegmentRefs>
+						</FareComponent>
+						<FareComponent>
+							<Price>
+								<TotalAmount>
+									<DetailCurrencyPrice>
+										<Total Code="EUR">12785</Total>
+									</DetailCurrencyPrice>
+								</TotalAmount>
+								<BaseAmount Code="EUR">9529</BaseAmount>
+								<FareFiledIn>
+									<BaseAmount Code="AUD">12687</BaseAmount>
+								</FareFiledIn>
+								<Surcharges>
+									<Surcharge>
+										<Total Code="EUR">1905</Total>
+										<Breakdown>
+											<Fee>
+												<Amount Code="EUR">1905</Amount>
+												<LocalAmount Code="AUD">3171</LocalAmount>
+												<Designator>Q</Designator>
+											</Fee>
+										</Breakdown>
+									</Surcharge>
+								</Surcharges>
+								<Taxes>
+									<Total Code="EUR">3256</Total>
+									<Breakdown>
+										<Tax>
+											<Amount Code="EUR">1100</Amount>
+											<TaxCode>YR</TaxCode>
+											<CollectionPoint>
+												<CurrCode NumberOfDecimals="2">EUR</CurrCode>
+												<AirportAmount>1100</AirportAmount>
+												<AirportCode>MEL</AirportCode>
+											</CollectionPoint>
+											<LocalAmount Code="EUR">1100</LocalAmount>
+											<Description>YRI QF CARRIER IMPOSED MISC FEE</Description>
+										</Tax>
+										<Tax>
+											<Amount Code="EUR">630</Amount>
+											<Nation>AU</Nation>
+											<TaxCode>QR</TaxCode>
+											<LocalAmount Code="AUD">1048</LocalAmount>
+											<Description>PASSENGER SERVICE CHARGE DOMESTIC DEPARTURE</Description>
+										</Tax>
+										<Tax>
+											<Amount Code="EUR">776</Amount>
+											<Nation>AU</Nation>
+											<TaxCode>QR</TaxCode>
+											<LocalAmount Code="AUD">1290</LocalAmount>
+											<Description>PASSENGER SERVICE CHARGE DOMESTIC ARRIVAL</Description>
+										</Tax>
+										<Tax>
+											<Amount Code="EUR">750</Amount>
+											<Nation>AU</Nation>
+											<TaxCode>WG</TaxCode>
+											<LocalAmount Code="AUD">1247</LocalAmount>
+											<Description>SAFETY AND SECURITY CHARGE  DEPARTURE</Description>
+										</Tax>
+									</Breakdown>
+								</Taxes>
+							</Price>
+							<FareBasis>
+								<FareBasisCode refs="FG2">
+									<Code>EDQA</Code>
+								</FareBasisCode>
+								<RBD>E</RBD>
+								<CabinType>
+									<CabinTypeCode>Y</CabinTypeCode>
+									<CabinTypeName>Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="true" RefundableInd="false">
+									<Details>
+										<Detail>
+											<Type>Change</Type>
+											<Application>2</Application>
+											<Amounts>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9000</CurrencyAmountValue>
+													<AmountApplication>MAX</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9000</CurrencyAmountValue>
+													<AmountApplication>MIN</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+											</Amounts>
+										</Detail>
+										<Detail>
+											<Type>Change</Type>
+											<Application>3</Application>
+											<Amounts>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9900</CurrencyAmountValue>
+													<AmountApplication>MAX</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9900</CurrencyAmountValue>
+													<AmountApplication>MIN</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+											</Amounts>
+										</Detail>
+										<Detail refs="RM6DDDF35C">
+											<Type>Change</Type>
+										</Detail>
+										<Detail refs="RMDFB35062">
+											<Type>Cancel</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+								<Ticketing>
+									<Endorsements>
+										<Endorsement>NON-REF/NON-END</Endorsement>
+										<Endorsement>SPECIAL FARE CONDITIONS</Endorsement>
+									</Endorsements>
+								</Ticketing>
+							</FareRules>
+							<PriceClassRef>QFREDeDeal-1</PriceClassRef>
+							<SegmentRefs OFF_Point="SYD" ON_Point="MEL">S5</SegmentRefs>
+						</FareComponent>
+						<FlightMileage>
+							<Value>912</Value>
+						</FlightMileage>
+					</FareDetail>
+				</OrderItem>
+				<OrderItem OrderItemID="P88884816-B93A-4C0D-BB55y6yw7ls0lltz0-1-2" Timestamp="2024-12-23T10:35:00">
+					<PriceDetail>
+						<TotalAmount>
+							<DetailCurrencyPrice>
+								<Total Code="EUR">25612</Total>
+							</DetailCurrencyPrice>
+						</TotalAmount>
+						<BaseAmount Code="EUR">19100</BaseAmount>
+						<Surcharges>
+							<Surcharge>
+								<Total Code="EUR">3810</Total>
+							</Surcharge>
+						</Surcharges>
+						<Taxes>
+							<Total Code="EUR">6512</Total>
+						</Taxes>
+					</PriceDetail>
+					<Service ServiceID="BAGGAGESRV9-T3">
+						<PassengerRef>T3</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S4">BASRV75D77042</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV10-T3">
+						<PassengerRef>T3</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S5">BASRV96E145E9</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV11-T3">
+						<PassengerRef>T3</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S5">BASRV3882582A-CO</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV12-T3">
+						<PassengerRef>T3</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S4">BASRV8FD02049-CO</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="SRV2-T3-S4" ServiceStatus="HK">
+						<PassengerRef>T3</PassengerRef>
+						<SegmentRef>S4</SegmentRef>
+					</Service>
+					<Service ServiceID="SRV2-T3-S5" ServiceStatus="HK">
+						<PassengerRef>T3</PassengerRef>
+						<SegmentRef>S5</SegmentRef>
+					</Service>
+					<TimeLimits>
+						<PaymentTimeLimit Timestamp="2024-12-23T23:59:00"/>
+						<PriceGuaranteeTimeLimits Timestamp="2024-12-23T12:05:21"/>
+						<TicketingTimeLimits Timestamp="2024-12-23T23:59:00"/>
+					</TimeLimits>
+					<Penalty RefundableInd="false"/>
+					<FareDetail>
+						<FareIndicatorCode>4</FareIndicatorCode>
+						<PassengerRefs>T3</PassengerRefs>
+						<Price>
+							<TotalAmount>
+								<DetailCurrencyPrice>
+									<Total Code="EUR">25612</Total>
+								</DetailCurrencyPrice>
+							</TotalAmount>
+							<BaseAmount Code="EUR">19100</BaseAmount>
+							<FareFiledIn>
+								<BaseAmount Code="AUD">31714</BaseAmount>
+								<ExchangeRate>0.60095310</ExchangeRate>
+							</FareFiledIn>
+							<Surcharges>
+								<Surcharge>
+									<Total Code="EUR">3810</Total>
+									<Breakdown>
+										<Fee>
+											<Amount Code="EUR">1905</Amount>
+											<LocalAmount Code="AUD">3171</LocalAmount>
+											<Designator>Q</Designator>
+										</Fee>
+										<Fee>
+											<Amount Code="EUR">1905</Amount>
+											<LocalAmount Code="AUD">3171</LocalAmount>
+											<Designator>Q</Designator>
+										</Fee>
+									</Breakdown>
+								</Surcharge>
+							</Surcharges>
+							<Taxes>
+								<Total Code="EUR">6512</Total>
+								<Breakdown>
+									<Tax RefundInd="true">
+										<Amount Code="EUR">1100</Amount>
+										<TaxCode>YR</TaxCode>
+										<CollectionPoint>
+											<CurrCode NumberOfDecimals="2">EUR</CurrCode>
+											<AirportAmount>1100</AirportAmount>
+											<AirportCode>SYD</AirportCode>
+										</CollectionPoint>
+										<LocalAmount Code="EUR">1100</LocalAmount>
+										<Description>YRI QF CARRIER IMPOSED MISC FEE</Description>
+									</Tax>
+									<Tax RefundInd="true">
+										<Amount Code="EUR">1100</Amount>
+										<TaxCode>YR</TaxCode>
+										<CollectionPoint>
+											<CurrCode NumberOfDecimals="2">EUR</CurrCode>
+											<AirportAmount>1100</AirportAmount>
+											<AirportCode>MEL</AirportCode>
+										</CollectionPoint>
+										<LocalAmount Code="EUR">1100</LocalAmount>
+										<Description>YRI QF CARRIER IMPOSED MISC FEE</Description>
+									</Tax>
+									<Tax RefundInd="true">
+										<Amount Code="EUR">1406</Amount>
+										<Nation>AU</Nation>
+										<TaxCode>QR</TaxCode>
+										<LocalAmount Code="AUD">2338</LocalAmount>
+										<Description>PASSENGER SERVICE CHARGE DOMESTIC DEPARTURE</Description>
+									</Tax>
+									<Tax RefundInd="true">
+										<Amount Code="EUR">1406</Amount>
+										<Nation>AU</Nation>
+										<TaxCode>QR</TaxCode>
+										<LocalAmount Code="AUD">2338</LocalAmount>
+										<Description>PASSENGER SERVICE CHARGE DOMESTIC ARRIVAL</Description>
+									</Tax>
+									<Tax RefundInd="true">
+										<Amount Code="EUR">1500</Amount>
+										<Nation>AU</Nation>
+										<TaxCode>WG</TaxCode>
+										<LocalAmount Code="AUD">2494</LocalAmount>
+										<Description>SAFETY AND SECURITY CHARGE  DEPARTURE</Description>
+									</Tax>
+								</Breakdown>
+							</Taxes>
+						</Price>
+						<FareComponent>
+							<Price>
+								<TotalAmount>
+									<DetailCurrencyPrice>
+										<Total Code="EUR">12785</Total>
+									</DetailCurrencyPrice>
+								</TotalAmount>
+								<BaseAmount Code="EUR">9529</BaseAmount>
+								<FareFiledIn>
+									<BaseAmount Code="AUD">12687</BaseAmount>
+								</FareFiledIn>
+								<Surcharges>
+									<Surcharge>
+										<Total Code="EUR">1905</Total>
+										<Breakdown>
+											<Fee>
+												<Amount Code="EUR">1905</Amount>
+												<LocalAmount Code="AUD">3171</LocalAmount>
+												<Designator>Q</Designator>
+											</Fee>
+										</Breakdown>
+									</Surcharge>
+								</Surcharges>
+								<Taxes>
+									<Total Code="EUR">3256</Total>
+									<Breakdown>
+										<Tax>
+											<Amount Code="EUR">1100</Amount>
+											<TaxCode>YR</TaxCode>
+											<CollectionPoint>
+												<CurrCode NumberOfDecimals="2">EUR</CurrCode>
+												<AirportAmount>1100</AirportAmount>
+												<AirportCode>SYD</AirportCode>
+											</CollectionPoint>
+											<LocalAmount Code="EUR">1100</LocalAmount>
+											<Description>YRI QF CARRIER IMPOSED MISC FEE</Description>
+										</Tax>
+										<Tax>
+											<Amount Code="EUR">776</Amount>
+											<Nation>AU</Nation>
+											<TaxCode>QR</TaxCode>
+											<LocalAmount Code="AUD">1290</LocalAmount>
+											<Description>PASSENGER SERVICE CHARGE DOMESTIC DEPARTURE</Description>
+										</Tax>
+										<Tax>
+											<Amount Code="EUR">630</Amount>
+											<Nation>AU</Nation>
+											<TaxCode>QR</TaxCode>
+											<LocalAmount Code="AUD">1048</LocalAmount>
+											<Description>PASSENGER SERVICE CHARGE DOMESTIC ARRIVAL</Description>
+										</Tax>
+										<Tax>
+											<Amount Code="EUR">750</Amount>
+											<Nation>AU</Nation>
+											<TaxCode>WG</TaxCode>
+											<LocalAmount Code="AUD">1247</LocalAmount>
+											<Description>SAFETY AND SECURITY CHARGE  DEPARTURE</Description>
+										</Tax>
+									</Breakdown>
+								</Taxes>
+							</Price>
+							<FareBasis>
+								<FareBasisCode refs="FG3">
+									<Code>EDQACH</Code>
+								</FareBasisCode>
+								<RBD>E</RBD>
+								<CabinType>
+									<CabinTypeCode>Y</CabinTypeCode>
+									<CabinTypeName>Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="true" RefundableInd="false">
+									<Details>
+										<Detail>
+											<Type>Change</Type>
+											<Application>2</Application>
+											<Amounts>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9000</CurrencyAmountValue>
+													<AmountApplication>MAX</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9000</CurrencyAmountValue>
+													<AmountApplication>MIN</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+											</Amounts>
+										</Detail>
+										<Detail>
+											<Type>Change</Type>
+											<Application>3</Application>
+											<Amounts>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9900</CurrencyAmountValue>
+													<AmountApplication>MAX</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9900</CurrencyAmountValue>
+													<AmountApplication>MIN</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+											</Amounts>
+										</Detail>
+										<Detail refs="RM6DDDF35C">
+											<Type>Change</Type>
+										</Detail>
+										<Detail refs="RMDFB35062">
+											<Type>Cancel</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+								<Ticketing>
+									<Endorsements>
+										<Endorsement>NON-REF/NON-END</Endorsement>
+										<Endorsement>SPECIAL FARE CONDITIONS</Endorsement>
+									</Endorsements>
+								</Ticketing>
+							</FareRules>
+							<PriceClassRef>QFREDeDeal-1</PriceClassRef>
+							<SegmentRefs OFF_Point="MEL" ON_Point="SYD">S4</SegmentRefs>
+						</FareComponent>
+						<FareComponent>
+							<Price>
+								<TotalAmount>
+									<DetailCurrencyPrice>
+										<Total Code="EUR">12785</Total>
+									</DetailCurrencyPrice>
+								</TotalAmount>
+								<BaseAmount Code="EUR">9529</BaseAmount>
+								<FareFiledIn>
+									<BaseAmount Code="AUD">12687</BaseAmount>
+								</FareFiledIn>
+								<Surcharges>
+									<Surcharge>
+										<Total Code="EUR">1905</Total>
+										<Breakdown>
+											<Fee>
+												<Amount Code="EUR">1905</Amount>
+												<LocalAmount Code="AUD">3171</LocalAmount>
+												<Designator>Q</Designator>
+											</Fee>
+										</Breakdown>
+									</Surcharge>
+								</Surcharges>
+								<Taxes>
+									<Total Code="EUR">3256</Total>
+									<Breakdown>
+										<Tax>
+											<Amount Code="EUR">1100</Amount>
+											<TaxCode>YR</TaxCode>
+											<CollectionPoint>
+												<CurrCode NumberOfDecimals="2">EUR</CurrCode>
+												<AirportAmount>1100</AirportAmount>
+												<AirportCode>MEL</AirportCode>
+											</CollectionPoint>
+											<LocalAmount Code="EUR">1100</LocalAmount>
+											<Description>YRI QF CARRIER IMPOSED MISC FEE</Description>
+										</Tax>
+										<Tax>
+											<Amount Code="EUR">630</Amount>
+											<Nation>AU</Nation>
+											<TaxCode>QR</TaxCode>
+											<LocalAmount Code="AUD">1048</LocalAmount>
+											<Description>PASSENGER SERVICE CHARGE DOMESTIC DEPARTURE</Description>
+										</Tax>
+										<Tax>
+											<Amount Code="EUR">776</Amount>
+											<Nation>AU</Nation>
+											<TaxCode>QR</TaxCode>
+											<LocalAmount Code="AUD">1290</LocalAmount>
+											<Description>PASSENGER SERVICE CHARGE DOMESTIC ARRIVAL</Description>
+										</Tax>
+										<Tax>
+											<Amount Code="EUR">750</Amount>
+											<Nation>AU</Nation>
+											<TaxCode>WG</TaxCode>
+											<LocalAmount Code="AUD">1247</LocalAmount>
+											<Description>SAFETY AND SECURITY CHARGE  DEPARTURE</Description>
+										</Tax>
+									</Breakdown>
+								</Taxes>
+							</Price>
+							<FareBasis>
+								<FareBasisCode refs="FG4">
+									<Code>EDQACH</Code>
+								</FareBasisCode>
+								<RBD>E</RBD>
+								<CabinType>
+									<CabinTypeCode>Y</CabinTypeCode>
+									<CabinTypeName>Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="true" RefundableInd="false">
+									<Details>
+										<Detail>
+											<Type>Change</Type>
+											<Application>2</Application>
+											<Amounts>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9000</CurrencyAmountValue>
+													<AmountApplication>MAX</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9000</CurrencyAmountValue>
+													<AmountApplication>MIN</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+											</Amounts>
+										</Detail>
+										<Detail>
+											<Type>Change</Type>
+											<Application>3</Application>
+											<Amounts>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9900</CurrencyAmountValue>
+													<AmountApplication>MAX</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">9900</CurrencyAmountValue>
+													<AmountApplication>MIN</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+											</Amounts>
+										</Detail>
+										<Detail refs="RM6DDDF35C">
+											<Type>Change</Type>
+										</Detail>
+										<Detail refs="RMDFB35062">
+											<Type>Cancel</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+								<Ticketing>
+									<Endorsements>
+										<Endorsement>NON-REF/NON-END</Endorsement>
+										<Endorsement>SPECIAL FARE CONDITIONS</Endorsement>
+									</Endorsements>
+								</Ticketing>
+							</FareRules>
+							<PriceClassRef>QFREDeDeal-1</PriceClassRef>
+							<SegmentRefs OFF_Point="SYD" ON_Point="MEL">S5</SegmentRefs>
+						</FareComponent>
+						<FlightMileage>
+							<Value>912</Value>
+						</FlightMileage>
+					</FareDetail>
+				</OrderItem>
+				<OrderItem OrderItemID="P88884816-B93A-4C0D-BB55y6yw7ls0lltz0-1-3" Timestamp="2024-12-23T10:35:00">
+					<PriceDetail>
+						<TotalAmount>
+							<DetailCurrencyPrice>
+								<Total Code="EUR">0</Total>
+							</DetailCurrencyPrice>
+						</TotalAmount>
+						<BaseAmount Code="EUR">0</BaseAmount>
+						<Taxes>
+							<Total Code="EUR">0</Total>
+						</Taxes>
+					</PriceDetail>
+					<Service ServiceID="BAGGAGESRV13-T1.1">
+						<PassengerRef>T1.1</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S4">BASRV1838D74B</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV14-T1.1">
+						<PassengerRef>T1.1</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S5">BASRV560FED05</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV15-T1.1">
+						<PassengerRef>T1.1</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S5">BASRV1B686830-CO</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="BAGGAGESRV16-T1.1">
+						<PassengerRef>T1.1</PassengerRef>
+						<ServiceDefinitionRef SegmentRef="S4">BASRVBDB8D05-CO</ServiceDefinitionRef>
+					</Service>
+					<Service ServiceID="SRV3-T1.1-S4" ServiceStatus="HK">
+						<PassengerRef>T1.1</PassengerRef>
+						<SegmentRef>S4</SegmentRef>
+					</Service>
+					<Service ServiceID="SRV3-T1.1-S5" ServiceStatus="HK">
+						<PassengerRef>T1.1</PassengerRef>
+						<SegmentRef>S5</SegmentRef>
+					</Service>
+					<TimeLimits>
+						<PaymentTimeLimit Timestamp="2024-12-23T23:59:00"/>
+						<PriceGuaranteeTimeLimits Timestamp="2024-12-23T12:05:21"/>
+						<TicketingTimeLimits Timestamp="2024-12-23T23:59:00"/>
+					</TimeLimits>
+					<Penalty RefundableInd="false"/>
+					<FareDetail>
+						<FareIndicatorCode>4</FareIndicatorCode>
+						<PassengerRefs>T1.1</PassengerRefs>
+						<Price>
+							<TotalAmount>
+								<DetailCurrencyPrice>
+									<Total Code="EUR">0</Total>
+								</DetailCurrencyPrice>
+							</TotalAmount>
+							<BaseAmount Code="EUR">0</BaseAmount>
+							<Taxes>
+								<Total Code="EUR">0</Total>
+							</Taxes>
+						</Price>
+						<FareComponent>
+							<Price>
+								<TotalAmount>
+									<DetailCurrencyPrice>
+										<Total Code="EUR">0</Total>
+									</DetailCurrencyPrice>
+								</TotalAmount>
+								<BaseAmount Code="EUR">0</BaseAmount>
+								<FareFiledIn>
+									<BaseAmount Code="AUD">0</BaseAmount>
+								</FareFiledIn>
+								<Taxes>
+									<Total Code="EUR">0</Total>
+								</Taxes>
+							</Price>
+							<FareBasis>
+								<FareBasisCode refs="FG5">
+									<Code>EDQAIN</Code>
+								</FareBasisCode>
+								<RBD>E</RBD>
+								<CabinType>
+									<CabinTypeCode>Y</CabinTypeCode>
+									<CabinTypeName>Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="false" RefundableInd="false">
+									<Details>
+										<Detail>
+											<Type>Change</Type>
+											<Application>2</Application>
+											<Amounts>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">0</CurrencyAmountValue>
+													<AmountApplication>MAX</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">0</CurrencyAmountValue>
+													<AmountApplication>MIN</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+											</Amounts>
+										</Detail>
+										<Detail>
+											<Type>Change</Type>
+											<Application>3</Application>
+											<Amounts>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">0</CurrencyAmountValue>
+													<AmountApplication>MAX</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">0</CurrencyAmountValue>
+													<AmountApplication>MIN</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+											</Amounts>
+										</Detail>
+										<Detail refs="RM6DDDF35C">
+											<Type>Change</Type>
+										</Detail>
+										<Detail refs="RMDFB35062">
+											<Type>Cancel</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+								<Ticketing>
+									<Endorsements>
+										<Endorsement>NON-REF/NON-END</Endorsement>
+										<Endorsement>SPECIAL FARE CONDITIONS</Endorsement>
+									</Endorsements>
+								</Ticketing>
+							</FareRules>
+							<PriceClassRef>QFREDeDeal-1</PriceClassRef>
+							<SegmentRefs OFF_Point="MEL" ON_Point="SYD">S4</SegmentRefs>
+						</FareComponent>
+						<FareComponent>
+							<Price>
+								<TotalAmount>
+									<DetailCurrencyPrice>
+										<Total Code="EUR">0</Total>
+									</DetailCurrencyPrice>
+								</TotalAmount>
+								<BaseAmount Code="EUR">0</BaseAmount>
+								<FareFiledIn>
+									<BaseAmount Code="AUD">0</BaseAmount>
+								</FareFiledIn>
+								<Taxes>
+									<Total Code="EUR">0</Total>
+								</Taxes>
+							</Price>
+							<FareBasis>
+								<FareBasisCode refs="FG6">
+									<Code>EDQAIN</Code>
+								</FareBasisCode>
+								<RBD>E</RBD>
+								<CabinType>
+									<CabinTypeCode>Y</CabinTypeCode>
+									<CabinTypeName>Economy</CabinTypeName>
+								</CabinType>
+							</FareBasis>
+							<FareRules>
+								<Penalty CancelFeeInd="false" ChangeFeeInd="false" RefundableInd="false">
+									<Details>
+										<Detail>
+											<Type>Change</Type>
+											<Application>2</Application>
+											<Amounts>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">0</CurrencyAmountValue>
+													<AmountApplication>MAX</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">0</CurrencyAmountValue>
+													<AmountApplication>MIN</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+											</Amounts>
+										</Detail>
+										<Detail>
+											<Type>Change</Type>
+											<Application>3</Application>
+											<Amounts>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">0</CurrencyAmountValue>
+													<AmountApplication>MAX</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+												<Amount>
+													<CurrencyAmountValue Code="AUD">0</CurrencyAmountValue>
+													<AmountApplication>MIN</AmountApplication>
+													<ApplicableFeeRemarks>
+														<Remark>Restrictions apply. Fare difference may also be payable.</Remark>
+													</ApplicableFeeRemarks>
+												</Amount>
+											</Amounts>
+										</Detail>
+										<Detail refs="RM6DDDF35C">
+											<Type>Change</Type>
+										</Detail>
+										<Detail refs="RMDFB35062">
+											<Type>Cancel</Type>
+										</Detail>
+									</Details>
+								</Penalty>
+								<Ticketing>
+									<Endorsements>
+										<Endorsement>NON-REF/NON-END</Endorsement>
+										<Endorsement>SPECIAL FARE CONDITIONS</Endorsement>
+									</Endorsements>
+								</Ticketing>
+							</FareRules>
+							<PriceClassRef>QFREDeDeal-1</PriceClassRef>
+							<SegmentRefs OFF_Point="SYD" ON_Point="MEL">S5</SegmentRefs>
+						</FareComponent>
+						<FlightMileage>
+							<Value>912</Value>
+						</FlightMileage>
+					</FareDetail>
+				</OrderItem>
+			</OrderItems>
+		</Order>
+		<DataLists>
+			<PassengerList>
+				<Passenger PassengerID="T1">
+					<PTC>ADT</PTC>
+					<Birthdate>1996-02-10</Birthdate>
+					<Individual>
+						<Birthdate>1996-02-10</Birthdate>
+						<Gender>Female</Gender>
+						<NameTitle>MRS</NameTitle>
+						<GivenName>AGDKLP</GivenName>
+						<Surname>NDCX</Surname>
+					</Individual>
+					<ContactInfoRef>CI1</ContactInfoRef>
+					<InfantRef>T1.1</InfantRef>
+				</Passenger>
+				<Passenger PassengerID="T1.1">
+					<PTC>INF</PTC>
+					<Birthdate>2023-11-01</Birthdate>
+					<Individual>
+						<Birthdate>2023-11-01</Birthdate>
+						<Gender>Female</Gender>
+						<GivenName>FPOACX</GivenName>
+						<Surname>NDCX</Surname>
+					</Individual>
+				</Passenger>
+				<Passenger PassengerID="T2">
+					<PTC>ADT</PTC>
+					<Birthdate>1995-12-07</Birthdate>
+					<Individual>
+						<Birthdate>1995-12-07</Birthdate>
+						<Gender>Male</Gender>
+						<NameTitle>MR</NameTitle>
+						<GivenName>AHGGDN</GivenName>
+						<Surname>NDCX</Surname>
+					</Individual>
+					<ContactInfoRef>CI2</ContactInfoRef>
+				</Passenger>
+				<Passenger PassengerID="T3">
+					<PTC>CNN</PTC>
+					<Birthdate>2016-12-09</Birthdate>
+					<Individual>
+						<Birthdate>2016-12-09</Birthdate>
+						<Gender>Female</Gender>
+						<NameTitle>MS</NameTitle>
+						<GivenName>CSAFCX</GivenName>
+						<Surname>NDCX</Surname>
+					</Individual>
+					<ContactInfoRef>CI3</ContactInfoRef>
+				</Passenger>
+			</PassengerList>
+			<ContactList>
+				<ContactInformation ContactID="CI1">
+					<PostalAddress>
+						<Label>AddressAtDestination</Label>
+						<Street>58 AV ALFJUH</Street>
+						<PostalCode>59618</PostalCode>
+						<CityName>ATLANTA</CityName>
+						<CountryCode>USA</CountryCode>
+					</PostalAddress>
+					<PostalAddress>
+						<Label>AddressAtOrigin</Label>
+						<Street>80 RUE QCXDSA</Street>
+						<PostalCode>75196</PostalCode>
+						<CityName>NICE</CityName>
+						<CountryCode>FRA</CountryCode>
+					</PostalAddress>
+					<ContactProvided>
+						<Phone>
+							<PhoneNumber>33912574551</PhoneNumber>
+						</Phone>
+					</ContactProvided>
+					<ContactProvided>
+						<EmailAddress>
+							<Label>Operational</Label>
+							<EmailAddressValue>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressValue>
+						</EmailAddress>
+					</ContactProvided>
+				</ContactInformation>
+				<ContactInformation ContactID="CI2">
+					<PostalAddress>
+						<Label>AddressAtDestination</Label>
+						<Street>57 AV LPOAQC</Street>
+						<PostalCode>60873</PostalCode>
+						<CityName>ATLANTA</CityName>
+						<CountryCode>USA</CountryCode>
+					</PostalAddress>
+					<PostalAddress>
+						<Label>AddressAtOrigin</Label>
+						<Street>96 RUE FRGTHG</Street>
+						<PostalCode>75126</PostalCode>
+						<CityName>NICE</CityName>
+						<CountryCode>FRA</CountryCode>
+					</PostalAddress>
+					<ContactProvided>
+						<Phone>
+							<PhoneNumber>33912574551</PhoneNumber>
+						</Phone>
+					</ContactProvided>
+					<ContactProvided>
+						<EmailAddress>
+							<Label>Operational</Label>
+							<EmailAddressValue>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressValue>
+						</EmailAddress>
+					</ContactProvided>
+				</ContactInformation>
+				<ContactInformation ContactID="CI3">
+					<PostalAddress>
+						<Label>AddressAtDestination</Label>
+						<Street>51 AV GDNFHT</Street>
+						<PostalCode>63710</PostalCode>
+						<CityName>ATLANTA</CityName>
+						<CountryCode>USA</CountryCode>
+					</PostalAddress>
+					<PostalAddress>
+						<Label>AddressAtOrigin</Label>
+						<Street>72 RUE FVREDF</Street>
+						<PostalCode>75039</PostalCode>
+						<CityName>NICE</CityName>
+						<CountryCode>FRA</CountryCode>
+					</PostalAddress>
+					<ContactProvided>
+						<Phone>
+							<PhoneNumber>33904104896</PhoneNumber>
+						</Phone>
+					</ContactProvided>
+					<ContactProvided>
+						<EmailAddress>
+							<Label>Operational</Label>
+							<EmailAddressValue>NAME_SURNAME_CHD@MYMAIL.COM</EmailAddressValue>
+						</EmailAddress>
+					</ContactProvided>
+				</ContactInformation>
+			</ContactList>
+			<BagDisclosureList>
+				<BagDisclosure ListKey="BaggageKey-1">
+					<BagRule>N</BagRule>
+					<Descriptions>
+						<Description>
+							<Text>Not subject to US DOT and CTA Reservation or Disclosure</Text>
+						</Description>
+					</Descriptions>
+				</BagDisclosure>
+				<BagDisclosure ListKey="BaggageKey-2">
+					<BagRule>N</BagRule>
+					<Descriptions>
+						<Description>
+							<Text>Not subject to US DOT and CTA Reservation or Disclosure</Text>
+						</Description>
+					</Descriptions>
+				</BagDisclosure>
+			</BagDisclosureList>
+			<BaggageAllowanceList>
+				<BaggageAllowance BaggageAllowanceID="BA2DAD4EB0-CO">
+					<BaggageCategory>CarryOn</BaggageCategory>
+					<AllowanceDescription>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<Descriptions>
+							<Description>
+								<Text>CARRYON HAND BAGGAGE ALLOWANCE</Text>
+							</Description>
+							<Description>
+								<Text>CARRY7KG 15LB UPTO41LI 105LCM</Text>
+							</Description>
+							<Description>
+								<Text>CARRY7KG 15LB UPTO41LI 105LCM</Text>
+							</Description>
+							<Description>
+								<Text>CARRY7KG 15LB UPTO45LI 115LCM</Text>
+							</Description>
+						</Descriptions>
+					</AllowanceDescription>
+					<DimensionAllowance>
+						<DimensionUOM>Centimeter</DimensionUOM>
+						<MaxLinear>105</MaxLinear>
+						<MinLinear>0</MinLinear>
+					</DimensionAllowance>
+					<PieceAllowance>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>2</TotalQuantity>
+						<PieceMeasurements Quantity="2"/>
+					</PieceAllowance>
+					<WeightAllowance>
+						<MaximumWeight>
+							<Value>7</Value>
+							<UOM>KG</UOM>
+						</MaximumWeight>
+						<MaximumWeight>
+							<Value>15</Value>
+							<UOM>LBS</UOM>
+						</MaximumWeight>
+					</WeightAllowance>
+					<BaggageDeterminingCarrier>
+						<AirlineID>QF</AirlineID>
+					</BaggageDeterminingCarrier>
+				</BaggageAllowance>
+				<BaggageAllowance BaggageAllowanceID="BA2508F258-CO">
+					<BaggageCategory>CarryOn</BaggageCategory>
+					<AllowanceDescription>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<Descriptions>
+							<Description>
+								<Text>CARRYON HAND BAGGAGE ALLOWANCE</Text>
+							</Description>
+							<Description>
+								<Text>CARRY7KG 15LB UPTO41LI 105LCM</Text>
+							</Description>
+							<Description>
+								<Text>CARRY7KG 15LB UPTO41LI 105LCM</Text>
+							</Description>
+							<Description>
+								<Text>CARRY7KG 15LB UPTO45LI 115LCM</Text>
+							</Description>
+						</Descriptions>
+					</AllowanceDescription>
+					<DimensionAllowance>
+						<DimensionUOM>Centimeter</DimensionUOM>
+						<MaxLinear>105</MaxLinear>
+						<MinLinear>0</MinLinear>
+					</DimensionAllowance>
+					<PieceAllowance>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>2</TotalQuantity>
+						<PieceMeasurements Quantity="2"/>
+					</PieceAllowance>
+					<WeightAllowance>
+						<MaximumWeight>
+							<Value>7</Value>
+							<UOM>KG</UOM>
+						</MaximumWeight>
+						<MaximumWeight>
+							<Value>15</Value>
+							<UOM>LBS</UOM>
+						</MaximumWeight>
+					</WeightAllowance>
+					<BaggageDeterminingCarrier>
+						<AirlineID>QF</AirlineID>
+					</BaggageDeterminingCarrier>
+				</BaggageAllowance>
+				<BaggageAllowance BaggageAllowanceID="BA5DB96DD7-CO">
+					<BaggageCategory>CarryOn</BaggageCategory>
+					<AllowanceDescription>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<Descriptions>
+							<Description>
+								<Text>CARRYON HAND BAGGAGE ALLOWANCE</Text>
+							</Description>
+						</Descriptions>
+					</AllowanceDescription>
+					<PieceAllowance>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>0</TotalQuantity>
+						<PieceMeasurements Quantity="0"/>
+					</PieceAllowance>
+					<BaggageDeterminingCarrier>
+						<AirlineID>QF</AirlineID>
+					</BaggageDeterminingCarrier>
+				</BaggageAllowance>
+				<BaggageAllowance BaggageAllowanceID="BAC09A1881-CO">
+					<BaggageCategory>CarryOn</BaggageCategory>
+					<AllowanceDescription>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<Descriptions>
+							<Description>
+								<Text>CARRYON HAND BAGGAGE ALLOWANCE</Text>
+							</Description>
+							<Description>
+								<Text>CARRY7KG 15LB UPTO41LI 105LCM</Text>
+							</Description>
+							<Description>
+								<Text>CARRY7KG 15LB UPTO41LI 105LCM</Text>
+							</Description>
+							<Description>
+								<Text>CARRY7KG 15LB UPTO45LI 115LCM</Text>
+							</Description>
+						</Descriptions>
+					</AllowanceDescription>
+					<DimensionAllowance>
+						<DimensionUOM>Centimeter</DimensionUOM>
+						<MaxLinear>105</MaxLinear>
+						<MinLinear>0</MinLinear>
+					</DimensionAllowance>
+					<PieceAllowance>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>2</TotalQuantity>
+						<PieceMeasurements Quantity="2"/>
+					</PieceAllowance>
+					<WeightAllowance>
+						<MaximumWeight>
+							<Value>7</Value>
+							<UOM>KG</UOM>
+						</MaximumWeight>
+						<MaximumWeight>
+							<Value>15</Value>
+							<UOM>LBS</UOM>
+						</MaximumWeight>
+					</WeightAllowance>
+					<BaggageDeterminingCarrier>
+						<AirlineID>QF</AirlineID>
+					</BaggageDeterminingCarrier>
+				</BaggageAllowance>
+				<BaggageAllowance BaggageAllowanceID="BA2CFC2D83-CO">
+					<BaggageCategory>CarryOn</BaggageCategory>
+					<AllowanceDescription>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<Descriptions>
+							<Description>
+								<Text>CARRYON HAND BAGGAGE ALLOWANCE</Text>
+							</Description>
+							<Description>
+								<Text>CARRY7KG 15LB UPTO41LI 105LCM</Text>
+							</Description>
+							<Description>
+								<Text>CARRY7KG 15LB UPTO41LI 105LCM</Text>
+							</Description>
+							<Description>
+								<Text>CARRY7KG 15LB UPTO45LI 115LCM</Text>
+							</Description>
+						</Descriptions>
+					</AllowanceDescription>
+					<DimensionAllowance>
+						<DimensionUOM>Centimeter</DimensionUOM>
+						<MaxLinear>105</MaxLinear>
+						<MinLinear>0</MinLinear>
+					</DimensionAllowance>
+					<PieceAllowance>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>2</TotalQuantity>
+						<PieceMeasurements Quantity="2"/>
+					</PieceAllowance>
+					<WeightAllowance>
+						<MaximumWeight>
+							<Value>7</Value>
+							<UOM>KG</UOM>
+						</MaximumWeight>
+						<MaximumWeight>
+							<Value>15</Value>
+							<UOM>LBS</UOM>
+						</MaximumWeight>
+					</WeightAllowance>
+					<BaggageDeterminingCarrier>
+						<AirlineID>QF</AirlineID>
+					</BaggageDeterminingCarrier>
+				</BaggageAllowance>
+				<BaggageAllowance BaggageAllowanceID="BAAF817D35-CO">
+					<BaggageCategory>CarryOn</BaggageCategory>
+					<AllowanceDescription>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<Descriptions>
+							<Description>
+								<Text>CARRYON HAND BAGGAGE ALLOWANCE</Text>
+							</Description>
+						</Descriptions>
+					</AllowanceDescription>
+					<PieceAllowance>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>0</TotalQuantity>
+						<PieceMeasurements Quantity="0"/>
+					</PieceAllowance>
+					<BaggageDeterminingCarrier>
+						<AirlineID>QF</AirlineID>
+					</BaggageDeterminingCarrier>
+				</BaggageAllowance>
+				<BaggageAllowance BaggageAllowanceID="BA510D8447">
+					<BaggageCategory>Checked</BaggageCategory>
+					<AllowanceDescription Concept="Piece">
+						<ApplicableParty>Traveler</ApplicableParty>
+						<Descriptions>
+							<Description>
+								<Text>CHECKED ALLOWANCE</Text>
+							</Description>
+						</Descriptions>
+					</AllowanceDescription>
+					<PieceAllowance>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>1</TotalQuantity>
+						<PieceMeasurements Quantity="1">
+							<PieceWeightAllowance>
+								<MaximumWeight>
+									<Value>23</Value>
+									<UOM>KG</UOM>
+								</MaximumWeight>
+								<MaximumWeight>
+									<Value>50</Value>
+									<UOM>LBS</UOM>
+								</MaximumWeight>
+							</PieceWeightAllowance>
+							<PieceDimensionAllowance>
+								<DimensionUOM>Centimeter</DimensionUOM>
+								<MaxLinear>140</MaxLinear>
+								<MinLinear>0</MinLinear>
+							</PieceDimensionAllowance>
+							<PieceDimensionAllowance>
+								<DimensionUOM>Inch</DimensionUOM>
+								<MaxLinear>55</MaxLinear>
+								<MinLinear>0</MinLinear>
+							</PieceDimensionAllowance>
+						</PieceMeasurements>
+					</PieceAllowance>
+					<BaggageDeterminingCarrier>
+						<AirlineID>QF</AirlineID>
+					</BaggageDeterminingCarrier>
+				</BaggageAllowance>
+				<BaggageAllowance BaggageAllowanceID="BA8E0B4D7F">
+					<BaggageCategory>Checked</BaggageCategory>
+					<AllowanceDescription Concept="Piece">
+						<ApplicableParty>Traveler</ApplicableParty>
+						<Descriptions>
+							<Description>
+								<Text>CHECKED ALLOWANCE</Text>
+							</Description>
+						</Descriptions>
+					</AllowanceDescription>
+					<PieceAllowance>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>1</TotalQuantity>
+						<PieceMeasurements Quantity="1">
+							<PieceWeightAllowance>
+								<MaximumWeight>
+									<Value>23</Value>
+									<UOM>KG</UOM>
+								</MaximumWeight>
+								<MaximumWeight>
+									<Value>50</Value>
+									<UOM>LBS</UOM>
+								</MaximumWeight>
+							</PieceWeightAllowance>
+							<PieceDimensionAllowance>
+								<DimensionUOM>Centimeter</DimensionUOM>
+								<MaxLinear>140</MaxLinear>
+								<MinLinear>0</MinLinear>
+							</PieceDimensionAllowance>
+							<PieceDimensionAllowance>
+								<DimensionUOM>Inch</DimensionUOM>
+								<MaxLinear>55</MaxLinear>
+								<MinLinear>0</MinLinear>
+							</PieceDimensionAllowance>
+						</PieceMeasurements>
+					</PieceAllowance>
+					<BaggageDeterminingCarrier>
+						<AirlineID>QF</AirlineID>
+					</BaggageDeterminingCarrier>
+				</BaggageAllowance>
+				<BaggageAllowance BaggageAllowanceID="BA612FD2C5">
+					<BaggageCategory>Checked</BaggageCategory>
+					<AllowanceDescription Concept="Piece">
+						<ApplicableParty>Traveler</ApplicableParty>
+						<Descriptions>
+							<Description>
+								<Text>CHECKED ALLOWANCE</Text>
+							</Description>
+						</Descriptions>
+					</AllowanceDescription>
+					<PieceAllowance>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>0</TotalQuantity>
+						<PieceMeasurements Quantity="0"/>
+					</PieceAllowance>
+					<BaggageDeterminingCarrier>
+						<AirlineID>QF</AirlineID>
+					</BaggageDeterminingCarrier>
+				</BaggageAllowance>
+				<BaggageAllowance BaggageAllowanceID="BA1D4EE058">
+					<BaggageCategory>Checked</BaggageCategory>
+					<AllowanceDescription Concept="Piece">
+						<ApplicableParty>Traveler</ApplicableParty>
+						<Descriptions>
+							<Description>
+								<Text>CHECKED ALLOWANCE</Text>
+							</Description>
+						</Descriptions>
+					</AllowanceDescription>
+					<PieceAllowance>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>1</TotalQuantity>
+						<PieceMeasurements Quantity="1">
+							<PieceWeightAllowance>
+								<MaximumWeight>
+									<Value>23</Value>
+									<UOM>KG</UOM>
+								</MaximumWeight>
+								<MaximumWeight>
+									<Value>50</Value>
+									<UOM>LBS</UOM>
+								</MaximumWeight>
+							</PieceWeightAllowance>
+							<PieceDimensionAllowance>
+								<DimensionUOM>Centimeter</DimensionUOM>
+								<MaxLinear>140</MaxLinear>
+								<MinLinear>0</MinLinear>
+							</PieceDimensionAllowance>
+							<PieceDimensionAllowance>
+								<DimensionUOM>Inch</DimensionUOM>
+								<MaxLinear>55</MaxLinear>
+								<MinLinear>0</MinLinear>
+							</PieceDimensionAllowance>
+						</PieceMeasurements>
+					</PieceAllowance>
+					<BaggageDeterminingCarrier>
+						<AirlineID>QF</AirlineID>
+					</BaggageDeterminingCarrier>
+				</BaggageAllowance>
+				<BaggageAllowance BaggageAllowanceID="BAEFAA946E">
+					<BaggageCategory>Checked</BaggageCategory>
+					<AllowanceDescription Concept="Piece">
+						<ApplicableParty>Traveler</ApplicableParty>
+						<Descriptions>
+							<Description>
+								<Text>CHECKED ALLOWANCE</Text>
+							</Description>
+						</Descriptions>
+					</AllowanceDescription>
+					<PieceAllowance>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>1</TotalQuantity>
+						<PieceMeasurements Quantity="1">
+							<PieceWeightAllowance>
+								<MaximumWeight>
+									<Value>23</Value>
+									<UOM>KG</UOM>
+								</MaximumWeight>
+								<MaximumWeight>
+									<Value>50</Value>
+									<UOM>LBS</UOM>
+								</MaximumWeight>
+							</PieceWeightAllowance>
+							<PieceDimensionAllowance>
+								<DimensionUOM>Centimeter</DimensionUOM>
+								<MaxLinear>140</MaxLinear>
+								<MinLinear>0</MinLinear>
+							</PieceDimensionAllowance>
+							<PieceDimensionAllowance>
+								<DimensionUOM>Inch</DimensionUOM>
+								<MaxLinear>55</MaxLinear>
+								<MinLinear>0</MinLinear>
+							</PieceDimensionAllowance>
+						</PieceMeasurements>
+					</PieceAllowance>
+					<BaggageDeterminingCarrier>
+						<AirlineID>QF</AirlineID>
+					</BaggageDeterminingCarrier>
+				</BaggageAllowance>
+				<BaggageAllowance BaggageAllowanceID="BAF6E0538B">
+					<BaggageCategory>Checked</BaggageCategory>
+					<AllowanceDescription Concept="Piece">
+						<ApplicableParty>Traveler</ApplicableParty>
+						<Descriptions>
+							<Description>
+								<Text>CHECKED ALLOWANCE</Text>
+							</Description>
+						</Descriptions>
+					</AllowanceDescription>
+					<PieceAllowance>
+						<ApplicableParty>Traveler</ApplicableParty>
+						<TotalQuantity>0</TotalQuantity>
+						<PieceMeasurements Quantity="0"/>
+					</PieceAllowance>
+					<BaggageDeterminingCarrier>
+						<AirlineID>QF</AirlineID>
+					</BaggageDeterminingCarrier>
+				</BaggageAllowance>
+			</BaggageAllowanceList>
+			<FareList>
+				<FareGroup ListKey="FG1" refs="FRKD552042E">
+					<Fare>
+						<FareCode>70J</FareCode>
+					</Fare>
+					<FareBasisCode>
+						<Code>EDQA</Code>
+					</FareBasisCode>
+				</FareGroup>
+				<FareGroup ListKey="FG2" refs="FRK74DFAF9B">
+					<Fare>
+						<FareCode>70J</FareCode>
+					</Fare>
+					<FareBasisCode>
+						<Code>EDQA</Code>
+					</FareBasisCode>
+				</FareGroup>
+				<FareGroup ListKey="FG3" refs="FRK39357400">
+					<Fare>
+						<FareCode>70J</FareCode>
+					</Fare>
+					<FareBasisCode>
+						<Code>EDQACH</Code>
+					</FareBasisCode>
+				</FareGroup>
+				<FareGroup ListKey="FG4" refs="FRK8EA9752F">
+					<Fare>
+						<FareCode>70J</FareCode>
+					</Fare>
+					<FareBasisCode>
+						<Code>EDQACH</Code>
+					</FareBasisCode>
+				</FareGroup>
+				<FareGroup ListKey="FG5" refs="FRK6E6019B8">
+					<Fare>
+						<FareCode>70J</FareCode>
+					</Fare>
+					<FareBasisCode>
+						<Code>EDQAIN</Code>
+					</FareBasisCode>
+				</FareGroup>
+				<FareGroup ListKey="FG6" refs="FRK572CDF80">
+					<Fare>
+						<FareCode>70J</FareCode>
+					</Fare>
+					<FareBasisCode>
+						<Code>EDQAIN</Code>
+					</FareBasisCode>
+				</FareGroup>
+			</FareList>
+			<FlightSegmentList>
+				<FlightSegment ElectronicTicketInd="true" SecureFlight="false" SegmentKey="S4">
+					<Departure>
+						<AirportCode>SYD</AirportCode>
+						<Date>2025-02-12</Date>
+						<Time>14:00</Time>
+						<AirportName>Sydney Kingsford Smith Apt, AU</AirportName>
+						<Terminal>
+							<Name>3</Name>
+						</Terminal>
+					</Departure>
+					<Arrival>
+						<AirportCode>MEL</AirportCode>
+						<Date>2025-02-12</Date>
+						<Time>15:35</Time>
+						<AirportName>Melbourne Airport, AU</AirportName>
+						<Terminal>
+							<Name>1</Name>
+						</Terminal>
+					</Arrival>
+					<MarketingCarrier>
+						<AirlineID>QF</AirlineID>
+						<Name>Qantas Airways</Name>
+						<FlightNumber>449</FlightNumber>
+					</MarketingCarrier>
+					<Equipment>
+						<AircraftCode>73H</AircraftCode>
+						<Name>Boeing 737-800 -Winglets- Passenger</Name>
+					</Equipment>
+					<ClassOfService>
+						<Code>E</Code>
+					</ClassOfService>
+					<FlightDetail>
+						<FlightDistance>
+							<Value>456</Value>
+							<UOM>Miles</UOM>
+						</FlightDistance>
+						<FlightDuration>
+							<Value>PT1H35M</Value>
+						</FlightDuration>
+						<Stops>
+							<StopQuantity>0</StopQuantity>
+						</Stops>
+						<ResDateTime>
+							<Date time="10:35">2024-12-23</Date>
+						</ResDateTime>
+					</FlightDetail>
+				</FlightSegment>
+				<FlightSegment ElectronicTicketInd="true" SecureFlight="false" SegmentKey="S5">
+					<Departure>
+						<AirportCode>MEL</AirportCode>
+						<Date>2025-03-13</Date>
+						<Time>16:30</Time>
+						<AirportName>Melbourne Airport, AU</AirportName>
+						<Terminal>
+							<Name>1</Name>
+						</Terminal>
+					</Departure>
+					<Arrival>
+						<AirportCode>SYD</AirportCode>
+						<Date>2025-03-13</Date>
+						<Time>17:55</Time>
+						<AirportName>Sydney Kingsford Smith Apt, AU</AirportName>
+						<Terminal>
+							<Name>3</Name>
+						</Terminal>
+					</Arrival>
+					<MarketingCarrier>
+						<AirlineID>QF</AirlineID>
+						<Name>Qantas Airways</Name>
+						<FlightNumber>462</FlightNumber>
+					</MarketingCarrier>
+					<Equipment>
+						<AircraftCode>73H</AircraftCode>
+						<Name>Boeing 737-800 -Winglets- Passenger</Name>
+					</Equipment>
+					<ClassOfService>
+						<Code>E</Code>
+					</ClassOfService>
+					<FlightDetail>
+						<FlightDistance>
+							<Value>456</Value>
+							<UOM>Miles</UOM>
+						</FlightDistance>
+						<FlightDuration>
+							<Value>PT1H25M</Value>
+						</FlightDuration>
+						<Stops>
+							<StopQuantity>0</StopQuantity>
+						</Stops>
+						<ResDateTime>
+							<Date time="10:35">2024-12-23</Date>
+						</ResDateTime>
+					</FlightDetail>
+				</FlightSegment>
+			</FlightSegmentList>
+			<FlightList>
+				<Flight FlightKey="F1">
+					<SegmentReferences OffPoint="MEL" OnPoint="SYD">S4</SegmentReferences>
+				</Flight>
+				<Flight FlightKey="F2">
+					<SegmentReferences OffPoint="SYD" OnPoint="MEL">S5</SegmentReferences>
+				</Flight>
+			</FlightList>
+			<OriginDestinationList>
+				<OriginDestination OriginDestinationKey="O1">
+					<DepartureCode>SYD</DepartureCode>
+					<ArrivalCode>MEL</ArrivalCode>
+					<FlightReferences OffPoint="MEL" OnPoint="SYD">F1</FlightReferences>
+				</OriginDestination>
+				<OriginDestination OriginDestinationKey="O2">
+					<DepartureCode>MEL</DepartureCode>
+					<ArrivalCode>SYD</ArrivalCode>
+					<FlightReferences OffPoint="SYD" OnPoint="MEL">F2</FlightReferences>
+				</OriginDestination>
+			</OriginDestinationList>
+			<PriceClassList>
+				<PriceClass PriceClassID="QFREDeDeal-1">
+					<Name>RED eDeal</Name>
+					<Code>EDEAL</Code>
+					<Descriptions>
+						<Description>
+							<Text>1. Changes:</Text>
+						</Description>
+						<Description>
+							<Text>Before day of scheduled departure:</Text>
+						</Description>
+						<Description>
+							<Text>- Change fee of $99 AUD inclusive of GST per person applies</Text>
+						</Description>
+						<Description>
+							<Text>- New fare must be of equal or higher value</Text>
+						</Description>
+						<Description>
+							<Text>- No show results in loss of fare</Text>
+						</Description>
+						<Description>
+							<Text>Day of departure:</Text>
+						</Description>
+						<Description>
+							<Text>- Changes not permitted and results in loss of fare</Text>
+						</Description>
+						<Description>
+							<Text>- No show results in loss of fare</Text>
+						</Description>
+						<Description>
+							<Text>2. Cancellations:</Text>
+						</Description>
+						<Description>
+							<Text>- Non-refundable</Text>
+						</Description>
+						<Description>
+							<Text>- Ticket value can be held in credit, change fee applies</Text>
+						</Description>
+						<Description>
+							<Text>- No show results in loss of fare</Text>
+						</Description>
+						<Description>
+							<Text>3. Name changes:</Text>
+						</Description>
+						<Description>
+							<Text>- Permitted with a name change fee of $99 AUD inclusive of GST per person</Text>
+						</Description>
+						<Description>
+							<Text>- New fare must be Economy Flex fare or higher</Text>
+						</Description>
+						<Description>
+							<Text>- Fare difference and change fee applies</Text>
+						</Description>
+						<Description>
+							<Text>4. Inclusions on Qantas operated flights:</Text>
+						</Description>
+						<Description>
+							<Text>- Included bags</Text>
+						</Description>
+						<Description>
+							<Text>- Carry On Baggage Allowance - All classes, one piece up to 10kgs and up to 7kgs Dash 8 services</Text>
+						</Description>
+						<Description>
+							<Text>- Complimentary standard seat selection</Text>
+						</Description>
+						<Description>
+							<Text>- Complimentary food and beverage</Text>
+						</Description>
+						<Description>
+							<Text>- Complimentary in-flight entertainment where available</Text>
+						</Description>
+						<Description>
+							<Text>5.Qantas Frequent Flyer benefits:</Text>
+						</Description>
+						<Description>
+							<Text>Points:</Text>
+						</Description>
+						<Description>
+							<Text>- Earn category is discounted economy</Text>
+						</Description>
+						<Description>
+							<Text>- Minimum points guarantee applies</Text>
+						</Description>
+						<Description>
+							<Text>Status Credits:</Text>
+						</Description>
+						<Description>
+							<Text>- Earn category is discounted economy</Text>
+						</Description>
+						<Description>
+							<Text>- Minimum Status Credits earnt is 10</Text>
+						</Description>
+						<Description>
+							<Text>Upgrade eligibility:</Text>
+						</Description>
+						<Description>
+							<Text>- Eligible for upgrade</Text>
+						</Description>
+						<Description>
+							<Text>- Subject to availability</Text>
+						</Description>
+						<Description>
+							<Text>Lounge access:</Text>
+						</Description>
+						<Description>
+							<Text>- May be applicable based on Tier</Text>
+						</Description>
+					</Descriptions>
+				</PriceClass>
+			</PriceClassList>
+			<ServiceDefinitionList>
+				<ServiceDefinition ServiceDefinitionID="BASRVF11D3A-CO">
+					<Name>Carry On Bag Allowance</Name>
+					<BaggageAllowanceRef>BA2DAD4EB0-CO</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Carry On Bag Allowance</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+				<ServiceDefinition ServiceDefinitionID="BASRV8FD02049-CO">
+					<Name>Carry On Bag Allowance</Name>
+					<BaggageAllowanceRef>BA2508F258-CO</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Carry On Bag Allowance</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+				<ServiceDefinition ServiceDefinitionID="BASRVBDB8D05-CO">
+					<Name>Carry On Bag Allowance</Name>
+					<BaggageAllowanceRef>BA5DB96DD7-CO</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Carry On Bag Allowance</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+				<ServiceDefinition ServiceDefinitionID="BASRVACF3DDE0-CO">
+					<Name>Carry On Bag Allowance</Name>
+					<BaggageAllowanceRef>BAC09A1881-CO</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Carry On Bag Allowance</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+				<ServiceDefinition ServiceDefinitionID="BASRV3882582A-CO">
+					<Name>Carry On Bag Allowance</Name>
+					<BaggageAllowanceRef>BA2CFC2D83-CO</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Carry On Bag Allowance</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+				<ServiceDefinition ServiceDefinitionID="BASRV1B686830-CO">
+					<Name>Carry On Bag Allowance</Name>
+					<BaggageAllowanceRef>BAAF817D35-CO</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Carry On Bag Allowance</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+				<ServiceDefinition ServiceDefinitionID="BASRV780F4602">
+					<Name>Checked Bag Allowance</Name>
+					<BaggageAllowanceRef>BA510D8447</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Checked Bag Allowance</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+				<ServiceDefinition ServiceDefinitionID="BASRV75D77042">
+					<Name>Checked Bag Allowance</Name>
+					<BaggageAllowanceRef>BA8E0B4D7F</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Checked Bag Allowance</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+				<ServiceDefinition ServiceDefinitionID="BASRV1838D74B">
+					<Name>Checked Bag Allowance</Name>
+					<BaggageAllowanceRef>BA612FD2C5</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Checked Bag Allowance</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+				<ServiceDefinition ServiceDefinitionID="BASRV8A5EF6C8">
+					<Name>Checked Bag Allowance</Name>
+					<BaggageAllowanceRef>BA1D4EE058</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Checked Bag Allowance</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+				<ServiceDefinition ServiceDefinitionID="BASRV96E145E9">
+					<Name>Checked Bag Allowance</Name>
+					<BaggageAllowanceRef>BAEFAA946E</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Checked Bag Allowance</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+				<ServiceDefinition ServiceDefinitionID="BASRV560FED05">
+					<Name>Checked Bag Allowance</Name>
+					<BaggageAllowanceRef>BAF6E0538B</BaggageAllowanceRef>
+					<Descriptions>
+						<Description>
+							<Text>Checked Bag Allowance</Text>
+						</Description>
+					</Descriptions>
+				</ServiceDefinition>
+			</ServiceDefinitionList>
+		</DataLists>
+		<Metadata>
+			<PassengerMetadata MetadataKey="M1">
+				<AugmentationPoint>
+					<AugPoint>
+						<AddlName xmlns="http://ndc.farelogix.com/aug">
+							<Name>FPOACX</Name>
+							<NameTypeCode>EquivGivenName</NameTypeCode>
+							<PassengerRef>T1.1</PassengerRef>
+						</AddlName>
+						<AddlName xmlns="http://ndc.farelogix.com/aug">
+							<Name>NDCX</Name>
+							<NameTypeCode>EquivSurname</NameTypeCode>
+							<PassengerRef>T1.1</PassengerRef>
+						</AddlName>
+						<AddlName xmlns="http://ndc.farelogix.com/aug">
+							<Name>AGDKLP MRS</Name>
+							<NameTypeCode>EquivGivenName</NameTypeCode>
+							<PassengerRef>T1</PassengerRef>
+						</AddlName>
+						<AddlName xmlns="http://ndc.farelogix.com/aug">
+							<Name>NDCX</Name>
+							<NameTypeCode>EquivSurname</NameTypeCode>
+							<PassengerRef>T1</PassengerRef>
+						</AddlName>
+						<AddlName xmlns="http://ndc.farelogix.com/aug">
+							<Name>AHGGDN MR</Name>
+							<NameTypeCode>EquivGivenName</NameTypeCode>
+							<PassengerRef>T2</PassengerRef>
+						</AddlName>
+						<AddlName xmlns="http://ndc.farelogix.com/aug">
+							<Name>NDCX</Name>
+							<NameTypeCode>EquivSurname</NameTypeCode>
+							<PassengerRef>T2</PassengerRef>
+						</AddlName>
+						<AddlName xmlns="http://ndc.farelogix.com/aug">
+							<Name>CSAFCX MS</Name>
+							<NameTypeCode>EquivGivenName</NameTypeCode>
+							<PassengerRef>T3</PassengerRef>
+						</AddlName>
+						<AddlName xmlns="http://ndc.farelogix.com/aug">
+							<Name>NDCX</Name>
+							<NameTypeCode>EquivSurname</NameTypeCode>
+							<PassengerRef>T3</PassengerRef>
+						</AddlName>
+					</AugPoint>
+				</AugmentationPoint>
+			</PassengerMetadata>
+			<PassengerMetadata MetadataKey="M2">
+				<AugmentationPoint>
+					<AugPoint>
+						<OtherServiceInformation xmlns="http://ndc.farelogix.com/aug">
+							<AirlineCode>YY</AirlineCode>
+							<Text>CTCP NCE 33912574551</Text>
+						</OtherServiceInformation>
+					</AugPoint>
+				</AugmentationPoint>
+			</PassengerMetadata>
+			<PassengerMetadata MetadataKey="M3">
+				<AugmentationPoint>
+					<AugPoint>
+						<OtherServiceInformation xmlns="http://ndc.farelogix.com/aug">
+							<AirlineCode>YY</AirlineCode>
+							<Text>CTCP NCE 33904104896</Text>
+						</OtherServiceInformation>
+					</AugPoint>
+				</AugmentationPoint>
+			</PassengerMetadata>
+			<PassengerMetadata MetadataKey="M4">
+				<AugmentationPoint>
+					<AugPoint>
+						<SpecialServiceRequest xmlns="http://ndc.farelogix.com/aug">
+							<TravelerIDRef>T1</TravelerIDRef>
+							<SegmentIDRef>S4</SegmentIDRef>
+							<AirlineCode>QF</AirlineCode>
+							<SSRCode>INFT</SSRCode>
+							<Text>NDCX/FPOACX 01NOV23</Text>
+							<ActionCode>HK</ActionCode>
+						</SpecialServiceRequest>
+					</AugPoint>
+				</AugmentationPoint>
+			</PassengerMetadata>
+			<PassengerMetadata MetadataKey="M5">
+				<AugmentationPoint>
+					<AugPoint>
+						<SpecialServiceRequest xmlns="http://ndc.farelogix.com/aug">
+							<TravelerIDRef>T1</TravelerIDRef>
+							<SegmentIDRef>S5</SegmentIDRef>
+							<AirlineCode>QF</AirlineCode>
+							<SSRCode>INFT</SSRCode>
+							<Text>NDCX/FPOACX 01NOV23</Text>
+							<ActionCode>HK</ActionCode>
+						</SpecialServiceRequest>
+					</AugPoint>
+				</AugmentationPoint>
+			</PassengerMetadata>
+			<PassengerMetadata MetadataKey="M6">
+				<AugmentationPoint>
+					<AugPoint>
+						<SpecialServiceRequest xmlns="http://ndc.farelogix.com/aug">
+							<TravelerIDRef>T3</TravelerIDRef>
+							<AirlineCode>QF</AirlineCode>
+							<SSRCode>CHLD</SSRCode>
+							<Text>09DEC16</Text>
+							<ActionCode>HK</ActionCode>
+						</SpecialServiceRequest>
+					</AugPoint>
+				</AugmentationPoint>
+			</PassengerMetadata>
+			<PassengerMetadata MetadataKey="M7">
+				<AugmentationPoint>
+					<AugPoint>
+						<SpecialServiceRequest xmlns="http://ndc.farelogix.com/aug">
+							<TravelerIDRef>T1</TravelerIDRef>
+							<AirlineCode>QF</AirlineCode>
+							<SSRCode>DOCA</SSRCode>
+							<Text>R/FRA/80 RUE QCXDSA/NICE//75196</Text>
+							<ActionCode>HK</ActionCode>
+						</SpecialServiceRequest>
+					</AugPoint>
+				</AugmentationPoint>
+			</PassengerMetadata>
+			<PassengerMetadata MetadataKey="M8">
+				<AugmentationPoint>
+					<AugPoint>
+						<SpecialServiceRequest xmlns="http://ndc.farelogix.com/aug">
+							<TravelerIDRef>T1</TravelerIDRef>
+							<AirlineCode>QF</AirlineCode>
+							<SSRCode>DOCA</SSRCode>
+							<Text>D/USA/58 AV ALFJUH/ATLANTA//59618</Text>
+							<ActionCode>HK</ActionCode>
+						</SpecialServiceRequest>
+					</AugPoint>
+				</AugmentationPoint>
+			</PassengerMetadata>
+			<PassengerMetadata MetadataKey="M9">
+				<AugmentationPoint>
+					<AugPoint>
+						<SpecialServiceRequest xmlns="http://ndc.farelogix.com/aug">
+							<TravelerIDRef>T2</TravelerIDRef>
+							<AirlineCode>QF</AirlineCode>
+							<SSRCode>DOCA</SSRCode>
+							<Text>R/FRA/96 RUE FRGTHG/NICE//75126</Text>
+							<ActionCode>HK</ActionCode>
+						</SpecialServiceRequest>
+					</AugPoint>
+				</AugmentationPoint>
+			</PassengerMetadata>
+			<PassengerMetadata MetadataKey="M10">
+				<AugmentationPoint>
+					<AugPoint>
+						<SpecialServiceRequest xmlns="http://ndc.farelogix.com/aug">
+							<TravelerIDRef>T2</TravelerIDRef>
+							<AirlineCode>QF</AirlineCode>
+							<SSRCode>DOCA</SSRCode>
+							<Text>D/USA/57 AV LPOAQC/ATLANTA//60873</Text>
+							<ActionCode>HK</ActionCode>
+						</SpecialServiceRequest>
+					</AugPoint>
+				</AugmentationPoint>
+			</PassengerMetadata>
+			<PassengerMetadata MetadataKey="M11">
+				<AugmentationPoint>
+					<AugPoint>
+						<SpecialServiceRequest xmlns="http://ndc.farelogix.com/aug">
+							<TravelerIDRef>T3</TravelerIDRef>
+							<AirlineCode>QF</AirlineCode>
+							<SSRCode>DOCA</SSRCode>
+							<Text>R/FRA/72 RUE FVREDF/NICE//75039</Text>
+							<ActionCode>HK</ActionCode>
+						</SpecialServiceRequest>
+					</AugPoint>
+				</AugmentationPoint>
+			</PassengerMetadata>
+			<PassengerMetadata MetadataKey="M12">
+				<AugmentationPoint>
+					<AugPoint>
+						<SpecialServiceRequest xmlns="http://ndc.farelogix.com/aug">
+							<TravelerIDRef>T3</TravelerIDRef>
+							<AirlineCode>QF</AirlineCode>
+							<SSRCode>DOCA</SSRCode>
+							<Text>D/USA/51 AV GDNFHT/ATLANTA//63710</Text>
+							<ActionCode>HK</ActionCode>
+						</SpecialServiceRequest>
+					</AugPoint>
+				</AugmentationPoint>
+			</PassengerMetadata>
+			<Other>
+				<OtherMetadata>
+					<CurrencyMetadatas>
+						<CurrencyMetadata MetadataKey="EUR">
+							<Decimals>2</Decimals>
+						</CurrencyMetadata>
+						<CurrencyMetadata MetadataKey="AUD">
+							<Decimals>2</Decimals>
+						</CurrencyMetadata>
+					</CurrencyMetadatas>
+				</OtherMetadata>
+				<OtherMetadata>
+					<PriceMetadatas>
+						<PriceMetadata MetadataKey="FRKD552042E">
+							<AugmentationPoint>
+								<AugPoint>
+									<FareRefKey xmlns="http://ndc.farelogix.com/aug">NO8EJWN~MVB8OLO~MNR9G~MpB8PD~MpN8RWC~MqB9KDJ~MDB8DBP?~MAW80230~MMB800675~MCA96107~MSN9NT@K~MQL9O5./~MQM97877~MQ/9CQQ~MMQ80~MOV9?CR~MPA857~MBS800755~MSK91463~MB@968~MEB9MA~M@K9/1475~MAT8@SC~MRC960~MQR91/0~MDS82.1~MQP96~M@Q8D*szwDIbAuGkMJ*flxKey</FareRefKey>
+								</AugPoint>
+							</AugmentationPoint>
+						</PriceMetadata>
+						<PriceMetadata MetadataKey="FRK74DFAF9B">
+							<AugmentationPoint>
+								<AugPoint>
+									<FareRefKey xmlns="http://ndc.farelogix.com/aug">NO8EJWN~MVB8OLO~MNR9G~MpB8PD~MpN8RWC~MqB9KDJ~MDB8DBP?~MAW80230~MMB800675~MCA96107~MSN9NT@K~MQL9O5./~MQM97877~MQ/9CQQ~MMQ80~MOV9?CR~MPA857~MBS8008.8~MSK92005~MB@968~MEB9GA~M@K9/1475~MAT8@SC~MRC960~MQR91/0~MDS82.1~MQP96~M@Q8D*szwDIbAuGkMJ*flxKey</FareRefKey>
+								</AugPoint>
+							</AugmentationPoint>
+						</PriceMetadata>
+						<PriceMetadata MetadataKey="FCPICC015E06">
+							<AugmentationPoint>
+								<AugPoint>
+									<FareCodePriceIndicator xmlns="http://ndc.farelogix.com/aug">4</FareCodePriceIndicator>
+								</AugPoint>
+							</AugmentationPoint>
+						</PriceMetadata>
+						<PriceMetadata MetadataKey="FRK39357400">
+							<AugmentationPoint>
+								<AugPoint>
+									<FareRefKey xmlns="http://ndc.farelogix.com/aug">NO8EJWN~MVB8OLO~MNR9G~MpB8PD~MpN8RWC~MqB9KDJ~MDB8DBP?~MAW80230~MMB800675~MCA96107~MSN9NT@K~MQL9O5./~MQM97877~MQ/9CQQ~MMQ80~MOV9AML~MPA857~MBS800755~MSK91463~MB@968~MEB9MA~M@K9/1475~MAT8@SC~MRC960~MQR91/0~MDS82.1~MQP96~M@Q8D*szwDIbAuGkMJ*flxKey</FareRefKey>
+								</AugPoint>
+							</AugmentationPoint>
+						</PriceMetadata>
+						<PriceMetadata MetadataKey="FRK8EA9752F">
+							<AugmentationPoint>
+								<AugPoint>
+									<FareRefKey xmlns="http://ndc.farelogix.com/aug">NO8EJWN~MVB8OLO~MNR9G~MpB8PD~MpN8RWC~MqB9KDJ~MDB8DBP?~MAW80230~MMB800675~MCA96107~MSN9NT@K~MQL9O5./~MQM97877~MQ/9CQQ~MMQ80~MOV9AML~MPA857~MBS8008.8~MSK92005~MB@968~MEB9GA~M@K9/1475~MAT8@SC~MRC960~MQR91/0~MDS82.1~MQP96~M@Q8D*szwDIbAuGkMJ*flxKey</FareRefKey>
+								</AugPoint>
+							</AugmentationPoint>
+						</PriceMetadata>
+						<PriceMetadata MetadataKey="FRK6E6019B8">
+							<AugmentationPoint>
+								<AugPoint>
+									<FareRefKey xmlns="http://ndc.farelogix.com/aug">NO8EJWN~MVB8OLO~MNR9G~MpB8PD~MpN8RWC~MqB9KDJ~MDB8DBP?~MAW80230~MMB800675~MCA96107~MSN9NT@K~MQL9O5./~MQM97877~MQ/9CQQ~MMQ80~MOV9GMD~MPA857~MBS800755~MSK91463~MB@968~MEB9MA~M@K9/1475~MAT8@SC~MRC960~MQR91/0~MDS82.1~MQP96~M@Q8D*szwDIbAuGkMJ*flxKey</FareRefKey>
+								</AugPoint>
+							</AugmentationPoint>
+						</PriceMetadata>
+						<PriceMetadata MetadataKey="FRK572CDF80">
+							<AugmentationPoint>
+								<AugPoint>
+									<FareRefKey xmlns="http://ndc.farelogix.com/aug">NO8EJWN~MVB8OLO~MNR9G~MpB8PD~MpN8RWC~MqB9KDJ~MDB8DBP?~MAW80230~MMB800675~MCA96107~MSN9NT@K~MQL9O5./~MQM97877~MQ/9CQQ~MMQ80~MOV9GMD~MPA857~MBS8008.8~MSK92005~MB@968~MEB9GA~M@K9/1475~MAT8@SC~MRC960~MQR91/0~MDS82.1~MQP96~M@Q8D*szwDIbAuGkMJ*flxKey</FareRefKey>
+								</AugPoint>
+							</AugmentationPoint>
+						</PriceMetadata>
+					</PriceMetadatas>
+				</OtherMetadata>
+				<OtherMetadata>
+					<RuleMetadatas>
+						<RuleMetadata MetadataKey="RM6DDDF35C">
+							<RuleID>Change</RuleID>
+							<Values>
+								<Value>
+									<Instruction>Allowed</Instruction>
+								</Value>
+							</Values>
+						</RuleMetadata>
+						<RuleMetadata MetadataKey="RMDFB35062">
+							<RuleID>Cancel</RuleID>
+							<Values>
+								<Value>
+									<Instruction>Not Allowed</Instruction>
+								</Value>
+							</Values>
+						</RuleMetadata>
+					</RuleMetadatas>
+				</OtherMetadata>
+			</Other>
+		</Metadata>
+	</Response>
+</OrderViewRS>'
+UNT+5+1'
+UNZ+1+02M8TQW9B90001'

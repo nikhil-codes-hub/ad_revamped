@@ -1,0 +1,1760 @@
+<ns4:IATA_OrderViewRS xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns:ns3="http://www.iata.org/IATA/2015/EASD/00/AMA_AugmentationPoint" xmlns:ns4="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+			<ns4:Response>
+				<DataLists>
+					<BaggageAllowanceList>
+						<BaggageAllowance>
+							<ApplicablePartyText>Traveler</ApplicablePartyText>
+							<BaggageAllowanceID>FBA1</BaggageAllowanceID>
+							<TypeCode>Checked</TypeCode>
+							<WeightAllowance>
+								<MaximumWeightMeasure>0</MaximumWeightMeasure>
+								<TotalMaximumWeightMeasure>0</TotalMaximumWeightMeasure>
+								<WeightUnitOfMeasurement>KGM</WeightUnitOfMeasurement>
+							</WeightAllowance>
+						</BaggageAllowance>
+					</BaggageAllowanceList>
+					<ContactInfoList>
+						<ContactInfo>
+							<ContactInfoID>CTCPAX2_1</ContactInfoID>
+							<ContactPurposeText>OTH</ContactPurposeText>
+							<EmailAddress>
+								<ContactTypeText>OTH</ContactTypeText>
+								<EmailAddressText>WAYNE@MYMAIL.COM</EmailAddressText>
+							</EmailAddress>
+							<IndividualRefID>PAX2</IndividualRefID>
+							<Phone>
+								<ContactTypeText>OTH</ContactTypeText>
+								<CountryDialingCode>33</CountryDialingCode>
+								<PhoneNumber>066523568923</PhoneNumber>
+							</Phone>
+						</ContactInfo>
+						<ContactInfo>
+							<ContactInfoID>CTCPAX2_2</ContactInfoID>
+							<ContactPurposeText>7</ContactPurposeText>
+							<IndividualRefID>PAX2</IndividualRefID>
+							<Phone>
+								<ContactTypeText>PER</ContactTypeText>
+								<PhoneNumber>33066523568923</PhoneNumber>
+							</Phone>
+						</ContactInfo>
+						<ContactInfo>
+							<ContactInfoID>CTCPAX2_3</ContactInfoID>
+							<ContactPurposeText>10</ContactPurposeText>
+							<EmailAddress>
+								<ContactTypeText>OTH</ContactTypeText>
+								<EmailAddressText>WAYNE@MYMAIL.COM</EmailAddressText>
+							</EmailAddress>
+							<IndividualRefID>PAX2</IndividualRefID>
+						</ContactInfo>
+						<ContactInfo>
+							<ContactInfoID>CTCPAX4_1</ContactInfoID>
+							<ContactPurposeText>OTH</ContactPurposeText>
+							<EmailAddress>
+								<ContactTypeText>OTH</ContactTypeText>
+								<EmailAddressText>WAYNE@MYMAIL.COM</EmailAddressText>
+							</EmailAddress>
+							<IndividualRefID>PAX4</IndividualRefID>
+							<Phone>
+								<ContactTypeText>OTH</ContactTypeText>
+								<CountryDialingCode>33</CountryDialingCode>
+								<PhoneNumber>066523568923</PhoneNumber>
+							</Phone>
+						</ContactInfo>
+						<ContactInfo>
+							<ContactInfoID>CTCPAX4_2</ContactInfoID>
+							<ContactPurposeText>7</ContactPurposeText>
+							<IndividualRefID>PAX4</IndividualRefID>
+							<Phone>
+								<ContactTypeText>PER</ContactTypeText>
+								<PhoneNumber>33066523568923</PhoneNumber>
+							</Phone>
+						</ContactInfo>
+						<ContactInfo>
+							<ContactInfoID>CTCPAX4_3</ContactInfoID>
+							<ContactPurposeText>10</ContactPurposeText>
+							<EmailAddress>
+								<ContactTypeText>OTH</ContactTypeText>
+								<EmailAddressText>WAYNE@MYMAIL.COM</EmailAddressText>
+							</EmailAddress>
+							<IndividualRefID>PAX4</IndividualRefID>
+						</ContactInfo>
+						<ContactInfo>
+							<ContactInfoID>CTCPAX5_1</ContactInfoID>
+							<ContactPurposeText>OTH</ContactPurposeText>
+							<EmailAddress>
+								<ContactTypeText>OTH</ContactTypeText>
+								<EmailAddressText>WAYNE@MYMAIL.COM</EmailAddressText>
+							</EmailAddress>
+							<IndividualRefID>PAX5</IndividualRefID>
+							<Phone>
+								<ContactTypeText>OTH</ContactTypeText>
+								<CountryDialingCode>33</CountryDialingCode>
+								<PhoneNumber>066523568923</PhoneNumber>
+							</Phone>
+						</ContactInfo>
+						<ContactInfo>
+							<ContactInfoID>CTCPAX5_2</ContactInfoID>
+							<ContactPurposeText>7</ContactPurposeText>
+							<IndividualRefID>PAX5</IndividualRefID>
+							<Phone>
+								<ContactTypeText>PER</ContactTypeText>
+								<PhoneNumber>33066523568923</PhoneNumber>
+							</Phone>
+						</ContactInfo>
+						<ContactInfo>
+							<ContactInfoID>CTCPAX5_3</ContactInfoID>
+							<ContactPurposeText>10</ContactPurposeText>
+							<EmailAddress>
+								<ContactTypeText>OTH</ContactTypeText>
+								<EmailAddressText>WAYNE@MYMAIL.COM</EmailAddressText>
+							</EmailAddress>
+							<IndividualRefID>PAX5</IndividualRefID>
+						</ContactInfo>
+					</ContactInfoList>
+					<DatedMarketingSegmentList>
+						<DatedMarketingSegment>
+							<Arrival>
+								<AircraftScheduledDateTime>2025-03-20T06:30:00</AircraftScheduledDateTime>
+								<IATA_LocationCode>FRA</IATA_LocationCode>
+								<TerminalName>2</TerminalName>
+							</Arrival>
+							<CarrierDesigCode>EY</CarrierDesigCode>
+							<CarrierName>ETIHAD AIRWAYS</CarrierName>
+							<DatedMarketingSegmentId>DMS1</DatedMarketingSegmentId>
+							<DatedOperatingSegmentRefId>DOS1</DatedOperatingSegmentRefId>
+							<Dep>
+								<AircraftScheduledDateTime>2025-03-20T02:25:00</AircraftScheduledDateTime>
+								<IATA_LocationCode>AUH</IATA_LocationCode>
+								<TerminalName>A</TerminalName>
+							</Dep>
+							<MarketingCarrierFlightNumberText>121</MarketingCarrierFlightNumberText>
+						</DatedMarketingSegment>
+						<DatedMarketingSegment>
+							<Arrival>
+								<AircraftScheduledDateTime>2025-03-25T06:20:00</AircraftScheduledDateTime>
+								<IATA_LocationCode>AUH</IATA_LocationCode>
+								<TerminalName>A</TerminalName>
+							</Arrival>
+							<CarrierDesigCode>EY</CarrierDesigCode>
+							<CarrierName>ETIHAD AIRWAYS</CarrierName>
+							<DatedMarketingSegmentId>DMS2</DatedMarketingSegmentId>
+							<DatedOperatingSegmentRefId>DOS2</DatedOperatingSegmentRefId>
+							<Dep>
+								<AircraftScheduledDateTime>2025-03-24T21:10:00</AircraftScheduledDateTime>
+								<IATA_LocationCode>FRA</IATA_LocationCode>
+								<TerminalName>2</TerminalName>
+							</Dep>
+							<MarketingCarrierFlightNumberText>124</MarketingCarrierFlightNumberText>
+						</DatedMarketingSegment>
+					</DatedMarketingSegmentList>
+					<DatedOperatingLegList>
+						<DatedOperatingLeg>
+							<Arrival>
+								<AircraftScheduledDateTime>2025-03-20T06:30:00</AircraftScheduledDateTime>
+								<IATA_LocationCode>FRA</IATA_LocationCode>
+							</Arrival>
+							<DatedOperatingLegID>LEG1</DatedOperatingLegID>
+							<Dep>
+								<AircraftScheduledDateTime>2025-03-20T02:25:00</AircraftScheduledDateTime>
+								<IATA_LocationCode>AUH</IATA_LocationCode>
+							</Dep>
+							<IATA_AircraftType>
+								<IATA_AircraftTypeCode>789</IATA_AircraftTypeCode>
+							</IATA_AircraftType>
+						</DatedOperatingLeg>
+						<DatedOperatingLeg>
+							<Arrival>
+								<AircraftScheduledDateTime>2025-03-25T06:20:00</AircraftScheduledDateTime>
+								<IATA_LocationCode>AUH</IATA_LocationCode>
+							</Arrival>
+							<DatedOperatingLegID>LEG2</DatedOperatingLegID>
+							<Dep>
+								<AircraftScheduledDateTime>2025-03-24T21:10:00</AircraftScheduledDateTime>
+								<IATA_LocationCode>FRA</IATA_LocationCode>
+							</Dep>
+							<IATA_AircraftType>
+								<IATA_AircraftTypeCode>789</IATA_AircraftTypeCode>
+							</IATA_AircraftType>
+						</DatedOperatingLeg>
+					</DatedOperatingLegList>
+					<DatedOperatingSegmentList>
+						<DatedOperatingSegment>
+							<CarrierDesigCode>EY</CarrierDesigCode>
+							<CarrierName>ETIHAD AIRWAYS</CarrierName>
+							<DatedOperatingLegRefID>LEG1</DatedOperatingLegRefID>
+							<DatedOperatingSegmentId>DOS1</DatedOperatingSegmentId>
+							<DisclosureRefID>DIS1</DisclosureRefID>
+						</DatedOperatingSegment>
+						<DatedOperatingSegment>
+							<CarrierDesigCode>EY</CarrierDesigCode>
+							<CarrierName>ETIHAD AIRWAYS</CarrierName>
+							<DatedOperatingLegRefID>LEG2</DatedOperatingLegRefID>
+							<DatedOperatingSegmentId>DOS2</DatedOperatingSegmentId>
+							<DisclosureRefID>DIS1</DisclosureRefID>
+						</DatedOperatingSegment>
+					</DatedOperatingSegmentList>
+					<DisclosureList>
+						<Disclosure>
+							<Desc>
+								<DescText>ETIHAD AIRWAYS</DescText>
+							</Desc>
+							<DisclosureID>DIS1</DisclosureID>
+						</Disclosure>
+					</DisclosureList>
+					<OriginDestList>
+						<OriginDest>
+							<DestCode>FRA</DestCode>
+							<OriginCode>AUH</OriginCode>
+							<OriginDestID>OND1</OriginDestID>
+							<PaxJourneyRefID>FLT1</PaxJourneyRefID>
+						</OriginDest>
+						<OriginDest>
+							<DestCode>AUH</DestCode>
+							<OriginCode>FRA</OriginCode>
+							<OriginDestID>OND2</OriginDestID>
+							<PaxJourneyRefID>FLT2</PaxJourneyRefID>
+						</OriginDest>
+					</OriginDestList>
+					<PaxJourneyList>
+						<PaxJourney>
+							<Duration>PT7H5M</Duration>
+							<PaxJourneyID>FLT1</PaxJourneyID>
+							<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						</PaxJourney>
+						<PaxJourney>
+							<Duration>PT6H10M</Duration>
+							<PaxJourneyID>FLT2</PaxJourneyID>
+							<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+						</PaxJourney>
+					</PaxJourneyList>
+					<PaxList>
+						<Pax>
+							<Individual>
+								<Birthdate>2024-12-11</Birthdate>
+								<GenderCode>M</GenderCode>
+								<GivenName>ROBIN</GivenName>
+								<IndividualID>PAX3</IndividualID>
+								<Surname>WAYNE</Surname>
+								<TitleName>MR</TitleName>
+							</Individual>
+							<PaxID>PAX3</PaxID>
+							<PaxRefID>PAX2</PaxRefID>
+							<PTC>INF</PTC>
+						</Pax>
+						<Pax>
+							<Individual>
+								<Birthdate>1986-12-08</Birthdate>
+								<GenderCode>M</GenderCode>
+								<GivenName>THOMAS</GivenName>
+								<IndividualID>PAX2</IndividualID>
+								<Surname>WAYNE</Surname>
+								<TitleName>MR</TitleName>
+							</Individual>
+							<PaxID>PAX2</PaxID>
+							<PTC>ADT</PTC>
+						</Pax>
+						<Pax>
+							<Individual>
+								<Birthdate>1990-12-09</Birthdate>
+								<GenderCode>F</GenderCode>
+								<GivenName>MARTHA</GivenName>
+								<IndividualID>PAX4</IndividualID>
+								<Surname>WAYNE</Surname>
+								<TitleName>MRS</TitleName>
+							</Individual>
+							<PaxID>PAX4</PaxID>
+							<PTC>ADT</PTC>
+						</Pax>
+						<Pax>
+							<Individual>
+								<Birthdate>2019-12-10</Birthdate>
+								<GenderCode>M</GenderCode>
+								<GivenName>BRUCE</GivenName>
+								<IndividualID>PAX5</IndividualID>
+								<Surname>WAYNE</Surname>
+								<TitleName>MR</TitleName>
+							</Individual>
+							<PaxID>PAX5</PaxID>
+							<PTC>CHD</PTC>
+						</Pax>
+					</PaxList>
+					<PaxSegmentList>
+						<PaxSegment>
+							<DatedMarketingSegmentRefId>DMS1</DatedMarketingSegmentRefId>
+							<MarketingCarrierRBD_Code>V</MarketingCarrierRBD_Code>
+							<PaxSegmentID>SEG1</PaxSegmentID>
+						</PaxSegment>
+						<PaxSegment>
+							<DatedMarketingSegmentRefId>DMS2</DatedMarketingSegmentRefId>
+							<MarketingCarrierRBD_Code>V</MarketingCarrierRBD_Code>
+							<PaxSegmentID>SEG2</PaxSegmentID>
+						</PaxSegment>
+					</PaxSegmentList>
+					<PriceClassList>
+						<PriceClass>
+							<Code>YBASIC</Code>
+							<Desc>
+								<DescText>Miles earned per guest - 15%</DescText>
+							</Desc>
+							<Desc>
+								<DescText>Cabin baggage allowance - Find more information on baggage terms at https://www.etihad.com/en-ae/fly-etihad/baggage</DescText>
+							</Desc>
+							<Desc>
+								<DescText>Checked baggage allowance per guest - Checked baggage allowance isn't included. Find more information on baggage terms at https://www.etihad.com/en-ae/fly-etihad/baggage</DescText>
+							</Desc>
+							<Desc>
+								<DescText>Cancellation / Refund - Cancellation isn't allowed</DescText>
+							</Desc>
+							<Desc>
+								<DescText>Change / Reissue - Changes not allowed</DescText>
+							</Desc>
+							<Name>Economy Basic</Name>
+							<PriceClassID>YBASIC</PriceClassID>
+						</PriceClass>
+					</PriceClassList>
+					<ServiceDefinitionList>
+						<ServiceDefinition>
+							<Desc>
+								<DescText>Bag allowances</DescText>
+							</Desc>
+							<Name>Bag allowances</Name>
+							<OwnerCode>EY</OwnerCode>
+							<ServiceDefinitionAssociation>
+								<BaggageAllowanceRef>
+									<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+								</BaggageAllowanceRef>
+							</ServiceDefinitionAssociation>
+							<ServiceDefinitionID>BAGALLOW_1</ServiceDefinitionID>
+						</ServiceDefinition>
+					</ServiceDefinitionList>
+				</DataLists>
+				<Order>
+					<OrderID>EY607PRXGVN00</OrderID>
+					<OrderItem>
+						<FareDetail>
+							<FareCalculationInfo>
+								<AddlInfoText>FC-AUH EY FRA Q25.00 242.95EY AUH242.95NUC510.90END ROE3.673414</AddlInfoText>
+								<PricingCodeText>F</PricingCodeText>
+							</FareCalculationInfo>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>5</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<FareBasisCode>VHE14H89C</FareBasisCode>
+								<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>V</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>5</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<FareBasisCode>VHE14H89C</FareBasisCode>
+								<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>V</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<PaxRefID>PAX5</PaxRefID>
+							<Price>
+								<BaseAmount CurCode="EUR">492.00</BaseAmount>
+								<TaxSummary>
+									<Tax>
+										<AddlTaxCode>AC</AddlTaxCode>
+										<Amount CurCode="EUR">173.00</Amount>
+										<TaxCode>YQ</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>AD</AddlTaxCode>
+										<Amount CurCode="EUR">19.63</Amount>
+										<TaxCode>AE</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>TO</AddlTaxCode>
+										<Amount CurCode="EUR">11.78</Amount>
+										<TaxCode>F6</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>SE</AddlTaxCode>
+										<Amount CurCode="EUR">1.31</Amount>
+										<TaxCode>TP</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>AP</AddlTaxCode>
+										<Amount CurCode="EUR">2.62</Amount>
+										<TaxCode>ZR</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>SE</AddlTaxCode>
+										<Amount CurCode="EUR">11.86</Amount>
+										<TaxCode>DE</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>CB</AddlTaxCode>
+										<Amount CurCode="EUR">39.34</Amount>
+										<TaxCode>OY</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>EB</AddlTaxCode>
+										<Amount CurCode="EUR">43.71</Amount>
+										<TaxCode>RA</TaxCode>
+									</Tax>
+									<TotalTaxAmount CurCode="EUR">303.25</TotalTaxAmount>
+								</TaxSummary>
+								<TotalAmount CurCode="EUR">795.25</TotalAmount>
+							</Price>
+						</FareDetail>
+						<FareDetail>
+							<FareCalculationInfo>
+								<AddlInfoText>FC-AUH EY FRA Q25.00 48.59EY AUH48.59NUC122.18END ROE3.673414</AddlInfoText>
+								<PricingCodeText>F</PricingCodeText>
+							</FareCalculationInfo>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>5</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<FareBasisCode>VHE14H89I</FareBasisCode>
+								<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>V</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>5</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<FareBasisCode>VHE14H89I</FareBasisCode>
+								<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>V</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<PaxRefID>PAX3</PaxRefID>
+							<Price>
+								<BaseAmount CurCode="EUR">118.00</BaseAmount>
+								<TaxSummary>
+									<Tax>
+										<AddlTaxCode>AC</AddlTaxCode>
+										<Amount CurCode="EUR">57.68</Amount>
+										<TaxCode>YQ</TaxCode>
+									</Tax>
+									<TotalTaxAmount CurCode="EUR">57.68</TotalTaxAmount>
+								</TaxSummary>
+								<TotalAmount CurCode="EUR">175.68</TotalAmount>
+							</Price>
+						</FareDetail>
+						<FareDetail>
+							<FareCalculationInfo>
+								<AddlInfoText>FC-AUH EY FRA Q25.00 323.94EY AUH323.94NUC672.88END ROE3.673414</AddlInfoText>
+								<PricingCodeText>F</PricingCodeText>
+							</FareCalculationInfo>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>5</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<FareBasisCode>VHE14H89</FareBasisCode>
+								<NegotiatedCode>70J</NegotiatedCode>
+								<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								<PriceClassRefID>YBASIC</PriceClassRefID>
+								<RBD>
+									<RBD_Code>V</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>5</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<FareBasisCode>VHE14H89</FareBasisCode>
+								<NegotiatedCode>70J</NegotiatedCode>
+								<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								<PriceClassRefID>YBASIC</PriceClassRefID>
+								<RBD>
+									<RBD_Code>V</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<PaxRefID>PAX4</PaxRefID>
+							<Price>
+								<BaseAmount CurCode="EUR">649.00</BaseAmount>
+								<TaxSummary>
+									<Tax>
+										<AddlTaxCode>AC</AddlTaxCode>
+										<Amount CurCode="EUR">173.00</Amount>
+										<TaxCode>YQ</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>AD</AddlTaxCode>
+										<Amount CurCode="EUR">19.63</Amount>
+										<TaxCode>AE</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>TO</AddlTaxCode>
+										<Amount CurCode="EUR">11.78</Amount>
+										<TaxCode>F6</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>SE</AddlTaxCode>
+										<Amount CurCode="EUR">1.31</Amount>
+										<TaxCode>TP</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>AP</AddlTaxCode>
+										<Amount CurCode="EUR">2.62</Amount>
+										<TaxCode>ZR</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>SE</AddlTaxCode>
+										<Amount CurCode="EUR">11.86</Amount>
+										<TaxCode>DE</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>CB</AddlTaxCode>
+										<Amount CurCode="EUR">39.34</Amount>
+										<TaxCode>OY</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>EB</AddlTaxCode>
+										<Amount CurCode="EUR">43.71</Amount>
+										<TaxCode>RA</TaxCode>
+									</Tax>
+									<TotalTaxAmount CurCode="EUR">303.25</TotalTaxAmount>
+								</TaxSummary>
+								<TotalAmount CurCode="EUR">952.25</TotalAmount>
+							</Price>
+						</FareDetail>
+						<FareDetail>
+							<FareCalculationInfo>
+								<AddlInfoText>FC-AUH EY FRA Q25.00 323.94EY AUH323.94NUC672.88END ROE3.673414</AddlInfoText>
+								<PricingCodeText>F</PricingCodeText>
+							</FareCalculationInfo>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>5</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<FareBasisCode>VHE14H89</FareBasisCode>
+								<NegotiatedCode>70J</NegotiatedCode>
+								<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								<PriceClassRefID>YBASIC</PriceClassRefID>
+								<RBD>
+									<RBD_Code>V</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>5</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refund not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</CancelRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure no show</DescText>
+									<JourneyStageCode>No Show</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Reissue not permitted before departure</DescText>
+									<JourneyStageCode>Prior To Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change not permitted after departure</DescText>
+									<JourneyStageCode>After Departure</JourneyStageCode>
+								</ChangeRestrictions>
+								<FareBasisCode>VHE14H89</FareBasisCode>
+								<NegotiatedCode>70J</NegotiatedCode>
+								<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								<PriceClassRefID>YBASIC</PriceClassRefID>
+								<RBD>
+									<RBD_Code>V</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<PaxRefID>PAX2</PaxRefID>
+							<Price>
+								<BaseAmount CurCode="EUR">649.00</BaseAmount>
+								<TaxSummary>
+									<Tax>
+										<AddlTaxCode>AC</AddlTaxCode>
+										<Amount CurCode="EUR">173.00</Amount>
+										<TaxCode>YQ</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>AD</AddlTaxCode>
+										<Amount CurCode="EUR">19.63</Amount>
+										<TaxCode>AE</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>TO</AddlTaxCode>
+										<Amount CurCode="EUR">11.78</Amount>
+										<TaxCode>F6</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>SE</AddlTaxCode>
+										<Amount CurCode="EUR">1.31</Amount>
+										<TaxCode>TP</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>AP</AddlTaxCode>
+										<Amount CurCode="EUR">2.62</Amount>
+										<TaxCode>ZR</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>SE</AddlTaxCode>
+										<Amount CurCode="EUR">11.86</Amount>
+										<TaxCode>DE</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>CB</AddlTaxCode>
+										<Amount CurCode="EUR">39.34</Amount>
+										<TaxCode>OY</TaxCode>
+									</Tax>
+									<Tax>
+										<AddlTaxCode>EB</AddlTaxCode>
+										<Amount CurCode="EUR">43.71</Amount>
+										<TaxCode>RA</TaxCode>
+									</Tax>
+									<TotalTaxAmount CurCode="EUR">303.25</TotalTaxAmount>
+								</TaxSummary>
+								<TotalAmount CurCode="EUR">952.25</TotalAmount>
+							</Price>
+						</FareDetail>
+						<OrderItemID>EY607PRXGVN00_AIR-1-2</OrderItemID>
+						<OwnerCode>EY</OwnerCode>
+						<Price>
+							<BaseAmount CurCode="EUR">1908.00</BaseAmount>
+							<TaxSummary>
+								<Tax>
+									<Amount CurCode="EUR">35.34</Amount>
+									<TaxCode>F6</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount CurCode="EUR">35.58</Amount>
+									<TaxCode>DE</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount CurCode="EUR">58.89</Amount>
+									<TaxCode>AE</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount CurCode="EUR">7.86</Amount>
+									<TaxCode>ZR</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount CurCode="EUR">576.68</Amount>
+									<TaxCode>YQ</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount CurCode="EUR">118.02</Amount>
+									<TaxCode>OY</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount CurCode="EUR">3.93</Amount>
+									<TaxCode>TP</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount CurCode="EUR">131.13</Amount>
+									<TaxCode>RA</TaxCode>
+								</Tax>
+								<TotalTaxAmount CurCode="EUR">967.43</TotalTaxAmount>
+							</TaxSummary>
+							<TotalAmount CurCode="EUR">2875.43</TotalAmount>
+						</Price>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX3</PaxRefID>
+							<ServiceID>SEG1_PAX3</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX2</PaxRefID>
+							<ServiceID>SEG1_PAX2</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX4</PaxRefID>
+							<ServiceID>SEG1_PAX4</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX5</PaxRefID>
+							<ServiceID>SEG1_PAX5</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX3</PaxRefID>
+							<ServiceID>SEG2_PAX3</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX2</PaxRefID>
+							<ServiceID>SEG2_PAX2</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX4</PaxRefID>
+							<ServiceID>SEG2_PAX4</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<PaxSegmentRef>
+									<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								</PaxSegmentRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX5</PaxRefID>
+							<ServiceID>SEG2_PAX5</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<ServiceDefinitionRef>
+									<OrderFlightAssociations>
+										<PaxSegmentRef>
+											<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+										</PaxSegmentRef>
+									</OrderFlightAssociations>
+									<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+								</ServiceDefinitionRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX5</PaxRefID>
+							<ServiceID>SEG1_PAX5_BAG1</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<ServiceDefinitionRef>
+									<OrderFlightAssociations>
+										<PaxSegmentRef>
+											<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+										</PaxSegmentRef>
+									</OrderFlightAssociations>
+									<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+								</ServiceDefinitionRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX5</PaxRefID>
+							<ServiceID>SEG2_PAX5_BAG1</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<ServiceDefinitionRef>
+									<OrderFlightAssociations>
+										<PaxSegmentRef>
+											<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+										</PaxSegmentRef>
+									</OrderFlightAssociations>
+									<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+								</ServiceDefinitionRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX3</PaxRefID>
+							<ServiceID>SEG1_PAX3_BAG1</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<ServiceDefinitionRef>
+									<OrderFlightAssociations>
+										<PaxSegmentRef>
+											<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+										</PaxSegmentRef>
+									</OrderFlightAssociations>
+									<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+								</ServiceDefinitionRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX3</PaxRefID>
+							<ServiceID>SEG2_PAX3_BAG1</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<ServiceDefinitionRef>
+									<OrderFlightAssociations>
+										<PaxSegmentRef>
+											<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+										</PaxSegmentRef>
+									</OrderFlightAssociations>
+									<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+								</ServiceDefinitionRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX4</PaxRefID>
+							<ServiceID>SEG1_PAX4_BAG1</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<ServiceDefinitionRef>
+									<OrderFlightAssociations>
+										<PaxSegmentRef>
+											<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+										</PaxSegmentRef>
+									</OrderFlightAssociations>
+									<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+								</ServiceDefinitionRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX4</PaxRefID>
+							<ServiceID>SEG2_PAX4_BAG1</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<ServiceDefinitionRef>
+									<OrderFlightAssociations>
+										<PaxSegmentRef>
+											<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+										</PaxSegmentRef>
+									</OrderFlightAssociations>
+									<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+								</ServiceDefinitionRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX2</PaxRefID>
+							<ServiceID>SEG1_PAX2_BAG1</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<Service>
+							<BookingRef>
+								<BookingEntity>
+									<Carrier>
+										<AirlineDesigCode>EY</AirlineDesigCode>
+									</Carrier>
+								</BookingEntity>
+								<BookingID>PRXGVN</BookingID>
+							</BookingRef>
+							<DeliveryStatusCode>READY TO PROCEED</DeliveryStatusCode>
+							<OrderServiceAssociation>
+								<ServiceDefinitionRef>
+									<OrderFlightAssociations>
+										<PaxSegmentRef>
+											<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+										</PaxSegmentRef>
+									</OrderFlightAssociations>
+									<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+								</ServiceDefinitionRef>
+							</OrderServiceAssociation>
+							<PaxRefID>PAX2</PaxRefID>
+							<ServiceID>SEG2_PAX2_BAG1</ServiceID>
+							<StatusCode>CONFIRMED</StatusCode>
+						</Service>
+						<StatusCode>ACTIVE</StatusCode>
+					</OrderItem>
+					<OwnerCode>EY</OwnerCode>
+					<StatusCode>OPENED</StatusCode>
+					<TotalPrice>
+						<BaseAmount CurCode="EUR">1908.00</BaseAmount>
+						<TaxSummary>
+							<TotalTaxAmount CurCode="EUR">967.43</TotalTaxAmount>
+						</TaxSummary>
+						<TotalAmount CurCode="EUR">2875.43</TotalAmount>
+					</TotalPrice>
+				</Order>
+				<TicketDocInfo>
+					<BookingAgency>
+						<AgencyID>PAREY07TA</AgencyID>
+						<TravelAgent>
+							<TravelAgentID>9994WS/SU</TravelAgentID>
+						</TravelAgent>
+					</BookingAgency>
+					<BookletQty>1</BookletQty>
+					<EndorsementText>NON ENDO/ NONREF</EndorsementText>
+					<IssueInfo>
+						<IssueDate>2025-01-03</IssueDate>
+						<IssuingCarrier>
+							<AirlineDesigCode>EY</AirlineDesigCode>
+						</IssuingCarrier>
+					</IssueInfo>
+					<PaxRefID>PAX2</PaxRefID>
+					<Ticket>
+						<Coupon>
+							<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+							<CouponNumber>1</CouponNumber>
+							<CouponStatusCode>I</CouponStatusCode>
+							<CurrentCouponFlightInfoRef>
+								<CurrentAirlinePaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</CurrentAirlinePaxSegmentRef>
+							</CurrentCouponFlightInfoRef>
+							<FareBasisCode>VHE14H89</FareBasisCode>
+						</Coupon>
+						<Coupon>
+							<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+							<CouponNumber>2</CouponNumber>
+							<CouponStatusCode>I</CouponStatusCode>
+							<CurrentCouponFlightInfoRef>
+								<CurrentAirlinePaxSegmentRef>
+									<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								</CurrentAirlinePaxSegmentRef>
+							</CurrentCouponFlightInfoRef>
+							<FareBasisCode>VHE14H89</FareBasisCode>
+						</Coupon>
+						<ReportingTypeCode>BSP</ReportingTypeCode>
+						<TicketDocTypeCode>T</TicketDocTypeCode>
+						<TicketNumber>6072407626452</TicketNumber>
+					</Ticket>
+				</TicketDocInfo>
+				<TicketDocInfo>
+					<BookingAgency>
+						<AgencyID>PAREY07TA</AgencyID>
+						<TravelAgent>
+							<TravelAgentID>9994WS/SU</TravelAgentID>
+						</TravelAgent>
+					</BookingAgency>
+					<BookletQty>1</BookletQty>
+					<EndorsementText>NON ENDO/ NONREF</EndorsementText>
+					<IssueInfo>
+						<IssueDate>2025-01-03</IssueDate>
+						<IssuingCarrier>
+							<AirlineDesigCode>EY</AirlineDesigCode>
+						</IssuingCarrier>
+					</IssueInfo>
+					<PaxRefID>PAX3</PaxRefID>
+					<Ticket>
+						<Coupon>
+							<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+							<CouponNumber>1</CouponNumber>
+							<CouponStatusCode>I</CouponStatusCode>
+							<CurrentCouponFlightInfoRef>
+								<CurrentAirlinePaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</CurrentAirlinePaxSegmentRef>
+							</CurrentCouponFlightInfoRef>
+							<FareBasisCode>VHE14H89I</FareBasisCode>
+						</Coupon>
+						<Coupon>
+							<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+							<CouponNumber>2</CouponNumber>
+							<CouponStatusCode>I</CouponStatusCode>
+							<CurrentCouponFlightInfoRef>
+								<CurrentAirlinePaxSegmentRef>
+									<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								</CurrentAirlinePaxSegmentRef>
+							</CurrentCouponFlightInfoRef>
+							<FareBasisCode>VHE14H89I</FareBasisCode>
+						</Coupon>
+						<ReportingTypeCode>BSP</ReportingTypeCode>
+						<TicketDocTypeCode>T</TicketDocTypeCode>
+						<TicketNumber>6072407626454</TicketNumber>
+					</Ticket>
+				</TicketDocInfo>
+				<TicketDocInfo>
+					<BookingAgency>
+						<AgencyID>PAREY07TA</AgencyID>
+						<TravelAgent>
+							<TravelAgentID>9994WS/SU</TravelAgentID>
+						</TravelAgent>
+					</BookingAgency>
+					<BookletQty>1</BookletQty>
+					<EndorsementText>NON ENDO/ NONREF</EndorsementText>
+					<IssueInfo>
+						<IssueDate>2025-01-03</IssueDate>
+						<IssuingCarrier>
+							<AirlineDesigCode>EY</AirlineDesigCode>
+						</IssuingCarrier>
+					</IssueInfo>
+					<PaxRefID>PAX4</PaxRefID>
+					<Ticket>
+						<Coupon>
+							<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+							<CouponNumber>1</CouponNumber>
+							<CouponStatusCode>I</CouponStatusCode>
+							<CurrentCouponFlightInfoRef>
+								<CurrentAirlinePaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</CurrentAirlinePaxSegmentRef>
+							</CurrentCouponFlightInfoRef>
+							<FareBasisCode>VHE14H89</FareBasisCode>
+						</Coupon>
+						<Coupon>
+							<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+							<CouponNumber>2</CouponNumber>
+							<CouponStatusCode>I</CouponStatusCode>
+							<CurrentCouponFlightInfoRef>
+								<CurrentAirlinePaxSegmentRef>
+									<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								</CurrentAirlinePaxSegmentRef>
+							</CurrentCouponFlightInfoRef>
+							<FareBasisCode>VHE14H89</FareBasisCode>
+						</Coupon>
+						<ReportingTypeCode>BSP</ReportingTypeCode>
+						<TicketDocTypeCode>T</TicketDocTypeCode>
+						<TicketNumber>6072407626451</TicketNumber>
+					</Ticket>
+				</TicketDocInfo>
+				<TicketDocInfo>
+					<BookingAgency>
+						<AgencyID>PAREY07TA</AgencyID>
+						<TravelAgent>
+							<TravelAgentID>9994WS/SU</TravelAgentID>
+						</TravelAgent>
+					</BookingAgency>
+					<BookletQty>1</BookletQty>
+					<EndorsementText>NON ENDO/ NONREF</EndorsementText>
+					<IssueInfo>
+						<IssueDate>2025-01-03</IssueDate>
+						<IssuingCarrier>
+							<AirlineDesigCode>EY</AirlineDesigCode>
+						</IssuingCarrier>
+					</IssueInfo>
+					<PaxRefID>PAX5</PaxRefID>
+					<Ticket>
+						<Coupon>
+							<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+							<CouponNumber>1</CouponNumber>
+							<CouponStatusCode>I</CouponStatusCode>
+							<CurrentCouponFlightInfoRef>
+								<CurrentAirlinePaxSegmentRef>
+									<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+								</CurrentAirlinePaxSegmentRef>
+							</CurrentCouponFlightInfoRef>
+							<FareBasisCode>VHE14H89C</FareBasisCode>
+						</Coupon>
+						<Coupon>
+							<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+							<CouponNumber>2</CouponNumber>
+							<CouponStatusCode>I</CouponStatusCode>
+							<CurrentCouponFlightInfoRef>
+								<CurrentAirlinePaxSegmentRef>
+									<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+								</CurrentAirlinePaxSegmentRef>
+							</CurrentCouponFlightInfoRef>
+							<FareBasisCode>VHE14H89C</FareBasisCode>
+						</Coupon>
+						<ReportingTypeCode>BSP</ReportingTypeCode>
+						<TicketDocTypeCode>T</TicketDocTypeCode>
+						<TicketNumber>6072407626453</TicketNumber>
+					</Ticket>
+				</TicketDocInfo>
+			</ns4:Response>
+			<ns4:DistributionChain>
+				<DistributionChainLink>
+					<Ordinal>1</Ordinal>
+					<OrgRole>Seller</OrgRole>
+					<ParticipatingOrg>
+						<OrgID>14349646</OrgID>
+					</ParticipatingOrg>
+				</DistributionChainLink>
+				<DistributionChainLink>
+					<Ordinal>2</Ordinal>
+					<OrgRole>Distributor</OrgRole>
+					<ParticipatingOrg>
+						<OrgID>1A</OrgID>
+					</ParticipatingOrg>
+				</DistributionChainLink>
+				<DistributionChainLink>
+					<Ordinal>3</Ordinal>
+					<OrgRole>Carrier</OrgRole>
+					<ParticipatingOrg>
+						<OrgID>EY</OrgID>
+					</ParticipatingOrg>
+				</DistributionChainLink>
+			</ns4:DistributionChain>
+			<ns4:PayloadAttributes>
+				<CorrelationID>VPAUU6NXB22X1Y1C#LBD#6U5H0</CorrelationID>
+				<VersionNumber>21.3</VersionNumber>
+			</ns4:PayloadAttributes>
+			<ns4:PaymentFunctions>
+				<OrderAssociation>
+					<OrderItemRefID>EY607PRXGVN00_AIR-1-2</OrderItemRefID>
+					<OrderRefID>EY607PRXGVN00</OrderRefID>
+				</OrderAssociation>
+				<PaymentProcessingSummary>
+					<Amount CurCode="EUR">952.25</Amount>
+					<PaymentID>PAY1</PaymentID>
+					<PaymentProcessingSummaryPaymentMethod>
+						<SettlementPlan>
+							<IATA_Number>14349646</IATA_Number>
+							<PaymentTypeCode>CA</PaymentTypeCode>
+						</SettlementPlan>
+					</PaymentProcessingSummaryPaymentMethod>
+					<PaymentStatusCode>SUCCESSFUL</PaymentStatusCode>
+				</PaymentProcessingSummary>
+			</ns4:PaymentFunctions>
+			<ns4:PaymentFunctions>
+				<OrderAssociation>
+					<OrderItemRefID>EY607PRXGVN00_AIR-1-2</OrderItemRefID>
+					<OrderRefID>EY607PRXGVN00</OrderRefID>
+				</OrderAssociation>
+				<PaymentProcessingSummary>
+					<Amount CurCode="EUR">952.25</Amount>
+					<PaymentID>PAY2</PaymentID>
+					<PaymentProcessingSummaryPaymentMethod>
+						<SettlementPlan>
+							<IATA_Number>14349646</IATA_Number>
+							<PaymentTypeCode>CA</PaymentTypeCode>
+						</SettlementPlan>
+					</PaymentProcessingSummaryPaymentMethod>
+					<PaymentStatusCode>SUCCESSFUL</PaymentStatusCode>
+				</PaymentProcessingSummary>
+			</ns4:PaymentFunctions>
+			<ns4:PaymentFunctions>
+				<OrderAssociation>
+					<OrderItemRefID>EY607PRXGVN00_AIR-1-2</OrderItemRefID>
+					<OrderRefID>EY607PRXGVN00</OrderRefID>
+				</OrderAssociation>
+				<PaymentProcessingSummary>
+					<Amount CurCode="EUR">795.25</Amount>
+					<PaymentID>PAY3</PaymentID>
+					<PaymentProcessingSummaryPaymentMethod>
+						<SettlementPlan>
+							<IATA_Number>14349646</IATA_Number>
+							<PaymentTypeCode>CA</PaymentTypeCode>
+						</SettlementPlan>
+					</PaymentProcessingSummaryPaymentMethod>
+					<PaymentStatusCode>SUCCESSFUL</PaymentStatusCode>
+				</PaymentProcessingSummary>
+			</ns4:PaymentFunctions>
+			<ns4:PaymentFunctions>
+				<OrderAssociation>
+					<OrderItemRefID>EY607PRXGVN00_AIR-1-2</OrderItemRefID>
+					<OrderRefID>EY607PRXGVN00</OrderRefID>
+				</OrderAssociation>
+				<PaymentProcessingSummary>
+					<Amount CurCode="EUR">175.68</Amount>
+					<PaymentID>PAY4</PaymentID>
+					<PaymentProcessingSummaryPaymentMethod>
+						<SettlementPlan>
+							<IATA_Number>14349646</IATA_Number>
+							<PaymentTypeCode>CA</PaymentTypeCode>
+						</SettlementPlan>
+					</PaymentProcessingSummaryPaymentMethod>
+					<PaymentStatusCode>SUCCESSFUL</PaymentStatusCode>
+				</PaymentProcessingSummary>
+			</ns4:PaymentFunctions>
+		</ns4:IATA_OrderViewRS>

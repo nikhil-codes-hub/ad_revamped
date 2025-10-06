@@ -1,0 +1,3199 @@
+<OrderViewRS>
+	<PayloadAttributes>
+		<Version>18.1</Version>
+	</PayloadAttributes>
+	<Response>
+		<DataLists>
+			<BaggageAllowanceList>
+				<BaggageAllowance>
+					<BaggageAllowanceID>FBA1</BaggageAllowanceID>
+					<TypeCode>Checked</TypeCode>
+					<WeightAllowance>
+						<MaximumWeightMeasure UnitCode="Kilogram">25</MaximumWeightMeasure>
+						<ApplicablePartyText>Traveler</ApplicablePartyText>
+					</WeightAllowance>
+				</BaggageAllowance>
+				<BaggageAllowance>
+					<BaggageAllowanceID>FBA2</BaggageAllowanceID>
+					<TypeCode>Checked</TypeCode>
+					<WeightAllowance>
+						<MaximumWeightMeasure UnitCode="Kilogram">10</MaximumWeightMeasure>
+						<ApplicablePartyText>Traveler</ApplicablePartyText>
+					</WeightAllowance>
+				</BaggageAllowance>
+			</BaggageAllowanceList>
+			<ContactInfoList>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX2_1</ContactInfoID>
+					<ContactTypeText>NOTIFICATION</ContactTypeText>
+					<IndividualRef>PAX2</IndividualRef>
+					<Phone>
+						<LabelText>MOBILE</LabelText>
+						<CountryDialingCode>33</CountryDialingCode>
+						<PhoneNumber>561470855</PhoneNumber>
+					</Phone>
+					<EmailAddress>
+						<EmailAddressText>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressText>
+					</EmailAddress>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX4_1</ContactInfoID>
+					<ContactTypeText>NOTIFICATION</ContactTypeText>
+					<IndividualRef>PAX4</IndividualRef>
+					<Phone>
+						<LabelText>MOBILE</LabelText>
+						<CountryDialingCode>33</CountryDialingCode>
+						<PhoneNumber>561470855</PhoneNumber>
+					</Phone>
+					<EmailAddress>
+						<EmailAddressText>NAME_SURNAME_ADT@MYMAIL.COM</EmailAddressText>
+					</EmailAddress>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTCPAX5_1</ContactInfoID>
+					<ContactTypeText>NOTIFICATION</ContactTypeText>
+					<IndividualRef>PAX5</IndividualRef>
+					<Phone>
+						<LabelText>MOBILE</LabelText>
+						<CountryDialingCode>33</CountryDialingCode>
+						<PhoneNumber>513723573</PhoneNumber>
+					</Phone>
+					<EmailAddress>
+						<EmailAddressText>NAME_SURNAME_CHD@MYMAIL.COM</EmailAddressText>
+					</EmailAddress>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CTC_1</ContactInfoID>
+					<ContactTypeText>STANDARD</ContactTypeText>
+					<Phone>
+						<LabelText>AGENCY</LabelText>
+						<PhoneNumber>33097230220</PhoneNumber>
+					</Phone>
+					<EmailAddress>
+						<EmailAddressText>ALTEANDC_TEST@AMADEUS.COM</EmailAddressText>
+					</EmailAddress>
+				</ContactInfo>
+			</ContactInfoList>
+			<InstructionsList>
+				<Instruction ListKey="OSI_54">
+					<FreeFormTextInstruction>
+						<Remark>BOOKING SITE FR</Remark>
+					</FreeFormTextInstruction>
+				</Instruction>
+			</InstructionsList>
+			<PaxJourneyList>
+				<PaxJourney>
+					<PaxJourneyID>FLT1</PaxJourneyID>
+					<Duration>PT4H55M</Duration>
+					<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+				</PaxJourney>
+				<PaxJourney>
+					<PaxJourneyID>FLT2</PaxJourneyID>
+					<Duration>PT4H35M</Duration>
+					<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<Pax>
+					<PaxID>PAX3</PaxID>
+					<PTC>INF</PTC>
+					<PaxRefID>PAX2</PaxRefID>
+					<Individual>
+						<IndividualID>PAX3</IndividualID>
+						<Birthdate>2023-09-24</Birthdate>
+						<GivenName>FBYJFH</GivenName>
+						<Surname>NDCX</Surname>
+					</Individual>
+				</Pax>
+				<Pax>
+					<PaxID>PAX2</PaxID>
+					<PTC>ADT</PTC>
+					<Individual>
+						<IndividualID>PAX2</IndividualID>
+						<Birthdate>1995-01-31</Birthdate>
+						<TitleName>MRS</TitleName>
+						<GivenName>AJUVCB</GivenName>
+						<Surname>NDCX</Surname>
+					</Individual>
+				</Pax>
+				<Pax>
+					<PaxID>PAX4</PaxID>
+					<PTC>ADT</PTC>
+					<Individual>
+						<IndividualID>PAX4</IndividualID>
+						<Birthdate>1994-05-22</Birthdate>
+						<TitleName>MRS</TitleName>
+						<GivenName>AQCGDN</GivenName>
+						<Surname>NDCX</Surname>
+					</Individual>
+				</Pax>
+				<Pax>
+					<PaxID>PAX5</PaxID>
+					<PTC>CHD</PTC>
+					<Individual>
+						<IndividualID>PAX5</IndividualID>
+						<Birthdate>2015-02-25</Birthdate>
+						<TitleName>MS</TitleName>
+						<GivenName>CXDSGD</GivenName>
+						<Surname>NDCX</Surname>
+					</Individual>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<PaxSegmentID>SEG1</PaxSegmentID>
+					<Dep>
+						<IATA_LocationCode>SIN</IATA_LocationCode>
+						<TerminalName>2</TerminalName>
+						<AircraftScheduledDateTime>2025-02-07T09:55:00</AircraftScheduledDateTime>
+					</Dep>
+					<Arrival>
+						<IATA_LocationCode>MLE</IATA_LocationCode>
+						<AircraftScheduledDateTime>2025-02-07T11:50:00</AircraftScheduledDateTime>
+					</Arrival>
+					<MarketingCarrierInfo>
+						<CarrierDesigCode>SQ</CarrierDesigCode>
+						<CarrierName>SINGAPORE AIRLINES</CarrierName>
+						<MarketingCarrierFlightNumberText>432</MarketingCarrierFlightNumberText>
+						<RBD_Code>N</RBD_Code>
+					</MarketingCarrierInfo>
+					<OperatingCarrierInfo>
+						<CarrierDesigCode>SQ</CarrierDesigCode>
+						<CarrierName>SINGAPORE AIRLINES</CarrierName>
+						<Disclosure>
+							<DisclosureID>DIS1</DisclosureID>
+							<Desc>
+								<DescID>DES1</DescID>
+								<DescText>SINGAPORE AIRLINES</DescText>
+							</Desc>
+						</Disclosure>
+					</OperatingCarrierInfo>
+					<DatedOperatingLeg>
+						<DatedOperatingLegID>LEG1</DatedOperatingLegID>
+						<Dep>
+							<IATA_LocationCode>SIN</IATA_LocationCode>
+							<AircraftScheduledDateTime>2025-02-07T09:55:00</AircraftScheduledDateTime>
+						</Dep>
+						<Arrival>
+							<IATA_LocationCode>MLE</IATA_LocationCode>
+							<AircraftScheduledDateTime>2025-02-07T11:50:00</AircraftScheduledDateTime>
+						</Arrival>
+						<IATA_AircraftType>
+							<IATA_AircraftTypeCode>359</IATA_AircraftTypeCode>
+						</IATA_AircraftType>
+					</DatedOperatingLeg>
+				</PaxSegment>
+				<PaxSegment>
+					<PaxSegmentID>SEG2</PaxSegmentID>
+					<Dep>
+						<IATA_LocationCode>MLE</IATA_LocationCode>
+						<AircraftScheduledDateTime>2025-03-24T23:40:00</AircraftScheduledDateTime>
+					</Dep>
+					<Arrival>
+						<IATA_LocationCode>SIN</IATA_LocationCode>
+						<TerminalName>0</TerminalName>
+						<AircraftScheduledDateTime>2025-03-25T07:15:00</AircraftScheduledDateTime>
+					</Arrival>
+					<MarketingCarrierInfo>
+						<CarrierDesigCode>SQ</CarrierDesigCode>
+						<CarrierName>SINGAPORE AIRLINES</CarrierName>
+						<MarketingCarrierFlightNumberText>437</MarketingCarrierFlightNumberText>
+						<RBD_Code>N</RBD_Code>
+					</MarketingCarrierInfo>
+					<OperatingCarrierInfo>
+						<CarrierDesigCode>SQ</CarrierDesigCode>
+						<CarrierName>SINGAPORE AIRLINES</CarrierName>
+						<Disclosure>
+							<DisclosureID>DIS2</DisclosureID>
+							<Desc>
+								<DescID>DES2</DescID>
+								<DescText>SINGAPORE AIRLINES</DescText>
+							</Desc>
+						</Disclosure>
+					</OperatingCarrierInfo>
+					<DatedOperatingLeg>
+						<DatedOperatingLegID>LEG2</DatedOperatingLegID>
+						<Dep>
+							<IATA_LocationCode>MLE</IATA_LocationCode>
+							<AircraftScheduledDateTime>2025-03-24T23:40:00</AircraftScheduledDateTime>
+						</Dep>
+						<Arrival>
+							<IATA_LocationCode>SIN</IATA_LocationCode>
+							<AircraftScheduledDateTime>2025-03-25T07:15:00</AircraftScheduledDateTime>
+						</Arrival>
+						<IATA_AircraftType>
+							<IATA_AircraftTypeCode>359</IATA_AircraftTypeCode>
+						</IATA_AircraftType>
+					</DatedOperatingLeg>
+				</PaxSegment>
+			</PaxSegmentList>
+			<PriceClassList>
+				<PriceClass>
+					<PriceClassID>FF41</PriceClassID>
+					<Name>SIN - ECON VALUE FF4</Name>
+				</PriceClass>
+			</PriceClassList>
+			<ServiceDefinitionList>
+				<ServiceDefinition>
+					<ServiceDefinitionID>BAGALLOW_1</ServiceDefinitionID>
+					<Name>Bag allowances</Name>
+					<Description>
+						<DescID>Bag allowances</DescID>
+					</Description>
+					<ServiceDefinitionAssociation>
+						<BaggageAllowanceRefID>FBA1</BaggageAllowanceRefID>
+					</ServiceDefinitionAssociation>
+				</ServiceDefinition>
+				<ServiceDefinition>
+					<ServiceDefinitionID>BAGALLOW_2</ServiceDefinitionID>
+					<Name>Bag allowances</Name>
+					<Description>
+						<DescID>Bag allowances</DescID>
+					</Description>
+					<ServiceDefinitionAssociation>
+						<BaggageAllowanceRefID>FBA2</BaggageAllowanceRefID>
+					</ServiceDefinitionAssociation>
+				</ServiceDefinition>
+			</ServiceDefinitionList>
+		</DataLists>
+		<Metadata>
+			<Other>
+				<OtherMetadata>
+					<RuleMetadatas>
+						<RuleMetadata MetadataKey="ATC_EXCHANGE_ELIGIBILITY">
+							<RuleID>ATC_EXCHANGE_ELIGIBILITY</RuleID>
+							<Status>false</Status>
+						</RuleMetadata>
+						<RuleMetadata MetadataKey="ATC_REFUND_ELIGIBILITY">
+							<RuleID>ATC_REFUND_ELIGIBILITY</RuleID>
+							<Status>false</Status>
+							<Remarks>
+								<Remark>ATC Voluntary Refund not allowed.</Remark>
+							</Remarks>
+						</RuleMetadata>
+						<RuleMetadata MetadataKey="VOID_ELIGIBILITY">
+							<RuleID>VOID_ELIGIBILITY</RuleID>
+							<Status>false</Status>
+							<Remarks>
+								<Remark>No ticket</Remark>
+							</Remarks>
+						</RuleMetadata>
+					</RuleMetadatas>
+				</OtherMetadata>
+			</Other>
+		</Metadata>
+		<Order>
+			<OrderID>SQ_6DZS4V</OrderID>
+			<OwnerCode>SQ</OwnerCode>
+			<PaymentTimeLimitDateTime>2025-01-06T22:00:00.000Z</PaymentTimeLimitDateTime>
+			<BookingRef>
+				<BookingID>6DZS4V</BookingID>
+				<BookingEntity>
+					<Carrier>
+						<AirlineDesigCode>SQ</AirlineDesigCode>
+					</Carrier>
+				</BookingEntity>
+			</BookingRef>
+			<OrderItem>
+				<OrderItemID>SQ_6DZS4V_AIR-1-2</OrderItemID>
+				<OwnerCode>SQ</OwnerCode>
+				<StatusCode>NOT ENTITLED</StatusCode>
+				<PriceGuaranteeTimeLimitDateTime>2024-12-26T23:00:00Z</PriceGuaranteeTimeLimitDateTime>
+				<FareDetail>
+					<PassengerRefs>PAX2</PassengerRefs>
+					<Price>
+						<TotalAmount>
+							<DetailCurrencyPrice>
+								<Total Code="EUR">666.49</Total>
+							</DetailCurrencyPrice>
+						</TotalAmount>
+						<BaseAmount Code="EUR">525.00</BaseAmount>
+						<Taxes>
+							<Total Code="EUR">141.49</Total>
+							<Breakdown>
+								<Tax>
+									<Amount Code="EUR">7.66</Amount>
+									<Nation>DE</Nation>
+									<TaxCode>L7</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">5.67</Amount>
+									<Nation>AE</Nation>
+									<TaxCode>OP</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">32.88</Amount>
+									<Nation>AD</Nation>
+									<TaxCode>SG</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">47.64</Amount>
+									<Nation>DP</Nation>
+									<TaxCode>BQ</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">47.64</Amount>
+									<Nation>DE</Nation>
+									<TaxCode>H9</TaxCode>
+								</Tax>
+							</Breakdown>
+						</Taxes>
+					</Price>
+					<FareComponent>
+						<FareBasis>
+							<FareBasisCode>
+								<Code>N16SGRPO</Code>
+							</FareBasisCode>
+							<CabinType>
+								<CabinTypeCode xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">5</CabinTypeCode>
+								<CabinTypeName xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">ECONOMY</CabinTypeName>
+							</CabinType>
+						</FareBasis>
+						<FareRules>
+							<Penalty CancelFeeInd="true" ChangeFeeInd="true">
+								<Details>
+									<Detail>
+										<Type>Cancel</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>Change</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>ANA-0</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-0</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ANA-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ANR-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>RVA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADR-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+								</Details>
+							</Penalty>
+						</FareRules>
+						<PriceClassRef>FF41</PriceClassRef>
+						<SegmentRefs>SEG1</SegmentRefs>
+					</FareComponent>
+					<FareComponent>
+						<FareBasis>
+							<FareBasisCode>
+								<Code>N16SGRPO</Code>
+							</FareBasisCode>
+							<CabinType>
+								<CabinTypeCode xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">5</CabinTypeCode>
+								<CabinTypeName xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">ECONOMY</CabinTypeName>
+							</CabinType>
+						</FareBasis>
+						<FareRules>
+							<Penalty CancelFeeInd="true" ChangeFeeInd="true">
+								<Details>
+									<Detail>
+										<Type>Cancel</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>Change</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>ANA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ANA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ANR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>RVA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+								</Details>
+							</Penalty>
+						</FareRules>
+						<PriceClassRef>FF41</PriceClassRef>
+						<SegmentRefs>SEG2</SegmentRefs>
+					</FareComponent>
+					<Remarks>
+						<Remark>FC-SIN SQ MLE Q7.55 272.04SQ SIN Q7.55 272.04NUC559.18END ROE1.323674</Remark>
+						<Remark>FE-PAX *M*CHNG FEE APPLY /REFUND FEE APPLY /NO SHOW FEE APPLY|00022665||</Remark>
+					</Remarks>
+				</FareDetail>
+				<FareDetail>
+					<PassengerRefs>PAX4</PassengerRefs>
+					<Price>
+						<TotalAmount>
+							<DetailCurrencyPrice>
+								<Total Code="EUR">666.49</Total>
+							</DetailCurrencyPrice>
+						</TotalAmount>
+						<BaseAmount Code="EUR">525.00</BaseAmount>
+						<Taxes>
+							<Total Code="EUR">141.49</Total>
+							<Breakdown>
+								<Tax>
+									<Amount Code="EUR">7.66</Amount>
+									<Nation>DE</Nation>
+									<TaxCode>L7</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">5.67</Amount>
+									<Nation>AE</Nation>
+									<TaxCode>OP</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">32.88</Amount>
+									<Nation>AD</Nation>
+									<TaxCode>SG</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">47.64</Amount>
+									<Nation>DP</Nation>
+									<TaxCode>BQ</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">47.64</Amount>
+									<Nation>DE</Nation>
+									<TaxCode>H9</TaxCode>
+								</Tax>
+							</Breakdown>
+						</Taxes>
+					</Price>
+					<FareComponent>
+						<FareBasis>
+							<FareBasisCode>
+								<Code>N16SGRPO</Code>
+							</FareBasisCode>
+							<CabinType>
+								<CabinTypeCode xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">5</CabinTypeCode>
+								<CabinTypeName xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">ECONOMY</CabinTypeName>
+							</CabinType>
+						</FareBasis>
+						<FareRules>
+							<Penalty CancelFeeInd="true" ChangeFeeInd="true">
+								<Details>
+									<Detail>
+										<Type>Cancel</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>Change</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>ANA-0</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-0</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ANA-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ANR-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>RVA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADR-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+								</Details>
+							</Penalty>
+						</FareRules>
+						<PriceClassRef>FF41</PriceClassRef>
+						<SegmentRefs>SEG1</SegmentRefs>
+					</FareComponent>
+					<FareComponent>
+						<FareBasis>
+							<FareBasisCode>
+								<Code>N16SGRPO</Code>
+							</FareBasisCode>
+							<CabinType>
+								<CabinTypeCode xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">5</CabinTypeCode>
+								<CabinTypeName xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">ECONOMY</CabinTypeName>
+							</CabinType>
+						</FareBasis>
+						<FareRules>
+							<Penalty CancelFeeInd="true" ChangeFeeInd="true">
+								<Details>
+									<Detail>
+										<Type>Cancel</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>Change</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>ANA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ANA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ANR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>RVA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+								</Details>
+							</Penalty>
+						</FareRules>
+						<PriceClassRef>FF41</PriceClassRef>
+						<SegmentRefs>SEG2</SegmentRefs>
+					</FareComponent>
+					<Remarks>
+						<Remark>FC-SIN SQ MLE Q7.55 272.04SQ SIN Q7.55 272.04NUC559.18END ROE1.323674</Remark>
+						<Remark>FE-PAX *M*CHNG FEE APPLY /REFUND FEE APPLY /NO SHOW FEE APPLY|00022665||</Remark>
+					</Remarks>
+				</FareDetail>
+				<FareDetail>
+					<PassengerRefs>PAX5</PassengerRefs>
+					<Price>
+						<TotalAmount>
+							<DetailCurrencyPrice>
+								<Total Code="EUR">539.49</Total>
+							</DetailCurrencyPrice>
+						</TotalAmount>
+						<BaseAmount Code="EUR">398.00</BaseAmount>
+						<Taxes>
+							<Total Code="EUR">141.49</Total>
+							<Breakdown>
+								<Tax>
+									<Amount Code="EUR">7.66</Amount>
+									<Nation>DE</Nation>
+									<TaxCode>L7</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">5.67</Amount>
+									<Nation>AE</Nation>
+									<TaxCode>OP</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">32.88</Amount>
+									<Nation>AD</Nation>
+									<TaxCode>SG</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">47.64</Amount>
+									<Nation>DP</Nation>
+									<TaxCode>BQ</TaxCode>
+								</Tax>
+								<Tax>
+									<Amount Code="EUR">47.64</Amount>
+									<Nation>DE</Nation>
+									<TaxCode>H9</TaxCode>
+								</Tax>
+							</Breakdown>
+						</Taxes>
+					</Price>
+					<FareComponent>
+						<FareBasis>
+							<FareBasisCode>
+								<Code>N16SGRPO</Code>
+							</FareBasisCode>
+							<CabinType>
+								<CabinTypeCode xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">5</CabinTypeCode>
+								<CabinTypeName xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">ECONOMY</CabinTypeName>
+							</CabinType>
+						</FareBasis>
+						<FareRules>
+							<Penalty CancelFeeInd="true" ChangeFeeInd="true">
+								<Details>
+									<Detail>
+										<Type>Cancel</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>Change</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>ANA-0</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-0</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ANA-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ANR-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>RVA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADR-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+								</Details>
+							</Penalty>
+						</FareRules>
+						<PriceClassRef>FF41</PriceClassRef>
+						<SegmentRefs>SEG1</SegmentRefs>
+					</FareComponent>
+					<FareComponent>
+						<FareBasis>
+							<FareBasisCode>
+								<Code>N16SGRPO</Code>
+							</FareBasisCode>
+							<CabinType>
+								<CabinTypeCode xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">5</CabinTypeCode>
+								<CabinTypeName xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">ECONOMY</CabinTypeName>
+							</CabinType>
+						</FareBasis>
+						<FareRules>
+							<Penalty CancelFeeInd="true" ChangeFeeInd="true">
+								<Details>
+									<Detail>
+										<Type>Cancel</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">142.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">234.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>Change</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>ANA-0</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ANA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ANR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>RVA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+								</Details>
+							</Penalty>
+						</FareRules>
+						<PriceClassRef>FF41</PriceClassRef>
+						<SegmentRefs>SEG2</SegmentRefs>
+					</FareComponent>
+					<Remarks>
+						<Remark>FC-SIN SQ MLE Q7.55 204.03SQ SIN Q7.55 204.03NUC423.16END ROE1.323674</Remark>
+						<Remark>FE-PAX *M*CHNG FEE APPLY /REFUND FEE APPLY /NO SHOW FEE APPLY|00022665||</Remark>
+					</Remarks>
+				</FareDetail>
+				<FareDetail>
+					<PassengerRefs>PAX3</PassengerRefs>
+					<Price>
+						<TotalAmount>
+							<DetailCurrencyPrice>
+								<Total Code="EUR">98.64</Total>
+							</DetailCurrencyPrice>
+						</TotalAmount>
+						<BaseAmount Code="EUR">51.00</BaseAmount>
+						<Taxes>
+							<Total Code="EUR">47.64</Total>
+							<Breakdown>
+								<Tax>
+									<Amount Code="EUR">47.64</Amount>
+									<Nation>DE</Nation>
+									<TaxCode>H9</TaxCode>
+								</Tax>
+							</Breakdown>
+						</Taxes>
+					</Price>
+					<FareComponent>
+						<FareBasis>
+							<FareBasisCode>
+								<Code>N16SGRPO</Code>
+							</FareBasisCode>
+							<CabinType>
+								<CabinTypeCode xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">5</CabinTypeCode>
+								<CabinTypeName xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">ECONOMY</CabinTypeName>
+							</CabinType>
+						</FareBasis>
+						<FareRules>
+							<Penalty CancelFeeInd="true" ChangeFeeInd="true">
+								<Details>
+									<Detail>
+										<Type>Cancel</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>Change</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>ANA-0</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-0</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ANA-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ANR-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>RVA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADR-0</Type>
+										<Application>CHA</Application>
+									</Detail>
+								</Details>
+							</Penalty>
+						</FareRules>
+						<PriceClassRef>FF41</PriceClassRef>
+						<SegmentRefs>SEG1</SegmentRefs>
+					</FareComponent>
+					<FareComponent>
+						<FareBasis>
+							<FareBasisCode>
+								<Code>N16SGRPO</Code>
+							</FareBasisCode>
+							<CabinType>
+								<CabinTypeCode xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">5</CabinTypeCode>
+								<CabinTypeName xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">ECONOMY</CabinTypeName>
+							</CabinType>
+						</FareBasis>
+						<FareRules>
+							<Penalty CancelFeeInd="true" ChangeFeeInd="true">
+								<Details>
+									<Detail>
+										<Type>Cancel</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>Change</Type>
+										<Amounts>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ADM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>ADX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount with sale currency</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>ANM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>ANX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount after departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BDM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">50.00</CurrencyAmountValue>
+												<AmountApplication>BDX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNC</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNI</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">0.00</CurrencyAmountValue>
+												<AmountApplication>BNM</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund minimum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNT</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount for the ticket before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNU</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Revalidation maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+											<Amount>
+												<CurrencyAmountValue Code="EUR">93.00</CurrencyAmountValue>
+												<AmountApplication>BNX</AmountApplication>
+												<ApplicableFeeRemarks>
+													<Remark>Reissue/Refund maximum penalty amount before departure no show</Remark>
+												</ApplicableFeeRemarks>
+											</Amount>
+										</Amounts>
+									</Detail>
+									<Detail>
+										<Type>ANA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CAN</Application>
+									</Detail>
+									<Detail>
+										<Type>ANA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ANR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BNR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>RVA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>BDA-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+									<Detail>
+										<Type>ADR-1</Type>
+										<Application>CHA</Application>
+									</Detail>
+								</Details>
+							</Penalty>
+						</FareRules>
+						<PriceClassRef>FF41</PriceClassRef>
+						<SegmentRefs>SEG2</SegmentRefs>
+					</FareComponent>
+					<Remarks>
+						<Remark>FC-SIN SQ MLE27.20SQ SIN27.20NUC54.40END ROE1.323674</Remark>
+						<Remark>FE-INF *M*CHNG FEE APPLY /REFUND FEE APPLY /NO SHOW FEE APPLY|00022665||</Remark>
+					</Remarks>
+				</FareDetail>
+				<Price>
+					<TotalAmount CurCode="EUR">1971.11</TotalAmount>
+					<BaseAmount CurCode="EUR">1499.00</BaseAmount>
+					<TaxSummary>
+						<TotalTaxAmount CurCode="EUR">472.11</TotalTaxAmount>
+					</TaxSummary>
+				</Price>
+				<Service>
+					<ServiceID>SEG1_PAX3</ServiceID>
+					<StatusCode>HK</StatusCode>
+					<PaxRefID>PAX3</PaxRefID>
+					<ServiceAssociations>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>BAGALLOW_2</ServiceDefinitionRefID>
+							<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						</ServiceDefinitionRef>
+					</ServiceAssociations>
+				</Service>
+				<Service>
+					<ServiceID>SEG1_PAX2</ServiceID>
+					<StatusCode>HK</StatusCode>
+					<PaxRefID>PAX2</PaxRefID>
+					<ServiceAssociations>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+							<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						</ServiceDefinitionRef>
+					</ServiceAssociations>
+				</Service>
+				<Service>
+					<ServiceID>SEG1_PAX4</ServiceID>
+					<StatusCode>HK</StatusCode>
+					<PaxRefID>PAX4</PaxRefID>
+					<ServiceAssociations>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+							<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						</ServiceDefinitionRef>
+					</ServiceAssociations>
+				</Service>
+				<Service>
+					<ServiceID>SEG1_PAX5</ServiceID>
+					<StatusCode>HK</StatusCode>
+					<PaxRefID>PAX5</PaxRefID>
+					<ServiceAssociations>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+							<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+						</ServiceDefinitionRef>
+					</ServiceAssociations>
+				</Service>
+				<Service>
+					<ServiceID>SEG2_PAX3</ServiceID>
+					<StatusCode>HK</StatusCode>
+					<PaxRefID>PAX3</PaxRefID>
+					<ServiceAssociations>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>BAGALLOW_2</ServiceDefinitionRefID>
+							<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+						</ServiceDefinitionRef>
+					</ServiceAssociations>
+				</Service>
+				<Service>
+					<ServiceID>SEG2_PAX2</ServiceID>
+					<StatusCode>HK</StatusCode>
+					<PaxRefID>PAX2</PaxRefID>
+					<ServiceAssociations>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+							<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+						</ServiceDefinitionRef>
+					</ServiceAssociations>
+				</Service>
+				<Service>
+					<ServiceID>SEG2_PAX4</ServiceID>
+					<StatusCode>HK</StatusCode>
+					<PaxRefID>PAX4</PaxRefID>
+					<ServiceAssociations>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+							<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+						</ServiceDefinitionRef>
+					</ServiceAssociations>
+				</Service>
+				<Service>
+					<ServiceID>SEG2_PAX5</ServiceID>
+					<StatusCode>HK</StatusCode>
+					<PaxRefID>PAX5</PaxRefID>
+					<ServiceAssociations>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>BAGALLOW_1</ServiceDefinitionRefID>
+							<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+						</ServiceDefinitionRef>
+					</ServiceAssociations>
+				</Service>
+			</OrderItem>
+			<TotalPrice>
+				<TotalAmount CurCode="EUR">1971.11</TotalAmount>
+				<BaseAmount CurCode="EUR">1499.00</BaseAmount>
+				<TaxSummary>
+					<TotalTaxAmount CurCode="EUR">472.11</TotalTaxAmount>
+				</TaxSummary>
+			</TotalPrice>
+		</Order>
+	</Response>
+</OrderViewRS>

@@ -1,0 +1,1894 @@
+<ns3:IATA_OrderViewRS xmlns:ns3="http://www.iata.org/IATA/2015/00/2018.2/IATA_OrderViewRS" xmlns="http://www.iata.org/IATA/2015/00/2018.2/IATA_OrderCreateRQ" xmlns:ns2="http://www.iata.org/IATA/2015/EASD/00/PassengerSalesTaxRegistration" xmlns:ns4="http://www.iata.org/IATA/2015/00/BP/2018.1/PaymentMethod_v1.0" xmlns:ns5="http://www.iata.org/IATA/2015/00/BP/2018.1/SecurePayment_v1.0" xmlns:ns6="http://www.iata.org/IATA/2015/EASD/00/AdditionnalServiceInformation" xmlns:ns7="http://www.af-klm.com/services/common/SystemFault-v1/xsd">
+	<ns3:Response>
+		<ns3:DataLists>
+			<ns3:BaggageAllowanceList>
+				<ns3:BaggageAllowance>
+					<ns3:BaggageAllowanceID>BA1_CHECKED</ns3:BaggageAllowanceID>
+					<ns3:PieceAllowance>
+						<ns3:ApplicablePartyText>Traveler</ns3:ApplicablePartyText>
+						<ns3:TotalQty>0</ns3:TotalQty>
+					</ns3:PieceAllowance>
+					<ns3:TypeCode>Checked</ns3:TypeCode>
+				</ns3:BaggageAllowance>
+				<ns3:BaggageAllowance>
+					<ns3:BaggageAllowanceID>BA1_CHECKED_INF</ns3:BaggageAllowanceID>
+					<ns3:PieceAllowance>
+						<ns3:ApplicablePartyText>Traveler</ns3:ApplicablePartyText>
+						<ns3:TotalQty>0</ns3:TotalQty>
+					</ns3:PieceAllowance>
+					<ns3:TypeCode>Checked</ns3:TypeCode>
+				</ns3:BaggageAllowance>
+				<ns3:BaggageAllowance>
+					<ns3:BaggageAllowanceID>BA7_CHECKED</ns3:BaggageAllowanceID>
+					<ns3:PieceAllowance>
+						<ns3:ApplicablePartyText>Traveler</ns3:ApplicablePartyText>
+						<ns3:TotalQty>0</ns3:TotalQty>
+					</ns3:PieceAllowance>
+					<ns3:TypeCode>Checked</ns3:TypeCode>
+				</ns3:BaggageAllowance>
+				<ns3:BaggageAllowance>
+					<ns3:BaggageAllowanceID>BA7_CHECKED_INF</ns3:BaggageAllowanceID>
+					<ns3:PieceAllowance>
+						<ns3:ApplicablePartyText>Traveler</ns3:ApplicablePartyText>
+						<ns3:TotalQty>0</ns3:TotalQty>
+					</ns3:PieceAllowance>
+					<ns3:TypeCode>Checked</ns3:TypeCode>
+				</ns3:BaggageAllowance>
+				<ns3:BaggageAllowance>
+					<ns3:BaggageAllowanceID>BA1_CARRY_ON</ns3:BaggageAllowanceID>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Length</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="IN">21.7</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Height</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="IN">13.8</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Width</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="IN">9.9</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Total Linear</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="IN">45.4</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Length</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="CM">55.0</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Height</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="CM">35.0</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Width</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="CM">25.0</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Total Linear</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="CM">115.0</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:PieceAllowance>
+						<ns3:ApplicablePartyText>Traveler</ns3:ApplicablePartyText>
+						<ns3:TotalQty>1</ns3:TotalQty>
+					</ns3:PieceAllowance>
+					<ns3:TypeCode>CarryOn</ns3:TypeCode>
+					<ns3:WeightAllowance>
+						<ns3:MaximumWeightMeasure UnitCode="KG">12.0</ns3:MaximumWeightMeasure>
+					</ns3:WeightAllowance>
+					<ns3:WeightAllowance>
+						<ns3:MaximumWeightMeasure UnitCode="LBS">26.0</ns3:MaximumWeightMeasure>
+					</ns3:WeightAllowance>
+				</ns3:BaggageAllowance>
+				<ns3:BaggageAllowance>
+					<ns3:BaggageAllowanceID>BA7_CARRY_ON</ns3:BaggageAllowanceID>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Length</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="IN">21.7</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Height</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="IN">13.8</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Width</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="IN">9.9</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Total Linear</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="IN">45.4</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Length</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="CM">55.0</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Height</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="CM">35.0</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Width</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="CM">25.0</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:DimensionAllowance>
+						<ns3:BaggageDimensionCategory>Total Linear</ns3:BaggageDimensionCategory>
+						<ns3:MaxMeasure UnitCode="CM">115.0</ns3:MaxMeasure>
+					</ns3:DimensionAllowance>
+					<ns3:PieceAllowance>
+						<ns3:ApplicablePartyText>Traveler</ns3:ApplicablePartyText>
+						<ns3:TotalQty>1</ns3:TotalQty>
+					</ns3:PieceAllowance>
+					<ns3:TypeCode>CarryOn</ns3:TypeCode>
+					<ns3:WeightAllowance>
+						<ns3:MaximumWeightMeasure UnitCode="KG">12.0</ns3:MaximumWeightMeasure>
+					</ns3:WeightAllowance>
+					<ns3:WeightAllowance>
+						<ns3:MaximumWeightMeasure UnitCode="LBS">26.0</ns3:MaximumWeightMeasure>
+					</ns3:WeightAllowance>
+				</ns3:BaggageAllowance>
+			</ns3:BaggageAllowanceList>
+			<ns3:ContactInfoList>
+				<ns3:ContactInfo>
+					<ns3:ContactInfoID>CTC1</ns3:ContactInfoID>
+					<ns3:EmailAddress>
+						<ns3:EmailAddressText>name_surname_adt@mymail.com</ns3:EmailAddressText>
+					</ns3:EmailAddress>
+					<ns3:Phone>
+						<ns3:PhoneNumber>33395035621</ns3:PhoneNumber>
+					</ns3:Phone>
+					<ns3:PostalAddress>
+						<ns3:CityName>NICE</ns3:CityName>
+						<ns3:CountryName>FR</ns3:CountryName>
+						<ns3:LabelText>AddressAtOrigin</ns3:LabelText>
+						<ns3:PostalCode>75185</ns3:PostalCode>
+						<ns3:StreetText>87 RUE RGTHGL</ns3:StreetText>
+					</ns3:PostalAddress>
+					<ns3:PostalAddress>
+						<ns3:CityName>ATLANTA</ns3:CityName>
+						<ns3:CountryName>US</ns3:CountryName>
+						<ns3:LabelText>AddressAtDestination</ns3:LabelText>
+						<ns3:PostalCode>65522</ns3:PostalCode>
+						<ns3:StreetText>59 AV XDSAFV</ns3:StreetText>
+					</ns3:PostalAddress>
+				</ns3:ContactInfo>
+				<ns3:ContactInfo>
+					<ns3:ContactInfoID>CTC2</ns3:ContactInfoID>
+					<ns3:EmailAddress>
+						<ns3:EmailAddressText>name_surname_adt@mymail.com</ns3:EmailAddressText>
+					</ns3:EmailAddress>
+					<ns3:Phone>
+						<ns3:PhoneNumber>33395035621</ns3:PhoneNumber>
+					</ns3:Phone>
+					<ns3:PostalAddress>
+						<ns3:CityName>NICE</ns3:CityName>
+						<ns3:CountryName>FR</ns3:CountryName>
+						<ns3:LabelText>AddressAtOrigin</ns3:LabelText>
+						<ns3:PostalCode>75010</ns3:PostalCode>
+						<ns3:StreetText>76 RUE AQCXDS</ns3:StreetText>
+					</ns3:PostalAddress>
+					<ns3:PostalAddress>
+						<ns3:CityName>ATLANTA</ns3:CityName>
+						<ns3:CountryName>US</ns3:CountryName>
+						<ns3:LabelText>AddressAtDestination</ns3:LabelText>
+						<ns3:PostalCode>59330</ns3:PostalCode>
+						<ns3:StreetText>57 AV CBYJKL</ns3:StreetText>
+					</ns3:PostalAddress>
+				</ns3:ContactInfo>
+				<ns3:ContactInfo>
+					<ns3:ContactInfoID>CTC3</ns3:ContactInfoID>
+					<ns3:EmailAddress>
+						<ns3:EmailAddressText>name_surname_chd@mymail.com</ns3:EmailAddressText>
+					</ns3:EmailAddress>
+					<ns3:Phone>
+						<ns3:PhoneNumber>33219551701</ns3:PhoneNumber>
+					</ns3:Phone>
+					<ns3:PostalAddress>
+						<ns3:CityName>NICE</ns3:CityName>
+						<ns3:CountryName>FR</ns3:CountryName>
+						<ns3:LabelText>AddressAtOrigin</ns3:LabelText>
+						<ns3:PostalCode>75136</ns3:PostalCode>
+						<ns3:StreetText>86 RUE CXDSAF</ns3:StreetText>
+					</ns3:PostalAddress>
+					<ns3:PostalAddress>
+						<ns3:CityName>ATLANTA</ns3:CityName>
+						<ns3:CountryName>US</ns3:CountryName>
+						<ns3:LabelText>AddressAtDestination</ns3:LabelText>
+						<ns3:PostalCode>56989</ns3:PostalCode>
+						<ns3:StreetText>58 AV CXDSAF</ns3:StreetText>
+					</ns3:PostalAddress>
+				</ns3:ContactInfo>
+				<ns3:ContactInfo>
+					<ns3:ContactInfoID>CTC4</ns3:ContactInfoID>
+					<ns3:PostalAddress>
+						<ns3:CityName>NICE</ns3:CityName>
+						<ns3:CountryName>FR</ns3:CountryName>
+						<ns3:LabelText>AddressAtOrigin</ns3:LabelText>
+						<ns3:PostalCode>75045</ns3:PostalCode>
+						<ns3:StreetText>72 RUE FRGTHG</ns3:StreetText>
+					</ns3:PostalAddress>
+					<ns3:PostalAddress>
+						<ns3:CityName>ATLANTA</ns3:CityName>
+						<ns3:CountryName>US</ns3:CountryName>
+						<ns3:LabelText>AddressAtDestination</ns3:LabelText>
+						<ns3:PostalCode>57683</ns3:PostalCode>
+						<ns3:StreetText>57 AV VREDFR</ns3:StreetText>
+					</ns3:PostalAddress>
+				</ns3:ContactInfo>
+			</ns3:ContactInfoList>
+			<ns3:OriginDestList>
+				<ns3:OriginDest>
+					<ns3:DestCode>HEL</ns3:DestCode>
+					<ns3:OriginCode>CDG</ns3:OriginCode>
+					<ns3:OriginDestID>OD1</ns3:OriginDestID>
+					<ns3:PaxJourneyRefID>PJ1</ns3:PaxJourneyRefID>
+				</ns3:OriginDest>
+				<ns3:OriginDest>
+					<ns3:DestCode>CDG</ns3:DestCode>
+					<ns3:OriginCode>HEL</ns3:OriginCode>
+					<ns3:OriginDestID>OD7</ns3:OriginDestID>
+					<ns3:PaxJourneyRefID>PJ7</ns3:PaxJourneyRefID>
+				</ns3:OriginDest>
+			</ns3:OriginDestList>
+			<ns3:PaxJourneyList>
+				<ns3:PaxJourney>
+					<ns3:Duration>P0Y0M0DT3H0M0.000S</ns3:Duration>
+					<ns3:PaxJourneyID>PJ1</ns3:PaxJourneyID>
+					<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+				</ns3:PaxJourney>
+				<ns3:PaxJourney>
+					<ns3:Duration>P0Y0M0DT3H25M0.000S</ns3:Duration>
+					<ns3:PaxJourneyID>PJ7</ns3:PaxJourneyID>
+					<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+				</ns3:PaxJourney>
+			</ns3:PaxJourneyList>
+			<ns3:PaxList>
+				<ns3:Pax>
+					<ns3:ContactInfoRefID>CTC1</ns3:ContactInfoRefID>
+					<ns3:Individual>
+						<ns3:Birthdate>1997-06-20</ns3:Birthdate>
+						<ns3:GivenName>ALMDSA</ns3:GivenName>
+						<ns3:IndividualID>ID1</ns3:IndividualID>
+						<ns3:Surname>NDCX</ns3:Surname>
+						<ns3:TitleName>MS</ns3:TitleName>
+					</ns3:Individual>
+					<ns3:PaxID>PAX1</ns3:PaxID>
+					<ns3:PaxRefID>PAX4</ns3:PaxRefID>
+					<ns3:PTC>ADT</ns3:PTC>
+				</ns3:Pax>
+				<ns3:Pax>
+					<ns3:ContactInfoRefID>CTC2</ns3:ContactInfoRefID>
+					<ns3:Individual>
+						<ns3:Birthdate>1990-06-20</ns3:Birthdate>
+						<ns3:GivenName>AJUGTH</ns3:GivenName>
+						<ns3:IndividualID>ID2</ns3:IndividualID>
+						<ns3:Surname>NDCX</ns3:Surname>
+						<ns3:TitleName>MRS</ns3:TitleName>
+					</ns3:Individual>
+					<ns3:PaxID>PAX2</ns3:PaxID>
+					<ns3:PTC>ADT</ns3:PTC>
+				</ns3:Pax>
+				<ns3:Pax>
+					<ns3:ContactInfoRefID>CTC3</ns3:ContactInfoRefID>
+					<ns3:Individual>
+						<ns3:Birthdate>2015-01-13</ns3:Birthdate>
+						<ns3:GivenName>CNFHED</ns3:GivenName>
+						<ns3:IndividualID>ID3</ns3:IndividualID>
+						<ns3:Surname>NDCX</ns3:Surname>
+						<ns3:TitleName>MR</ns3:TitleName>
+					</ns3:Individual>
+					<ns3:PaxID>PAX3</ns3:PaxID>
+					<ns3:PTC>CHD</ns3:PTC>
+				</ns3:Pax>
+				<ns3:Pax>
+					<ns3:ContactInfoRefID>CTC4</ns3:ContactInfoRefID>
+					<ns3:Individual>
+						<ns3:Birthdate>2023-11-14</ns3:Birthdate>
+						<ns3:GivenName>FVCBTH</ns3:GivenName>
+						<ns3:IndividualID>ID4</ns3:IndividualID>
+						<ns3:Surname>NDCX</ns3:Surname>
+					</ns3:Individual>
+					<ns3:PaxID>PAX4</ns3:PaxID>
+					<ns3:PTC>INF</ns3:PTC>
+				</ns3:Pax>
+			</ns3:PaxList>
+			<ns3:PaxSegmentList>
+				<ns3:PaxSegment>
+					<ns3:Arrival>
+						<ns3:AircraftScheduledDateTime>2025-02-07T16:00:00</ns3:AircraftScheduledDateTime>
+						<ns3:IATALocationCode>HEL</ns3:IATALocationCode>
+					</ns3:Arrival>
+					<ns3:CabinType>
+						<ns3:CabinTypeCode>Y</ns3:CabinTypeCode>
+						<ns3:CabinTypeName>ECONOMY</ns3:CabinTypeName>
+					</ns3:CabinType>
+					<ns3:DatedOperatingLeg>
+						<ns3:Arrival/>
+						<ns3:ChangeofGaugeInd>false</ns3:ChangeofGaugeInd>
+						<ns3:DatedOperatingLegID>LEG1</ns3:DatedOperatingLegID>
+						<ns3:Dep/>
+						<ns3:IATAAircraftType>
+							<ns3:IATAAircraftTypeCode>223</ns3:IATAAircraftTypeCode>
+						</ns3:IATAAircraftType>
+					</ns3:DatedOperatingLeg>
+					<ns3:Dep>
+						<ns3:AircraftScheduledDateTime>2025-02-07T12:00:00</ns3:AircraftScheduledDateTime>
+						<ns3:IATALocationCode>CDG</ns3:IATALocationCode>
+						<ns3:TerminalName>2F</ns3:TerminalName>
+					</ns3:Dep>
+					<ns3:MarketingCarrierInfo>
+						<ns3:CarrierDesigCode>AF</ns3:CarrierDesigCode>
+						<ns3:MarketingCarrierFlightNumberText>1070</ns3:MarketingCarrierFlightNumberText>
+						<ns3:RBDCode>R</ns3:RBDCode>
+					</ns3:MarketingCarrierInfo>
+					<ns3:OperatingCarrierInfo>
+						<ns3:CarrierDesigCode>AF</ns3:CarrierDesigCode>
+					</ns3:OperatingCarrierInfo>
+					<ns3:PaxSegmentID>SEG1</ns3:PaxSegmentID>
+				</ns3:PaxSegment>
+				<ns3:PaxSegment>
+					<ns3:Arrival>
+						<ns3:AircraftScheduledDateTime>2025-03-17T19:20:00</ns3:AircraftScheduledDateTime>
+						<ns3:IATALocationCode>CDG</ns3:IATALocationCode>
+						<ns3:TerminalName>2F</ns3:TerminalName>
+					</ns3:Arrival>
+					<ns3:CabinType>
+						<ns3:CabinTypeCode>Y</ns3:CabinTypeCode>
+						<ns3:CabinTypeName>ECONOMY</ns3:CabinTypeName>
+					</ns3:CabinType>
+					<ns3:DatedOperatingLeg>
+						<ns3:Arrival/>
+						<ns3:ChangeofGaugeInd>false</ns3:ChangeofGaugeInd>
+						<ns3:DatedOperatingLegID>LEG7</ns3:DatedOperatingLegID>
+						<ns3:Dep/>
+						<ns3:IATAAircraftType>
+							<ns3:IATAAircraftTypeCode>223</ns3:IATAAircraftTypeCode>
+						</ns3:IATAAircraftType>
+					</ns3:DatedOperatingLeg>
+					<ns3:Dep>
+						<ns3:AircraftScheduledDateTime>2025-03-17T16:55:00</ns3:AircraftScheduledDateTime>
+						<ns3:IATALocationCode>HEL</ns3:IATALocationCode>
+					</ns3:Dep>
+					<ns3:MarketingCarrierInfo>
+						<ns3:CarrierDesigCode>AF</ns3:CarrierDesigCode>
+						<ns3:MarketingCarrierFlightNumberText>1071</ns3:MarketingCarrierFlightNumberText>
+						<ns3:RBDCode>R</ns3:RBDCode>
+					</ns3:MarketingCarrierInfo>
+					<ns3:OperatingCarrierInfo>
+						<ns3:CarrierDesigCode>AF</ns3:CarrierDesigCode>
+					</ns3:OperatingCarrierInfo>
+					<ns3:PaxSegmentID>SEG7</ns3:PaxSegmentID>
+				</ns3:PaxSegment>
+			</ns3:PaxSegmentList>
+			<ns3:PriceClassList>
+				<ns3:PriceClass>
+					<ns3:CabinType>
+						<ns3:CabinTypeCode>Y</ns3:CabinTypeCode>
+						<ns3:CabinTypeName>ECONOMY</ns3:CabinTypeName>
+					</ns3:CabinType>
+					<ns3:FareBasisCode>RYS02NLA</ns3:FareBasisCode>
+					<ns3:Name>Light</ns3:Name>
+					<ns3:PriceClassID>PC11</ns3:PriceClassID>
+				</ns3:PriceClass>
+			</ns3:PriceClassList>
+			<ns3:ServiceDefinitionList>
+				<ns3:ServiceDefinition>
+					<ns3:Desc>
+						<ns3:DescText>Bag Included</ns3:DescText>
+					</ns3:Desc>
+					<ns3:Name>Bag Included</ns3:Name>
+					<ns3:ServiceDefinitionAssociation>
+						<ns3:BaggageAllowanceRefID>BA1_CHECKED</ns3:BaggageAllowanceRefID>
+					</ns3:ServiceDefinitionAssociation>
+					<ns3:ServiceDefinitionID>SRVID1_BI</ns3:ServiceDefinitionID>
+				</ns3:ServiceDefinition>
+				<ns3:ServiceDefinition>
+					<ns3:Desc>
+						<ns3:DescText>Bag Included</ns3:DescText>
+					</ns3:Desc>
+					<ns3:Name>Bag Included</ns3:Name>
+					<ns3:ServiceDefinitionAssociation>
+						<ns3:BaggageAllowanceRefID>BA1_CHECKED_INF</ns3:BaggageAllowanceRefID>
+					</ns3:ServiceDefinitionAssociation>
+					<ns3:ServiceDefinitionID>SRVID1_BI_INF</ns3:ServiceDefinitionID>
+				</ns3:ServiceDefinition>
+				<ns3:ServiceDefinition>
+					<ns3:Desc>
+						<ns3:DescText>Bag Included</ns3:DescText>
+					</ns3:Desc>
+					<ns3:Name>Bag Included</ns3:Name>
+					<ns3:ServiceDefinitionAssociation>
+						<ns3:BaggageAllowanceRefID>BA7_CHECKED</ns3:BaggageAllowanceRefID>
+					</ns3:ServiceDefinitionAssociation>
+					<ns3:ServiceDefinitionID>SRVID7_BI</ns3:ServiceDefinitionID>
+				</ns3:ServiceDefinition>
+				<ns3:ServiceDefinition>
+					<ns3:Desc>
+						<ns3:DescText>Bag Included</ns3:DescText>
+					</ns3:Desc>
+					<ns3:Name>Bag Included</ns3:Name>
+					<ns3:ServiceDefinitionAssociation>
+						<ns3:BaggageAllowanceRefID>BA7_CHECKED_INF</ns3:BaggageAllowanceRefID>
+					</ns3:ServiceDefinitionAssociation>
+					<ns3:ServiceDefinitionID>SRVID7_BI_INF</ns3:ServiceDefinitionID>
+				</ns3:ServiceDefinition>
+				<ns3:ServiceDefinition>
+					<ns3:Desc>
+						<ns3:DescText>Carry On Bag</ns3:DescText>
+					</ns3:Desc>
+					<ns3:Name>Carry On Bag</ns3:Name>
+					<ns3:ServiceDefinitionAssociation>
+						<ns3:BaggageAllowanceRefID>BA1_CARRY_ON</ns3:BaggageAllowanceRefID>
+					</ns3:ServiceDefinitionAssociation>
+					<ns3:ServiceDefinitionID>SRVID1_CO</ns3:ServiceDefinitionID>
+				</ns3:ServiceDefinition>
+				<ns3:ServiceDefinition>
+					<ns3:Desc>
+						<ns3:DescText>Carry On Bag</ns3:DescText>
+					</ns3:Desc>
+					<ns3:Name>Carry On Bag</ns3:Name>
+					<ns3:ServiceDefinitionAssociation>
+						<ns3:BaggageAllowanceRefID>BA7_CARRY_ON</ns3:BaggageAllowanceRefID>
+					</ns3:ServiceDefinitionAssociation>
+					<ns3:ServiceDefinitionID>SRVID7_CO</ns3:ServiceDefinitionID>
+				</ns3:ServiceDefinition>
+			</ns3:ServiceDefinitionList>
+		</ns3:DataLists>
+		<ns3:Order>
+			<ns3:BookingRef>
+				<ns3:BookingEntity>
+					<ns3:Carrier>
+						<ns3:AirlineDesigCode>AF</ns3:AirlineDesigCode>
+					</ns3:Carrier>
+				</ns3:BookingEntity>
+				<ns3:BookingID>WSHK5J</ns3:BookingID>
+			</ns3:BookingRef>
+			<ns3:OrderID>AF057AV0F3CAF</ns3:OrderID>
+			<ns3:OrderItem>
+				<ns3:Disclosure>
+					<ns3:Desc>
+						<ns3:DescText>BookingID</ns3:DescText>
+					</ns3:Desc>
+					<ns3:DisclosureID>WSHK5J</ns3:DisclosureID>
+				</ns3:Disclosure>
+				<ns3:FareDetail>
+					<ns3:FareComponent>
+						<ns3:FareTypeCode>70J</ns3:FareTypeCode>
+					</ns3:FareComponent>
+					<ns3:FareComponent>
+						<ns3:FareRule>
+							<ns3:Penalty>
+								<ns3:AppCode>NOS</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>NoShow</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>PDE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Cancellation</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>ADE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Cancellation</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>PDE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Change</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>ADE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Change</ns3:TypeCode>
+							</ns3:Penalty>
+						</ns3:FareRule>
+						<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+						<ns3:PriceClassRefID>PC11</ns3:PriceClassRefID>
+					</ns3:FareComponent>
+					<ns3:FareComponent>
+						<ns3:FareRule>
+							<ns3:Penalty>
+								<ns3:AppCode>NOS</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>NoShow</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>PDE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Cancellation</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>ADE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Cancellation</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>PDE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Change</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>ADE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Change</ns3:TypeCode>
+							</ns3:Penalty>
+						</ns3:FareRule>
+						<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+						<ns3:PriceClassRefID>PC11</ns3:PriceClassRefID>
+					</ns3:FareComponent>
+					<ns3:FarePriceType>
+						<ns3:FarePriceTypeCode>70J</ns3:FarePriceTypeCode>
+						<ns3:Price>
+							<ns3:BaseAmount CurCode="EUR">167.00</ns3:BaseAmount>
+							<ns3:LoyaltyUnitAmount CurCode="MILES">696.00</ns3:LoyaltyUnitAmount>
+							<ns3:Surcharge>
+								<ns3:Breakdown>
+									<ns3:Amount CurCode="EUR">3.48</ns3:Amount>
+									<ns3:DescText>AggregatorFee</ns3:DescText>
+									<ns3:DesigText>T02</ns3:DesigText>
+								</ns3:Breakdown>
+							</ns3:Surcharge>
+							<ns3:TaxSummary>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>TI</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">12.80</ns3:Amount>
+									<ns3:TaxCode>FR</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>AP</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">5.99</ns3:Amount>
+									<ns3:TaxCode>DQ</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>AP</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">13.45</ns3:Amount>
+									<ns3:TaxCode>QX</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>EB</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">1.13</ns3:Amount>
+									<ns3:TaxCode>IZ</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>DP</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">11.71</ns3:Amount>
+									<ns3:TaxCode>FI</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>VA</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">3.00</ns3:Amount>
+									<ns3:TaxCode>YR</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>SE</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">5.05</ns3:Amount>
+									<ns3:TaxCode>FR</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>VC</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">1.50</ns3:Amount>
+									<ns3:TaxCode>O4</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>AV</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">0.90</ns3:Amount>
+									<ns3:TaxCode>XU</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:TotalTaxAmount CurCode="EUR">55.53</ns3:TotalTaxAmount>
+							</ns3:TaxSummary>
+							<ns3:TotalAmount CurCode="EUR">226.01</ns3:TotalAmount>
+						</ns3:Price>
+					</ns3:FarePriceType>
+					<ns3:PaxRefID>PAX1</ns3:PaxRefID>
+					<ns3:PaxRefID>PAX2</ns3:PaxRefID>
+				</ns3:FareDetail>
+				<ns3:OrderItemID>c01ce0e0-19c1-4847-a2bf-ecb4328629a1</ns3:OrderItemID>
+				<ns3:PaymentTimeLimitDateTime>2024-12-26T12:00:00Z</ns3:PaymentTimeLimitDateTime>
+				<ns3:Price>
+					<ns3:BaseAmount CurCode="EUR">334.00</ns3:BaseAmount>
+					<ns3:Surcharge>
+						<ns3:Breakdown>
+							<ns3:Amount CurCode="EUR">6.96</ns3:Amount>
+							<ns3:DescText>AggregatorFee</ns3:DescText>
+							<ns3:DesigText>T02</ns3:DesigText>
+						</ns3:Breakdown>
+					</ns3:Surcharge>
+					<ns3:TaxSummary>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>TI</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">25.60</ns3:Amount>
+							<ns3:TaxCode>FR</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>AP</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">11.98</ns3:Amount>
+							<ns3:TaxCode>DQ</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>AP</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">26.90</ns3:Amount>
+							<ns3:TaxCode>QX</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>EB</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">2.26</ns3:Amount>
+							<ns3:TaxCode>IZ</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>DP</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">23.42</ns3:Amount>
+							<ns3:TaxCode>FI</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>VA</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">6.00</ns3:Amount>
+							<ns3:TaxCode>YR</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>SE</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">10.10</ns3:Amount>
+							<ns3:TaxCode>FR</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>VC</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">3.00</ns3:Amount>
+							<ns3:TaxCode>O4</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>AV</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">1.80</ns3:Amount>
+							<ns3:TaxCode>XU</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:TotalTaxAmount CurCode="EUR">111.06</ns3:TotalTaxAmount>
+					</ns3:TaxSummary>
+					<ns3:TotalAmount CurCode="EUR">452.02</ns3:TotalAmount>
+				</ns3:Price>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX1</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRV_PAX1_SEG1</ns3:ServiceID>
+					<ns3:StatusCode>HK</ns3:StatusCode>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX1</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID1_BI</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID1_BI_PAX1_SEG1</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX1</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID1_CO</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID1_CO_PAX1_SEG1</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX1</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRV_PAX1_SEG7</ns3:ServiceID>
+					<ns3:StatusCode>HK</ns3:StatusCode>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX1</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID7_BI</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID7_BI_PAX1_SEG7</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX1</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID7_CO</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID7_CO_PAX1_SEG7</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX2</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRV_PAX2_SEG1</ns3:ServiceID>
+					<ns3:StatusCode>HK</ns3:StatusCode>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX2</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID1_BI</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID1_BI_PAX2_SEG1</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX2</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID1_CO</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID1_CO_PAX2_SEG1</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX2</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRV_PAX2_SEG7</ns3:ServiceID>
+					<ns3:StatusCode>HK</ns3:StatusCode>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX2</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID7_BI</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID7_BI_PAX2_SEG7</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX2</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID7_CO</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID7_CO_PAX2_SEG7</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:StatusCode>K</ns3:StatusCode>
+			</ns3:OrderItem>
+			<ns3:OrderItem>
+				<ns3:Disclosure>
+					<ns3:Desc>
+						<ns3:DescText>BookingID</ns3:DescText>
+					</ns3:Desc>
+					<ns3:DisclosureID>WSHK5J</ns3:DisclosureID>
+				</ns3:Disclosure>
+				<ns3:FareDetail>
+					<ns3:FareComponent>
+						<ns3:FareTypeCode>70J</ns3:FareTypeCode>
+					</ns3:FareComponent>
+					<ns3:FareComponent>
+						<ns3:FareRule>
+							<ns3:Penalty>
+								<ns3:AppCode>NOS</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>NoShow</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>PDE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Cancellation</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>ADE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Cancellation</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>PDE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Change</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>ADE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Change</ns3:TypeCode>
+							</ns3:Penalty>
+						</ns3:FareRule>
+						<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+						<ns3:PriceClassRefID>PC11</ns3:PriceClassRefID>
+					</ns3:FareComponent>
+					<ns3:FareComponent>
+						<ns3:FareRule>
+							<ns3:Penalty>
+								<ns3:AppCode>NOS</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>NoShow</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>PDE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Cancellation</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>ADE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Cancellation</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>PDE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Change</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>ADE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Change</ns3:TypeCode>
+							</ns3:Penalty>
+						</ns3:FareRule>
+						<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+						<ns3:PriceClassRefID>PC11</ns3:PriceClassRefID>
+					</ns3:FareComponent>
+					<ns3:FarePriceType>
+						<ns3:FarePriceTypeCode>70J</ns3:FarePriceTypeCode>
+						<ns3:Price>
+							<ns3:BaseAmount CurCode="EUR">134.00</ns3:BaseAmount>
+							<ns3:LoyaltyUnitAmount CurCode="MILES">560.00</ns3:LoyaltyUnitAmount>
+							<ns3:Surcharge>
+								<ns3:Breakdown>
+									<ns3:Amount CurCode="EUR">3.48</ns3:Amount>
+									<ns3:DescText>AggregatorFee</ns3:DescText>
+									<ns3:DesigText>T02</ns3:DesigText>
+								</ns3:Breakdown>
+							</ns3:Surcharge>
+							<ns3:TaxSummary>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>TI</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">12.80</ns3:Amount>
+									<ns3:TaxCode>FR</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>AP</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">5.99</ns3:Amount>
+									<ns3:TaxCode>DQ</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>AP</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">13.45</ns3:Amount>
+									<ns3:TaxCode>QX</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>EB</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">1.13</ns3:Amount>
+									<ns3:TaxCode>IZ</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>DP</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">11.71</ns3:Amount>
+									<ns3:TaxCode>FI</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>VA</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">3.00</ns3:Amount>
+									<ns3:TaxCode>YR</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>SE</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">5.05</ns3:Amount>
+									<ns3:TaxCode>FR</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>VC</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">1.50</ns3:Amount>
+									<ns3:TaxCode>O4</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:Tax>
+									<ns3:AddlTaxCode>AV</ns3:AddlTaxCode>
+									<ns3:Amount CurCode="EUR">0.90</ns3:Amount>
+									<ns3:TaxCode>XU</ns3:TaxCode>
+								</ns3:Tax>
+								<ns3:TotalTaxAmount CurCode="EUR">55.53</ns3:TotalTaxAmount>
+							</ns3:TaxSummary>
+							<ns3:TotalAmount CurCode="EUR">193.01</ns3:TotalAmount>
+						</ns3:Price>
+					</ns3:FarePriceType>
+					<ns3:PaxRefID>PAX3</ns3:PaxRefID>
+				</ns3:FareDetail>
+				<ns3:OrderItemID>a02b7ad8-b705-458e-90b3-24ac926271a6</ns3:OrderItemID>
+				<ns3:PaymentTimeLimitDateTime>2024-12-26T12:00:00Z</ns3:PaymentTimeLimitDateTime>
+				<ns3:Price>
+					<ns3:BaseAmount CurCode="EUR">134.00</ns3:BaseAmount>
+					<ns3:Surcharge>
+						<ns3:Breakdown>
+							<ns3:Amount CurCode="EUR">3.48</ns3:Amount>
+							<ns3:DescText>AggregatorFee</ns3:DescText>
+							<ns3:DesigText>T02</ns3:DesigText>
+						</ns3:Breakdown>
+					</ns3:Surcharge>
+					<ns3:TaxSummary>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>TI</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">12.80</ns3:Amount>
+							<ns3:TaxCode>FR</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>AP</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">5.99</ns3:Amount>
+							<ns3:TaxCode>DQ</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>AP</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">13.45</ns3:Amount>
+							<ns3:TaxCode>QX</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>EB</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">1.13</ns3:Amount>
+							<ns3:TaxCode>IZ</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>DP</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">11.71</ns3:Amount>
+							<ns3:TaxCode>FI</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>VA</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">3.00</ns3:Amount>
+							<ns3:TaxCode>YR</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>SE</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">5.05</ns3:Amount>
+							<ns3:TaxCode>FR</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>VC</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">1.50</ns3:Amount>
+							<ns3:TaxCode>O4</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:Tax>
+							<ns3:AddlTaxCode>AV</ns3:AddlTaxCode>
+							<ns3:Amount CurCode="EUR">0.90</ns3:Amount>
+							<ns3:TaxCode>XU</ns3:TaxCode>
+						</ns3:Tax>
+						<ns3:TotalTaxAmount CurCode="EUR">55.53</ns3:TotalTaxAmount>
+					</ns3:TaxSummary>
+					<ns3:TotalAmount CurCode="EUR">193.01</ns3:TotalAmount>
+				</ns3:Price>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX3</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRV_PAX3_SEG1</ns3:ServiceID>
+					<ns3:StatusCode>HK</ns3:StatusCode>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX3</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID1_BI</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID1_BI_PAX3_SEG1</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX3</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID1_CO</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID1_CO_PAX3_SEG1</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX3</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRV_PAX3_SEG7</ns3:ServiceID>
+					<ns3:StatusCode>HK</ns3:StatusCode>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX3</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID7_BI</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID7_BI_PAX3_SEG7</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX3</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID7_CO</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID7_CO_PAX3_SEG7</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:StatusCode>K</ns3:StatusCode>
+			</ns3:OrderItem>
+			<ns3:OrderItem>
+				<ns3:Disclosure>
+					<ns3:Desc>
+						<ns3:DescText>BookingID</ns3:DescText>
+					</ns3:Desc>
+					<ns3:DisclosureID>WSHK5J</ns3:DisclosureID>
+				</ns3:Disclosure>
+				<ns3:FareDetail>
+					<ns3:FareComponent>
+						<ns3:FareTypeCode>70J</ns3:FareTypeCode>
+					</ns3:FareComponent>
+					<ns3:FareComponent>
+						<ns3:FareRule>
+							<ns3:Penalty>
+								<ns3:AppCode>NOS</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>NoShow</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>PDE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Cancellation</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>ADE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Cancellation</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>PDE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Change</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>ADE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Change</ns3:TypeCode>
+							</ns3:Penalty>
+						</ns3:FareRule>
+						<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+						<ns3:PriceClassRefID>PC11</ns3:PriceClassRefID>
+					</ns3:FareComponent>
+					<ns3:FareComponent>
+						<ns3:FareRule>
+							<ns3:Penalty>
+								<ns3:AppCode>NOS</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>NoShow</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>PDE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Cancellation</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>ADE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Cancellation</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>PDE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Change</ns3:TypeCode>
+							</ns3:Penalty>
+							<ns3:Penalty>
+								<ns3:AppCode>ADE</ns3:AppCode>
+								<ns3:DescText>NAV</ns3:DescText>
+								<ns3:TypeCode>Change</ns3:TypeCode>
+							</ns3:Penalty>
+						</ns3:FareRule>
+						<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+						<ns3:PriceClassRefID>PC11</ns3:PriceClassRefID>
+					</ns3:FareComponent>
+					<ns3:FarePriceType>
+						<ns3:FarePriceTypeCode>70J</ns3:FarePriceTypeCode>
+						<ns3:Price>
+							<ns3:BaseAmount CurCode="EUR">17.00</ns3:BaseAmount>
+							<ns3:TaxSummary>
+								<ns3:TotalTaxAmount CurCode="EUR">0.00</ns3:TotalTaxAmount>
+							</ns3:TaxSummary>
+							<ns3:TotalAmount CurCode="EUR">17.00</ns3:TotalAmount>
+						</ns3:Price>
+					</ns3:FarePriceType>
+					<ns3:PaxRefID>PAX4</ns3:PaxRefID>
+				</ns3:FareDetail>
+				<ns3:OrderItemID>e0219081-fa4e-410b-a176-5c0cd817782a</ns3:OrderItemID>
+				<ns3:PaymentTimeLimitDateTime>2024-12-26T12:00:00Z</ns3:PaymentTimeLimitDateTime>
+				<ns3:Price>
+					<ns3:BaseAmount CurCode="EUR">17.00</ns3:BaseAmount>
+					<ns3:TaxSummary>
+						<ns3:TotalTaxAmount CurCode="EUR">0.00</ns3:TotalTaxAmount>
+					</ns3:TaxSummary>
+					<ns3:TotalAmount CurCode="EUR">17.00</ns3:TotalAmount>
+				</ns3:Price>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX4</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRV_PAX4_SEG1</ns3:ServiceID>
+					<ns3:StatusCode>HK</ns3:StatusCode>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX4</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG1</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID1_BI_INF</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID1_BI_INF_PAX4_SEG1</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX4</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRV_PAX4_SEG7</ns3:ServiceID>
+					<ns3:StatusCode>HK</ns3:StatusCode>
+				</ns3:Service>
+				<ns3:Service>
+					<ns3:PaxRefID>PAX4</ns3:PaxRefID>
+					<ns3:ServiceAssociations>
+						<ns3:ServiceDefinitionRef>
+							<ns3:PaxSegmentRefID>SEG7</ns3:PaxSegmentRefID>
+							<ns3:ServiceDefinitionRefID>SRVID7_BI_INF</ns3:ServiceDefinitionRefID>
+						</ns3:ServiceDefinitionRef>
+					</ns3:ServiceAssociations>
+					<ns3:ServiceID>SRVID7_BI_INF_PAX4_SEG7</ns3:ServiceID>
+				</ns3:Service>
+				<ns3:StatusCode>K</ns3:StatusCode>
+			</ns3:OrderItem>
+			<ns3:OwnerCode>AF</ns3:OwnerCode>
+			<ns3:PaymentTimeLimitDateTime>2024-12-26T12:00:00Z</ns3:PaymentTimeLimitDateTime>
+			<ns3:StatusCode>K</ns3:StatusCode>
+			<ns3:TotalPrice>
+				<ns3:TotalAmount CurCode="EUR">662.03</ns3:TotalAmount>
+			</ns3:TotalPrice>
+		</ns3:Order>
+		<ns3:Warning>
+			<ns3:DescText>Contact are not allowed for INF</ns3:DescText>
+			<ns3:StatusText>INF_CONTACT_NOT_AUTHORIZED</ns3:StatusText>
+		</ns3:Warning>
+	</ns3:Response>
+	<ns3:AugmentationPoint>
+		<ns4:PaymentMethod>
+			<ns4:Cash/>
+		</ns4:PaymentMethod>
+		<ns5:SecurePayment>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>AX</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT2</ns5:PaymentInfoID>
+				<ns5:TypeCode>CC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>AX</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT3</ns5:PaymentInfoID>
+				<ns5:TypeCode>CC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>DC</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT4</ns5:PaymentInfoID>
+				<ns5:TypeCode>CC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>DC</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT5</ns5:PaymentInfoID>
+				<ns5:TypeCode>CC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>CA</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT10</ns5:PaymentInfoID>
+				<ns5:TypeCode>CC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>CA</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT11</ns5:PaymentInfoID>
+				<ns5:TypeCode>CC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>VI</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT12</ns5:PaymentInfoID>
+				<ns5:TypeCode>CC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>VI</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT13</ns5:PaymentInfoID>
+				<ns5:TypeCode>CC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>EP</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT14</ns5:PaymentInfoID>
+				<ns5:TypeCode>CC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>EP</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT15</ns5:PaymentInfoID>
+				<ns5:TypeCode>CC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>VI</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT16</ns5:PaymentInfoID>
+				<ns5:TypeCode>DC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>VI</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT17</ns5:PaymentInfoID>
+				<ns5:TypeCode>DC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>CA</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT18</ns5:PaymentInfoID>
+				<ns5:TypeCode>DC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+			<ns5:PaymentSupportedMethods>
+				<ns5:PaymentCard>
+					<ns5:CardBrandCode>CA</ns5:CardBrandCode>
+					<ns5:SecurePaymentAuthenticationVersion>
+						<ns5:SupportedVersionText>2.2.0</ns5:SupportedVersionText>
+						<ns5:SupportedVersionText>2.1.0</ns5:SupportedVersionText>
+					</ns5:SecurePaymentAuthenticationVersion>
+				</ns5:PaymentCard>
+				<ns5:PaymentInfoID>PMT19</ns5:PaymentInfoID>
+				<ns5:TypeCode>DC</ns5:TypeCode>
+			</ns5:PaymentSupportedMethods>
+		</ns5:SecurePayment>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>AX</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Consumer</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>AX</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Corporate</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>DC</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Consumer</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>DC</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Corporate</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>JC</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Consumer</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>JC</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Corporate</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>TP</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Consumer</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>TP</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Corporate</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>CA</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Consumer</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>CA</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Corporate</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>VI</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Consumer</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>VI</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Corporate</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>EP</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Consumer</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>EP</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Corporate</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Credit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>VI</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Consumer</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Debit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>VI</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Corporate</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Debit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>CA</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Consumer</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Debit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:PaymentCard>
+				<ns4:CardBrandCode>CA</ns4:CardBrandCode>
+				<ns4:CardBrandProductTypeCode>Corporate</ns4:CardBrandProductTypeCode>
+				<ns4:CardTypeText>Debit Card</ns4:CardTypeText>
+			</ns4:PaymentCard>
+			<ns4:PaymentSurcharge>
+				<ns4:SurchargeAmount>0</ns4:SurchargeAmount>
+			</ns4:PaymentSurcharge>
+		</ns4:PaymentMethod>
+		<ns4:PaymentMethod>
+			<ns4:Voucher/>
+		</ns4:PaymentMethod>
+	</ns3:AugmentationPoint>
+	<ns3:PayloadAttributes>
+		<ns3:CorrelationID>837f22ca-a602-4b72-97dc-d9176bebb5fd</ns3:CorrelationID>
+		<ns3:Timestamp>2024-12-23T10:39:39.817750387</ns3:Timestamp>
+		<ns3:VersionNumber>18.2</ns3:VersionNumber>
+	</ns3:PayloadAttributes>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>Cash</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT1</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:Cash/>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>NAV</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>American Express</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT2</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>AX</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Consumer</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>American Express</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT3</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>AX</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Corporate</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>Diners Club</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT4</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>DC</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Consumer</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>Diners Club</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT5</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>DC</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Corporate</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>JCB</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT6</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>JC</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Consumer</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>JCB</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT7</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>JC</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Corporate</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>UATP / AirPlus</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT8</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>TP</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Consumer</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>UATP / AirPlus</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT9</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>TP</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Corporate</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>Mastercard</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT10</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>CA</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Consumer</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>Mastercard</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT11</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>CA</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Corporate</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>Visa</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT12</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>VI</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Consumer</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>Visa</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT13</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>VI</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Corporate</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>EASYPAY</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT14</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>EP</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Consumer</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>EASYPAY</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT15</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>EP</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Corporate</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Credit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>CC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>Visa Debit</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT16</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>VI</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Consumer</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Debit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>DC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>Visa Debit</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT17</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>VI</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Corporate</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Debit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>DC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>Debit MasterCard</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT18</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>CA</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Consumer</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Debit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>DC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>Debit MasterCard</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT19</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:PaymentCard>
+				<ns3:CardBrandCode>CA</ns3:CardBrandCode>
+				<ns3:CardProductTypeCode>Corporate</ns3:CardProductTypeCode>
+				<ns3:CardTypeText>Debit Card</ns3:CardTypeText>
+				<ns3:SecureProgram>
+					<ns3:EnrollmentStatusText>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURWVENDQWoyZ0F3SUJBZ0lKQUlwcjdGQklxNFlRTUEwR0NTcUdTSWIzRFFFQkN3VUFNRUV4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUlEQVpHY21GdVkyVXhJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcApkSE1nVUhSNUlFeDBaREFlRncweE9EQTNNRFF4TVRReU1qWmFGdzB5TWpBM01ETXhNVFF5TWpaYU1FRXhDekFKCkJnTlZCQVlUQWtaU01ROHdEUVlEVlFRSURBWkdjbUZ1WTJVeElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHAKWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU9KWApUdlllOWg0RWhFQkxSN2hLSVJ3b2JLNUlrbWROOHpodkMveklsUjRSY0VPaS93eHRhbnpEc0R5MEFheDRuVjFxCkRsRGYwejNHQnQxamdXT3pxdHdtVndEWHV0UHFpcmJDZzQ3dkwwdDRvSHZ1VzBwcjFWZUt0aHRJQ2I2VGxZbUYKK1FtUFlpRGtLVWRPcS9nTHBocXh2ZTVpMTIxcTUzcHI1UFI3a2Rmd3Zzb1FYb1FzNFROVjRRbzRyMlFPY0haLwpIK1dHdDdLMEYydFU0L1NtMU5CdVN6SWdwRDg2SGVBTG92Zytvbnp4NTliMm8wcCtTc0ZtcjNwNHMveUc1NDVLCmYzR3ZvU0V0U3c0R3UwNUNqMmxSWkVxM0lYc3hSVkthWTBvTU9RTElWZ1dMSVBaRXZsOW1qU1JMTkREZVdkM1UKVldDRm5JRGIrbHlFQ2ljdGZ1c0NBd0VBQWFOUU1FNHdIUVlEVlIwT0JCWUVGT1MwUSttWHh4Q2JTTkQvN2piNwpNMGc3TFVHdU1COEdBMVVkSXdRWU1CYUFGT1MwUSttWHh4Q2JTTkQvN2piN00wZzdMVUd1TUF3R0ExVWRFd1FGCk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUV2b0w5ci9ENmNmSUx1d3lDUmFlN1ZWSUxrYjRtdmEKbmxKUnBpM3JGYXpFUXFLWUFrdVkweHlXSEpCV1pYd3lFU0xTWjRlSGgzTkh4K3FmMGpUaytKVGRSVVlabHNOUgo4cGNYYTNsa3lwNzM1QlBsZWlOc2Y0amMzRzJyZWt2aEVsL0l1NFlWRUVQNzFKUm1oNW44dDkvejZMZ1FBYm1mCkE4ZUhlSk4yMjYwNkVmak1JTy83Vy82MEQ0T29CeVZEWmpSSEk0L3hEcUlaMHRTVC9xOHFob0FHZHZ6Y3gzU0UKMTU0MTBwTXNVRzZCbjR2NXdYYi9vZnpFaWtNdkFWTlhGMFVUdFREVFIyZmxPakwyQytYVGMzdUZSL1hVVVNDLwp4Q3FscmNLZm1oVFhGa1pUQkFZQ0R1UFIwMFhPOWx6SXFEYU5lcEh0ZUJmb0crVDd5WDk1V0pNPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</ns3:EnrollmentStatusText>
+					<ns3:SecurePaymentProgramName>TEST-RSAOEAP-001</ns3:SecurePaymentProgramName>
+				</ns3:SecureProgram>
+			</ns3:PaymentCard>
+		</ns3:PaymentMethod>
+		<ns3:SurchargeAmount CurCode="EUR">0.00</ns3:SurchargeAmount>
+		<ns3:TypeCode>DC</ns3:TypeCode>
+	</ns3:PaymentInfo>
+	<ns3:PaymentInfo>
+		<ns3:Amount CurCode="EUR">0.00</ns3:Amount>
+		<ns3:Desc>
+			<ns3:DescText>Bon</ns3:DescText>
+		</ns3:Desc>
+		<ns3:PaymentInfoID>PMT20</ns3:PaymentInfoID>
+		<ns3:PaymentMethod>
+			<ns3:Voucher/>
+		</ns3:PaymentMethod>
+		<ns3:TypeCode>VCR</ns3:TypeCode>
+	</ns3:PaymentInfo>
+</ns3:IATA_OrderViewRS>'
+UNT+5+1'

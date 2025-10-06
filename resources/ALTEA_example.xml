@@ -1,0 +1,27 @@
+<PaxList>
+    <Pax>
+        <Individual>
+            <Birthdate>1986-12-08</Birthdate>
+            <GenderCode>M</GenderCode>
+            <GivenName>THOMAS</GivenName>
+            <IndividualID>PAX2</IndividualID>
+            <Surname>WAYNE</Surname>
+            <TitleName>MR</TitleName>
+        </Individual>
+        <PaxID>PAX2</PaxID>
+        <PTC>ADT</PTC>
+    </Pax>
+    <Pax>
+        <Individual>
+            <Birthdate>2024-12-11</Birthdate>
+            <GenderCode>M</GenderCode>
+            <GivenName>ROBIN</GivenName>
+            <IndividualID>PAX3</IndividualID>
+            <Surname>WAYNE</Surname>
+            <TitleName>MR</TitleName>
+        </Individual>
+        <PaxID>PAX3</PaxID>
+        <PaxRefID>PAX2</PaxRefID> 
+        <PTC>INF</PTC>
+    </Pax>
+</PaxList>
