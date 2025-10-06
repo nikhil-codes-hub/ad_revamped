@@ -370,6 +370,11 @@ class XmlStreamingParser:
             for event, element in context:
                 if event == 'start':
                     local_name = element.tag.split('}')[1] if '}' in element.tag else element.tag
+
+                    # Normalize IATA_ prefix for root element to match target paths
+                    if len(element_stack) == 0 and local_name.startswith('IATA_'):
+                        local_name = local_name[5:]  # Remove IATA_ prefix
+
                     element_stack.append(local_name)
 
                     # Detect version info from root element

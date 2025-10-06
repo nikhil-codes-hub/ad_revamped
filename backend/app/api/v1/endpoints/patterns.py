@@ -87,11 +87,14 @@ async def list_patterns(
                 ).distinct().all()
                 run_section_paths = [path[0] for path in run_section_paths]
 
+                # Normalize paths to match pattern format (remove leading slash)
+                normalized_paths = [path.lstrip('/') for path in run_section_paths]
+
                 # Filter patterns by run's version/message and section paths
                 query = query.filter(
                     Pattern.spec_version == run.spec_version,
                     Pattern.message_root == run.message_root,
-                    Pattern.section_path.in_(run_section_paths)
+                    Pattern.section_path.in_(normalized_paths)
                 )
 
                 # If run has airline_code, prioritize airline-specific patterns
