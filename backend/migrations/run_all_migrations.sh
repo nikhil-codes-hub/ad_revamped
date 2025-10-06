@@ -33,6 +33,7 @@ MIGRATIONS=(
     "003_add_airline_to_patterns.sql"
     "004_add_node_configurations.sql"
     "005_add_pattern_description.sql"
+    "006_add_reference_types.sql"
 )
 
 # Run each migration
@@ -71,3 +72,4 @@ echo "  ✓ association_facts"
 echo "  ✓ patterns"
 echo "  ✓ pattern_matches"
 echo "  ✓ node_configurations"
+echo "  ✓ reference_types"

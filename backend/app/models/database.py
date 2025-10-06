@@ -277,3 +277,31 @@ class NodeConfiguration(Base):
     def applies_to_airline(self) -> str:
         """Get airline scope description."""
         return self.airline_code if self.airline_code else "All airlines"
+
+
+class ReferenceType(Base):
+    """Glossary of reference types used in NDC XML node relationships."""
+
+    __tablename__ = "reference_types"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    reference_type = Column(String(100), nullable=False, unique=True, comment="Unique reference type identifier")
+    display_name = Column(String(200), nullable=False, comment="Human-readable display name")
+    description = Column(Text, nullable=False, comment="Description of what this reference represents")
+    example = Column(String(500), comment="Example of this reference type")
+    category = Column(String(50), comment="Category: passenger, segment, journey, baggage, price, service")
+    is_active = Column(Boolean, default=True, comment="Whether this reference type is active")
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    created_by = Column(String(100), comment="User who created this reference type")
+
+    def __repr__(self):
+        return f"<ReferenceType({self.reference_type}: {self.display_name})>"
+
+    @property
+    def full_description(self) -> str:
+        """Get full description with example."""
+        desc = self.description
+        if self.example:
+            desc += f"\n\nExample: {self.example}"
+        return desc

@@ -1086,7 +1086,7 @@ def show_node_manager_page():
     st.header("📋 Node Configuration Manager")
     st.write("Configure which nodes to extract during Discovery and define expected references")
 
-    tab1, tab2, tab3 = st.tabs(["📤 Analyze XML", "⚙️ Manage Configurations", "📋 Copy to Versions"])
+    tab1, tab2, tab3, tab4 = st.tabs(["📤 Analyze XML", "⚙️ Manage Configurations", "📋 Copy to Versions", "🔖 Reference Types"])
 
     with tab1:
         st.subheader("Upload XML to Discover Nodes")
@@ -1242,7 +1242,7 @@ def show_node_manager_page():
                         st.error("Failed to save configurations")
 
             with col2:
-                st.caption("💡 **Reference types**: infant_parent, segment_reference, pax_reference, baggage_reference, journey_reference")
+                st.caption("💡 **Tip**: See available reference types in the 'Reference Types' tab →")
 
     with tab2:
         st.subheader("⚙️ Existing Configurations")
@@ -1370,6 +1370,136 @@ def show_node_manager_page():
                             st.text(error)
                 else:
                     st.error("Failed to copy configurations. Please check:\n- Source version and message root are correct\n- Configurations exist for the source version")
+
+    with tab4:
+        st.subheader("🔖 Reference Types Glossary")
+        st.write("Manage reference types used in node configurations")
+
+        # Add new reference type section
+        with st.expander("➕ Add New Reference Type", expanded=False):
+            col1, col2 = st.columns(2)
+
+            with col1:
+                new_ref_type = st.text_input("Reference Type ID*", placeholder="e.g., document_reference",
+                                            help="Unique identifier (lowercase, underscores)")
+                new_display_name = st.text_input("Display Name*", placeholder="e.g., Document Reference")
+                new_category = st.selectbox("Category*",
+                    ["passenger", "segment", "journey", "baggage", "price", "service", "order", "document", "other"])
+
+            with col2:
+                new_description = st.text_area("Description*", placeholder="Describe what this reference represents", height=100)
+                new_example = st.text_input("Example", placeholder="e.g., Ticket references DocumentID:DOC123")
+
+            if st.button("✅ Add Reference Type", type="primary"):
+                if not new_ref_type or not new_display_name or not new_description:
+                    st.error("Please fill in all required fields (marked with *)")
+                else:
+                    try:
+                        response = requests.post(
+                            f"{API_BASE_URL}/reference-types/",
+                            params={
+                                "reference_type": new_ref_type,
+                                "display_name": new_display_name,
+                                "description": new_description,
+                                "example": new_example if new_example else None,
+                                "category": new_category,
+                                "created_by": "user"
+                            },
+                            timeout=10
+                        )
+
+                        if response.status_code == 200:
+                            st.success(f"✅ Reference type '{new_ref_type}' added successfully!")
+                            st.rerun()
+                        else:
+                            error_data = response.json()
+                            st.error(f"Failed to add reference type: {error_data.get('detail', response.text)}")
+                    except Exception as e:
+                        st.error(f"Error: {str(e)}")
+
+        st.divider()
+
+        # Filter section
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            filter_category = st.selectbox("Filter by Category", ["All"] + ["passenger", "segment", "journey", "baggage", "price", "service", "order", "document", "other"])
+        with col2:
+            show_inactive = st.checkbox("Show Inactive", value=False)
+
+        # Load reference types
+        try:
+            params = {}
+            if filter_category != "All":
+                params["category"] = filter_category
+            if not show_inactive:
+                params["is_active"] = True
+
+            response = requests.get(
+                f"{API_BASE_URL}/reference-types/",
+                params=params,
+                timeout=10
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+                ref_types = data.get('reference_types', [])
+
+                if ref_types:
+                    st.success(f"📚 Found {len(ref_types)} reference types")
+
+                    # Group by category
+                    categories = {}
+                    for ref_type in ref_types:
+                        cat = ref_type.get('category', 'other')
+                        if cat not in categories:
+                            categories[cat] = []
+                        categories[cat].append(ref_type)
+
+                    # Display by category
+                    for category, items in sorted(categories.items()):
+                        st.subheader(f"📂 {category.title()}")
+
+                        for ref_type in items:
+                            with st.expander(f"**{ref_type['display_name']}** (`{ref_type['reference_type']}`)", expanded=False):
+                                col1, col2 = st.columns([3, 1])
+
+                                with col1:
+                                    st.write("**Description:**")
+                                    st.write(ref_type['description'])
+
+                                    if ref_type.get('example'):
+                                        st.write("**Example:**")
+                                        st.code(ref_type['example'])
+
+                                    st.caption(f"Created by: {ref_type.get('created_by', 'Unknown')}")
+
+                                with col2:
+                                    status_icon = "✅" if ref_type['is_active'] else "⏸️"
+                                    st.write(f"**Status:** {status_icon}")
+
+                                    if ref_type.get('created_by') != 'system':
+                                        if st.button("🗑️ Delete", key=f"del_{ref_type['id']}"):
+                                            try:
+                                                del_response = requests.delete(
+                                                    f"{API_BASE_URL}/reference-types/{ref_type['id']}",
+                                                    timeout=10
+                                                )
+                                                if del_response.status_code == 200:
+                                                    st.success("Deleted!")
+                                                    st.rerun()
+                                                else:
+                                                    st.error("Delete failed")
+                                            except Exception as e:
+                                                st.error(f"Error: {str(e)}")
+
+                        st.divider()
+                else:
+                    st.info("No reference types found. Add one using the form above.")
+            else:
+                st.error(f"Failed to load reference types: {response.status_code}")
+
+        except Exception as e:
+            st.error(f"Error loading reference types: {str(e)}")
 
 
 # ========== MAIN APP ==========
