@@ -1057,6 +1057,9 @@ def show_node_manager_page():
             st.subheader("✏️ Configure Nodes")
             st.write("Check which nodes to extract, add expected references, and remarks")
 
+            # Search filter
+            search_node = st.text_input("🔍 Search nodes by type", placeholder="e.g., Pax, Segment, Price", key="analyze_search")
+
             # Create DataFrame for editing
             nodes_data = []
             for idx, node in enumerate(result['nodes']):
@@ -1072,6 +1075,16 @@ def show_node_manager_page():
                 })
 
             df_nodes = pd.DataFrame(nodes_data)
+
+            # Store original nodes_data for later reference
+            original_nodes_data = nodes_data.copy()
+
+            # Apply search filter if specified
+            if search_node:
+                df_nodes = df_nodes[
+                    df_nodes['Node Type'].str.contains(search_node, case=False, na=False)
+                ].copy()
+                st.info(f"Showing {len(df_nodes)} nodes matching '{search_node}'")
 
             # Convert to proper dtypes for PyArrow 20.0.0 compatibility
             df_nodes['Enabled'] = df_nodes['Enabled'].fillna(False).astype(bool)
@@ -1115,7 +1128,9 @@ def show_node_manager_page():
                     # Prepare data for bulk update
                     configurations = []
                     for idx, row in edited_df.iterrows():
-                        original = nodes_data[idx]
+                        # Get the original index from df_nodes to map back to original_nodes_data
+                        original_idx = df_nodes.iloc[idx]['Index']
+                        original = original_nodes_data[original_idx]
 
                         # Parse expected references
                         refs_str = row['Expected References'].strip()
@@ -1151,13 +1166,15 @@ def show_node_manager_page():
         st.subheader("⚙️ Existing Configurations")
 
         # Filters
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
             filter_version = st.text_input("Filter by Version", placeholder="e.g., 21.3")
         with col2:
             filter_message = st.text_input("Filter by Message", placeholder="e.g., OrderViewRS")
         with col3:
             filter_airline = st.text_input("Filter by Airline", placeholder="e.g., SQ")
+        with col4:
+            filter_node = st.text_input("Search Node Type", placeholder="e.g., Pax")
 
         if st.button("🔍 Load Configurations"):
             configs_data = get_node_configurations(
@@ -1167,8 +1184,6 @@ def show_node_manager_page():
             )
 
             if configs_data and configs_data['configurations']:
-                st.success(f"Found {configs_data['total']} configurations")
-
                 # Display as table
                 config_list = []
                 for config in configs_data['configurations']:
@@ -1185,15 +1200,27 @@ def show_node_manager_page():
 
                 df_configs = pd.DataFrame(config_list)
 
-                # Apply color coding to Enabled column
-                def highlight_enabled(row):
-                    if row['Enabled'] == 'Yes':
-                        return ['background-color: #d4edda'] * len(row)  # Light green
-                    else:
-                        return ['background-color: #f8d7da'] * len(row)  # Light red
+                # Apply node type filter if specified
+                if filter_node:
+                    # Case-insensitive partial match on Node Type
+                    df_configs = df_configs[
+                        df_configs['Node Type'].str.contains(filter_node, case=False, na=False)
+                    ]
 
-                styled_df = df_configs.style.apply(highlight_enabled, axis=1)
-                st.dataframe(styled_df, use_container_width=True, hide_index=True)
+                if len(df_configs) > 0:
+                    st.success(f"Found {len(df_configs)} configurations")
+
+                    # Apply color coding to Enabled column
+                    def highlight_enabled(row):
+                        if row['Enabled'] == 'Yes':
+                            return ['background-color: #d4edda'] * len(row)  # Light green
+                        else:
+                            return ['background-color: #f8d7da'] * len(row)  # Light red
+
+                    styled_df = df_configs.style.apply(highlight_enabled, axis=1)
+                    st.dataframe(styled_df, use_container_width=True, hide_index=True)
+                else:
+                    st.warning(f"No configurations found matching node type '{filter_node}'")
             else:
                 st.info("No configurations found. Upload an XML in the 'Analyze XML' tab to create configurations.")
 
