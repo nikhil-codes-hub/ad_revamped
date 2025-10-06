@@ -1065,20 +1065,14 @@ def show_node_manager_page():
 
             df_nodes = pd.DataFrame(nodes_data)
 
-            # Explicitly convert columns to proper dtypes for PyArrow compatibility
-            # Convert boolean values using Python bool() to avoid numpy dtype issues
-            df_nodes['Enabled'] = df_nodes['Enabled'].apply(lambda x: bool(x) if x is not None else True)
+            # Convert to PyArrow-compatible types
+            # Use integer (0/1) instead of boolean for PyArrow compatibility
+            df_nodes['Enabled'] = df_nodes['Enabled'].apply(lambda x: 1 if (x is True or x == True) else 0).astype(int)
             df_nodes['Expected References'] = df_nodes['Expected References'].fillna('').astype(str)
             df_nodes['BA Remarks'] = df_nodes['BA Remarks'].fillna('').astype(str)
 
-            # Create a clean subset - rebuild the dataframe with clean data
-            display_df = pd.DataFrame({
-                "Enabled": df_nodes['Enabled'].tolist(),
-                "Node Type": df_nodes['Node Type'].tolist(),
-                "Section Path": df_nodes['Section Path'].tolist(),
-                "Expected References": df_nodes['Expected References'].tolist(),
-                "BA Remarks": df_nodes['BA Remarks'].tolist()
-            })
+            # Create display dataframe
+            display_df = df_nodes[["Enabled", "Node Type", "Section Path", "Expected References", "BA Remarks"]].copy()
 
             # Use experimental data editor for editable table
             edited_df = st.data_editor(
@@ -1125,7 +1119,7 @@ def show_node_manager_page():
                             'airline_code': result.get('airline_code'),
                             'node_type': row['Node Type'],
                             'section_path': row['Section Path'],
-                            'enabled': row['Enabled'],
+                            'enabled': bool(row['Enabled']),  # Convert integer back to boolean
                             'expected_references': refs,
                             'ba_remarks': row['BA Remarks']
                         }
