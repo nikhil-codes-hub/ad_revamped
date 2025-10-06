@@ -1,6 +1,10 @@
 -- Add node_configurations table for BA-managed extraction rules
 -- Migration: 004_add_node_configurations.sql
 
+-- Drop table if exists (for clean setup)
+DROP TABLE IF EXISTS node_configurations;
+
+-- Create node_configurations table
 CREATE TABLE node_configurations (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     spec_version VARCHAR(10) NOT NULL COMMENT 'NDC specification version (e.g., 18.1, 21.3)',
@@ -25,7 +29,3 @@ CREATE TABLE node_configurations (
     INDEX idx_node_type (node_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='BA-managed node extraction configurations';
-
--- Add description column to patterns table
-ALTER TABLE patterns
-ADD COLUMN description TEXT NULL COMMENT 'Human-readable pattern description' AFTER decision_rule;

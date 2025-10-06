@@ -41,22 +41,25 @@ EXIT;
 
 ### Run Migrations (IN ORDER)
 
+**IMPORTANT:** Run these migrations in exact order. They use `IF NOT EXISTS` clauses to prevent duplicate column errors.
+
 ```bash
 cd backend
 
 # Run each migration in sequence
-# Note: Use 001_initial_schema_fixed.sql if 001_initial_schema.sql doesn't exist
-mysql -u assisted_discovery -p'assisted_discovery_2025_secure' assisted_discovery < migrations/001_initial_schema_fixed.sql
+mysql -u assisted_discovery -p'assisted_discovery_2025_secure' assisted_discovery < migrations/001_initial_schema.sql
 mysql -u assisted_discovery -p'assisted_discovery_2025_secure' assisted_discovery < migrations/002_add_airline_columns.sql
-
-# Use SAFE versions to avoid "Duplicate column" errors
-mysql -u assisted_discovery -p'assisted_discovery_2025_secure' assisted_discovery < migrations/003_add_airline_to_patterns_safe.sql
+mysql -u assisted_discovery -p'assisted_discovery_2025_secure' assisted_discovery < migrations/003_add_airline_to_patterns.sql
 mysql -u assisted_discovery -p'assisted_discovery_2025_secure' assisted_discovery < migrations/004_add_node_configurations.sql
-mysql -u assisted_discovery -p'assisted_discovery_2025_secure' assisted_discovery < migrations/005_add_pattern_description_safe.sql
+mysql -u assisted_discovery -p'assisted_discovery_2025_secure' assisted_discovery < migrations/005_add_pattern_description.sql
 ```
 
-**If you get "Duplicate column" errors:**
-The safe versions (003_safe, 005_safe) check if columns exist before adding them. If you already ran the regular versions and got errors, the safe versions will skip the duplicate columns automatically.
+**Note:** All migrations are now idempotent (safe to re-run). They use:
+- `DROP TABLE IF EXISTS` (migration 001, 004)
+- `ADD COLUMN IF NOT EXISTS` (migrations 002, 003, 005)
+- `CREATE INDEX IF NOT EXISTS` (migrations 002, 003)
+
+This means you can re-run them without errors if something fails midway.
 
 **Verify migrations:**
 ```bash
