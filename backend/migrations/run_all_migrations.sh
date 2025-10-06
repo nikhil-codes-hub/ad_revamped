@@ -38,12 +38,15 @@ MIGRATIONS=(
 # Run each migration
 for migration in "${MIGRATIONS[@]}"; do
     echo "Running migration: $migration"
-    mysql -u "$MYSQL_USER" -p"$MYSQL_PASSWORD" "$DATABASE" < "$SCRIPT_DIR/$migration" 2>&1 | grep -v "Using a password"
 
-    if [ $? -eq 0 ]; then
+    # Run migration and capture exit code
+    mysql -u "$MYSQL_USER" -p"$MYSQL_PASSWORD" "$DATABASE" < "$SCRIPT_DIR/$migration" 2>&1
+    EXIT_CODE=$?
+
+    if [ $EXIT_CODE -eq 0 ]; then
         echo "✅ $migration - SUCCESS"
     else
-        echo "❌ $migration - FAILED"
+        echo "❌ $migration - FAILED (exit code: $EXIT_CODE)"
         exit 1
     fi
     echo ""
@@ -56,7 +59,7 @@ echo ""
 
 # Verify tables
 echo "Verifying database tables..."
-mysql -u "$MYSQL_USER" -p"$MYSQL_PASSWORD" "$DATABASE" -e "SHOW TABLES;" 2>&1 | grep -v "Using a password"
+mysql -u "$MYSQL_USER" -p"$MYSQL_PASSWORD" "$DATABASE" -e "SHOW TABLES;" 2>&1
 
 echo ""
 echo "Expected tables:"
