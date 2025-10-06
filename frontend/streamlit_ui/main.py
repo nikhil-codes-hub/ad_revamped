@@ -1092,7 +1092,18 @@ def show_node_manager_page():
         st.subheader("Upload XML to Discover Nodes")
         st.write("Upload an XML file to analyze its structure and create configurations")
 
-        uploaded_file = st.file_uploader("Choose XML file", type=['xml'], key="node_config_upload")
+        col_upload, col_clear = st.columns([4, 1])
+
+        with col_upload:
+            uploaded_file = st.file_uploader("Choose XML file", type=['xml'], key="node_config_upload")
+
+        with col_clear:
+            if 'analyzed_nodes' in st.session_state:
+                st.write("")  # Spacer
+                st.write("")  # Spacer
+                if st.button("🔄 Clear & New Upload", help="Clear current analysis and upload a new file"):
+                    del st.session_state.analyzed_nodes
+                    st.rerun()
 
         if uploaded_file:
             if st.button("Analyze Structure", type="primary"):
@@ -1234,10 +1245,7 @@ def show_node_manager_page():
                     # Send to API
                     if bulk_update_node_configurations(configurations):
                         st.success(f"✅ Saved {len(configurations)} node configurations!")
-                        # Clear session state
-                        if 'analyzed_nodes' in st.session_state:
-                            del st.session_state.analyzed_nodes
-                        st.rerun()
+                        st.info("💡 Configurations saved successfully. You can continue editing or upload a new XML file.")
                     else:
                         st.error("Failed to save configurations")
 
