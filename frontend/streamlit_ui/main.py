@@ -1100,7 +1100,12 @@ def show_node_manager_page():
                     result = analyze_xml_for_nodes(uploaded_file)
 
                 if result:
-                    st.success(f"✅ Discovered {result['total_nodes']} nodes in {result['spec_version']}/{result['message_root']}")
+                    airline_display = f" - Airline: {result['airline_code']}" if result.get('airline_code') else ""
+                    st.success(f"✅ Discovered {result['total_nodes']} nodes in {result['spec_version']}/{result['message_root']}{airline_display}")
+
+                    if result.get('airline_code'):
+                        st.info(f"ℹ️ Showing configurations for **{result['airline_code']}** airline. "
+                               f"Configurations are airline-specific - each airline has its own settings.")
 
                     # Store in session state for editing
                     st.session_state.analyzed_nodes = result
@@ -1113,15 +1118,20 @@ def show_node_manager_page():
             result = st.session_state.analyzed_nodes
 
             st.divider()
-            st.subheader("📊 Discovered Nodes")
 
-            col1, col2, col3 = st.columns(3)
+            # Show airline context prominently
+            airline_display = f" for {result.get('airline_code', 'Global')}" if result.get('airline_code') else " (Global)"
+            st.subheader(f"📊 Discovered Nodes{airline_display}")
+
+            col1, col2, col3, col4 = st.columns(4)
             with col1:
-                st.metric("Total Nodes", result['total_nodes'])
+                st.metric("Version", result['spec_version'])
             with col2:
-                st.metric("Already Configured", result['configured_nodes'])
+                st.metric("Airline", result.get('airline_code', 'Global'))
             with col3:
-                st.metric("New Nodes", result['total_nodes'] - result['configured_nodes'])
+                st.metric("Total Nodes", result['total_nodes'])
+            with col4:
+                st.metric("Configured", result['configured_nodes'])
 
             st.divider()
 

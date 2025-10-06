@@ -77,13 +77,51 @@ async def analyze_xml_structure(
 
             extract_nodes(root)
 
-            # Get existing configurations
-            existing_configs = db.query(NodeConfiguration).filter(
+            logger.info(f"Detected: {version_info.spec_version}/{version_info.message_root}, Airline: {version_info.airline_code or 'None'}")
+
+            # Get existing configurations for this specific airline
+            # Match both airline-specific configs and global configs (airline_code=NULL)
+            existing_configs_query = db.query(NodeConfiguration).filter(
                 NodeConfiguration.spec_version == version_info.spec_version,
                 NodeConfiguration.message_root == version_info.message_root
-            ).all()
+            )
 
-            existing_paths = {config.section_path: config for config in existing_configs}
+            if version_info.airline_code:
+                # Get configs for this airline OR global configs
+                existing_configs = existing_configs_query.filter(
+                    (NodeConfiguration.airline_code == version_info.airline_code) |
+                    (NodeConfiguration.airline_code == None)
+                ).all()
+            else:
+                # No airline detected - only get global configs
+                existing_configs = existing_configs_query.filter(
+                    NodeConfiguration.airline_code == None
+                ).all()
+
+            # Prioritize airline-specific configs over global configs
+            existing_paths = {}
+            airline_specific_count = 0
+            global_count = 0
+
+            for config in existing_configs:
+                path = config.section_path
+                # If path already exists, only replace with airline-specific config
+                if path in existing_paths:
+                    # Replace global config with airline-specific config
+                    if config.airline_code and not existing_paths[path].airline_code:
+                        existing_paths[path] = config
+                        airline_specific_count += 1
+                        global_count -= 1  # We're replacing a global config
+                else:
+                    existing_paths[path] = config
+                    if config.airline_code:
+                        airline_specific_count += 1
+                    else:
+                        global_count += 1
+
+            logger.info(f"Found {len(existing_paths)} existing configs: "
+                       f"{airline_specific_count} airline-specific ({version_info.airline_code}), "
+                       f"{global_count} global")
 
             # Merge discovered nodes with existing configs
             result_nodes = []
