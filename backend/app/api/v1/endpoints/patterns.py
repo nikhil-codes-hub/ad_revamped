@@ -24,6 +24,8 @@ async def list_patterns(
     message_root: Optional[str] = Query(None, description="Filter by message root (e.g., OrderViewRS)"),
     section_path: Optional[str] = Query(None, description="Filter by section path"),
     spec_version: Optional[str] = Query(None, description="Filter by NDC specification version"),
+    run_id: Optional[str] = Query(None, description="Filter by run ID (patterns generated from this run)"),
+    airline_code: Optional[str] = Query(None, description="Filter by airline code"),
     limit: int = Query(default=50, ge=1, le=200, description="Maximum number of patterns to return"),
     offset: int = Query(default=0, ge=0, description="Number of patterns to skip for pagination"),
     min_confidence: Optional[float] = Query(None, ge=0.0, le=1.0, description="Minimum times_seen count"),
@@ -35,6 +37,8 @@ async def list_patterns(
     - **message_root**: Filter by message type (e.g., 'OrderViewRS')
     - **section_path**: Filter by XML section path (supports partial matching)
     - **spec_version**: Filter by NDC version (e.g., '17.2')
+    - **run_id**: Filter by Discovery run (only show patterns from this run)
+    - **airline_code**: Filter by airline code (e.g., 'SQ', 'VY')
     - **limit**: Maximum patterns to return (1-200)
     - **offset**: Skip patterns for pagination
     - **min_confidence**: Minimum times_seen count for pattern quality
@@ -43,6 +47,8 @@ async def list_patterns(
                 message_root=message_root,
                 section_path=section_path,
                 spec_version=spec_version,
+                run_id=run_id,
+                airline_code=airline_code,
                 limit=limit,
                 offset=offset)
 
@@ -55,6 +61,53 @@ async def list_patterns(
         query = query.filter(Pattern.section_path.like(f'%{section_path}%'))
     if spec_version:
         query = query.filter(Pattern.spec_version == spec_version)
+    if airline_code:
+        query = query.filter(
+            (Pattern.airline_code == airline_code) | (Pattern.airline_code == None)
+        )
+    if run_id:
+        # Filter patterns generated from node_facts in this specific run
+        # Get node_fact IDs from this run, then find patterns that have examples from these facts
+        from app.models.database import NodeFact
+
+        run_node_fact_ids = db.query(NodeFact.id).filter(NodeFact.run_id == run_id).all()
+        run_node_fact_ids = [nf_id[0] for nf_id in run_node_fact_ids]
+
+        if run_node_fact_ids:
+            # Patterns are generated from node_facts, so we filter by matching:
+            # 1. spec_version and message_root from the run
+            # 2. section_path matching node_facts from this run
+            from app.models.database import Run
+            run = db.query(Run).filter(Run.id == run_id).first()
+
+            if run:
+                # Get unique section_paths from this run's node_facts
+                run_section_paths = db.query(NodeFact.section_path).filter(
+                    NodeFact.run_id == run_id
+                ).distinct().all()
+                run_section_paths = [path[0] for path in run_section_paths]
+
+                # Filter patterns by run's version/message and section paths
+                query = query.filter(
+                    Pattern.spec_version == run.spec_version,
+                    Pattern.message_root == run.message_root,
+                    Pattern.section_path.in_(run_section_paths)
+                )
+
+                # If run has airline_code, prioritize airline-specific patterns
+                if run.airline_code:
+                    query = query.filter(
+                        (Pattern.airline_code == run.airline_code) | (Pattern.airline_code == None)
+                    )
+            else:
+                # Run not found, return empty
+                logger.warning(f"Run {run_id} not found")
+                return []
+        else:
+            # No node_facts for this run, return empty
+            logger.warning(f"No node_facts found for run {run_id}")
+            return []
+
     if min_confidence:
         query = query.filter(Pattern.times_seen >= int(min_confidence))
 
