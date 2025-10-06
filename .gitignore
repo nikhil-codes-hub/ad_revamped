@@ -109,10 +109,13 @@ test_data/*.xml
 sample_data/*.xml
 *.xml
 
-# Model files
+# ML Model files (but NOT the app/models/ directory with ORM models!)
 *.pkl
 *.joblib
-models/
+*.h5
+*.onnx
+saved_models/
+ml_models/
 
 # OS generated files
 .DS_Store
