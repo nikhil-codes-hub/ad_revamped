@@ -300,11 +300,11 @@ async def delete_node_configuration(
 
 @router.post("/copy-to-versions")
 async def copy_configurations_to_versions(
-    source_spec_version: str,
-    source_message_root: str,
-    target_versions: List[str],
-    source_airline_code: Optional[str] = None,
-    target_airline_code: Optional[str] = None,
+    source_spec_version: str = Query(..., description="Source NDC version"),
+    source_message_root: str = Query(..., description="Source message root"),
+    target_versions: List[str] = Query(..., description="Target versions to copy to"),
+    source_airline_code: Optional[str] = Query(None, description="Source airline code"),
+    target_airline_code: Optional[str] = Query(None, description="Target airline code"),
     db: Session = Depends(get_db_session)
 ):
     """
@@ -313,6 +313,7 @@ async def copy_configurations_to_versions(
     Useful for applying 18.1 configurations to all other NDC versions.
     """
     logger.info(f"Copying configs from {source_spec_version}/{source_message_root} to versions: {target_versions}")
+    logger.info(f"Source airline: {source_airline_code}, Target airline: {target_airline_code}")
 
     # Get source configurations
     source_configs_query = db.query(NodeConfiguration).filter(
@@ -320,12 +321,16 @@ async def copy_configurations_to_versions(
         NodeConfiguration.message_root == source_message_root
     )
 
+    detected_airline = None  # Track which airline was used
+
     if source_airline_code:
         # Specific airline requested
         source_configs_query = source_configs_query.filter(NodeConfiguration.airline_code == source_airline_code)
         source_configs = source_configs_query.all()
+        detected_airline = source_airline_code
 
         if not source_configs:
+            logger.warning(f"No configurations found for {source_spec_version}/{source_message_root}/{source_airline_code}")
             raise HTTPException(
                 status_code=404,
                 detail=f"No configurations found for {source_spec_version}/{source_message_root}/{source_airline_code}"
@@ -337,6 +342,7 @@ async def copy_configurations_to_versions(
 
         if global_configs:
             source_configs = global_configs
+            detected_airline = "Global (NULL)"
             logger.info(f"Using {len(global_configs)} global configurations (airline_code=NULL)")
         else:
             # Priority 2: Get configs from first available airline
@@ -345,11 +351,13 @@ async def copy_configurations_to_versions(
                 # Group by airline and pick first
                 first_airline = all_configs[0].airline_code
                 source_configs = [c for c in all_configs if c.airline_code == first_airline]
+                detected_airline = first_airline
                 logger.info(f"Using {len(source_configs)} configurations from airline: {first_airline}")
             else:
+                logger.warning(f"No configurations found for {source_spec_version}/{source_message_root}")
                 raise HTTPException(
                     status_code=404,
-                    detail=f"No configurations found for {source_spec_version}/{source_message_root}"
+                    detail=f"No configurations found for {source_spec_version}/{source_message_root}. Please create configurations first using the Analyze XML tab."
                 )
 
     created_count = 0
@@ -391,9 +399,12 @@ async def copy_configurations_to_versions(
 
     db.commit()
 
+    logger.info(f"Copy complete: {created_count} created, {skipped_count} skipped, {len(errors)} errors")
+
     return {
         "success": len(errors) == 0,
         "source_version": source_spec_version,
+        "detected_airline": detected_airline,
         "target_versions": target_versions,
         "source_configs": len(source_configs),
         "created": created_count,

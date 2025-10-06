@@ -238,26 +238,34 @@ def copy_configurations_to_versions(
 ) -> Optional[Dict[str, Any]]:
     """Copy configurations from one version to multiple other versions."""
     try:
+        # Build query parameters (FastAPI will parse List[str] from query params)
         params = {
             "source_spec_version": source_spec_version,
             "source_message_root": source_message_root,
-            "target_versions": target_versions
         }
+
+        # Add target_versions as multiple query params (e.g., ?target_versions=17.2&target_versions=19.2)
+        query_string = f"source_spec_version={source_spec_version}&source_message_root={source_message_root}"
+        for version in target_versions:
+            query_string += f"&target_versions={version}"
+
         if source_airline_code:
-            params["source_airline_code"] = source_airline_code
+            query_string += f"&source_airline_code={source_airline_code}"
         if target_airline_code:
-            params["target_airline_code"] = target_airline_code
+            query_string += f"&target_airline_code={target_airline_code}"
 
         response = requests.post(
-            f"{API_BASE_URL}/node-configs/copy-to-versions",
-            params=params,
+            f"{API_BASE_URL}/node-configs/copy-to-versions?{query_string}",
             timeout=30
         )
 
         if response.status_code == 200:
             return response.json()
+        else:
+            st.error(f"API Error: {response.status_code} - {response.text}")
         return None
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException as e:
+        st.error(f"Request failed: {str(e)}")
         return None
 
 
@@ -1243,7 +1251,8 @@ def show_node_manager_page():
                         st.metric("Skipped (already exist)", result['skipped'])
 
                     # Show which airline was used
-                    airline_info = f" (Airline: {source_airline})" if source_airline else " (auto-detected)"
+                    detected = result.get('detected_airline', 'Unknown')
+                    airline_info = f" (Airline: {detected})"
                     st.info(f"📋 Copied from **{result['source_version']}{airline_info}** to: {', '.join(result['target_versions'])}")
 
                     if result.get('errors'):
