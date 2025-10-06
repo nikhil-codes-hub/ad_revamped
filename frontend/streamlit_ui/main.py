@@ -334,6 +334,11 @@ def show_discovery_page():
                     progress_bar.progress(100)
 
                     st.success(f"✅ Discovery completed! Run ID: {result['id']}")
+
+                    # Show warning if no node configurations were found
+                    if result.get('warning'):
+                        st.warning(f"⚠️ {result['warning']}")
+
                     st.session_state.discovery_selected_run = result['id']
                     st.rerun()
 

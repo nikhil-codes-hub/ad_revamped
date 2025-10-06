@@ -331,7 +331,8 @@ class DiscoveryWorkflow:
             'status': 'started',
             'error_details': None,
             'optimization_used': None,
-            'target_paths_loaded': 0
+            'target_paths_loaded': 0,
+            'warning': None
         }
 
         try:
@@ -375,7 +376,11 @@ class DiscoveryWorkflow:
                         version_info.message_root
                     )
                     optimization_strategy = "ndc_target_paths"
-                    logger.info(f"Using {len(target_paths)} database target paths (no node configs found)")
+                    warning_msg = (f"No node configurations found for {version_info.spec_version}/{version_info.message_root}. "
+                                  f"Using fallback target paths from ndc_target_paths table. "
+                                  f"Please configure nodes in Node Manager for better control.")
+                    workflow_results['warning'] = warning_msg
+                    logger.warning(warning_msg)
 
             else:
                 # FALLBACK: Version detection failed

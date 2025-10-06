@@ -97,7 +97,8 @@ async def create_run(
                 message_root=results.get('version_info', {}).get('message_root') if results.get('version_info') else None,
                 airline_code=results.get('version_info', {}).get('airline_code') if results.get('version_info') else None,
                 airline_name=results.get('version_info', {}).get('airline_name') if results.get('version_info') else None,
-                error_details=results.get('error_details')
+                error_details=results.get('error_details'),
+                warning=results.get('warning')
             )
 
         finally:

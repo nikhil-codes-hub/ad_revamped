@@ -66,6 +66,7 @@ class RunResponse(BaseModel):
     node_facts_count: Optional[int] = Field(None, description="Number of node facts extracted")
     subtrees_processed: Optional[int] = Field(None, description="Number of subtrees processed")
     error_details: Optional[str] = Field(None, description="Error information if failed")
+    warning: Optional[str] = Field(None, description="Warning message (e.g., no node configs found)")
 
     class Config:
         from_attributes = True
