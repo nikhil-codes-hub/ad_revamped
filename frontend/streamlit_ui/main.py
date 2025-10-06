@@ -1066,8 +1066,8 @@ def show_node_manager_page():
             df_nodes = pd.DataFrame(nodes_data)
 
             # Convert to PyArrow-compatible types
-            # Use integer (0/1) instead of boolean for PyArrow compatibility
-            df_nodes['Enabled'] = df_nodes['Enabled'].apply(lambda x: 1 if (x is True or x == True) else 0).astype(int)
+            # Use string Yes/No instead of boolean to avoid PyArrow compatibility issues
+            df_nodes['Enabled'] = df_nodes['Enabled'].apply(lambda x: 'Yes' if (x is True or x == True) else 'No')
             df_nodes['Expected References'] = df_nodes['Expected References'].fillna('').astype(str)
             df_nodes['BA Remarks'] = df_nodes['BA Remarks'].fillna('').astype(str)
 
@@ -1080,10 +1080,11 @@ def show_node_manager_page():
                 use_container_width=True,
                 num_rows="fixed",
                 column_config={
-                    "Enabled": st.column_config.CheckboxColumn(
+                    "Enabled": st.column_config.SelectboxColumn(
                         "Enabled",
                         help="Extract this node during Discovery?",
-                        default=True
+                        options=["Yes", "No"],
+                        default="Yes"
                     ),
                     "Expected References": st.column_config.TextColumn(
                         "Expected References",
@@ -1119,7 +1120,7 @@ def show_node_manager_page():
                             'airline_code': result.get('airline_code'),
                             'node_type': row['Node Type'],
                             'section_path': row['Section Path'],
-                            'enabled': bool(row['Enabled']),  # Convert integer back to boolean
+                            'enabled': (row['Enabled'] == 'Yes'),  # Convert Yes/No to boolean
                             'expected_references': refs,
                             'ba_remarks': row['BA Remarks']
                         }
