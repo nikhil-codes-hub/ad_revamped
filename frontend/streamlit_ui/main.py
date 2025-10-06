@@ -1165,19 +1165,27 @@ def show_node_manager_page():
                 config_list = []
                 for config in configs_data['configurations']:
                     config_list.append({
-                        "ID": config['id'],
                         "Version": config['spec_version'],
                         "Message": config['message_root'],
                         "Airline": config['airline_code'] or "All",
                         "Node Type": config['node_type'],
                         "Section Path": config['section_path'],
-                        "Enabled": "✓" if config['enabled'] else "✗",
+                        "Enabled": "Yes" if config['enabled'] else "No",
                         "References": ", ".join(config['expected_references']) if config['expected_references'] else "-",
                         "Remarks": config['ba_remarks'] or "-"
                     })
 
                 df_configs = pd.DataFrame(config_list)
-                st.dataframe(df_configs, use_container_width=True, hide_index=True)
+
+                # Apply color coding to Enabled column
+                def highlight_enabled(row):
+                    if row['Enabled'] == 'Yes':
+                        return ['background-color: #d4edda'] * len(row)  # Light green
+                    else:
+                        return ['background-color: #f8d7da'] * len(row)  # Light red
+
+                styled_df = df_configs.style.apply(highlight_enabled, axis=1)
+                st.dataframe(styled_df, use_container_width=True, hide_index=True)
             else:
                 st.info("No configurations found. Upload an XML in the 'Analyze XML' tab to create configurations.")
 
