@@ -1064,6 +1064,9 @@ def show_node_manager_page():
 
             df_nodes = pd.DataFrame(nodes_data)
 
+            # Explicitly convert boolean column to proper dtype for PyArrow compatibility
+            df_nodes['Enabled'] = df_nodes['Enabled'].astype(bool)
+
             # Use experimental data editor for editable table
             edited_df = st.data_editor(
                 df_nodes[["Enabled", "Node Type", "Section Path", "Expected References", "BA Remarks"]],
