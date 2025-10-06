@@ -7,6 +7,7 @@ Clean table-based interface with sidebar navigation.
 import streamlit as st
 import requests
 import pandas as pd
+import numpy as np
 from datetime import datetime
 from typing import Optional, Dict, Any, List
 
@@ -1064,12 +1065,18 @@ def show_node_manager_page():
 
             df_nodes = pd.DataFrame(nodes_data)
 
-            # Explicitly convert boolean column to proper dtype for PyArrow compatibility
-            df_nodes['Enabled'] = df_nodes['Enabled'].astype(bool)
+            # Explicitly convert columns to proper dtypes for PyArrow compatibility
+            # Convert to numpy bool_ type for PyArrow
+            df_nodes['Enabled'] = df_nodes['Enabled'].fillna(True).astype(np.bool_)
+            df_nodes['Expected References'] = df_nodes['Expected References'].fillna('').astype(str)
+            df_nodes['BA Remarks'] = df_nodes['BA Remarks'].fillna('').astype(str)
+
+            # Create a clean subset with proper dtypes
+            display_df = df_nodes[["Enabled", "Node Type", "Section Path", "Expected References", "BA Remarks"]].copy()
 
             # Use experimental data editor for editable table
             edited_df = st.data_editor(
-                df_nodes[["Enabled", "Node Type", "Section Path", "Expected References", "BA Remarks"]],
+                display_df,
                 use_container_width=True,
                 num_rows="fixed",
                 column_config={
