@@ -116,12 +116,17 @@ class DiscoveryWorkflow:
         """
         target_paths = []
         for section_path, config in node_configs.items():
+            # Normalize path to match XML parser's format
+            # Remove IATA_ prefix variations (17.2 vs 19.2+)
+            normalized_path = section_path.replace('IATA_OrderViewRS/', 'OrderViewRS/')
+            normalized_path = normalized_path.replace('/IATA_OrderViewRS/', '/OrderViewRS/')
+
             # Convert to parser format
             target_paths.append({
                 'id': config['id'],
                 'spec_version': None,  # Will be set by parser
                 'message_root': None,  # Will be set by parser
-                'path_local': f"/{section_path}",  # Add leading slash for parser
+                'path_local': f"/{normalized_path}",  # Add leading slash for parser
                 'extractor_key': 'llm',  # Use LLM extraction by default
                 'is_required': False,
                 'importance': 'medium',
@@ -141,9 +146,17 @@ class DiscoveryWorkflow:
             # No configs loaded - extract everything (backward compatibility)
             return True
 
+        # Normalize the section_path to match node_configs format
+        normalized_section = section_path.replace('IATA_OrderViewRS/', 'OrderViewRS/')
+        normalized_section = normalized_section.replace('/IATA_OrderViewRS/', '/OrderViewRS/')
+
         # Check if this path has a configuration
         for config_path, config in node_configs.items():
-            if config_path in section_path:
+            # Normalize config path too
+            normalized_config = config_path.replace('IATA_OrderViewRS/', 'OrderViewRS/')
+            normalized_config = normalized_config.replace('/IATA_OrderViewRS/', '/OrderViewRS/')
+
+            if normalized_config in normalized_section or config_path in section_path:
                 return config['enabled']
 
         # No matching config - default to extract
