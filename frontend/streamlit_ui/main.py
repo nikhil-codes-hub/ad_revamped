@@ -1054,7 +1054,7 @@ def show_node_manager_page():
             for idx, node in enumerate(result['nodes']):
                 nodes_data.append({
                     "Index": idx,
-                    "Enabled": node.get('enabled', True),
+                    "Enabled": node.get('enabled', False),
                     "Node Type": node['node_type'],
                     "Section Path": node['section_path'],
                     "Expected References": ", ".join(node.get('expected_references', [])),
@@ -1065,22 +1065,15 @@ def show_node_manager_page():
 
             df_nodes = pd.DataFrame(nodes_data)
 
-            # Convert to PyArrow-compatible types
-            # Use string Yes/No instead of boolean to avoid PyArrow compatibility issues
-            df_nodes['Enabled'] = df_nodes['Enabled'].apply(lambda x: 'Yes' if (x is True or x == True) else 'No').astype(str)
+            # Convert to proper dtypes for PyArrow 20.0.0 compatibility
+            df_nodes['Enabled'] = df_nodes['Enabled'].fillna(False).astype(bool)
             df_nodes['Expected References'] = df_nodes['Expected References'].fillna('').astype(str)
             df_nodes['BA Remarks'] = df_nodes['BA Remarks'].fillna('').astype(str)
             df_nodes['Node Type'] = df_nodes['Node Type'].astype(str)
             df_nodes['Section Path'] = df_nodes['Section Path'].astype(str)
 
-            # Create display dataframe with explicit string dtypes
-            display_df = pd.DataFrame({
-                "Enabled": df_nodes['Enabled'].values.astype(str),
-                "Node Type": df_nodes['Node Type'].values.astype(str),
-                "Section Path": df_nodes['Section Path'].values.astype(str),
-                "Expected References": df_nodes['Expected References'].values.astype(str),
-                "BA Remarks": df_nodes['BA Remarks'].values.astype(str)
-            })
+            # Create display dataframe
+            display_df = df_nodes[["Enabled", "Node Type", "Section Path", "Expected References", "BA Remarks"]].copy()
 
             # Use experimental data editor for editable table
             edited_df = st.data_editor(
@@ -1088,11 +1081,10 @@ def show_node_manager_page():
                 use_container_width=True,
                 num_rows="fixed",
                 column_config={
-                    "Enabled": st.column_config.SelectboxColumn(
+                    "Enabled": st.column_config.CheckboxColumn(
                         "Enabled",
                         help="Extract this node during Discovery?",
-                        options=["Yes", "No"],
-                        default="Yes"
+                        default=False
                     ),
                     "Expected References": st.column_config.TextColumn(
                         "Expected References",
@@ -1128,7 +1120,7 @@ def show_node_manager_page():
                             'airline_code': result.get('airline_code'),
                             'node_type': row['Node Type'],
                             'section_path': row['Section Path'],
-                            'enabled': (row['Enabled'] == 'Yes'),  # Convert Yes/No to boolean
+                            'enabled': bool(row['Enabled']),
                             'expected_references': refs,
                             'ba_remarks': row['BA Remarks']
                         }

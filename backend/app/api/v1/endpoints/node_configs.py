@@ -110,7 +110,7 @@ async def analyze_xml_structure(
                     result_nodes.append({
                         **node,
                         "config_id": None,
-                        "enabled": True,  # Default to enabled
+                        "enabled": False,  # Default to disabled
                         "expected_references": [],
                         "ba_remarks": "",
                         "is_configured": False
