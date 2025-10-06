@@ -52,25 +52,42 @@ class LLMNodeFactsExtractor:
         try:
             if self.provider == "azure" and settings.AZURE_OPENAI_KEY:
                 # Initialize Azure OpenAI client
+                logger.info(f"Initializing Azure OpenAI client...")
+                logger.info(f"  Endpoint: {settings.AZURE_OPENAI_ENDPOINT}")
+                logger.info(f"  API Version: {settings.AZURE_API_VERSION}")
+                logger.info(f"  Model Deployment: {settings.MODEL_DEPLOYMENT_NAME}")
+
                 self.client = AsyncAzureOpenAI(
                     api_key=settings.AZURE_OPENAI_KEY,
                     azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
                     api_version=settings.AZURE_API_VERSION
                 )
                 self.model = settings.MODEL_DEPLOYMENT_NAME
-                logger.info(f"LLM extractor initialized with Azure OpenAI: {self.model}")
+                logger.info(f"✅ LLM extractor initialized successfully with Azure OpenAI: {self.model}")
 
             elif settings.OPENAI_API_KEY:
                 # Fallback to OpenAI
+                logger.info(f"Initializing OpenAI client...")
+                logger.info(f"  Model: {settings.LLM_MODEL}")
+
                 self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
                 self.model = settings.LLM_MODEL
-                logger.info(f"LLM extractor initialized with OpenAI: {self.model}")
+                logger.info(f"✅ LLM extractor initialized successfully with OpenAI: {self.model}")
 
             else:
-                logger.warning("No LLM API keys found - LLM extraction disabled")
+                logger.error("❌ LLM INITIALIZATION FAILED: No API keys found!")
+                logger.error("  Please set either:")
+                logger.error("    - AZURE_OPENAI_KEY + AZURE_OPENAI_ENDPOINT (for Azure)")
+                logger.error("    - OPENAI_API_KEY (for OpenAI)")
+                logger.warning("⚠️ LLM extraction is DISABLED - Discovery will fail!")
 
         except Exception as e:
-            logger.error(f"Failed to initialize LLM client: {e}")
+            logger.error(f"❌ CRITICAL: Failed to initialize LLM client: {type(e).__name__}: {str(e)}")
+            logger.error(f"  Provider: {self.provider}")
+            logger.error(f"  Endpoint: {settings.AZURE_OPENAI_ENDPOINT if self.provider == 'azure' else 'N/A'}")
+            logger.error(f"  This will cause Discovery to fail!")
+            import traceback
+            logger.error(f"  Traceback:\n{traceback.format_exc()}")
 
     def _analyze_xml_structure(self, xml_content: str, section_path: str) -> Dict[str, Any]:
         """
@@ -163,11 +180,15 @@ class LLMNodeFactsExtractor:
     async def _call_llm(self, prompt: str) -> Dict[str, Any]:
         """Call LLM API for extraction."""
         if not self.client:
-            raise ValueError("LLM client not initialized")
+            error_msg = "LLM client not initialized - check API keys in .env file"
+            logger.error(f"❌ {error_msg}")
+            raise ValueError(error_msg)
 
         start_time = datetime.now()
 
         try:
+            logger.info(f"Calling LLM API (model: {self.model}, max_tokens: {self.max_tokens})...")
+
             response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
@@ -184,7 +205,8 @@ class LLMNodeFactsExtractor:
             processing_time = int((datetime.now() - start_time).total_seconds() * 1000)
 
             content = response.choices[0].message.content
-            logger.info(f"LLM raw response ({len(content)} chars): {content[:500]}...")
+            logger.info(f"✅ LLM API call successful ({len(content)} chars, {processing_time}ms)")
+            logger.debug(f"   Response preview: {content[:200]}...")
 
             return {
                 "content": content,
@@ -193,9 +215,35 @@ class LLMNodeFactsExtractor:
                 "model": response.model
             }
 
+        except openai.AuthenticationError as e:
+            logger.error(f"❌ LLM AUTHENTICATION FAILED: Invalid API key")
+            logger.error(f"   Provider: {self.provider}")
+            logger.error(f"   Error: {str(e)}")
+            raise ValueError(f"LLM Authentication Failed: Check your API keys in .env file")
+
+        except openai.RateLimitError as e:
+            logger.error(f"❌ LLM RATE LIMIT EXCEEDED")
+            logger.error(f"   Error: {str(e)}")
+            raise ValueError(f"LLM Rate Limit Exceeded: Please try again later")
+
+        except openai.APIConnectionError as e:
+            logger.error(f"❌ LLM CONNECTION ERROR: Cannot reach API endpoint")
+            logger.error(f"   Endpoint: {settings.AZURE_OPENAI_ENDPOINT if self.provider == 'azure' else 'OpenAI'}")
+            logger.error(f"   Error: {str(e)}")
+            raise ValueError(f"LLM Connection Error: Check network and endpoint configuration")
+
+        except openai.APITimeoutError as e:
+            logger.error(f"❌ LLM TIMEOUT: Request took too long")
+            logger.error(f"   Error: {str(e)}")
+            raise ValueError(f"LLM Timeout: Request took too long, try with smaller XML")
+
         except Exception as e:
-            logger.error(f"LLM API call failed: {e}")
-            raise
+            logger.error(f"❌ LLM API CALL FAILED: {type(e).__name__}: {str(e)}")
+            logger.error(f"   Model: {self.model}")
+            logger.error(f"   Provider: {self.provider}")
+            import traceback
+            logger.error(f"   Traceback:\n{traceback.format_exc()}")
+            raise ValueError(f"LLM API Error: {type(e).__name__}: {str(e)}")
 
     def _parse_llm_response(self, llm_response: str) -> List[Dict[str, Any]]:
         """Parse and validate LLM response."""
@@ -384,16 +432,19 @@ class LLMNodeFactsExtractor:
                 extraction_method="llm"
             )
 
+        except ValueError as e:
+            # These are our custom error messages - re-raise them
+            logger.error(f"❌ LLM extraction failed for {subtree.path}: {str(e)}")
+            raise
+
         except Exception as e:
-            logger.error(f"LLM extraction failed for {subtree.path}: {e}")
-            return LLMExtractionResult(
-                node_facts=[],
-                confidence_score=0.0,
-                processing_time_ms=int((datetime.now() - start_time).total_seconds() * 1000),
-                tokens_used=0,
-                model_used=self.model,
-                extraction_method="llm_error"
-            )
+            logger.error(f"❌ UNEXPECTED ERROR in LLM extraction for {subtree.path}")
+            logger.error(f"   Error type: {type(e).__name__}")
+            logger.error(f"   Error message: {str(e)}")
+            import traceback
+            logger.error(f"   Traceback:\n{traceback.format_exc()}")
+
+            raise ValueError(f"LLM Extraction Error: {type(e).__name__}: {str(e)}")
 
     def extract_from_subtree_sync(self, subtree: XmlSubtree,
                                 context: Optional[Dict[str, Any]] = None) -> LLMExtractionResult:

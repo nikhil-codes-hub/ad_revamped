@@ -57,10 +57,44 @@ def upload_file_for_run(file, run_kind: str, target_version: Optional[str] = Non
         if response.status_code == 200:
             return response.json()
         else:
-            st.error(f"Upload failed: {response.text}")
+            # Try to extract detailed error message from response
+            try:
+                error_data = response.json()
+                error_detail = error_data.get('detail', response.text)
+            except:
+                error_detail = response.text
+
+            st.error(f"❌ **Upload Failed** (Status {response.status_code})")
+            st.error(f"{error_detail}")
+
+            # Show helpful hints based on error content
+            if "API" in str(error_detail) or "LLM" in str(error_detail):
+                st.info("💡 **Troubleshooting Tips:**\n"
+                       "- Check your `.env` file has correct API keys\n"
+                       "- Verify AZURE_OPENAI_KEY or OPENAI_API_KEY is set\n"
+                       "- Check AZURE_OPENAI_ENDPOINT is correct\n"
+                       "- Review backend logs for detailed error messages")
+            elif "XML" in str(error_detail):
+                st.info("💡 **Troubleshooting Tips:**\n"
+                       "- Verify the XML file is well-formed\n"
+                       "- Check if the file is a valid NDC OrderViewRS\n"
+                       "- Try opening the XML in a validator first")
+
             return None
+
+    except requests.exceptions.Timeout:
+        st.error(f"❌ **Request Timeout**: The server took too long to respond")
+        st.info("💡 The XML file might be too large. Try with a smaller file.")
+        return None
+
+    except requests.exceptions.ConnectionError as e:
+        st.error(f"❌ **Connection Error**: Cannot reach the backend server")
+        st.error(f"Details: {str(e)}")
+        st.info("💡 Make sure the backend is running: `uvicorn app.main:app --reload`")
+        return None
+
     except requests.exceptions.RequestException as e:
-        st.error(f"Upload error: {str(e)}")
+        st.error(f"❌ **Request Error**: {str(e)}")
         return None
 
 
@@ -309,38 +343,71 @@ def show_discovery_page():
                 result = upload_file_for_run(uploaded_file, "discovery")
 
                 if result:
-                    # Step 3: Processing events
-                    status_text.text("📋 Parsing XML structure...")
-                    progress_bar.progress(30)
-                    time.sleep(0.2)
+                    # Check if there was an error during processing
+                    if result.get('error_details'):
+                        status_text.empty()
+                        progress_bar.empty()
 
-                    status_text.text("🤖 LLM extracting NodeFacts...")
-                    progress_bar.progress(50)
-                    time.sleep(0.3)
+                        st.error(f"❌ **Discovery Failed**")
+                        st.error(f"**Error:** {result['error_details']}")
 
-                    status_text.text("🧠 Applying business intelligence...")
-                    progress_bar.progress(70)
-                    time.sleep(0.2)
+                        # Show helpful hints based on error content
+                        error_detail = result['error_details']
+                        if "LLM" in error_detail or "API" in error_detail:
+                            st.info("💡 **LLM/API Error - Troubleshooting:**\n"
+                                   "- Check backend logs for detailed error messages\n"
+                                   "- Verify `.env` file has correct API keys:\n"
+                                   "  - AZURE_OPENAI_KEY + AZURE_OPENAI_ENDPOINT (for Azure)\n"
+                                   "  - OPENAI_API_KEY (for OpenAI)\n"
+                                   "- Test your API credentials independently\n"
+                                   "- Check if you have exceeded rate limits")
+                        elif "XML" in error_detail:
+                            st.info("💡 **XML Parsing Error - Troubleshooting:**\n"
+                                   "- Verify the XML file is well-formed\n"
+                                   "- Check if the file is valid NDC OrderViewRS format\n"
+                                   "- Try validating the XML with an online validator\n"
+                                   "- Look for unclosed tags or special characters")
+                        else:
+                            st.info("💡 **Troubleshooting:**\n"
+                                   "- Check backend logs for full error details\n"
+                                   "- Run: `tail -f backend_logs.txt` or check console output\n"
+                                   "- Contact support with the Run ID above")
 
-                    status_text.text("🏗️ Generating patterns...")
-                    progress_bar.progress(85)
-                    time.sleep(0.2)
+                        st.info(f"📋 **Run ID:** `{result['id']}` (check logs with this ID)")
 
-                    status_text.text("💾 Saving to database...")
-                    progress_bar.progress(95)
-                    time.sleep(0.2)
+                    else:
+                        # Step 3: Processing events
+                        status_text.text("📋 Parsing XML structure...")
+                        progress_bar.progress(30)
+                        time.sleep(0.2)
 
-                    status_text.text("✅ Discovery completed!")
-                    progress_bar.progress(100)
+                        status_text.text("🤖 LLM extracting NodeFacts...")
+                        progress_bar.progress(50)
+                        time.sleep(0.3)
 
-                    st.success(f"✅ Discovery completed! Run ID: {result['id']}")
+                        status_text.text("🧠 Applying business intelligence...")
+                        progress_bar.progress(70)
+                        time.sleep(0.2)
 
-                    # Show warning if no node configurations were found
-                    if result.get('warning'):
-                        st.warning(f"⚠️ {result['warning']}")
+                        status_text.text("🏗️ Generating patterns...")
+                        progress_bar.progress(85)
+                        time.sleep(0.2)
 
-                    st.session_state.discovery_selected_run = result['id']
-                    st.rerun()
+                        status_text.text("💾 Saving to database...")
+                        progress_bar.progress(95)
+                        time.sleep(0.2)
+
+                        status_text.text("✅ Discovery completed!")
+                        progress_bar.progress(100)
+
+                        st.success(f"✅ Discovery completed! Run ID: {result['id']}")
+
+                        # Show warning if no node configurations were found
+                        if result.get('warning'):
+                            st.warning(f"⚠️ {result['warning']}")
+
+                        st.session_state.discovery_selected_run = result['id']
+                        st.rerun()
 
     st.divider()
 

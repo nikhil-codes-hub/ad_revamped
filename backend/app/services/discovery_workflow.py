@@ -494,13 +494,26 @@ class DiscoveryWorkflow:
                                 # Store LLM-extracted facts
                                 facts_stored = self._store_llm_node_facts(run_id, subtree, llm_result)
 
+                            except ValueError as e:
+                                # ValueErrors contain detailed user-friendly messages - propagate them
+                                error_msg = str(e)
+                                logger.error(f"❌ LLM EXTRACTION FAILED for {subtree.path}")
+                                logger.error(f"   Error: {error_msg}")
+                                logger.error(f"   This is likely a configuration or connectivity issue")
+                                logger.error(f"   Please check the logs and .env file")
+
+                                # Don't fallback - raise the error to stop processing
+                                raise ValueError(f"LLM Extraction Failed: {error_msg}")
+
                             except Exception as e:
-                                logger.error(f"LLM extraction failed for {subtree.path}: {e}")
-                                # Fallback to templates
-                                logger.info(f"Falling back to template extraction for {subtree.path}")
-                                template_keys = self._get_template_keys_for_path(matching_target)
-                                extraction_results = template_extractor.extract_from_subtree(subtree, template_keys)
-                                facts_stored = self._store_node_facts(run_id, subtree, extraction_results)
+                                logger.error(f"❌ UNEXPECTED ERROR during LLM extraction for {subtree.path}")
+                                logger.error(f"   Error type: {type(e).__name__}")
+                                logger.error(f"   Error message: {str(e)}")
+                                import traceback
+                                logger.error(f"   Traceback:\n{traceback.format_exc()}")
+
+                                # Raise with context
+                                raise ValueError(f"Discovery Error: {type(e).__name__}: {str(e)}")
                         else:
                             # LLM not available, use templates directly
                             logger.info(f"LLM client not available, using template extraction for {subtree.path}")

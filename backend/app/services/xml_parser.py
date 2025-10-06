@@ -437,11 +437,19 @@ class XmlStreamingParser:
                         element_stack.pop()
 
         except etree.XMLSyntaxError as e:
-            logger.error(f"XML syntax error in {xml_file_path}: {e}")
-            raise ValueError(f"Invalid XML syntax: {e}")
+            logger.error(f"❌ XML SYNTAX ERROR in {xml_file_path}")
+            logger.error(f"   Error: {str(e)}")
+            logger.error(f"   Line: {e.lineno if hasattr(e, 'lineno') else 'Unknown'}")
+            logger.error(f"   The XML file is malformed or corrupted")
+            raise ValueError(f"Invalid XML: {str(e)} at line {e.lineno if hasattr(e, 'lineno') else 'unknown'}")
+
         except Exception as e:
-            logger.error(f"Error parsing XML file {xml_file_path}: {e}")
-            raise
+            logger.error(f"❌ XML PARSING ERROR in {xml_file_path}")
+            logger.error(f"   Error type: {type(e).__name__}")
+            logger.error(f"   Error message: {str(e)}")
+            import traceback
+            logger.error(f"   Traceback:\n{traceback.format_exc()}")
+            raise ValueError(f"XML Parsing Error: {type(e).__name__}: {str(e)}")
 
         logger.info(f"Completed XML parsing: {subtrees_found} target subtrees found")
 
