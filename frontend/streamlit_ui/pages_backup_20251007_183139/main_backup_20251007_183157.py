@@ -2116,53 +2116,23 @@ def main():
     st.sidebar.title("🔍 AssistedDiscovery")
     st.sidebar.divider()
 
-    # Workspace Selector
-    st.sidebar.subheader("🗂️ Workspace")
-    workspaces = ["default", "LATAM", "LH", "SQ", "VY", "AFKL"]
-    current_workspace = st.sidebar.selectbox(
-        "Select Workspace:",
-        workspaces,
-        key="current_workspace",
-        help="Organize patterns by workspace (airline, project, etc.)"
-    )
-
-    st.sidebar.caption(f"📁 Active: **{current_workspace}**")
-    st.sidebar.divider()
-
-    # Main Navigation
     page = st.sidebar.radio(
         "Navigation",
-        ["🔬 Discovery", "🎯 Identify", "🎨 Pattern Manager", "📚 Pattern Explorer", "📋 Node Manager"],
+        ["🔬 Discovery", "🎯 Identify", "📚 Pattern Explorer", "📋 Node Manager"],
         label_visibility="collapsed"
     )
-
-    st.sidebar.divider()
-
-    # Cost Display (placeholder for now)
-    st.sidebar.subheader("💰 Token Usage")
-    col1, col2 = st.sidebar.columns(2)
-    with col1:
-        st.metric("Session", "0", help="Tokens used this session")
-    with col2:
-        st.metric("Total", "0", help="Total tokens used")
-    st.sidebar.caption("💡 Token tracking coming soon")
 
     st.sidebar.divider()
 
     # Show system status
     st.sidebar.subheader("System Status")
     st.sidebar.success("✅ API Connected")
-    backend_patterns_count = len(get_patterns(limit=500))
-    st.sidebar.metric("Backend Patterns", backend_patterns_count)
 
     # Show page based on selection
     if page == "🔬 Discovery":
         show_discovery_page()
     elif page == "🎯 Identify":
         show_identify_page()
-    elif page == "🎨 Pattern Manager":
-        from pattern_manager import show_pattern_manager_page
-        show_pattern_manager_page()
     elif page == "📚 Pattern Explorer":
         show_patterns_page()
     elif page == "📋 Node Manager":
