@@ -111,6 +111,7 @@ class Run(Base):
     # Relationships
     node_facts = relationship("NodeFact", back_populates="run", cascade="all, delete-orphan")
     association_facts = relationship("AssociationFact", back_populates="run", cascade="all, delete-orphan")
+    node_relationships = relationship("NodeRelationship", back_populates="run", cascade="all, delete-orphan")
     pattern_matches = relationship("PatternMatch", back_populates="run", cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -178,6 +179,51 @@ class AssociationFact(Base):
 
     def __repr__(self):
         return f"<AssociationFact({self.rel_type}: {self.from_node_type} -> {self.to_node_type})>"
+
+
+class NodeRelationship(Base):
+    """LLM-discovered and validated relationships between nodes with metadata."""
+
+    __tablename__ = "node_relationships"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    run_id = Column(String(36), ForeignKey("runs.id", ondelete="CASCADE"), nullable=False)
+
+    # Source node (contains the reference)
+    source_node_fact_id = Column(BigInteger, ForeignKey("node_facts.id", ondelete="CASCADE"), nullable=False)
+    source_node_type = Column(String(255), nullable=False)
+    source_section_path = Column(String(500), nullable=False)
+
+    # Target node (being referenced)
+    target_node_fact_id = Column(BigInteger, ForeignKey("node_facts.id", ondelete="CASCADE"), nullable=True, comment="NULL if reference is broken")
+    target_node_type = Column(String(255), nullable=False)
+    target_section_path = Column(String(500), nullable=False)
+
+    # Relationship details
+    reference_type = Column(String(100), nullable=False, comment="e.g., 'pax_reference', 'segment_reference', 'infant_parent'")
+    reference_field = Column(String(255), comment="Field containing reference, e.g., 'PaxRefID'")
+    reference_value = Column(String(255), comment="Actual reference value, e.g., 'PAX1'")
+
+    # Validation and discovery metadata
+    is_valid = Column(Boolean, default=True, comment="Does reference resolve to target?")
+    was_expected = Column(Boolean, default=False, comment="Was this in expected_references?")
+    confidence = Column(DECIMAL(3, 2), default=1.0, comment="LLM confidence (0.0-1.0)")
+
+    # Discovery source
+    discovered_by = Column(String(50), default='llm', comment="'llm' or 'config'")
+    model_used = Column(String(100), comment="LLM model that discovered this")
+
+    created_at = Column(DateTime, default=func.now())
+
+    # Relationships
+    run = relationship("Run", back_populates="node_relationships")
+    source_node = relationship("NodeFact", foreign_keys=[source_node_fact_id])
+    target_node = relationship("NodeFact", foreign_keys=[target_node_fact_id])
+
+    def __repr__(self):
+        status = "✓" if self.is_valid else "✗"
+        expected = "[expected]" if self.was_expected else "[discovered]"
+        return f"<NodeRelationship({status} {self.reference_type} {expected}: {self.source_node_type} -> {self.target_node_type})>"
 
 
 class Pattern(Base):

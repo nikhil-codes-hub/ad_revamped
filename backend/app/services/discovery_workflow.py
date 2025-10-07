@@ -582,6 +582,37 @@ class DiscoveryWorkflow:
                        f"Facts: {total_facts_extracted}, "
                        f"Skipped by config: {nodes_skipped_by_config}")
 
+            # PHASE 2.5: Relationship Analysis (if NodeFacts were extracted)
+            if total_facts_extracted > 0:
+                logger.info(f"Phase 2.5: Analyzing relationships between {total_facts_extracted} NodeFacts")
+                try:
+                    from app.services.relationship_analyzer import create_relationship_analyzer
+
+                    # Get all extracted node facts for this run
+                    node_facts = self.db_session.query(NodeFact).filter(
+                        NodeFact.run_id == run_id
+                    ).all()
+
+                    # Analyze relationships using LLM
+                    relationship_analyzer = create_relationship_analyzer(self.db_session)
+                    relationship_results = relationship_analyzer.analyze_relationships(
+                        run_id,
+                        node_facts
+                    )
+
+                    workflow_results['relationship_analysis'] = relationship_results
+
+                    logger.info(f"Relationship analysis completed: "
+                               f"{relationship_results.get('relationships_count', 0)} relationships discovered, "
+                               f"{relationship_results['statistics'].get('valid_relationships', 0)} valid, "
+                               f"{relationship_results['statistics'].get('broken_relationships', 0)} broken")
+                except Exception as e:
+                    logger.error(f"Relationship analysis failed for run {run_id}: {e}")
+                    workflow_results['relationship_analysis'] = {
+                        'success': False,
+                        'error': str(e)
+                    }
+
             # PHASE 3: Pattern Generation (if NodeFacts were extracted)
             if total_facts_extracted > 0:
                 logger.info(f"Phase 3: Generating patterns from {total_facts_extracted} NodeFacts")

@@ -276,6 +276,17 @@ async def generate_detailed_explanation(
         node_structure = node_fact.fact_json
         pattern_rule = pattern.decision_rule if pattern else None
 
+        # Defensive check: ensure JSON fields are dicts, not strings
+        if isinstance(node_structure, str):
+            logger.error(f"node_structure is a string, not a dict: {node_structure[:100]}")
+            import json
+            node_structure = json.loads(node_structure)
+
+        if isinstance(pattern_rule, str):
+            logger.error(f"pattern_rule is a string, not a dict: {pattern_rule[:100]}")
+            import json
+            pattern_rule = json.loads(pattern_rule)
+
         if pattern:
             # Determine if this is a mismatch
             is_mismatch = match.confidence < 0.95
@@ -410,8 +421,8 @@ Explain in 2-3 sentences:
 Be factual and concise. Format as a paragraph, NOT bullet points.
 """
 
-        # Call LLM
-        detailed_explanation = llm.generate_explanation(prompt)
+        # Call LLM (async)
+        detailed_explanation = await llm.generate_explanation_async(prompt)
 
         # Store in match_metadata (cache for future requests)
         match_metadata['detailed_explanation'] = detailed_explanation
@@ -427,5 +438,7 @@ Be factual and concise. Format as a paragraph, NOT bullet points.
         }
 
     except Exception as e:
+        import traceback
         logger.error(f"Error generating explanation: {str(e)}")
+        logger.error(f"Full traceback:\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Failed to generate explanation: {str(e)}")

@@ -206,3 +206,39 @@ class ErrorResponse(BaseModel):
     detail: str = Field(..., description="Error message")
     error_code: Optional[str] = Field(None, description="Specific error code")
     timestamp: str = Field(..., description="Error timestamp")
+
+
+# Relationship Models
+class RelationshipResponse(BaseModel):
+    """Response model for discovered node relationships."""
+    model_config = {"protected_namespaces": (), "from_attributes": True}
+
+    id: int = Field(..., description="Unique relationship ID")
+    run_id: str = Field(..., description="Run ID this relationship belongs to")
+    source_node_type: str = Field(..., description="Source node type (e.g., PaxSegment)")
+    source_section_path: str = Field(..., description="Source node section path")
+    target_node_type: str = Field(..., description="Target node type (e.g., Pax)")
+    target_section_path: str = Field(..., description="Target node section path")
+    reference_type: str = Field(..., description="Type of reference (e.g., pax_reference)")
+    reference_field: Optional[str] = Field(None, description="Field containing reference (e.g., PaxRefID)")
+    reference_value: Optional[str] = Field(None, description="Actual reference value (e.g., PAX1)")
+    is_valid: bool = Field(..., description="Does the reference resolve to a target node?")
+    was_expected: bool = Field(..., description="Was this in expected_references config?")
+    confidence: Optional[float] = Field(None, description="LLM confidence score (0.0-1.0)")
+    discovered_by: Optional[str] = Field(None, description="Discovery source (llm or config)")
+    model_used: Optional[str] = Field(None, description="LLM model that discovered this")
+    created_at: Optional[str] = Field(None, description="When relationship was discovered")
+
+
+class RelationshipStatsResponse(BaseModel):
+    """Statistics about discovered relationships."""
+    total_relationships: int = Field(..., description="Total number of relationships")
+    valid_relationships: int = Field(..., description="Number of valid relationships")
+    broken_relationships: int = Field(..., description="Number of broken relationships")
+    expected_relationships: int = Field(..., description="Number of expected relationships")
+    discovered_relationships: int = Field(..., description="Number of discovered relationships")
+    reference_type_breakdown: Dict[str, int] = Field(..., description="Count by reference type")
+    top_reference_types: List[Dict[str, Any]] = Field(..., description="Most common reference types")
+
+    class Config:
+        from_attributes = True

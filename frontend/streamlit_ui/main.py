@@ -42,43 +42,165 @@ def build_node_tree(nodes: List[Dict]) -> List[Dict]:
         nodes: List of node dicts with 'section_path', 'node_type', 'enabled', etc.
 
     Returns:
-        List of tree nodes in format: {"label": str, "value": str, "checked": bool, "children": []}
+        List of tree nodes in format: {"label": str, "value": str, "children": []}
     """
-    # Build a dictionary mapping section_path to node
+    if not nodes:
+        return []
+
+    # Build a dictionary mapping section_path to node (with temporary children list)
     path_to_node = {}
     for node in nodes:
         path = node['section_path']
         path_to_node[path] = {
             "label": node['node_type'],
             "value": path,
-            "checked": node.get('enabled', False),
-            "children": []
+            "_children": []  # Temporary field
         }
 
     # Build tree hierarchy
     root_nodes = []
-    for path, tree_node in path_to_node.items():
-        # Find parent path
+    for path in sorted(path_to_node.keys()):  # Sort to ensure parents come before children
         parts = path.split('/')
         if len(parts) == 1:
             # This is a root node
-            root_nodes.append(tree_node)
+            root_nodes.append(path_to_node[path])
         else:
-            # Find parent
+            # Find parent and add as child
             parent_path = '/'.join(parts[:-1])
             if parent_path in path_to_node:
-                path_to_node[parent_path]['children'].append(tree_node)
+                path_to_node[parent_path]['_children'].append(path_to_node[path])
 
-    # Clean up empty children arrays
-    def clean_tree(nodes):
-        for node in nodes:
-            if node.get('children') is not None and len(node['children']) == 0:
-                del node['children']
-            elif node.get('children'):
-                clean_tree(node['children'])
-        return nodes
+    # Convert _children to children (only if non-empty) and remove the field
+    def finalize_tree(node_list):
+        for node in node_list:
+            children = node.pop('_children', [])
+            if children:
+                finalize_tree(children)  # Recursively finalize children
+                node['children'] = children
+            # If no children, don't add the field at all
+        return node_list
 
-    return clean_tree(root_nodes)
+    return finalize_tree(root_nodes)
+
+
+def flatten_tree_values(nodes: List[Dict[str, Any]]) -> List[str]:
+    """Return a flat list of all node values found in a tree-select node structure."""
+    values: List[str] = []
+    for node in nodes:
+        value = node.get('value')
+        if value:
+            values.append(value)
+        children = node.get('children') or []
+        if children:
+            values.extend(flatten_tree_values(children))
+    return values
+
+
+def _path_ancestors(path: str) -> List[str]:
+    parts = path.split('/')
+    return ['/'.join(parts[:i]) for i in range(1, len(parts)) if parts[:i]]
+
+
+def filter_raw_paths(raw_paths: List[str], previous_raw: Optional[List[str]] = None,
+                     previous_effective: Optional[List[str]] = None) -> List[str]:
+    """Remove auto-selected descendants when parent is newly chosen."""
+    unique_paths = list(dict.fromkeys(raw_paths or []))
+    prev_selected = set(previous_raw or []) | set(previous_effective or [])
+    raw_set = set(unique_paths)
+
+    filtered = []
+    for path in unique_paths:
+        has_parent_selected = any(parent in raw_set for parent in _path_ancestors(path))
+        if has_parent_selected and path not in prev_selected:
+            continue  # Skip descendants implicitly checked via parent
+        filtered.append(path)
+
+    return filtered
+
+
+def compute_effective_paths(raw_paths: List[str],
+                            previous_effective: Optional[List[str]] = None,
+                            previous_raw: Optional[List[str]] = None) -> List[str]:
+    """Compute effective enabled paths based on filtered raw selections and prior state."""
+
+    filtered_raw = filter_raw_paths(raw_paths, previous_raw, previous_effective)
+    prev_paths = previous_effective or []
+
+    raw_set = set(filtered_raw)
+    prev_set = set(prev_paths)
+    final_set = set(prev_paths)
+
+    # Remove entries explicitly unchecked (no descendants selected)
+    removed_paths = prev_set - raw_set
+    for path in removed_paths:
+        has_descendant = any(desc == path or desc.startswith(f"{path}/") for desc in raw_set)
+        if not has_descendant:
+            final_set.discard(path)
+
+    # Add newly checked nodes
+    final_set.update(raw_set)
+
+    # When child selected without parent previously, ensure parent stays disabled
+    for path in list(final_set):
+        for parent in _path_ancestors(path):
+            if parent in final_set and parent not in prev_set and parent not in raw_set:
+                final_set.discard(parent)
+
+    ordered: List[str] = []
+
+    for path in prev_paths:
+        if path in final_set and path not in ordered:
+            ordered.append(path)
+
+    for path in filtered_raw:
+        if path in final_set and path not in ordered:
+            ordered.append(path)
+
+    # Add any remaining (e.g., parents restored due to descendants) by depth
+    for path in sorted(final_set, key=lambda p: (p.count('/'), p)):
+        if path not in ordered:
+            ordered.append(path)
+
+    return ordered
+
+
+def merge_existing_configs(result: Dict[str, Any]) -> Dict[str, Any]:
+    """Merge existing node configurations from API into analyzed nodes."""
+    if not result or 'spec_version' not in result or 'message_root' not in result:
+        return result
+
+    configs_data = get_node_configurations(
+        spec_version=result.get('spec_version'),
+        message_root=result.get('message_root'),
+        airline_code=result.get('airline_code')
+    )
+
+    if not configs_data or not configs_data.get('configurations'):
+        return result
+
+    config_map = {}
+    for cfg in configs_data['configurations']:
+        section_path = cfg.get('section_path')
+        if section_path:
+            config_map[section_path] = cfg
+
+    for node in result.get('nodes', []):
+        cfg = config_map.get(node.get('section_path'))
+        if not cfg:
+            continue
+
+        config_id = cfg.get('config_id') or cfg.get('id')
+        if config_id:
+            node['config_id'] = config_id
+
+        if 'enabled' in cfg:
+            node['enabled'] = cfg['enabled']
+        if 'expected_references' in cfg:
+            node['expected_references'] = cfg['expected_references'] or []
+        if 'ba_remarks' in cfg:
+            node['ba_remarks'] = cfg['ba_remarks'] or ''
+
+    return result
 
 
 def upload_file_for_run(file, run_kind: str, target_version: Optional[str] = None, target_message_root: Optional[str] = None, target_airline_code: Optional[str] = None) -> Optional[Dict[str, Any]]:
@@ -257,6 +379,28 @@ def get_patterns(limit: int = 100, run_id: Optional[str] = None) -> List[Dict[st
         return []
 
 
+def detect_version_and_airline(file) -> Optional[Dict[str, Any]]:
+    """Fast detection of NDC version and airline from XML."""
+    try:
+        files = {"file": (file.name, file.getvalue(), "application/xml")}
+        response = requests.post(
+            f"{API_BASE_URL}/node-configs/analyze",
+            files=files,
+            timeout=15
+        )
+        if response.status_code == 200:
+            result = response.json()
+            # Return only version and airline info
+            return {
+                'spec_version': result.get('spec_version'),
+                'message_root': result.get('message_root'),
+                'airline_code': result.get('airline_code')
+            }
+        return None
+    except requests.exceptions.RequestException:
+        return None
+
+
 def analyze_xml_for_nodes(file) -> Optional[Dict[str, Any]]:
     """Upload XML and analyze its structure for node configuration."""
     try:
@@ -309,6 +453,45 @@ def bulk_update_node_configurations(configurations: List[Dict[str, Any]]) -> boo
         return response.status_code == 200
     except requests.exceptions.RequestException:
         return False
+
+
+def get_relationships(run_id: Optional[str] = None,
+                     reference_type: Optional[str] = None,
+                     is_valid: Optional[bool] = None) -> Optional[List[Dict[str, Any]]]:
+    """Get discovered relationships with optional filtering."""
+    try:
+        params = {"limit": 500}
+        if run_id:
+            params["run_id"] = run_id
+        if reference_type:
+            params["reference_type"] = reference_type
+        if is_valid is not None:
+            params["is_valid"] = is_valid
+
+        response = requests.get(
+            f"{API_BASE_URL}/relationships/",
+            params=params,
+            timeout=15
+        )
+        if response.status_code == 200:
+            return response.json()
+        return None
+    except requests.exceptions.RequestException:
+        return None
+
+
+def get_relationship_summary(run_id: str) -> Optional[Dict[str, Any]]:
+    """Get comprehensive relationship summary for a run."""
+    try:
+        response = requests.get(
+            f"{API_BASE_URL}/relationships/run/{run_id}/summary",
+            timeout=15
+        )
+        if response.status_code == 200:
+            return response.json()
+        return None
+    except requests.exceptions.RequestException:
+        return None
 
 
 def copy_configurations_to_versions(
@@ -367,13 +550,123 @@ def show_discovery_page():
     uploaded_file = st.file_uploader("Choose an NDC XML file", type=['xml'], key="discovery_upload")
 
     if uploaded_file:
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
             st.write(f"**Filename:** {uploaded_file.name}")
-        with col2:
             st.write(f"**Size:** {uploaded_file.size:,} bytes")
+        with col2:
+            if st.button("📋 Show Configured Nodes", help="View configured nodes for this XML", use_container_width=True):
+                # Detect version and airline from XML
+                with st.spinner("Analyzing XML..."):
+                    detect_result = detect_version_and_airline(uploaded_file)
+
+                if detect_result:
+                    st.session_state.discovery_detect_result = detect_result
+                    st.rerun()
         with col3:
-            if st.button("Start Discovery", type="primary", key="start_discovery"):
+            if 'discovery_detect_result' in st.session_state:
+                if st.button("🔄 Clear", help="Clear detection and upload new file", use_container_width=True):
+                    del st.session_state.discovery_detect_result
+                    st.rerun()
+
+        # Show configured nodes table if detection was done
+        if 'discovery_detect_result' in st.session_state:
+            detect_result = st.session_state.discovery_detect_result
+
+            st.divider()
+            st.subheader("⚙️ Configured Nodes for This File")
+
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Version", detect_result.get('spec_version', 'Unknown'))
+            with col2:
+                st.metric("Message", detect_result.get('message_root', 'Unknown'))
+            with col3:
+                st.metric("Airline", detect_result.get('airline_code', 'Global'))
+
+            # Fetch configured nodes for this version/message/airline
+            configs_data = get_node_configurations(
+                spec_version=detect_result.get('spec_version'),
+                message_root=detect_result.get('message_root'),
+                airline_code=detect_result.get('airline_code')
+            )
+
+            if configs_data and configs_data.get('configurations'):
+                configs = configs_data['configurations']
+                enabled_configs = [c for c in configs if c.get('enabled')]
+
+                st.info(f"✅ Found {len(enabled_configs)} enabled node(s) configured for extraction")
+
+                # Build tree structure from configurations
+                # Convert configs to node format for tree building
+                nodes_for_tree = [
+                    {
+                        'section_path': cfg['section_path'],
+                        'node_type': cfg['node_type'],
+                        'enabled': cfg.get('enabled', False)
+                    }
+                    for cfg in configs
+                ]
+
+                if nodes_for_tree:
+                    tree_data = build_node_tree(nodes_for_tree)
+
+                    # Get list of enabled node paths for checked display
+                    enabled_paths = [cfg['section_path'] for cfg in configs if cfg.get('enabled')]
+
+                    col1, col2 = st.columns([1, 1])
+
+                    with col1:
+                        st.write("**🌳 Node Hierarchy**")
+                        st.caption(f"✅ Checked = Enabled ({len(enabled_paths)} nodes)")
+                        st.caption("ℹ️ View-only. Edit in Node Manager →")
+
+                        # Display tree with enabled nodes checked (read-only display)
+                        tree_select(
+                            tree_data,
+                            checked=enabled_paths,
+                            only_leaf_checkboxes=False,
+                            expand_on_click=True,
+                            no_cascade=True,
+                            expanded=[node['value'] for node in tree_data if node.get('value')],
+                            disabled=True,
+                            key="discovery_config_tree"
+                        )
+
+                    with col2:
+                        st.write("**📋 Enabled Node Details**")
+
+                        if enabled_configs:
+                            st.caption(f"Showing {len(enabled_configs)} enabled nodes")
+
+                            for cfg in enabled_configs[:10]:  # Show first 10
+                                with st.expander(f"**{cfg['node_type']}**", expanded=False):
+                                    st.write(f"**Path:** `{cfg['section_path']}`")
+
+                                    if cfg.get('expected_references'):
+                                        st.write(f"**Expected References:**")
+                                        for ref in cfg['expected_references']:
+                                            st.write(f"  • `{ref}`")
+
+                                    if cfg.get('ba_remarks'):
+                                        st.write(f"**BA Remarks:** {cfg['ba_remarks']}")
+
+                            if len(enabled_configs) > 10:
+                                st.caption(f"...and {len(enabled_configs) - 10} more")
+                        else:
+                            st.info("No nodes enabled")
+                else:
+                    st.warning("⚠️ No nodes are configured. Please configure nodes in the Node Manager.")
+            else:
+                st.warning(f"⚠️ No configurations found for {detect_result.get('spec_version')}/{detect_result.get('message_root')}/{detect_result.get('airline_code', 'Global')}")
+                st.info("💡 Go to **Node Manager** to configure nodes for this version/airline.")
+
+            st.divider()
+
+        # Start Discovery button
+        col1, col2, col3 = st.columns(3)
+        with col2:
+            if st.button("🚀 Start Discovery", type="primary", key="start_discovery", use_container_width=True):
                 import time
                 progress_bar = st.progress(0)
                 status_text = st.empty()
@@ -383,9 +676,17 @@ def show_discovery_page():
                 progress_bar.progress(5)
                 time.sleep(0.3)
 
+                status_text.text("🔍 Analysing XML, detecting root and version...")
+                progress_bar.progress(10)
+                time.sleep(0.2)
+
                 status_text.text("🔍 Detecting NDC version...")
                 progress_bar.progress(10)
                 time.sleep(0.2)
+
+                status_text.text("🔍 Analyzing relationships and extracting patterns, this will take some time. Please wait!...")
+                progress_bar.progress(30)
+                time.sleep(2.0)
 
                 # Step 2: Start processing
                 result = upload_file_for_run(uploaded_file, "discovery")
@@ -530,6 +831,133 @@ def show_discovery_run_details(run_id: str):
             st.info(f"Showing 10 of {len(patterns)} patterns. View all in Pattern Explorer →")
     else:
         st.info("No patterns generated yet. Patterns are created during the pattern generation phase.")
+
+    st.divider()
+
+    # Relationships section
+    st.subheader("🔗 Discovered Relationships")
+    rel_summary = get_relationship_summary(run_id)
+
+    if rel_summary and rel_summary.get('statistics', {}).get('total_relationships', 0) > 0:
+        stats = rel_summary['statistics']
+
+        # Display metrics
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            st.metric("Total", stats['total_relationships'])
+        with col2:
+            st.metric("✅ Valid", stats['valid_relationships'])
+        with col3:
+            st.metric("❌ Broken", stats['broken_relationships'])
+        with col4:
+            st.metric("Expected", stats['expected_relationships'])
+        with col5:
+            st.metric("🔍 Discovered", stats['discovered_relationships'])
+
+        # Validation rate
+        if stats['total_relationships'] > 0:
+            validation_rate = stats.get('validation_rate', 0)
+            if validation_rate >= 90:
+                st.success(f"✅ {validation_rate}% of relationships are valid")
+            elif validation_rate >= 70:
+                st.warning(f"⚠️ {validation_rate}% of relationships are valid")
+            else:
+                st.error(f"❌ Only {validation_rate}% of relationships are valid")
+
+        # Reference type breakdown
+        st.write("**Reference Types Breakdown:**")
+        ref_types = rel_summary.get('reference_types', {})
+
+        if ref_types:
+            type_data = []
+            for ref_type, counts in ref_types.items():
+                type_data.append({
+                    "Reference Type": ref_type,
+                    "Total": counts['total'],
+                    "Valid": counts['valid'],
+                    "Broken": counts['broken'],
+                    "Expected": counts['expected'],
+                    "Discovered": counts['discovered']
+                })
+
+            df_types = pd.DataFrame(type_data)
+            st.dataframe(df_types, use_container_width=True, hide_index=True)
+
+        # Broken references table
+        broken_refs = rel_summary.get('broken_references', [])
+        if broken_refs:
+            st.warning(f"⚠️ {len(broken_refs)} broken reference(s) found")
+
+            with st.expander("View Broken References", expanded=False):
+                broken_data = []
+                for br in broken_refs:
+                    status = "Expected" if br.get('was_expected') else "Discovered"
+                    broken_data.append({
+                        "Source": br['source'],
+                        "→ Target": br['target'],
+                        "Type": br['reference_type'],
+                        "Field": br.get('reference_field', 'N/A'),
+                        "Value": br.get('reference_value', 'N/A'),
+                        "Status": status
+                    })
+
+                df_broken = pd.DataFrame(broken_data)
+                st.dataframe(df_broken, use_container_width=True, hide_index=True)
+
+        # Unexpected discoveries table
+        discoveries = rel_summary.get('unexpected_discoveries', [])
+        if discoveries:
+            st.info(f"🔍 {len(discoveries)} unexpected relationship(s) discovered by LLM")
+
+            with st.expander("View Unexpected Discoveries", expanded=False):
+                disc_data = []
+                for d in discoveries:
+                    status = "✅ Valid" if d.get('is_valid') else "❌ Broken"
+                    conf = d.get('confidence')
+                    conf_str = f"{conf:.0%}" if conf is not None else "N/A"
+
+                    disc_data.append({
+                        "Source": d['source'],
+                        "→ Target": d['target'],
+                        "Type": d['reference_type'],
+                        "Field": d.get('reference_field', 'N/A'),
+                        "Confidence": conf_str,
+                        "Status": status
+                    })
+
+                df_disc = pd.DataFrame(disc_data)
+                st.dataframe(df_disc, use_container_width=True, hide_index=True)
+
+        # Full relationships table
+        with st.expander("📊 All Relationships", expanded=False):
+            all_rels = get_relationships(run_id=run_id)
+
+            if all_rels:
+                rel_data = []
+                for r in all_rels:
+                    status_icon = "✅" if r.get('is_valid') else "❌"
+                    origin_icon = "📋" if r.get('was_expected') else "🔍"
+                    conf = r.get('confidence')
+                    conf_str = f"{conf:.0%}" if conf is not None else "N/A"
+
+                    rel_data.append({
+                        "": f"{status_icon} {origin_icon}",
+                        "Source": r['source_node_type'],
+                        "→ Target": r['target_node_type'],
+                        "Type": r['reference_type'],
+                        "Field": r.get('reference_field', 'N/A'),
+                        "Value": r.get('reference_value', 'N/A'),
+                        "Confidence": conf_str
+                    })
+
+                df_all = pd.DataFrame(rel_data)
+                st.dataframe(df_all, use_container_width=True, hide_index=True)
+
+                st.caption("Legend: ✅ Valid | ❌ Broken | 📋 Expected | 🔍 Discovered")
+            else:
+                st.info("No relationship details available")
+    else:
+        st.info("No relationships analyzed yet. Relationships are discovered during the Discovery workflow.")
 
     st.divider()
 
@@ -1028,7 +1456,7 @@ def show_identify_run_details(run_id: str):
                 st.write("**NodeFact Structure:**")
                 st.json(fact_json)
     else:
-        st.info("No pattern matches found")
+        st.info("No pattern matches found. Please Discover them first.")
 
 
 def show_patterns_page():
@@ -1151,6 +1579,8 @@ def show_node_manager_page():
                 st.write("")  # Spacer
                 if st.button("🔄 Clear & New Upload", help="Clear current analysis and upload a new file"):
                     del st.session_state.analyzed_nodes
+                    st.session_state.pop('node_checked_paths_raw', None)
+                    st.session_state.pop('node_checked_paths_effective', None)
                     st.rerun()
 
         if uploaded_file:
@@ -1167,14 +1597,26 @@ def show_node_manager_page():
                                f"Configurations are airline-specific - each airline has its own settings.")
 
                     # Store in session state for editing
-                    st.session_state.analyzed_nodes = result
+                    st.session_state.analyzed_nodes = merge_existing_configs(result)
+                    default_checked_raw = [
+                        node['section_path']
+                        for node in result.get('nodes', [])
+                        if node.get('enabled', False)
+                    ]
+                    st.session_state.node_checked_paths_raw = default_checked_raw
+                    st.session_state.node_checked_paths_effective = compute_effective_paths(
+                        default_checked_raw,
+                        previous_effective=default_checked_raw,
+                        previous_raw=default_checked_raw
+                    )
                     st.rerun()
                 else:
                     st.error("Failed to analyze XML structure")
 
         # Show analyzed nodes if available
         if 'analyzed_nodes' in st.session_state:
-            result = st.session_state.analyzed_nodes
+            result = merge_existing_configs(st.session_state.analyzed_nodes)
+            st.session_state.analyzed_nodes = result
 
             st.divider()
 
@@ -1204,26 +1646,83 @@ def show_node_manager_page():
             # Create a mapping of section_path to node data for quick lookup
             node_lookup = {node['section_path']: node for node in result['nodes']}
 
+            # Determine which nodes should be checked initially
+            default_checked_raw = [
+                node['section_path'] for node in result['nodes'] if node.get('enabled', False)
+            ]
+
+            stored_raw = st.session_state.get('node_checked_paths_raw')
+            if stored_raw is None:
+                stored_raw = [path for path in default_checked_raw if path in node_lookup]
+                st.session_state.node_checked_paths_raw = stored_raw
+
+            stored_raw = [path for path in stored_raw if path in node_lookup]
+            if stored_raw != st.session_state.get('node_checked_paths_raw'):
+                st.session_state.node_checked_paths_raw = stored_raw
+
+            stored_effective = st.session_state.get('node_checked_paths_effective')
+            if stored_effective is None:
+                stored_effective = compute_effective_paths(
+                    stored_raw,
+                    previous_effective=stored_raw,
+                    previous_raw=stored_raw
+                )
+                stored_effective = [path for path in stored_effective if path in node_lookup]
+                st.session_state.node_checked_paths_effective = stored_effective
+
+            pre_checked_display = list(dict.fromkeys([
+                *stored_raw,
+                *[path for path in stored_effective if path in node_lookup]
+            ]))
+
+            if not pre_checked_display and default_checked_raw:
+                pre_checked_display = [path for path in default_checked_raw if path in node_lookup]
+                st.session_state.node_checked_paths_raw = pre_checked_display
+                stored_raw = pre_checked_display
+
             # Display tree selector
             col1, col2 = st.columns([1, 1])
+
+            checked_paths = st.session_state.get('node_checked_paths_effective', [])
 
             with col1:
                 st.write("**🌳 Node Hierarchy**")
                 st.caption("Check nodes to enable extraction")
 
                 # Tree select component
-                if tree_data and isinstance(tree_data, list):
+                try:
                     selected = tree_select(
                         tree_data,
-                        check_model='leaf',
-                        expanded=False
+                        checked=pre_checked_display,
+                        only_leaf_checkboxes=False,
+                        expand_on_click=True,
+                        no_cascade=True,
+                        expanded=[node['value'] for node in tree_data if node.get('value')],
+                        key="node_manager_tree"
                     )
-                else:
-                    st.error("Invalid tree data structure")
+                except Exception as e:
+                    st.error(f"Tree component error: {str(e)}")
+                    st.write("Tree data:", tree_data)
                     selected = {'checked': []}
 
                 # Get checked nodes from tree_select
-                checked_paths = selected.get('checked', [])
+                raw_checked = selected.get('checked')
+                if raw_checked is None:
+                    raw_checked = pre_checked_display
+                raw_checked = [path for path in raw_checked if path in node_lookup]
+
+                previous_raw = st.session_state.get('node_checked_paths_raw', stored_raw)
+                previous_effective = st.session_state.get('node_checked_paths_effective')
+
+                filtered_raw = filter_raw_paths(raw_checked, previous_raw, previous_effective)
+                filtered_raw = [path for path in filtered_raw if path in node_lookup]
+                st.session_state.node_checked_paths_raw = filtered_raw
+
+                effective_checked = compute_effective_paths(filtered_raw, previous_effective, previous_raw)
+                effective_checked = [path for path in effective_checked if path in node_lookup]
+                st.session_state.node_checked_paths_effective = effective_checked
+
+                checked_paths = effective_checked
 
             with col2:
                 st.write("**⚙️ Node Properties**")
@@ -1231,6 +1730,12 @@ def show_node_manager_page():
                 # Show configuration form for selected nodes
                 if checked_paths:
                     st.info(f"✅ {len(checked_paths)} nodes selected for extraction")
+
+                    raw_selection = st.session_state.get('node_checked_paths_raw', [])
+                    auto_enabled = [path for path in checked_paths if path not in raw_selection]
+                    if auto_enabled:
+                        auto_display = ", ".join(f"`{path}`" for path in auto_enabled)
+                        st.caption(f"🔁 Parent selections also keep these nodes enabled: {auto_display}")
 
                     # Get first checked node for editing
                     selected_path = checked_paths[0] if checked_paths else None
