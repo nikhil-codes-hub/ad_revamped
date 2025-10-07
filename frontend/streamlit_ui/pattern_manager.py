@@ -321,7 +321,7 @@ class PatternManager:
     def _render_verify_tab(self):
         """Verify workspace patterns with test XML."""
         st.subheader("✅ Verify Patterns with Test XML")
-        st.info("💡 Test your workspace patterns against sample XML to ensure they work correctly")
+        st.info("💡 Test your workspace patterns against sample XML using AI-powered verification")
 
         # Get workspace patterns
         workspace_patterns = self.db_utils.get_all_patterns()
@@ -362,7 +362,8 @@ class PatternManager:
             test_xml = st.text_area(
                 "Paste XML snippet to test:",
                 height=200,
-                placeholder="<YourNode>\n  <Attribute>Value</Attribute>\n</YourNode>"
+                placeholder="<YourNode>\n  <Attribute>Value</Attribute>\n</YourNode>",
+                key="verify_test_xml"
             )
 
             col1, col2 = st.columns([1, 3])
@@ -378,23 +379,117 @@ class PatternManager:
 
             # Process verification
             if verify_btn and test_xml.strip():
-                with st.status("🔄 Verifying pattern...", expanded=True) as status:
-                    st.write("Testing XML against pattern...")
+                self._process_verification(pattern, test_xml)
 
-                    # TODO: Implement actual LLM verification
-                    # For now, show placeholder
-                    st.write("✅ Verification complete")
+    def _process_verification(self, pattern: Dict[str, Any], test_xml: str):
+        """Process pattern verification with LLM."""
+        with st.status("🔄 Verifying pattern with AI...", expanded=True) as status:
+            st.write("📤 Sending to Azure OpenAI for analysis...")
 
-                    status.update(label="✅ Verification Complete", state="complete")
+            try:
+                # Import and initialize verifier
+                from utils.pattern_llm_verifier import get_verifier
 
-                # Show results
-                st.markdown("---")
-                st.markdown("### 📊 Verification Results")
-                st.success("✅ Pattern matches the XML structure")
-                st.write("**Findings:**")
-                st.write("- All required attributes present")
-                st.write("- Child structure matches expectations")
-                st.info("💡 This is a placeholder. LLM verification will be implemented next.")
+                verifier = get_verifier()
+                st.write("🤖 Analyzing XML against pattern...")
+
+                # Verify pattern
+                result = verifier.verify_pattern(pattern['prompt'], test_xml)
+
+                if 'error' in result:
+                    st.write(f"❌ Verification error: {result['error']}")
+                    status.update(label="❌ Verification Failed", state="error")
+                    return
+
+                st.write("✅ Verification complete!")
+                status.update(label="✅ AI Verification Complete", state="complete")
+
+                # Display results
+                self._display_verification_results(result, pattern)
+
+            except ImportError:
+                st.error("❌ LLM verifier not available. Check that openai package is installed.")
+                status.update(label="❌ Verification Failed", state="error")
+
+            except Exception as e:
+                st.error(f"❌ Verification failed: {str(e)}")
+                st.write("**Debug Info:**")
+                st.write(f"- Error Type: {type(e).__name__}")
+                st.write(f"- Error Details: {str(e)}")
+                status.update(label="❌ Verification Failed", state="error")
+
+    def _display_verification_results(self, result: Dict[str, Any], pattern: Dict[str, Any]):
+        """Display verification results."""
+        st.markdown("---")
+        st.markdown("### 📊 AI Verification Results")
+
+        # Summary with match status
+        is_match = result.get('is_match', False)
+        confidence = result.get('confidence', 0.0)
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if is_match:
+                st.success("✅ **MATCH**")
+            else:
+                st.error("❌ **NO MATCH**")
+
+        with col2:
+            st.metric("Confidence", f"{confidence:.0%}")
+
+        with col3:
+            tokens_used = result.get('tokens_used', 0)
+            st.metric("Tokens Used", tokens_used)
+
+        # Summary
+        summary = result.get('summary', 'No summary available')
+        st.markdown("**Summary:**")
+        if is_match:
+            st.success(summary)
+        else:
+            st.warning(summary)
+
+        # Detailed findings
+        findings = result.get('findings', [])
+        if findings:
+            st.markdown("---")
+            st.markdown("### 🔍 Detailed Findings")
+
+            for finding in findings:
+                aspect = finding.get('aspect', 'Unknown')
+                expected = finding.get('expected', 'N/A')
+                found = finding.get('found', 'N/A')
+                match = finding.get('match', False)
+
+                with st.expander(f"{'✅' if match else '❌'} {aspect.replace('_', ' ').title()}", expanded=not match):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write("**Expected:**")
+                        st.code(expected, language='text')
+                    with col2:
+                        st.write("**Found:**")
+                        st.code(found, language='text')
+
+                    if match:
+                        st.success("✅ Matches pattern requirements")
+                    else:
+                        st.error("❌ Does not match pattern requirements")
+
+        # Issues
+        issues = result.get('issues', [])
+        if issues:
+            st.markdown("---")
+            st.markdown("### ⚠️ Issues Found")
+            for issue in issues:
+                st.warning(f"• {issue}")
+
+        # Recommendations
+        recommendations = result.get('recommendations', [])
+        if recommendations:
+            st.markdown("---")
+            st.markdown("### 💡 Recommendations")
+            for rec in recommendations:
+                st.info(f"• {rec}")
 
     def _render_manage_tab(self):
         """Manage workspace patterns."""
