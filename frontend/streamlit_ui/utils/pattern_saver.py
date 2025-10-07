@@ -1,7 +1,7 @@
 import streamlit as st
-from core.assisted_discovery.gap_analysis_manager import GapAnalysisManager
-from core.database.sql_db_utils import SQLDatabaseUtils
-from core.database.default_patterns_manager import DefaultPatternsManager
+from utils.gap_analysis_manager import GapAnalysisManager
+from utils.sql_db_utils import SQLDatabaseUtils
+from utils.default_patterns_manager import DefaultPatternsManager
 
 
 

@@ -1,7 +1,7 @@
 import pandas as pd
-from core.llm.LLMManager import LLMManager
+from utils.llm.LLMManager import LLMManager
 import streamlit as st
-from core.common.ui_utils import render_custom_table
+from utils.ui_utils import render_custom_table
 
 class GapAnalysisManager(LLMManager):
     
@@ -32,7 +32,7 @@ class GapAnalysisManager(LLMManager):
             if data:
                 df = pd.DataFrame(data, columns=['XPATH', 'Name', 'Description', 'Prompt'])
                 st.subheader(":blue[Here are the patterns identified for the given XML]")
-                from core.common.css_utils import get_css_path
+                from utils.css_utils import get_css_path
                 css_path = get_css_path()
                 render_custom_table(df, long_text_cols=['Description', 'Prompt'], css_rel_path=css_path)
         except Exception as e:

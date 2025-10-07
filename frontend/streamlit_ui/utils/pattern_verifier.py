@@ -1,7 +1,7 @@
 import json
 import streamlit as st
-from core.assisted_discovery.gap_analysis_manager import GapAnalysisManager
-from core.prompts_manager.gap_analysis_prompt_manager import GapAnalysisPromptManager
+from utils.gap_analysis_manager import GapAnalysisManager
+from utils.gap_analysis_prompt_manager import GapAnalysisPromptManager
 
 class PatternVerifier(GapAnalysisManager, GapAnalysisPromptManager):
     def __init__(self, model_name):

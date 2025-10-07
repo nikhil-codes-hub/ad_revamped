@@ -12,16 +12,76 @@ import requests
 from typing import Dict, List, Any, Optional
 from pathlib import Path
 import sys
+import sqlite3
 
 # Add utils to path
 sys.path.insert(0, str(Path(__file__).parent / "utils"))
 
-from utils.sql_db_utils import SQLDatabaseUtils
-from utils.pattern_verifier import PatternVerifier
-from utils.cost_display_manager import CostDisplayManager
-
 # API Configuration
 API_BASE_URL = "http://localhost:8000/api/v1"
+
+
+class SimpleSQLDatabaseUtils:
+    """Simplified SQLite database utilities."""
+
+    def __init__(self, db_name="patterns.db", base_dir=None):
+        if base_dir is None:
+            base_dir = Path(__file__).parent / "data" / "workspaces"
+        else:
+            base_dir = Path(base_dir)
+
+        base_dir.mkdir(parents=True, exist_ok=True)
+        self.db_path = base_dir / db_name
+
+    def connect(self):
+        return sqlite3.connect(str(self.db_path), timeout=30)
+
+    def run_query(self, query, params=None):
+        conn = self.connect()
+        cursor = conn.cursor()
+        if params:
+            cursor.execute(query, params)
+        else:
+            cursor.execute(query)
+        results = cursor.fetchall()
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return results
+
+    def insert_data(self, table_name, values, columns=None):
+        conn = self.connect()
+        cursor = conn.cursor()
+        if columns:
+            columns_str = ", ".join(columns)
+            placeholders = ", ".join(["?"] * len(values))
+            query = f"INSERT INTO {table_name} ({columns_str}) VALUES ({placeholders})"
+        else:
+            placeholders = ", ".join(["?"] * len(values))
+            query = f"INSERT INTO {table_name} VALUES ({placeholders})"
+        cursor.execute(query, values)
+        conn.commit()
+        last_id = cursor.lastrowid
+        cursor.close()
+        conn.close()
+        return last_id
+
+    def get_all_patterns(self):
+        query = """
+            SELECT a.api_name, COALESCE(av.version_number, 'N/A') as api_version,
+                   aps.section_name, pd.pattern_description, pd.pattern_prompt
+            FROM api a
+            LEFT JOIN apiversion av ON a.api_id = av.api_id
+            JOIN api_section aps ON a.api_id = aps.api_id
+            JOIN section_pattern_mapping spm ON aps.section_id = spm.section_id AND aps.api_id = spm.api_id
+            JOIN pattern_details pd ON spm.pattern_id = pd.pattern_id
+            GROUP BY a.api_name, av.version_number, pd.pattern_prompt
+        """
+        return self.run_query(query)
+
+    def insert_api_version(self, api_id, version_number):
+        return self.insert_data("apiversion", (api_id, version_number),
+                              columns=["api_id", "version_number"])
 
 
 class PatternManager:
@@ -29,16 +89,15 @@ class PatternManager:
 
     def __init__(self):
         self.db_utils = self._get_workspace_db()
-        self.cost_manager = CostDisplayManager()
 
-    def _get_workspace_db(self) -> SQLDatabaseUtils:
+    def _get_workspace_db(self) -> SimpleSQLDatabaseUtils:
         """Get current workspace database."""
         workspace = st.session_state.get('current_workspace', 'default')
         db_name = f"{workspace}_patterns.db"
         db_dir = Path(__file__).parent / "data" / "workspaces"
         db_dir.mkdir(parents=True, exist_ok=True)
 
-        return SQLDatabaseUtils(db_name=db_name, base_dir=str(db_dir))
+        return SimpleSQLDatabaseUtils(db_name=db_name, base_dir=str(db_dir))
 
     def render(self):
         """Render Pattern Manager page."""
