@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 from typing import Optional, Dict, Any, List
+from streamlit_tree_select import tree_select
 
 # Configure Streamlit page
 st.set_page_config(
@@ -31,6 +32,45 @@ def check_api_health() -> bool:
         return response.status_code == 200
     except requests.exceptions.RequestException:
         return False
+
+
+def build_node_tree(nodes: List[Dict]) -> List[Dict]:
+    """
+    Convert flat node list to hierarchical tree structure for streamlit-tree-select.
+
+    Args:
+        nodes: List of node dicts with 'section_path', 'node_type', 'enabled', etc.
+
+    Returns:
+        List of tree nodes in format: {"label": str, "value": str, "checked": bool, "children": []}
+    """
+    # Build a dictionary mapping section_path to node
+    path_to_node = {}
+    for node in nodes:
+        path = node['section_path']
+        path_to_node[path] = {
+            "label": node['node_type'],
+            "value": path,
+            "checked": node.get('enabled', False),
+            "children": [],
+            "_node_data": node  # Store original node data for reference
+        }
+
+    # Build tree hierarchy
+    root_nodes = []
+    for path, tree_node in path_to_node.items():
+        # Find parent path
+        parts = path.split('/')
+        if len(parts) == 1:
+            # This is a root node
+            root_nodes.append(tree_node)
+        else:
+            # Find parent
+            parent_path = '/'.join(parts[:-1])
+            if parent_path in path_to_node:
+                path_to_node[parent_path]['children'].append(tree_node)
+
+    return root_nodes
 
 
 def upload_file_for_run(file, run_kind: str, target_version: Optional[str] = None, target_message_root: Optional[str] = None, target_airline_code: Optional[str] = None) -> Optional[Dict[str, Any]]:
@@ -1146,106 +1186,146 @@ def show_node_manager_page():
 
             st.divider()
 
-            # Editable table
+            # Tree-based node selection
             st.subheader("✏️ Configure Nodes")
-            st.write("Check which nodes to extract, add expected references, and remarks")
+            st.write("Select nodes from the tree to enable extraction and configure properties")
 
-            # Search filter
-            search_node = st.text_input("🔍 Search nodes by type", placeholder="e.g., Pax, Segment, Price", key="analyze_search")
+            # Build tree structure from flat nodes
+            tree_data = build_node_tree(result['nodes'])
 
-            # Create DataFrame for editing
-            nodes_data = []
-            for idx, node in enumerate(result['nodes']):
-                nodes_data.append({
-                    "Index": idx,
-                    "Enabled": node.get('enabled', False),
-                    "Node Type": node['node_type'],
-                    "Section Path": node['section_path'],
-                    "Expected References": ", ".join(node.get('expected_references', [])),
-                    "BA Remarks": node.get('ba_remarks', ''),
-                    "_config_id": node.get('config_id'),
-                    "_has_children": node.get('has_children', False)
-                })
+            # Create a mapping of section_path to node data for quick lookup
+            node_lookup = {node['section_path']: node for node in result['nodes']}
 
-            df_nodes = pd.DataFrame(nodes_data)
+            # Initialize session state for tree selections if not exists
+            if 'tree_checked' not in st.session_state:
+                st.session_state.tree_checked = []
 
-            # Store original nodes_data for later reference
-            original_nodes_data = nodes_data.copy()
+            # Display tree selector
+            col1, col2 = st.columns([1, 1])
 
-            # Apply search filter if specified
-            if search_node:
-                df_nodes = df_nodes[
-                    df_nodes['Node Type'].str.contains(search_node, case=False, na=False)
-                ].copy()
-                st.info(f"Showing {len(df_nodes)} nodes matching '{search_node}'")
+            with col1:
+                st.write("**🌳 Node Hierarchy**")
+                st.caption("Check nodes to enable extraction")
 
-            # Convert to proper dtypes for PyArrow 20.0.0 compatibility
-            df_nodes['Enabled'] = df_nodes['Enabled'].fillna(False).astype(bool)
-            df_nodes['Expected References'] = df_nodes['Expected References'].fillna('').astype(str)
-            df_nodes['BA Remarks'] = df_nodes['BA Remarks'].fillna('').astype(str)
-            df_nodes['Node Type'] = df_nodes['Node Type'].astype(str)
-            df_nodes['Section Path'] = df_nodes['Section Path'].astype(str)
+                # Tree select component
+                selected = tree_select(
+                    tree_data,
+                    check_model='leaf',
+                    expanded=True,
+                    no_cascade=False
+                )
 
-            # Create display dataframe
-            display_df = df_nodes[["Enabled", "Node Type", "Section Path", "Expected References", "BA Remarks"]].copy()
+                # Get checked nodes from tree_select
+                checked_paths = selected.get('checked', [])
 
-            # Use experimental data editor for editable table
-            edited_df = st.data_editor(
-                display_df,
-                use_container_width=True,
-                num_rows="fixed",
-                column_config={
-                    "Enabled": st.column_config.CheckboxColumn(
-                        "Enabled",
-                        help="Extract this node during Discovery?",
-                        default=False
-                    ),
-                    "Expected References": st.column_config.TextColumn(
-                        "Expected References",
-                        help="Comma-separated: infant_parent, segment_reference, etc.",
-                        max_chars=200
-                    ),
-                    "BA Remarks": st.column_config.TextColumn(
-                        "BA Remarks",
-                        help="Notes and instructions",
-                        max_chars=500
-                    )
-                },
-                hide_index=True
-            )
+            with col2:
+                st.write("**⚙️ Node Properties**")
+
+                # Show configuration form for selected nodes
+                if checked_paths:
+                    st.info(f"✅ {len(checked_paths)} nodes selected for extraction")
+
+                    # Get first checked node for editing
+                    selected_path = checked_paths[0] if checked_paths else None
+
+                    if selected_path and selected_path in node_lookup:
+                        selected_node = node_lookup[selected_path]
+
+                        st.write(f"**Editing:** `{selected_node['node_type']}`")
+                        st.caption(f"Path: {selected_path}")
+
+                        # Initialize form state
+                        if 'node_configs' not in st.session_state:
+                            st.session_state.node_configs = {}
+
+                        # Get current config or defaults
+                        current_config = st.session_state.node_configs.get(selected_path, {
+                            'expected_references': selected_node.get('expected_references', []),
+                            'ba_remarks': selected_node.get('ba_remarks', '')
+                        })
+
+                        # Form for editing node properties
+                        with st.form(key=f"edit_form_{selected_path}"):
+                            expected_refs_str = st.text_input(
+                                "Expected References",
+                                value=", ".join(current_config['expected_references']),
+                                help="Comma-separated: infant_parent, segment_reference, etc.",
+                                placeholder="e.g., segment_reference, pax_reference"
+                            )
+
+                            ba_remarks_str = st.text_area(
+                                "BA Remarks",
+                                value=current_config['ba_remarks'],
+                                help="Notes and instructions for this node",
+                                placeholder="Add any notes or special instructions..."
+                            )
+
+                            if st.form_submit_button("💾 Update This Node"):
+                                # Parse and store config
+                                refs = [r.strip() for r in expected_refs_str.split(',') if r.strip()]
+                                st.session_state.node_configs[selected_path] = {
+                                    'expected_references': refs,
+                                    'ba_remarks': ba_remarks_str
+                                }
+                                st.success(f"✅ Updated {selected_node['node_type']}")
+
+                        # Show all selected nodes summary
+                        if len(checked_paths) > 1:
+                            st.divider()
+                            st.caption(f"**Other selected nodes ({len(checked_paths) - 1}):**")
+                            for path in checked_paths[1:6]:  # Show up to 5
+                                if path in node_lookup:
+                                    st.caption(f"• {node_lookup[path]['node_type']}")
+                            if len(checked_paths) > 6:
+                                st.caption(f"...and {len(checked_paths) - 6} more")
+                else:
+                    st.info("👈 Check nodes in the tree to configure them")
+                    st.caption("**Tip:** You can select multiple nodes at once")
 
             # Save button
+            st.divider()
             col1, col2 = st.columns([1, 4])
             with col1:
                 if st.button("💾 Save All Configurations", type="primary"):
-                    # Prepare data for bulk update
+                    # Prepare data for bulk update from all nodes
                     configurations = []
-                    for idx, row in edited_df.iterrows():
-                        # Get the original index from df_nodes to map back to original_nodes_data
-                        original_idx = df_nodes.iloc[idx]['Index']
-                        original = original_nodes_data[original_idx]
 
-                        # Parse expected references
-                        refs_str = row['Expected References'].strip()
-                        refs = [r.strip() for r in refs_str.split(',') if r.strip()] if refs_str else []
+                    # Get configs from session state or defaults
+                    node_configs = st.session_state.get('node_configs', {})
+
+                    # Process all nodes
+                    for node in result['nodes']:
+                        section_path = node['section_path']
+
+                        # Check if node is enabled (in checked_paths)
+                        enabled = section_path in checked_paths
+
+                        # Get config for this node
+                        config_data = node_configs.get(section_path, {
+                            'expected_references': node.get('expected_references', []),
+                            'ba_remarks': node.get('ba_remarks', '')
+                        })
 
                         config = {
-                            'config_id': original['_config_id'],
+                            'config_id': node.get('config_id'),
                             'spec_version': result['spec_version'],
                             'message_root': result['message_root'],
                             'airline_code': result.get('airline_code'),
-                            'node_type': row['Node Type'],
-                            'section_path': row['Section Path'],
-                            'enabled': bool(row['Enabled']),
-                            'expected_references': refs,
-                            'ba_remarks': row['BA Remarks']
+                            'node_type': node['node_type'],
+                            'section_path': section_path,
+                            'enabled': enabled,
+                            'expected_references': config_data['expected_references'],
+                            'ba_remarks': config_data['ba_remarks']
                         }
                         configurations.append(config)
 
                     # Send to API
                     if bulk_update_node_configurations(configurations):
                         st.success(f"✅ Saved {len(configurations)} node configurations!")
+                        st.success(f"   • {len(checked_paths)} nodes enabled for extraction")
                         st.info("💡 Configurations saved successfully. You can continue editing or upload a new XML file.")
+                        # Clear session state configs after save
+                        st.session_state.node_configs = {}
                     else:
                         st.error("Failed to save configurations")
 
