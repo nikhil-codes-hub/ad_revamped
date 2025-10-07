@@ -52,8 +52,7 @@ def build_node_tree(nodes: List[Dict]) -> List[Dict]:
             "label": node['node_type'],
             "value": path,
             "checked": node.get('enabled', False),
-            "children": [],
-            "_node_data": node  # Store original node data for reference
+            "children": []
         }
 
     # Build tree hierarchy
@@ -70,7 +69,16 @@ def build_node_tree(nodes: List[Dict]) -> List[Dict]:
             if parent_path in path_to_node:
                 path_to_node[parent_path]['children'].append(tree_node)
 
-    return root_nodes
+    # Clean up empty children arrays
+    def clean_tree(nodes):
+        for node in nodes:
+            if node.get('children') is not None and len(node['children']) == 0:
+                del node['children']
+            elif node.get('children'):
+                clean_tree(node['children'])
+        return nodes
+
+    return clean_tree(root_nodes)
 
 
 def upload_file_for_run(file, run_kind: str, target_version: Optional[str] = None, target_message_root: Optional[str] = None, target_airline_code: Optional[str] = None) -> Optional[Dict[str, Any]]:
@@ -1196,10 +1204,6 @@ def show_node_manager_page():
             # Create a mapping of section_path to node data for quick lookup
             node_lookup = {node['section_path']: node for node in result['nodes']}
 
-            # Initialize session state for tree selections if not exists
-            if 'tree_checked' not in st.session_state:
-                st.session_state.tree_checked = []
-
             # Display tree selector
             col1, col2 = st.columns([1, 1])
 
@@ -1208,12 +1212,15 @@ def show_node_manager_page():
                 st.caption("Check nodes to enable extraction")
 
                 # Tree select component
-                selected = tree_select(
-                    tree_data,
-                    check_model='leaf',
-                    expanded=True,
-                    no_cascade=False
-                )
+                if tree_data and isinstance(tree_data, list):
+                    selected = tree_select(
+                        tree_data,
+                        check_model='leaf',
+                        expanded=False
+                    )
+                else:
+                    st.error("Invalid tree data structure")
+                    selected = {'checked': []}
 
                 # Get checked nodes from tree_select
                 checked_paths = selected.get('checked', [])
