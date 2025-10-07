@@ -190,9 +190,16 @@ class RelationshipAnalyzer:
 
             response = await self.llm_extractor.client.chat.completions.create(
                 model=self.llm_extractor.model,
-                messages=[{"role": "user", "content": prompt}],
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are an XML relationship analysis expert. Analyze XML structures and return structured JSON results."
+                    },
+                    {"role": "user", "content": prompt}
+                ],
                 temperature=0.1,  # Low temperature for consistency
-                max_tokens=1000
+                max_tokens=1000,
+                response_format={"type": "json_object"}  # Ensure JSON response
             )
 
             # Parse JSON response

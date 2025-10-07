@@ -201,7 +201,7 @@ class PatternGenerator:
         schema = {}
 
         # Type breakdown structure
-        if 'type_breakdown' in bi:
+        if 'type_breakdown' in bi and bi['type_breakdown'] is not None:
             schema['has_type_breakdown'] = True
             schema['breakdown_keys'] = sorted(list(bi['type_breakdown'].keys()))
 
