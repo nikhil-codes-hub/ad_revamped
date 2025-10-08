@@ -33,8 +33,85 @@ class SimpleSQLDatabaseUtils:
         base_dir.mkdir(parents=True, exist_ok=True)
         self.db_path = base_dir / db_name
 
+        # Initialize database schema if it doesn't exist
+        self._init_schema()
+
     def connect(self):
         return sqlite3.connect(str(self.db_path), timeout=30)
+
+    def _init_schema(self):
+        """Initialize database schema if tables don't exist."""
+        conn = self.connect()
+        cursor = conn.cursor()
+
+        try:
+            # Create api table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS api (
+                    api_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    api_name TEXT NOT NULL UNIQUE,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            # Create apiversion table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS apiversion (
+                    version_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    api_id INTEGER NOT NULL,
+                    version_number TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (api_id) REFERENCES api(api_id),
+                    UNIQUE(api_id, version_number)
+                )
+            """)
+
+            # Create api_section table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS api_section (
+                    section_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    api_id INTEGER NOT NULL,
+                    section_name TEXT NOT NULL,
+                    section_type TEXT,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (api_id) REFERENCES api(api_id),
+                    UNIQUE(api_id, section_name)
+                )
+            """)
+
+            # Create pattern_details table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS pattern_details (
+                    pattern_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    pattern_name TEXT NOT NULL,
+                    pattern_description TEXT,
+                    pattern_prompt TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            # Create section_pattern_mapping table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS section_pattern_mapping (
+                    mapping_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    section_id INTEGER NOT NULL,
+                    api_id INTEGER NOT NULL,
+                    pattern_id INTEGER NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (section_id) REFERENCES api_section(section_id),
+                    FOREIGN KEY (api_id) REFERENCES api(api_id),
+                    FOREIGN KEY (pattern_id) REFERENCES pattern_details(pattern_id),
+                    UNIQUE(section_id, api_id, pattern_id)
+                )
+            """)
+
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            conn.close()
 
     def run_query(self, query, params=None):
         conn = self.connect()
