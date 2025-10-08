@@ -145,3 +145,56 @@ def list_workspaces() -> list[str]:
         workspaces.append(workspace_name)
 
     return sorted(workspaces) if workspaces else ["default"]
+
+
+# FastAPI dependency for workspace database sessions
+from typing import Generator
+from functools import partial
+
+
+def _get_workspace_session_generator(workspace: str) -> Generator[Session, None, None]:
+    """Internal generator for workspace sessions."""
+    factory = get_workspace_session_factory(workspace)
+    session = factory.get_session()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
+
+
+def get_workspace_db(workspace: str) -> Generator[Session, None, None]:
+    """
+    Dependency factory for workspace database sessions.
+
+    Returns a dependency function bound to the specific workspace.
+
+    Usage in endpoint:
+        from fastapi import Depends, Query
+
+        @router.post("/example")
+        def example(
+            workspace: str = Query("default", description="Workspace name"),
+            db: Session = Depends(lambda w=workspace: get_workspace_db(w))
+        ):
+            # Use db session
+            pass
+
+    Or simpler pattern with request parameter:
+        from app.api.dependencies import get_workspace_from_request
+
+        @router.post("/example")
+        def example(db: Session = Depends(get_workspace_from_request)):
+            # db is workspace-specific
+            pass
+
+    Args:
+        workspace: Workspace name
+
+    Yields:
+        Session: SQLAlchemy session for the workspace
+    """
+    return _get_workspace_session_generator(workspace)

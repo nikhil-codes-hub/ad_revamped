@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from app.models.schemas import RunCreate, RunResponse, RunStatus
-from app.services.database import get_db_session
+from app.services.workspace_db import get_workspace_db
 from app.services.discovery_workflow import create_discovery_workflow
 from app.services.identify_workflow import create_identify_workflow
 from app.models.database import Run, RunKind, RunStatus as DbRunStatus
@@ -27,10 +27,10 @@ logger = logging.getLogger(__name__)
 async def create_run(
     kind: str = Query(..., regex="^(discovery|identify)$", description="Type of run: discovery or identify"),
     file: UploadFile = File(...),
+    workspace: str = Query("default", description="Workspace name (e.g., default, SQ, LATAM)"),
     target_version: Optional[str] = Query(None, description="Target NDC version for identify (e.g., 18.1)"),
     target_message_root: Optional[str] = Query(None, description="Target message root for identify (e.g., OrderViewRS)"),
-    target_airline_code: Optional[str] = Query(None, description="Target airline code for identify (e.g., SQ, AF)"),
-    db: Session = Depends(get_db_session)
+    target_airline_code: Optional[str] = Query(None, description="Target airline code for identify (e.g., SQ, AF)")
 ) -> RunResponse:
     """
     Create a new Discovery or Identify run.
@@ -50,6 +50,12 @@ async def create_run(
     # Validate file size (basic check)
     if file.size and file.size > 100 * 1024 * 1024:  # 100MB limit
         raise HTTPException(status_code=400, detail="File too large (max 100MB)")
+
+    logger.info(f"Creating {kind} run in workspace: {workspace}, file: {file.filename}")
+
+    # Get workspace database session
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
 
     try:
         # Create temporary file for processing
@@ -113,20 +119,40 @@ async def create_run(
     except Exception as e:
         logger.error(f"Failed to create run: {e}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+    finally:
+        # Clean up database session
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
 
 
 @router.get("/{run_id}", response_model=RunResponse)
-async def get_run_status(run_id: str, db: Session = Depends(get_db_session)) -> RunResponse:
+async def get_run_status(
+    run_id: str,
+    workspace: str = Query("default", description="Workspace name")
+) -> RunResponse:
     """
     Get the status and details of a specific run.
 
     - **run_id**: Unique identifier for the run
+    - **workspace**: Workspace name (default: 'default')
     """
-    logger.info(f"Getting run status: {run_id}")
+    logger.info(f"Getting run status: {run_id} from workspace: {workspace}")
 
-    # Get run from database
-    workflow = create_discovery_workflow(db)
-    run_summary = workflow.get_run_summary(run_id)
+    # Get workspace database session
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
+
+    try:
+        # Get run from database
+        workflow = create_discovery_workflow(db)
+        run_summary = workflow.get_run_summary(run_id)
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
 
     if not run_summary:
         raise HTTPException(status_code=404, detail="Run not found")
@@ -194,7 +220,7 @@ async def list_runs(
     limit: int = Query(default=10, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     kind: Optional[str] = Query(default=None, regex="^(discovery|identify)$"),
-    db: Session = Depends(get_db_session)
+    workspace: str = Query("default", description="Workspace name")
 ) -> List[RunResponse]:
     """
     List recent runs with pagination.
@@ -202,44 +228,55 @@ async def list_runs(
     - **limit**: Maximum number of runs to return (1-100)
     - **offset**: Number of runs to skip for pagination
     - **kind**: Filter by run type (optional)
+    - **workspace**: Workspace name (default: 'default')
     """
-    logger.info(f"Listing runs: limit={limit}, offset={offset}, kind={kind}")
+    logger.info(f"Listing runs from workspace: {workspace}, limit={limit}, offset={offset}, kind={kind}")
 
-    # Query database for runs
-    query = db.query(Run).order_by(Run.started_at.desc())
+    # Get workspace database session
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
 
-    # Apply kind filter if specified
-    if kind:
-        query = query.filter(Run.kind == kind)
+    try:
+        # Query database for runs
+        query = db.query(Run).order_by(Run.started_at.desc())
 
-    # Apply pagination
-    runs = query.offset(offset).limit(limit).all()
+        # Apply kind filter if specified
+        if kind:
+            query = query.filter(Run.kind == kind)
 
-    # Convert to response format
-    response_runs = []
-    for run in runs:
-        # Convert database status to API enum
-        api_status = RunStatus.STARTED
-        if run.status == 'completed':
-            api_status = RunStatus.COMPLETED
-        elif run.status == 'failed':
-            api_status = RunStatus.FAILED
-        elif run.status == 'in_progress':
-            api_status = RunStatus.IN_PROGRESS
+        # Apply pagination
+        runs = query.offset(offset).limit(limit).all()
 
-        response_runs.append(RunResponse(
-            id=run.id,
-            kind=run.kind,
-            status=api_status,
-            filename=run.filename,
-            file_size_bytes=run.file_size_bytes,
-            created_at=run.started_at.isoformat() if run.started_at else None,
-            finished_at=run.finished_at.isoformat() if run.finished_at else None,
-            duration_seconds=run.duration_seconds,
-            node_facts_count=0,  # We'd need to count these if required
-            spec_version=run.spec_version,
-            message_root=run.message_root,
-            error_details=run.error_details
-        ))
+        # Convert to response format
+        response_runs = []
+        for run in runs:
+            # Convert database status to API enum
+            api_status = RunStatus.STARTED
+            if run.status == 'completed':
+                api_status = RunStatus.COMPLETED
+            elif run.status == 'failed':
+                api_status = RunStatus.FAILED
+            elif run.status == 'in_progress':
+                api_status = RunStatus.IN_PROGRESS
 
-    return response_runs
+            response_runs.append(RunResponse(
+                id=run.id,
+                kind=run.kind,
+                status=api_status,
+                filename=run.filename,
+                file_size_bytes=run.file_size_bytes,
+                created_at=run.started_at.isoformat() if run.started_at else None,
+                finished_at=run.finished_at.isoformat() if run.finished_at else None,
+                duration_seconds=run.duration_seconds,
+                node_facts_count=0,  # We'd need to count these if required
+                spec_version=run.spec_version,
+                message_root=run.message_root,
+                error_details=run.error_details
+            ))
+
+        return response_runs
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
