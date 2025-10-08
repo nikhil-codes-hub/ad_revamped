@@ -134,9 +134,13 @@ def test_database_connection() -> bool:
         return False
 
 
+# MySQL database initialization disabled - using workspace SQLite databases instead
+# See app/services/workspace_db.py for SQLite workspace database management
+logger.info("MySQL database initialization skipped - using workspace SQLite databases")
+
 # Initialize database on module import
-try:
-    init_database()
-except Exception as e:
-    logger.warning(f"Database initialization failed during import: {e}")
-    # Don't fail module import, let individual functions handle initialization
+# try:
+#     init_database()
+# except Exception as e:
+#     logger.warning(f"Database initialization failed during import: {e}")
+#     # Don't fail module import, let individual functions handle initialization
