@@ -204,11 +204,14 @@ def merge_existing_configs(result: Dict[str, Any]) -> Dict[str, Any]:
     return result
 
 
-def upload_file_for_run(file, run_kind: str, target_version: Optional[str] = None, target_message_root: Optional[str] = None, target_airline_code: Optional[str] = None) -> Optional[Dict[str, Any]]:
+def upload_file_for_run(file, run_kind: str, workspace: str = "default", target_version: Optional[str] = None, target_message_root: Optional[str] = None, target_airline_code: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """Upload file and create a new run."""
     try:
         files = {"file": (file.name, file.getvalue(), "application/xml")}
-        params = {"kind": run_kind}
+        params = {
+            "kind": run_kind,
+            "workspace": workspace
+        }
 
         # Add optional filters for identify runs
         if target_version:
@@ -269,10 +272,13 @@ def upload_file_for_run(file, run_kind: str, target_version: Optional[str] = Non
         return None
 
 
-def get_runs(kind: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
+def get_runs(kind: Optional[str] = None, limit: int = 50, workspace: str = "default") -> List[Dict[str, Any]]:
     """Get list of runs."""
     try:
-        params = {"limit": limit}
+        params = {
+            "limit": limit,
+            "workspace": workspace
+        }
         if kind:
             params["kind"] = kind
 
@@ -288,11 +294,12 @@ def get_runs(kind: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]
         return []
 
 
-def get_run_status(run_id: str) -> Optional[Dict[str, Any]]:
+def get_run_status(run_id: str, workspace: str = "default") -> Optional[Dict[str, Any]]:
     """Get status of a specific run."""
     try:
         response = requests.get(
             f"{API_BASE_URL}/runs/{run_id}",
+            params={"workspace": workspace},
             timeout=15
         )
         if response.status_code == 200:
@@ -690,7 +697,7 @@ def show_discovery_page():
                 time.sleep(2.0)
 
                 # Step 2: Start processing
-                result = upload_file_for_run(uploaded_file, "discovery")
+                result = upload_file_for_run(uploaded_file, "discovery", workspace=current_workspace)
 
                 if result:
                     # Check if there was an error during processing
@@ -1097,6 +1104,7 @@ def show_identify_page():
                     result = upload_file_for_run(
                         uploaded_file,
                         "identify",
+                        workspace=current_workspace,
                         target_version=filter_version,
                         target_message_root=filter_msg_root,
                         target_airline_code=filter_airline
