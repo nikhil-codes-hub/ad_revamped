@@ -131,3 +131,4 @@ Thumbs.db
 # Virtual environments (project specific)
 ad_env/
 assisted_discovery_env/
+frontend/streamlit_ui/data/workspaces/workspaces.json

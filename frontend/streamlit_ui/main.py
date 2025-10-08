@@ -2118,15 +2118,74 @@ def main():
 
     # Workspace Selector
     st.sidebar.subheader("🗂️ Workspace")
-    workspaces = ["default", "LATAM", "LH", "SQ", "VY", "AFKL"]
+
+    # Load/save workspaces from persistent storage
+    workspace_config_file = Path(__file__).parent / "data" / "workspaces" / "workspaces.json"
+
+    def load_workspaces():
+        """Load workspaces from file or return defaults."""
+        if workspace_config_file.exists():
+            try:
+                import json
+                with open(workspace_config_file, 'r') as f:
+                    return json.load(f)
+            except Exception:
+                pass
+        return ["default", "LATAM", "LH", "SQ", "VY", "AFKL"]
+
+    def save_workspaces(workspaces):
+        """Save workspaces to file."""
+        import json
+        workspace_config_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(workspace_config_file, 'w') as f:
+            json.dump(workspaces, f, indent=2)
+
+    # Initialize workspaces in session state
+    if 'workspaces' not in st.session_state:
+        st.session_state.workspaces = load_workspaces()
+
+    # Workspace selector
     current_workspace = st.sidebar.selectbox(
         "Select Workspace:",
-        workspaces,
+        st.session_state.workspaces,
         key="current_workspace",
         help="Organize patterns by workspace (airline, project, etc.)"
     )
 
     st.sidebar.caption(f"📁 Active: **{current_workspace}**")
+
+    # Workspace management
+    with st.sidebar.expander("⚙️ Manage Workspaces"):
+        # Add new workspace
+        new_workspace = st.text_input("New Workspace Name:", key="new_workspace_input")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if st.button("➕ Add", use_container_width=True):
+                if new_workspace and new_workspace.strip():
+                    workspace_name = new_workspace.strip()
+                    if workspace_name not in st.session_state.workspaces:
+                        st.session_state.workspaces.append(workspace_name)
+                        save_workspaces(st.session_state.workspaces)
+                        st.success(f"Added '{workspace_name}'")
+                        st.rerun()
+                    else:
+                        st.warning(f"'{workspace_name}' already exists")
+                else:
+                    st.warning("Enter a workspace name")
+
+        with col2:
+            if st.button("🗑️ Delete", use_container_width=True):
+                if current_workspace == "default":
+                    st.error("Cannot delete 'default' workspace")
+                elif current_workspace in st.session_state.workspaces:
+                    st.session_state.workspaces.remove(current_workspace)
+                    save_workspaces(st.session_state.workspaces)
+                    st.success(f"Deleted '{current_workspace}'")
+                    st.rerun()
+
+        st.caption("💡 Delete removes current workspace")
+
     st.sidebar.divider()
 
     # Main Navigation
