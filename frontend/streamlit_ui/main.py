@@ -2144,6 +2144,15 @@ def main():
     # Initialize workspaces in session state
     if 'workspaces' not in st.session_state:
         st.session_state.workspaces = load_workspaces()
+    if 'workspace_delete_candidate' not in st.session_state:
+        st.session_state.workspace_delete_candidate = None
+    if 'workspace_next_active' in st.session_state:
+        target_workspace = st.session_state.workspace_next_active
+        if target_workspace in st.session_state.workspaces:
+            st.session_state.current_workspace = target_workspace
+        elif st.session_state.workspaces:
+            st.session_state.current_workspace = st.session_state.workspaces[0]
+        del st.session_state.workspace_next_active
 
     # Workspace selector
     current_workspace = st.sidebar.selectbox(
@@ -2179,13 +2188,32 @@ def main():
             if st.button("🗑️ Delete", use_container_width=True):
                 if current_workspace == "default":
                     st.error("Cannot delete 'default' workspace")
-                elif current_workspace in st.session_state.workspaces:
-                    st.session_state.workspaces.remove(current_workspace)
-                    save_workspaces(st.session_state.workspaces)
-                    st.success(f"Deleted '{current_workspace}'")
+                    st.session_state.workspace_delete_candidate = None
+                else:
+                    st.session_state.workspace_delete_candidate = current_workspace
+
+        if st.session_state.workspace_delete_candidate:
+            candidate = st.session_state.workspace_delete_candidate
+            st.warning(f"Permanently delete workspace '{candidate}'? This action cannot be undone.")
+            confirm_col, cancel_col = st.columns(2)
+            with confirm_col:
+                if st.button("✅ Yes, delete", key="confirm_delete_workspace", use_container_width=True):
+                    if candidate in st.session_state.workspaces:
+                        st.session_state.workspaces.remove(candidate)
+                        if not st.session_state.workspaces:
+                            st.session_state.workspaces = ["default"]
+                        save_workspaces(st.session_state.workspaces)
+                        st.session_state.workspace_delete_candidate = None
+                        # Reset active workspace on next render
+                        st.session_state.workspace_next_active = st.session_state.workspaces[0]
+                        st.success(f"Deleted '{candidate}'")
+                        st.rerun()
+            with cancel_col:
+                if st.button("❌ Cancel", key="cancel_delete_workspace", use_container_width=True):
+                    st.session_state.workspace_delete_candidate = None
                     st.rerun()
 
-        st.caption("💡 Delete removes current workspace")
+        st.caption("💡 Delete requires confirmation and removes the current workspace")
 
     st.sidebar.divider()
 
