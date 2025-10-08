@@ -9,9 +9,10 @@ from typing import List, Dict, Any, Optional, Tuple
 from sqlalchemy.orm import Session
 import structlog
 import json
+from openai import AzureOpenAI, OpenAI
 
 from app.models.database import NodeFact, NodeRelationship, NodeConfiguration
-from app.services.llm_extractor import get_llm_extractor
+from app.core.config import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -21,33 +22,33 @@ class RelationshipAnalyzer:
 
     def __init__(self, db: Session):
         self.db = db
-        self.llm_extractor = get_llm_extractor()
+        self.llm_client = None
+        self.model = settings.LLM_MODEL
+        self._init_sync_client()
+
+    def _init_sync_client(self):
+        """Initialize synchronous LLM client."""
+        try:
+            if settings.LLM_PROVIDER == "azure" and settings.AZURE_OPENAI_KEY:
+                self.llm_client = AzureOpenAI(
+                    api_key=settings.AZURE_OPENAI_KEY,
+                    azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
+                    api_version=settings.AZURE_API_VERSION
+                )
+                self.model = settings.MODEL_DEPLOYMENT_NAME
+                logger.info("Initialized sync Azure OpenAI client for relationship analysis")
+            elif settings.OPENAI_API_KEY:
+                self.llm_client = OpenAI(api_key=settings.OPENAI_API_KEY)
+                self.model = settings.LLM_MODEL
+                logger.info("Initialized sync OpenAI client for relationship analysis")
+            else:
+                logger.error("No LLM API keys found for relationship analysis")
+        except Exception as e:
+            logger.error(f"Failed to initialize sync LLM client: {e}")
 
     def analyze_relationships(self, run_id: str, node_facts: List[NodeFact]) -> Dict[str, Any]:
         """
-        Analyze relationships between all NodeFacts in a run (synchronous wrapper).
-
-        Args:
-            run_id: The run ID
-            node_facts: List of extracted NodeFacts
-
-        Returns:
-            Dictionary with statistics and discovered relationships
-        """
-        import asyncio
-
-        # Run async analysis in event loop
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-
-        return loop.run_until_complete(self._analyze_relationships_async(run_id, node_facts))
-
-    async def _analyze_relationships_async(self, run_id: str, node_facts: List[NodeFact]) -> Dict[str, Any]:
-        """
-        Async implementation of relationship analysis.
+        Analyze relationships between all NodeFacts in a run (synchronous).
 
         Args:
             run_id: The run ID
@@ -75,7 +76,7 @@ class RelationshipAnalyzer:
         # Analyze each source node type against all target node types
         for source_path, source_facts in node_groups.items():
             # Get expected references from configuration
-            expected_refs = await self._get_expected_references(source_path, source_facts[0])
+            expected_refs = self._get_expected_references(source_path, source_facts[0])
 
             logger.info(f"Analyzing {source_path}",
                        fact_count=len(source_facts),
@@ -89,7 +90,7 @@ class RelationshipAnalyzer:
                 stats['total_comparisons'] += 1
 
                 # Use LLM to discover references
-                discovered = await self._discover_references_llm(
+                discovered = self._discover_references_llm(
                     source_facts[0],  # Sample source fact
                     target_facts[0],   # Sample target fact
                     expected_refs
@@ -141,7 +142,7 @@ class RelationshipAnalyzer:
             groups[fact.section_path].append(fact)
         return groups
 
-    async def _get_expected_references(self, section_path: str, sample_fact: NodeFact) -> List[str]:
+    def _get_expected_references(self, section_path: str, sample_fact: NodeFact) -> List[str]:
         """Get expected references from node configuration."""
         config = self.db.query(NodeConfiguration).filter(
             NodeConfiguration.section_path == section_path,
@@ -153,7 +154,57 @@ class RelationshipAnalyzer:
             return config.expected_references
         return []
 
-    async def _discover_references_llm(
+    def _extract_xml_snippet(self, fact_json: Dict[str, Any]) -> str:
+        """
+        Extract XML snippet from node fact JSON.
+
+        Handles both direct xml_snippet field and nested children structure.
+        Reconstructs a representative XML snippet from the stored data.
+        """
+        # Try direct xml_snippet field first
+        if 'xml_snippet' in fact_json and fact_json['xml_snippet']:
+            return fact_json['xml_snippet']
+
+        # Reconstruct from children snippets
+        xml_parts = []
+        node_type = fact_json.get('node_type', 'UnknownNode')
+
+        # Build container opening tag
+        xml_parts.append(f"<{node_type}>")
+
+        # Add children snippets
+        children = fact_json.get('children', [])
+        for child in children[:5]:  # Limit to first 5 children to keep snippet size reasonable
+            if 'snippet' in child and child['snippet']:
+                xml_parts.append(child['snippet'])
+            else:
+                # Fallback: construct minimal snippet from attributes
+                child_type = child.get('node_type', 'Child')
+                child_attrs = child.get('attributes', {})
+                xml_parts.append(f"<{child_type}>")
+                for key, value in list(child_attrs.items())[:3]:  # First 3 attributes
+                    xml_parts.append(f"  <{key}>{value}</{key}>")
+                xml_parts.append(f"</{child_type}>")
+
+        # If no children, try to extract from refs or attributes
+        if not children:
+            attributes = fact_json.get('attributes', {})
+            for key, value in list(attributes.items())[:5]:
+                if isinstance(value, (str, int, float)):
+                    xml_parts.append(f"  <{key}>{value}</{key}>")
+
+        # Add container closing tag
+        xml_parts.append(f"</{node_type}>")
+
+        xml_snippet = '\n'.join(xml_parts)
+
+        logger.debug(f"Reconstructed XML snippet for {node_type}",
+                    has_children=len(children),
+                    snippet_length=len(xml_snippet))
+
+        return xml_snippet
+
+    def _discover_references_llm(
         self,
         source_fact: NodeFact,
         target_fact: NodeFact,
@@ -170,9 +221,9 @@ class RelationshipAnalyzer:
         Returns:
             Dictionary with discovered references or None
         """
-        # Extract XML snippets from fact_json
-        source_xml = source_fact.fact_json.get('xml_snippet', '')
-        target_xml = target_fact.fact_json.get('xml_snippet', '')
+        # Extract XML snippets from fact_json (handle nested structure)
+        source_xml = self._extract_xml_snippet(source_fact.fact_json)
+        target_xml = self._extract_xml_snippet(target_fact.fact_json)
 
         prompt = self._build_discovery_prompt(
             source_fact.node_type,
@@ -183,13 +234,13 @@ class RelationshipAnalyzer:
         )
 
         try:
-            # Use LLM extractor's client directly
-            if not self.llm_extractor.client:
+            # Use synchronous LLM client
+            if not self.llm_client:
                 logger.error("LLM client not initialized")
                 return None
 
-            response = await self.llm_extractor.client.chat.completions.create(
-                model=self.llm_extractor.model,
+            response = self.llm_client.chat.completions.create(
+                model=self.model,
                 messages=[
                     {
                         "role": "system",
@@ -205,6 +256,13 @@ class RelationshipAnalyzer:
             # Parse JSON response
             content = response.choices[0].message.content
             result = json.loads(content)
+
+            # Debug logging
+            logger.info(f"LLM relationship result: {source_fact.node_type} -> {target_fact.node_type}",
+                       has_references=result.get('has_references'),
+                       references_count=len(result.get('references', [])),
+                       result=result)
+
             return result
 
         except Exception as e:
@@ -315,13 +373,18 @@ Return ONLY valid JSON (no markdown, no explanation):
                 'was_expected': ref_info.get('reference_type') in expected_refs,
                 'confidence': float(ref_info.get('confidence', 1.0)),
                 'discovered_by': 'llm',
-                'model_used': self.llm_extractor.model
+                'model_used': self.model
             })
 
         return relationships
 
     def _extract_reference_value(self, fact: NodeFact, reference_field: str) -> Optional[str]:
-        """Extract reference value from node fact using field name."""
+        """
+        Extract reference value from node fact using field name.
+
+        Handles nested structure where data is stored in children[].attributes or children[].references.
+        Returns the first matching reference value found.
+        """
         fact_data = fact.fact_json
 
         # Try direct field lookup
@@ -333,15 +396,60 @@ Return ONLY valid JSON (no markdown, no explanation):
         if reference_field in child_refs:
             return child_refs[reference_field]
 
+        # Search in children structure
+        children = fact_data.get('children', [])
+        for child in children:
+            # Check attributes
+            attributes = child.get('attributes', {})
+
+            # Look for exact field name match (case-insensitive)
+            for attr_key, attr_value in attributes.items():
+                if attr_key.lower() == reference_field.lower():
+                    logger.debug(f"Exact match found: {attr_key} == {reference_field}")
+                    return attr_value
+                # Also check for common variations (e.g., operating_leg_ref_id vs DatedOperatingLegRefID)
+                # Remove underscores and compare
+                normalized_attr = attr_key.lower().replace('_', '')
+                normalized_field = reference_field.lower().replace('_', '')
+                if normalized_attr == normalized_field:
+                    logger.debug(f"Normalized match found: {attr_key} matches {reference_field}")
+                    return attr_value
+                # Check if the field name is contained in the attribute (e.g., "legrefid" in "operating_leg_ref_id")
+                # But only if the match is substantial (at least 5 characters)
+                if normalized_field in normalized_attr or normalized_attr in normalized_field:
+                    if ('id' in normalized_field or 'ref' in normalized_field) and min(len(normalized_field), len(normalized_attr)) >= 5:
+                        logger.debug(f"Partial match found: {attr_key} contains {reference_field}")
+                        return attr_value
+
+            # Check references
+            references = child.get('references', {})
+            for ref_type, ref_values in references.items():
+                if isinstance(ref_values, list) and len(ref_values) > 0:
+                    # If reference field name matches the type, return first value
+                    if ref_type.lower() in reference_field.lower() or reference_field.lower() in ref_type.lower():
+                        return ref_values[0]
+
+        # Try in refs section at root level
+        refs = fact_data.get('refs', {})
+        if reference_field in refs:
+            ref_value = refs[reference_field]
+            if isinstance(ref_value, list) and len(ref_value) > 0:
+                return ref_value[0]
+            elif isinstance(ref_value, str):
+                return ref_value
+
         return None
 
     def _find_target_by_reference(self, target_facts: List[NodeFact], ref_value: str) -> Optional[NodeFact]:
-        """Find target node that matches the reference value."""
+        """
+        Find target node that matches the reference value.
+
+        Searches in nested structure (children[].attributes, children[].references) for matching IDs.
+        """
         for fact in target_facts:
-            # Check if this fact has an ID or key that matches ref_value
             fact_data = fact.fact_json
 
-            # Check common ID fields
+            # Check common ID fields at root level
             if fact_data.get('ID') == ref_value:
                 return fact
             if fact_data.get('Key') == ref_value:
@@ -349,7 +457,47 @@ Return ONLY valid JSON (no markdown, no explanation):
             if fact_data.get('ObjectKey') == ref_value:
                 return fact
 
-            # Check in child_values
+            # Search in children structure
+            children = fact_data.get('children', [])
+            for child in children:
+                # Check attributes for ID/Key fields
+                attributes = child.get('attributes', {})
+                for attr_key, attr_value in attributes.items():
+                    # Check if this is an ID field and matches our reference
+                    if attr_value == ref_value:
+                        return fact
+                    # Also check if the attribute contains part of the reference (segment matching)
+                    if isinstance(attr_value, str) and isinstance(ref_value, str):
+                        # Handle cases like "seg0542686836-leg0" matching "seg0542686836"
+                        if ref_value in attr_value or attr_value in ref_value:
+                            if 'id' in attr_key.lower() or 'key' in attr_key.lower() or 'ref' in attr_key.lower():
+                                return fact
+
+                # Check references section
+                references = child.get('references', {})
+                for ref_type, ref_values in references.items():
+                    if isinstance(ref_values, list):
+                        if ref_value in ref_values:
+                            return fact
+                        # Check partial matches
+                        for rv in ref_values:
+                            if isinstance(rv, str) and (ref_value in rv or rv in ref_value):
+                                return fact
+
+            # Check in refs section at root level
+            refs = fact_data.get('refs', {})
+            for ref_key, ref_vals in refs.items():
+                if isinstance(ref_vals, list):
+                    if ref_value in ref_vals:
+                        return fact
+                    # Check partial matches
+                    for rv in ref_vals:
+                        if isinstance(rv, str) and (ref_value in rv or rv in ref_value):
+                            return fact
+                elif ref_vals == ref_value:
+                    return fact
+
+            # Check in child_values at root level
             for key, value in fact_data.items():
                 if value == ref_value and ('ID' in key or 'Key' in key):
                     return fact
