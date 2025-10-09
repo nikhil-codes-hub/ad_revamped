@@ -42,16 +42,8 @@ class WorkspaceSessionFactory:
 
     def _get_db_dir(self) -> Path:
         """Get workspace database directory."""
-        # Check if running from backend directory
+        # Store workspace databases in backend/data/workspaces
         backend_dir = Path(__file__).parent.parent.parent
-
-        # Try frontend data directory (if exists)
-        frontend_data_dir = backend_dir.parent / "frontend" / "streamlit_ui" / "data" / "workspaces"
-        if frontend_data_dir.parent.exists():
-            frontend_data_dir.mkdir(parents=True, exist_ok=True)
-            return frontend_data_dir
-
-        # Fallback to backend data directory
         backend_data_dir = backend_dir / "data" / "workspaces"
         backend_data_dir.mkdir(parents=True, exist_ok=True)
         return backend_data_dir
@@ -66,7 +58,7 @@ class WorkspaceSessionFactory:
             sqlite_url,
             connect_args={"check_same_thread": False},  # Allow multi-threading
             poolclass=StaticPool,  # Keep single connection
-            echo=settings.DEBUG
+            echo=settings.LOG_LEVEL == "DEBUG"
         )
 
         # Enable foreign keys for SQLite

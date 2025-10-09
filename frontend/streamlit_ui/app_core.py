@@ -1984,17 +1984,38 @@ def show_config_page():
                 key="config_delete_workspace",
                 label_visibility="collapsed"
             )
-            st.caption("Deleting removes it from the selection list. Existing data files remain on disk.")
-            if st.button("🗑️ Delete", key="config_delete_workspace_btn", use_container_width=True):
-                if workspace_to_delete in st.session_state.workspaces:
-                    st.session_state.workspaces.remove(workspace_to_delete)
-                    if not st.session_state.workspaces:
-                        st.session_state.workspaces = ["default"]
-                    save_workspaces(st.session_state.workspaces)
-                    if st.session_state.current_workspace == workspace_to_delete:
-                        st.session_state.current_workspace = st.session_state.workspaces[0]
-                    st.success(f"Workspace '{workspace_to_delete}' deleted.")
-                    st.experimental_rerun()
+            st.warning("⚠️ This will permanently delete the workspace and all its data (patterns, runs, node facts)!")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("🗑️ Delete Workspace", key="config_delete_workspace_btn", use_container_width=True, type="primary"):
+                    if workspace_to_delete in st.session_state.workspaces:
+                        # Remove from workspace list
+                        st.session_state.workspaces.remove(workspace_to_delete)
+                        if not st.session_state.workspaces:
+                            st.session_state.workspaces = ["default"]
+                        save_workspaces(st.session_state.workspaces)
+
+                        # Delete database file from disk (stored in backend/data/workspaces)
+                        import os
+                        backend_workspace_path = Path(__file__).parent.parent.parent / "backend" / "data" / "workspaces" / f"{workspace_to_delete}.db"
+                        if backend_workspace_path.exists():
+                            try:
+                                os.remove(backend_workspace_path)
+                                st.success(f"✅ Workspace '{workspace_to_delete}' and its database deleted.")
+                            except Exception as e:
+                                st.error(f"❌ Failed to delete database file: {e}")
+                        else:
+                            st.success(f"✅ Workspace '{workspace_to_delete}' removed from list (database not found).")
+
+                        # Switch to default if current workspace was deleted
+                        if st.session_state.current_workspace == workspace_to_delete:
+                            st.session_state.current_workspace = st.session_state.workspaces[0]
+
+                        st.rerun()
+
+            with col2:
+                st.caption(f"📁 Database: `{workspace_to_delete}.db`")
 
     st.divider()
 
