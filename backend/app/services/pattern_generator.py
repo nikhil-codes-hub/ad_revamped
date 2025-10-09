@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 from app.models.database import NodeFact, Pattern, Run
 from app.core.config import settings
 from app.services.llm_extractor import get_llm_extractor
+from app.services.utils import normalize_iata_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -27,14 +28,13 @@ class PatternGenerator:
         """Initialize pattern generator with database session."""
         self.db_session = db_session
 
-    def _normalize_path(self, path: str) -> str:
+    def _normalize_path(self, path: str, message_root: str) -> str:
         """Normalize section path for consistent matching."""
         # Remove leading/trailing slashes
         normalized = path.strip('/')
 
-        # Handle IATA_ prefix variations (17.2 vs 19.2+)
-        normalized = normalized.replace('/IATA_OrderViewRS/', '/OrderViewRS/')
-        normalized = normalized.replace('IATA_OrderViewRS/', 'OrderViewRS/')
+        # Remove IATA_ prefix for any message type (OrderViewRS, AirShoppingRS, etc.)
+        normalized = normalize_iata_prefix(normalized, message_root)
 
         return normalized
 
@@ -287,8 +287,11 @@ class PatternGenerator:
         - Reference patterns
         - Spec version
         """
+        # Extract message_root from decision_rule or section_path
+        message_root = decision_rule.get('message_root', section_path.split('/')[0] if '/' in section_path else '')
+
         components = {
-            'path': self._normalize_path(section_path),
+            'path': self._normalize_path(section_path, message_root),
             'version': spec_version,
             'node_type': decision_rule.get('node_type', ''),
             'must_have': decision_rule.get('must_have_attributes', []),
@@ -422,7 +425,7 @@ Description (1-2 sentences, focus on business purpose):"""
                 spec_version=spec_version,
                 message_root=message_root,
                 airline_code=airline_code,
-                section_path=self._normalize_path(section_path),
+                section_path=self._normalize_path(section_path, message_root),
                 selector_xpath=selector_xpath,
                 decision_rule=decision_rule,
                 description=description,  # Add generated description

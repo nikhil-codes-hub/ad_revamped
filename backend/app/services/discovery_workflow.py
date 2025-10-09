@@ -22,6 +22,7 @@ from app.services.template_extractor import template_extractor
 from app.services.llm_extractor import get_llm_extractor
 from app.services.pii_masking import pii_engine
 from app.services.pattern_generator import create_pattern_generator
+from app.services.utils import normalize_iata_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -117,9 +118,8 @@ class DiscoveryWorkflow:
         target_paths = []
         for section_path, config in node_configs.items():
             # Normalize path to match XML parser's format
-            # Remove IATA_ prefix variations (17.2 vs 19.2+)
-            normalized_path = section_path.replace('IATA_OrderViewRS/', 'OrderViewRS/')
-            normalized_path = normalized_path.replace('/IATA_OrderViewRS/', '/OrderViewRS/')
+            # Remove IATA_ prefix for any message type (OrderViewRS, AirShoppingRS, etc.)
+            normalized_path = normalize_iata_prefix(section_path, self.message_root)
 
             # Convert to parser format
             target_paths.append({
@@ -147,14 +147,13 @@ class DiscoveryWorkflow:
             return True
 
         # Normalize the section_path to match node_configs format
-        normalized_section = section_path.replace('IATA_OrderViewRS/', 'OrderViewRS/')
-        normalized_section = normalized_section.replace('/IATA_OrderViewRS/', '/OrderViewRS/')
+        # Remove IATA_ prefix for any message type
+        normalized_section = normalize_iata_prefix(section_path, self.message_root)
 
         # Check if this path has a configuration
         for config_path, config in node_configs.items():
             # Normalize config path too
-            normalized_config = config_path.replace('IATA_OrderViewRS/', 'OrderViewRS/')
-            normalized_config = normalized_config.replace('/IATA_OrderViewRS/', '/OrderViewRS/')
+            normalized_config = normalize_iata_prefix(config_path, self.message_root)
 
             if normalized_config in normalized_section or config_path in section_path:
                 return config['enabled']
