@@ -17,7 +17,8 @@ class Settings(BaseSettings):
         env_file=("../.env", "../../.env", "../../../.env"),
         env_file_encoding="utf-8",
         case_sensitive=False,
-        extra="ignore"
+        extra="ignore",
+        protected_namespaces=()  # Allow MODEL_ field names
     )
 
     # Application
