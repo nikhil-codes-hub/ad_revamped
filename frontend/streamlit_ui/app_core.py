@@ -1565,7 +1565,29 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
                 st.write("**NodeFact Structure:**")
                 st.json(fact_json)
     else:
-        st.info("No pattern matches found. Please Discover them first.")
+        # Show helpful message about why no patterns were found
+        workspace = st.session_state.get('current_workspace', 'default')
+
+        # Get available patterns in workspace
+        available_patterns = get_patterns(limit=10, workspace=workspace)
+
+        if available_patterns:
+            # Show what message types have patterns
+            unique_message_types = set(f"{p['spec_version']}/{p['message_root']}" for p in available_patterns)
+
+            st.warning(f"⚠️ No pattern matches found for this XML.")
+            st.info(f"""
+**Possible reasons:**
+1. The XML message type doesn't have patterns yet
+2. You tried to identify a different message type than what was discovered
+
+**Available patterns in workspace '{workspace}':**
+{chr(10).join(f"• {msg_type}" for msg_type in sorted(unique_message_types))}
+
+**Solution:** Run **Discovery** on an XML file of the same message type you want to identify.
+            """)
+        else:
+            st.info("📭 No patterns found in this workspace. Please run **Discovery** first to generate patterns.")
 
 
 def _export_selected_patterns(patterns: List[Dict[str, Any]], selected_pattern_ids: List[int], workspace: str):
