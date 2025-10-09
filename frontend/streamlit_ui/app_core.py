@@ -1156,7 +1156,7 @@ def show_identify_page(current_workspace: Optional[str] = None):
 
         if uploaded_file:
             # Get available patterns to populate filters
-            all_patterns = get_patterns(limit=200)
+            all_patterns = get_patterns(limit=200, workspace=current_workspace)
             available_versions = sorted(set(p.get('spec_version', '') for p in all_patterns if p.get('spec_version')))
             available_msg_roots = sorted(set(p.get('message_root', '') for p in all_patterns if p.get('message_root')))
             available_airlines = sorted(set(p.get('airline_code', '') for p in all_patterns if p.get('airline_code')))
@@ -1245,14 +1245,14 @@ def show_identify_page(current_workspace: Optional[str] = None):
     if st.session_state.identify_current_run:
         run_id = st.session_state.identify_current_run
         st.success("📊 Pattern Matching Results")
-        show_identify_run_details(run_id)
+        show_identify_run_details(run_id, current_workspace)
     else:
         st.info("👆 Upload an XML file above to see pattern matching results")
 
 
-def show_identify_run_details(run_id: str):
+def show_identify_run_details(run_id: str, workspace: str = "default"):
     """Show detailed view of an identify run with pattern matches."""
-    run_details = get_run_status(run_id)
+    run_details = get_run_status(run_id, workspace)
 
     if not run_details:
         st.error("Failed to load run details")
@@ -1696,6 +1696,19 @@ def show_patterns_page(embedded: bool = False):
     patterns = get_patterns(limit=200, workspace=workspace)
 
     if patterns:
+        # Deduplicate patterns by signature_hash - keep the one with highest times_seen
+        unique_patterns = {}
+        for pattern in patterns:
+            sig_hash = pattern.get('signature_hash')
+            if sig_hash:
+                if sig_hash not in unique_patterns or pattern['times_seen'] > unique_patterns[sig_hash]['times_seen']:
+                    unique_patterns[sig_hash] = pattern
+            else:
+                # No signature hash, treat as unique
+                unique_patterns[pattern['id']] = pattern
+
+        patterns = list(unique_patterns.values())
+
         # Patterns table
         pattern_data = []
         for pattern in patterns:
@@ -1709,8 +1722,7 @@ def show_patterns_page(embedded: bool = False):
                 "Message": pattern['message_root'],
                 "Times Seen": pattern['times_seen'],
                 "Must-Have Attrs": len(decision_rule.get('must_have_attributes', [])),
-                "Has Children": "✓" if decision_rule.get('child_structure', {}).get('has_children') else "",
-                "Last Seen": datetime.fromisoformat(pattern["last_seen_at"]).strftime("%Y-%m-%d %H:%M") if pattern.get("last_seen_at") else "Never"
+                "Has Children": "✓" if decision_rule.get('child_structure', {}).get('has_children') else ""
             })
 
         df_patterns = pd.DataFrame(pattern_data)
@@ -1901,22 +1913,14 @@ def show_config_page():
 
     workspaces = st.session_state.workspaces
 
-    col_active, col_add, col_delete = st.columns([2, 2, 2])
-    with col_active:
-        st.markdown("### Active Workspace")
-        current_idx = workspaces.index(st.session_state.current_workspace)
-        selected_workspace = st.selectbox(
-            "Active workspace",
-            options=workspaces,
-            index=current_idx,
-            key="config_workspace_selector",
-            label_visibility="collapsed"
-        )
-        if selected_workspace != st.session_state.current_workspace:
-            st.session_state.current_workspace = selected_workspace
-            st.success(f"Active workspace set to '{selected_workspace}'.")
-            st.experimental_rerun()
+    active_workspace_label = st.session_state.current_workspace
+    st.markdown(
+        f"<div style='padding:0.5rem 0; font-weight:600; color:#0B1F33;'>"
+        f"Active Workspace: <span style='color:#1A5DBF;'>{active_workspace_label}</span></div>",
+        unsafe_allow_html=True
+    )
 
+    col_add, col_delete = st.columns([1, 1])
     with col_add:
         st.markdown("### Add Workspace")
         new_workspace = st.text_input(
@@ -2701,7 +2705,25 @@ def render_sidebar() -> str:
 
     active_workspace = st.session_state.current_workspace
 
-    st.sidebar.metric("Active Workspace", active_workspace)
+    options = st.session_state.workspaces
+    current_idx = options.index(active_workspace)
+    selected_sidebar_workspace = st.sidebar.selectbox(
+        "Select Workspace",
+        options,
+        index=current_idx,
+        key="sidebar_workspace_selector"
+    )
+
+    if selected_sidebar_workspace != active_workspace:
+        st.session_state.current_workspace = selected_sidebar_workspace
+        st.experimental_rerun()
+
+    st.sidebar.markdown(
+        f"<div style='padding-top:0.25rem; font-weight:600; color:#0B1F33;'>"
+        f"Current Workspace: <span style='color:#1A5DBF;'>{selected_sidebar_workspace}</span></div>",
+        unsafe_allow_html=True
+    )
+
     st.sidebar.caption("Manage workspaces from the ⚙️ Config page.")
 
     st.sidebar.divider()
@@ -2724,5 +2746,6 @@ def render_sidebar_footer() -> None:
 
     st.sidebar.subheader("System Status")
     st.sidebar.success("✅ API Connected")
-    backend_patterns_count = len(get_patterns(limit=500))
+    active_workspace = st.session_state.get('current_workspace', 'default')
+    backend_patterns_count = len(get_patterns(limit=500, workspace=active_workspace))
     st.sidebar.metric("Patterns", backend_patterns_count)
