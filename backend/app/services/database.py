@@ -31,7 +31,7 @@ def init_database():
         # Create database engine
         engine = create_engine(
             settings.mysql_url,
-            echo=settings.DEBUG,  # Log SQL queries in debug mode
+            echo=settings.LOG_LEVEL == "DEBUG",  # Log SQL queries only in debug level
             pool_size=10,
             max_overflow=20,
             pool_recycle=3600,  # Recycle connections every hour

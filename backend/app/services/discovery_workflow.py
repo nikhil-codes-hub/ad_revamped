@@ -117,10 +117,12 @@ class DiscoveryWorkflow:
             List of target path dicts compatible with XmlStreamingParser
         """
         target_paths = []
+        message_root = self.message_root or ''
+
         for section_path, config in node_configs.items():
             # Normalize path to match XML parser's format
             # Remove IATA_ prefix for any message type (OrderViewRS, AirShoppingRS, etc.)
-            normalized_path = normalize_iata_prefix(section_path, self.message_root)
+            normalized_path = normalize_iata_prefix(section_path, message_root)
 
             # Convert to parser format
             target_paths.append({
@@ -149,12 +151,14 @@ class DiscoveryWorkflow:
 
         # Normalize the section_path to match node_configs format
         # Remove IATA_ prefix for any message type
-        normalized_section = normalize_iata_prefix(section_path, self.message_root)
+        message_root = self.message_root or ''
+
+        normalized_section = normalize_iata_prefix(section_path, message_root)
 
         # Check if this path has a configuration
         for config_path, config in node_configs.items():
             # Normalize config path too
-            normalized_config = normalize_iata_prefix(config_path, self.message_root)
+            normalized_config = normalize_iata_prefix(config_path, message_root)
 
             if normalized_config in normalized_section or config_path in section_path:
                 return config['enabled']
