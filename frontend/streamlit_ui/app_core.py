@@ -408,12 +408,12 @@ def get_node_facts(run_id: str, limit: int = 100, workspace: str = "default") ->
         return []
 
 
-def get_identify_matches(run_id: str, limit: int = 100) -> Optional[Dict[str, Any]]:
+def get_identify_matches(run_id: str, limit: int = 100, workspace: str = "default") -> Optional[Dict[str, Any]]:
     """Get pattern matching results for an identify run."""
     try:
         response = requests.get(
             f"{API_BASE_URL}/identify/{run_id}/matches",
-            params={"limit": limit},
+            params={"limit": limit, "workspace": workspace},
             timeout=15
         )
         if response.status_code == 200:
@@ -423,11 +423,12 @@ def get_identify_matches(run_id: str, limit: int = 100) -> Optional[Dict[str, An
         return None
 
 
-def get_gap_analysis(run_id: str) -> Optional[Dict[str, Any]]:
+def get_gap_analysis(run_id: str, workspace: str = "default") -> Optional[Dict[str, Any]]:
     """Get gap analysis for an identify run."""
     try:
         response = requests.get(
             f"{API_BASE_URL}/identify/{run_id}/gap-analysis",
+            params={"workspace": workspace},
             timeout=15
         )
         if response.status_code == 200:
@@ -1271,7 +1272,7 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
     st.divider()
 
     # Gap Analysis
-    gap_analysis = get_gap_analysis(run_id)
+    gap_analysis = get_gap_analysis(run_id, workspace)
 
     if gap_analysis:
         stats = gap_analysis.get('statistics', {})
@@ -1322,7 +1323,7 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
     # Pattern Matches table
     st.subheader("🔍 Pattern Matches")
 
-    matches_data = get_identify_matches(run_id, limit=200)
+    matches_data = get_identify_matches(run_id, limit=200, workspace=workspace)
 
     if matches_data and matches_data.get('matches'):
         matches = matches_data['matches']
