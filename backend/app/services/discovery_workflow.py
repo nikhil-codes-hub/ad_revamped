@@ -33,6 +33,7 @@ class DiscoveryWorkflow:
     def __init__(self, db_session: Session):
         """Initialize workflow with database session."""
         self.db_session = db_session
+        self.message_root: Optional[str] = None
 
     def _calculate_file_hash(self, file_path: str) -> str:
         """Calculate SHA-256 hash of file."""
@@ -321,6 +322,9 @@ class DiscoveryWorkflow:
         """
         logger.info(f"Starting optimized discovery workflow: {xml_file_path}")
 
+        # Reset message root context for this run
+        self.message_root = None
+
         # Validate file
         file_path = Path(xml_file_path)
         if not file_path.exists():
@@ -359,6 +363,9 @@ class DiscoveryWorkflow:
             if version_info and version_info.spec_version and version_info.message_root:
                 # SUCCESS: Version detected, use optimized approach
                 logger.info(f"Version detected: {version_info.spec_version}/{version_info.message_root}")
+
+                # Cache message root for helper methods
+                self.message_root = version_info.message_root
 
                 # Update run with version info immediately
                 self._update_run_version_info(
@@ -415,6 +422,7 @@ class DiscoveryWorkflow:
                         target_paths = candidate_paths
                         fallback_version_used = f"{version}/{message_root}"
                         logger.info(f"Using fallback version: {fallback_version_used}")
+                        self.message_root = message_root
                         break
 
                 if not target_paths:
@@ -459,6 +467,7 @@ class DiscoveryWorkflow:
                     )
                     version_updated_during_processing = True
                     version_info = parser.version_info
+                    self.message_root = parser.version_info.message_root
 
                 # Find matching target path for this subtree
                 matching_target = None
