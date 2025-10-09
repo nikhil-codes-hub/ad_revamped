@@ -1,0 +1,577 @@
+<IATA_OfferPriceRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<Response>
+		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<BaggageAllowanceList>
+				<BaggageAllowance>
+					<BaggageAllowanceID>0eee0ce9-1833-4d8b-93e1-f97a2b0b0bea</BaggageAllowanceID>
+					<BDC>
+						<CarrierDesigCode>AS</CarrierDesigCode>
+					</BDC>
+					<DescText>FREE BAGGAGE ALLOWANCE</DescText>
+					<RFISC>0DF</RFISC>
+					<TypeCode>CHECKED</TypeCode>
+				</BaggageAllowance>
+				<BaggageAllowance>
+					<BaggageAllowanceID>ccd7d3a3-eafe-4dbf-86e0-61765b9ce379</BaggageAllowanceID>
+					<BDC>
+						<CarrierDesigCode>AS</CarrierDesigCode>
+					</BDC>
+					<DescText>STANDARD PIECE MAX 50LB 62LI</DescText>
+					<DescText>Up to 50 lb/23 kg</DescText>
+					<DescText>Up to 62 li/158 lcm</DescText>
+					<RFISC>0GO</RFISC>
+					<TypeCode>CHECKED</TypeCode>
+				</BaggageAllowance>
+				<BaggageAllowance>
+					<BaggageAllowanceID>10b77e9d-3478-40d8-9f04-3118f0995e70</BaggageAllowanceID>
+					<BDC>
+						<CarrierDesigCode>AS</CarrierDesigCode>
+					</BDC>
+					<DescText>CARRYON HAND BAGGAGE ALLOWANCE</DescText>
+					<DescText>Up to 45 li/115 lcm</DescText>
+					<RFISC>0LN</RFISC>
+					<TypeCode>CARRYON</TypeCode>
+				</BaggageAllowance>
+			</BaggageAllowanceList>
+			<DatedMarketingSegmentList>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-09T09:50:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>LAX</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<CarrierName/>
+					<DatedMarketingSegmentId>b7d799f9-3385-4801-afc2-5300b83acfa3</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>25d34268-0ab2-4843-8cf7-45b7775a3eaa</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-09T07:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>1246</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-10T08:58:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<CarrierName/>
+					<DatedMarketingSegmentId>47643379-d5e9-4f15-aea8-8d5b1edb3442</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>de7ecd25-ecaf-4061-afdf-111f247733e4</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-10T06:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>LAX</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>1293</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+			</DatedMarketingSegmentList>
+			<DatedOperatingLegList>
+				<DatedOperatingLeg>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-09T09:50:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>LAX</IATA_LocationCode>
+						<TerminalName>6</TerminalName>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>73H</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Boeing 737-800 (Winglets) Passenger</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>9a39267a-d317-4221-a372-6cc93398b177</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-09T07:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<DistanceMeasure UnitCode="Mi">954</DistanceMeasure>
+					<IATA_AircraftType>
+						<IATA_AircraftTypeCode>73H</IATA_AircraftTypeCode>
+					</IATA_AircraftType>
+					<OnGroundDuration>0</OnGroundDuration>
+				</DatedOperatingLeg>
+				<DatedOperatingLeg>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-10T08:58:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Boeing 737-900 (Winglets) Passenger</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>d4c387e6-24f9-45c2-997b-74f08fb7feb5</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-10T06:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>LAX</IATA_LocationCode>
+						<TerminalName>6</TerminalName>
+					</Dep>
+					<DistanceMeasure UnitCode="Mi">954</DistanceMeasure>
+					<IATA_AircraftType>
+						<IATA_AircraftTypeCode>73J</IATA_AircraftTypeCode>
+					</IATA_AircraftType>
+					<OnGroundDuration>0</OnGroundDuration>
+				</DatedOperatingLeg>
+			</DatedOperatingLegList>
+			<DatedOperatingSegmentList>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedOperatingLegRefID>9a39267a-d317-4221-a372-6cc93398b177</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>25d34268-0ab2-4843-8cf7-45b7775a3eaa</DatedOperatingSegmentId>
+					<Duration>PT2H50M</Duration>
+				</DatedOperatingSegment>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedOperatingLegRefID>d4c387e6-24f9-45c2-997b-74f08fb7feb5</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>de7ecd25-ecaf-4061-afdf-111f247733e4</DatedOperatingSegmentId>
+					<Duration>PT5H48M</Duration>
+				</DatedOperatingSegment>
+			</DatedOperatingSegmentList>
+			<DisclosureList/>
+			<OriginDestList>
+				<OriginDest>
+					<DestCode>LAX</DestCode>
+					<OriginCode>SEA</OriginCode>
+					<OriginDestID>40294966-03f7-45b5-b75c-e6b10f0d22db</OriginDestID>
+					<PaxJourneyRefID>4c97e4aa-90eb-4452-a102-7a0adf11cce0</PaxJourneyRefID>
+				</OriginDest>
+				<OriginDest>
+					<DestCode>SEA</DestCode>
+					<OriginCode>LAX</OriginCode>
+					<OriginDestID>9c0831a7-ea35-4d21-ae8b-558aa9c6b9ca</OriginDestID>
+					<PaxJourneyRefID>4c97e4aa-90eb-4452-a102-7a0adf11cce0</PaxJourneyRefID>
+				</OriginDest>
+			</OriginDestList>
+			<PaxJourneyList>
+				<PaxJourney>
+					<DistanceMeasure UnitCode="Mi">1908</DistanceMeasure>
+					<Duration>PT5H48M</Duration>
+					<PaxJourneyID>4c97e4aa-90eb-4452-a102-7a0adf11cce0</PaxJourneyID>
+					<PaxSegmentRefID>GFl+x1ZRQDx-hSOM</PaxSegmentRefID>
+					<PaxSegmentRefID>GCRYqMFAEeURe4X3</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<Pax>
+					<PaxID>0</PaxID>
+				</Pax>
+				<Pax>
+					<PaxID>1</PaxID>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<CabinTypeAssociationChoice>
+						<LegCabinAssociations>
+							<LegsAssociatedCabin>
+								<LegCabinType/>
+							</LegsAssociatedCabin>
+						</LegCabinAssociations>
+					</CabinTypeAssociationChoice>
+					<DatedMarketingSegmentRefId>b7d799f9-3385-4801-afc2-5300b83acfa3</DatedMarketingSegmentRefId>
+					<OperatingCarrierRBD_Code>Q</OperatingCarrierRBD_Code>
+					<PaxSegmentID>GFl+x1ZRQDx-hSOM</PaxSegmentID>
+				</PaxSegment>
+				<PaxSegment>
+					<CabinTypeAssociationChoice>
+						<LegCabinAssociations>
+							<LegsAssociatedCabin>
+								<LegCabinType/>
+							</LegsAssociatedCabin>
+						</LegCabinAssociations>
+					</CabinTypeAssociationChoice>
+					<DatedMarketingSegmentRefId>47643379-d5e9-4f15-aea8-8d5b1edb3442</DatedMarketingSegmentRefId>
+					<OperatingCarrierRBD_Code>G</OperatingCarrierRBD_Code>
+					<PaxSegmentID>GCRYqMFAEeURe4X3</PaxSegmentID>
+				</PaxSegment>
+			</PaxSegmentList>
+			<PenaltyList>
+				<Penalty>
+					<DescText>No-Show</DescText>
+					<PenaltyID>6c87cc7c-8a26-4044-aa57-2d5902011787</PenaltyID>
+					<TypeCode>Cancellation</TypeCode>
+				</Penalty>
+				<Penalty>
+					<DescText>Before Departure</DescText>
+					<PenaltyID>ffd31c4b-c113-4c4b-b697-b6acc896ec3c</PenaltyID>
+					<TypeCode>Cancellation</TypeCode>
+				</Penalty>
+				<Penalty>
+					<DescText>After Departure</DescText>
+					<PenaltyID>d834bd46-451e-4c8b-86df-4f1177cabba4</PenaltyID>
+					<TypeCode>Cancellation</TypeCode>
+				</Penalty>
+			</PenaltyList>
+			<PriceClassList>
+				<PriceClass>
+					<CabinType>
+						<CabinTypeCode>5</CabinTypeCode>
+						<CabinTypeName>Main</CabinTypeName>
+					</CabinType>
+					<FareBasisCode>QH2OAVMN</FareBasisCode>
+					<Name>MAIN</Name>
+					<PriceClassID>71353993-a3fb-496e-9325-09f39d563692</PriceClassID>
+				</PriceClass>
+				<PriceClass>
+					<CabinType>
+						<CabinTypeCode>5</CabinTypeCode>
+						<CabinTypeName>Main</CabinTypeName>
+					</CabinType>
+					<FareBasisCode>GH2OXUMN</FareBasisCode>
+					<Name>MAIN</Name>
+					<PriceClassID>6509d813-b06d-4319-a90f-6e5bb1d989b3</PriceClassID>
+				</PriceClass>
+			</PriceClassList>
+			<ServiceDefinitionList>
+				<ServiceDefinition>
+					<Desc/>
+					<Desc/>
+					<Name>FREE BAGGAGE ALLOWANCE</Name>
+					<OwnerCode>AS</OwnerCode>
+					<RFISC>0DF</RFISC>
+					<ServiceDefinitionAssociation>
+						<BaggageAllowanceRef>
+							<BaggageAllowanceRefID>0eee0ce9-1833-4d8b-93e1-f97a2b0b0bea</BaggageAllowanceRefID>
+						</BaggageAllowanceRef>
+					</ServiceDefinitionAssociation>
+					<ServiceDefinitionID>17a54cb0-0364-425c-b432-1bdc9dcf5cbc</ServiceDefinitionID>
+				</ServiceDefinition>
+				<ServiceDefinition>
+					<Desc>
+						<DescText>Up to 50 lb/23 kg</DescText>
+					</Desc>
+					<Desc>
+						<DescText>Up to 62 li/158 lcm</DescText>
+					</Desc>
+					<Name>STANDARD PIECE MAX 50LB 62LI</Name>
+					<OwnerCode>AS</OwnerCode>
+					<RFISC>0GO</RFISC>
+					<ServiceDefinitionAssociation>
+						<BaggageAllowanceRef>
+							<BaggageAllowanceRefID>ccd7d3a3-eafe-4dbf-86e0-61765b9ce379</BaggageAllowanceRefID>
+						</BaggageAllowanceRef>
+					</ServiceDefinitionAssociation>
+					<ServiceDefinitionID>48fff0e4-7870-4245-bcbc-dcde4022efc4</ServiceDefinitionID>
+				</ServiceDefinition>
+				<ServiceDefinition>
+					<Desc>
+						<DescText>Up to 45 li/115 lcm</DescText>
+					</Desc>
+					<Desc/>
+					<Name>CARRYON HAND BAGGAGE ALLOWANCE</Name>
+					<OwnerCode>AS</OwnerCode>
+					<RFISC>0LN</RFISC>
+					<ServiceDefinitionAssociation>
+						<BaggageAllowanceRef>
+							<BaggageAllowanceRefID>10b77e9d-3478-40d8-9f04-3118f0995e70</BaggageAllowanceRefID>
+						</BaggageAllowanceRef>
+					</ServiceDefinitionAssociation>
+					<ServiceDefinitionID>debd6255-0943-4700-b20f-77fc2cc618d9</ServiceDefinitionID>
+				</ServiceDefinition>
+			</ServiceDefinitionList>
+		</DataLists>
+		<PricedOffer xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<Desc>
+				<DescText>0DF, AS, FREE BAGGAGE ALLOWANCE, 0.00, USD</DescText>
+			</Desc>
+			<Desc>
+				<DescText>0GO, AS, STANDARD PIECE MAX 50LB 62LI, 35.00, USD</DescText>
+			</Desc>
+			<Desc>
+				<DescText>0GO, AS, STANDARD PIECE MAX 50LB 62LI, 45.00, USD</DescText>
+			</Desc>
+			<Desc>
+				<DescText>0GO, AS, STANDARD PIECE MAX 50LB 62LI, 150.00, USD</DescText>
+			</Desc>
+			<Desc>
+				<DescText>0DF, AS, FREE BAGGAGE ALLOWANCE, 0.00, USD</DescText>
+			</Desc>
+			<Desc>
+				<DescText>0GO, AS, STANDARD PIECE MAX 50LB 62LI, 35.00, USD</DescText>
+			</Desc>
+			<Desc>
+				<DescText>0GO, AS, STANDARD PIECE MAX 50LB 62LI, 45.00, USD</DescText>
+			</Desc>
+			<Desc>
+				<DescText>0GO, AS, STANDARD PIECE MAX 50LB 62LI, 150.00, USD</DescText>
+			</Desc>
+			<Desc>
+				<DescText>0LN, AS, CARRYON HAND BAGGAGE ALLOWANCE, 0.00, USD</DescText>
+			</Desc>
+			<Desc>
+				<DescText>0LN, AS, CARRYON HAND BAGGAGE ALLOWANCE, 0.00, USD</DescText>
+			</Desc>
+			<JourneyOverview>
+				<JourneyPriceClass>
+					<PaxJourneyRefID>4c97e4aa-90eb-4452-a102-7a0adf11cce0</PaxJourneyRefID>
+					<PriceClassRefID>71353993-a3fb-496e-9325-09f39d563692</PriceClassRefID>
+				</JourneyPriceClass>
+				<JourneyPriceClass>
+					<PaxJourneyRefID>4c97e4aa-90eb-4452-a102-7a0adf11cce0</PaxJourneyRefID>
+					<PriceClassRefID>6509d813-b06d-4319-a90f-6e5bb1d989b3</PriceClassRefID>
+				</JourneyPriceClass>
+			</JourneyOverview>
+			<OfferID>47f13d3f-2b14-4b2d-85b4-fbb8650547a2</OfferID>
+			<OfferItem>
+				<CancelRestrictions>
+					<AllowedModificationInd>false</AllowedModificationInd>
+				</CancelRestrictions>
+				<ChangeRestrictions>
+					<AllowedModificationInd>true</AllowedModificationInd>
+				</ChangeRestrictions>
+				<FareDetail>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>Main</CabinTypeName>
+						</CabinType>
+						<FareBasisCode>QH2OAVMN</FareBasisCode>
+						<FareTypeCode>END</FareTypeCode>
+						<PaxSegmentRefID>GFl+x1ZRQDx-hSOM</PaxSegmentRefID>
+						<PriceClassRefID>71353993-a3fb-496e-9325-09f39d563692</PriceClassRefID>
+					</FareComponent>
+					<PenaltyRefID>6c87cc7c-8a26-4044-aa57-2d5902011787</PenaltyRefID>
+					<PenaltyRefID>ffd31c4b-c113-4c4b-b697-b6acc896ec3c</PenaltyRefID>
+					<PenaltyRefID>d834bd46-451e-4c8b-86df-4f1177cabba4</PenaltyRefID>
+				</FareDetail>
+				<FareDetail>
+					<FareComponent>
+						<CabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>Main</CabinTypeName>
+						</CabinType>
+						<FareBasisCode>GH2OXUMN</FareBasisCode>
+						<FareTypeCode>END</FareTypeCode>
+						<PaxSegmentRefID>GCRYqMFAEeURe4X3</PaxSegmentRefID>
+						<PriceClassRefID>6509d813-b06d-4319-a90f-6e5bb1d989b3</PriceClassRefID>
+					</FareComponent>
+					<PenaltyRefID>6c87cc7c-8a26-4044-aa57-2d5902011787</PenaltyRefID>
+					<PenaltyRefID>ffd31c4b-c113-4c4b-b697-b6acc896ec3c</PenaltyRefID>
+					<PenaltyRefID>d834bd46-451e-4c8b-86df-4f1177cabba4</PenaltyRefID>
+				</FareDetail>
+				<OfferItemID>P8DssbuvEPHStl4wztfZaP029</OfferItemID>
+				<Price>
+					<BaseAmount CurCode="USD">205.58</BaseAmount>
+					<TaxSummary>
+						<Tax>
+							<AddlTaxCode>001</AddlTaxCode>
+							<Amount CurCode="USD">9.63</Amount>
+							<Country>
+								<CountryCode>US</CountryCode>
+							</Country>
+							<DescText>US Transportation Tax</DescText>
+							<TaxCode>US</TaxCode>
+						</Tax>
+						<Tax>
+							<AddlTaxCode>001</AddlTaxCode>
+							<Amount CurCode="USD">5.79</Amount>
+							<Country>
+								<CountryCode>US</CountryCode>
+							</Country>
+							<DescText>US Transportation Tax</DescText>
+							<TaxCode>US</TaxCode>
+						</Tax>
+						<Tax>
+							<AddlTaxCode>001</AddlTaxCode>
+							<Amount CurCode="USD">5.60</Amount>
+							<CollectionPointTax>
+								<AirportAmount CurCode="USD">5.60</AirportAmount>
+								<Station>
+									<IATA_LocationCode>SEA</IATA_LocationCode>
+								</Station>
+							</CollectionPointTax>
+							<Country>
+								<CountryCode>US</CountryCode>
+							</Country>
+							<DescText>United States Passenger Civil Aviation Security Service Fee</DescText>
+							<TaxCode>AY</TaxCode>
+						</Tax>
+						<Tax>
+							<AddlTaxCode>001</AddlTaxCode>
+							<Amount CurCode="USD">5.00</Amount>
+							<CollectionPointTax>
+								<AirportAmount CurCode="USD">5.00</AirportAmount>
+								<Station>
+									<IATA_LocationCode>SEA</IATA_LocationCode>
+								</Station>
+							</CollectionPointTax>
+							<Country>
+								<CountryCode>US</CountryCode>
+							</Country>
+							<DescText>United States Flight Segment Tax Domestic</DescText>
+							<TaxCode>ZP</TaxCode>
+						</Tax>
+						<Tax>
+							<Amount CurCode="USD">4.50</Amount>
+							<CollectionPointTax>
+								<AirportAmount CurCode="USD">4.50</AirportAmount>
+								<Station>
+									<IATA_LocationCode>SEA</IATA_LocationCode>
+								</Station>
+							</CollectionPointTax>
+							<Country>
+								<CountryCode>US</CountryCode>
+							</Country>
+							<DescText>US Passenger Facility Charge</DescText>
+							<TaxCode>XF</TaxCode>
+						</Tax>
+						<Tax>
+							<AddlTaxCode>001</AddlTaxCode>
+							<Amount CurCode="USD">5.00</Amount>
+							<CollectionPointTax>
+								<AirportAmount CurCode="USD">5.00</AirportAmount>
+								<Station>
+									<IATA_LocationCode>LAX</IATA_LocationCode>
+								</Station>
+							</CollectionPointTax>
+							<Country>
+								<CountryCode>US</CountryCode>
+							</Country>
+							<DescText>United States Flight Segment Tax Domestic</DescText>
+							<TaxCode>ZP</TaxCode>
+						</Tax>
+						<Tax>
+							<AddlTaxCode>001</AddlTaxCode>
+							<Amount CurCode="USD">5.60</Amount>
+							<CollectionPointTax>
+								<AirportAmount CurCode="USD">5.60</AirportAmount>
+								<Station>
+									<IATA_LocationCode>LAX</IATA_LocationCode>
+								</Station>
+							</CollectionPointTax>
+							<Country>
+								<CountryCode>US</CountryCode>
+							</Country>
+							<DescText>United States Passenger Civil Aviation Security Service Fee</DescText>
+							<TaxCode>AY</TaxCode>
+						</Tax>
+						<Tax>
+							<Amount CurCode="USD">4.50</Amount>
+							<CollectionPointTax>
+								<AirportAmount CurCode="USD">4.50</AirportAmount>
+								<Station>
+									<IATA_LocationCode>LAX</IATA_LocationCode>
+								</Station>
+							</CollectionPointTax>
+							<Country>
+								<CountryCode>US</CountryCode>
+							</Country>
+							<DescText>US Passenger Facility Charge</DescText>
+							<TaxCode>XF</TaxCode>
+						</Tax>
+						<TotalTaxAmount CurCode="USD">45.62</TotalTaxAmount>
+					</TaxSummary>
+					<TotalAmount CurCode="USD">251.20</TotalAmount>
+				</Price>
+				<Service>
+					<OfferServiceAssociation>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>17a54cb0-0364-425c-b432-1bdc9dcf5cbc</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OfferServiceAssociation>
+					<PaxRefID>0</PaxRefID>
+					<PaxRefID>1</PaxRefID>
+					<ServiceID>d25136a7-b455-438f-b804-1edc36e22172</ServiceID>
+				</Service>
+				<Service>
+					<OfferServiceAssociation>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>48fff0e4-7870-4245-bcbc-dcde4022efc4</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OfferServiceAssociation>
+					<PaxRefID>0</PaxRefID>
+					<PaxRefID>1</PaxRefID>
+					<ServiceID>9af7596d-7668-490b-ba2c-1ab08cdd7144</ServiceID>
+				</Service>
+				<Service>
+					<OfferServiceAssociation>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>78a88589-8903-4283-a17e-ab88ee86489f</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OfferServiceAssociation>
+					<PaxRefID>0</PaxRefID>
+					<PaxRefID>1</PaxRefID>
+					<ServiceID>ffd7a368-be17-4645-90bd-dfb2183f5593</ServiceID>
+				</Service>
+				<Service>
+					<OfferServiceAssociation>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>982ea10a-089b-4bd4-bd52-6974beec9b4f</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OfferServiceAssociation>
+					<PaxRefID>0</PaxRefID>
+					<PaxRefID>1</PaxRefID>
+					<ServiceID>518f75e8-ad26-469f-b85a-6fb9f712e059</ServiceID>
+				</Service>
+				<Service>
+					<OfferServiceAssociation>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>a2793c6f-6800-4ed7-ab13-6c73fb3fb9cc</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OfferServiceAssociation>
+					<PaxRefID>0</PaxRefID>
+					<PaxRefID>1</PaxRefID>
+					<ServiceID>e0f9bb0a-e78d-4750-bafe-9215fe0d87c7</ServiceID>
+				</Service>
+				<Service>
+					<OfferServiceAssociation>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>7ad2d66a-47e7-470a-9895-b58183168d89</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OfferServiceAssociation>
+					<PaxRefID>0</PaxRefID>
+					<PaxRefID>1</PaxRefID>
+					<ServiceID>cdac9ac7-6c5f-47b9-ac18-073edfec3e0f</ServiceID>
+				</Service>
+				<Service>
+					<OfferServiceAssociation>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>825e9df4-0d9a-4905-9f28-83838174d0f9</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OfferServiceAssociation>
+					<PaxRefID>0</PaxRefID>
+					<PaxRefID>1</PaxRefID>
+					<ServiceID>577e81d4-c055-42ec-919a-49e8de79d6e3</ServiceID>
+				</Service>
+				<Service>
+					<OfferServiceAssociation>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>fe50dba3-986a-4a54-87d4-0f85cb6553b9</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OfferServiceAssociation>
+					<PaxRefID>0</PaxRefID>
+					<PaxRefID>1</PaxRefID>
+					<ServiceID>6aa3916a-8590-4c2f-8aee-97319591d2fd</ServiceID>
+				</Service>
+				<Service>
+					<OfferServiceAssociation>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>debd6255-0943-4700-b20f-77fc2cc618d9</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OfferServiceAssociation>
+					<PaxRefID>0</PaxRefID>
+					<PaxRefID>1</PaxRefID>
+					<ServiceID>66c810d3-91e0-4518-910e-35bf26b90529</ServiceID>
+				</Service>
+				<Service>
+					<OfferServiceAssociation>
+						<ServiceDefinitionRef>
+							<ServiceDefinitionRefID>cf6f6c65-ea73-4df4-b670-3b202e5562f9</ServiceDefinitionRefID>
+						</ServiceDefinitionRef>
+					</OfferServiceAssociation>
+					<PaxRefID>0</PaxRefID>
+					<PaxRefID>1</PaxRefID>
+					<ServiceID>92e8fee1-5026-4b6f-9824-ed534b595486</ServiceID>
+				</Service>
+			</OfferItem>
+			<OwnerCode>AS</OwnerCode>
+			<TotalPrice>
+				<BaseAmount CurCode="USD">411.16</BaseAmount>
+				<TaxSummary>
+					<TotalTaxAmount CurCode="USD">91.24</TotalTaxAmount>
+				</TaxSummary>
+				<TotalAmount CurCode="USD">502.40</TotalAmount>
+			</TotalPrice>
+		</PricedOffer>
+	</Response>
+	<PayloadAttributes>
+		<CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">c497f3ab-f277-43d5-9024-7815b22e0531</CorrelationID>
+		<VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">21.3</VersionNumber>
+	</PayloadAttributes>
+</IATA_OfferPriceRS>

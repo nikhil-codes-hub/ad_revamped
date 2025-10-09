@@ -228,42 +228,31 @@ class PatternManager:
         return SimpleSQLDatabaseUtils(db_name=db_name, base_dir=str(db_dir))
 
     def render(self, explorer_callback=None):
-        """Render Pattern Manager page with optional explorer tab."""
+        """Render Pattern Manager page with optional pattern manager tab."""
 
         st.header("🎨 Pattern Manager")
-        st.write("Export backend patterns, verify, and organize in workspace")
+        st.write("Browse, export, import, and verify patterns")
 
         if explorer_callback:
             tabs = st.tabs([
-                "📚 Pattern Explorer",
-                "📤 Export Patterns",
-                "✅ Verify Patterns",
-                "📚 Manage Workspace"
+                "🎨 Pattern Manager",
+                "✅ Verify Patterns"
             ])
 
             with tabs[0]:
                 explorer_callback()
             with tabs[1]:
-                self._render_export_tab()
-            with tabs[2]:
                 self._render_verify_tab()
-            with tabs[3]:
-                self._render_manage_tab()
         else:
-            tab1, tab2, tab3 = st.tabs(["📤 Export Patterns", "✅ Verify Patterns", "📚 Manage Workspace"])
-
-            with tab1:
-                self._render_export_tab()
-            with tab2:
-                self._render_verify_tab()
-            with tab3:
-                self._render_manage_tab()
+            st.warning("⚠️ Pattern Manager callback not provided")
+            self._render_verify_tab()
 
     def _render_export_tab(self):
-        """Export backend patterns to workspace."""
-        st.subheader("📤 Export Backend Patterns to Workspace")
+        """Export  patterns to workspace."""
+        st.subheader("📤 Export Patterns to Workspace")
 
         workspace = st.session_state.get('current_workspace', 'default')
+        st.caption(f"📁 Fetching patterns from workspace: **{workspace}**")
 
         # Fetch backend patterns
         try:
@@ -362,7 +351,7 @@ class PatternManager:
 
         df = pd.DataFrame(table_rows)
 
-        # Data editor with checkbox column
+        # Data editor with checkbox column (key includes workspace to force refresh on workspace change)
         edited_df = st.data_editor(
             df,
             hide_index=True,
@@ -377,7 +366,7 @@ class PatternManager:
                 "Must-Have Attrs": st.column_config.NumberColumn("Must-Have Attrs", format="%d"),
             },
             disabled=["Node Type", "Section Path", "Version", "Airline", "Message", "Times Seen", "Must-Have Attrs", "Has Children"],
-            key="export_patterns_table"
+            key=f"export_patterns_table_{workspace}"
         )
 
         # Get selected pattern IDs

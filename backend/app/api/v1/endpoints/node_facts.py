@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from app.models.schemas import NodeFactResponse
 from app.models.database import NodeFact
-from app.services.database import get_db_session
+from app.services.workspace_db import get_workspace_db
 from app.core.logging import get_logger
 
 router = APIRouter()
@@ -28,7 +28,7 @@ async def list_node_facts(
     message_root: Optional[str] = Query(None, description="Filter by message root"),
     limit: int = Query(default=50, ge=1, le=200, description="Maximum node facts to return"),
     offset: int = Query(default=0, ge=0, description="Number of node facts to skip for pagination"),
-    db: Session = Depends(get_db_session)
+    workspace: str = Query("default", description="Workspace name")
 ) -> List[NodeFactResponse]:
     """
     List extracted node facts with filtering and pagination.
@@ -46,49 +46,59 @@ async def list_node_facts(
                 section_path=section_path,
                 node_type=node_type,
                 limit=limit,
-                offset=offset)
+                offset=offset,
+                workspace=workspace)
 
-    # Build query with filters
-    query = db.query(NodeFact).order_by(NodeFact.created_at.desc())
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
 
-    if run_id:
-        query = query.filter(NodeFact.run_id == run_id)
-    if section_path:
-        query = query.filter(NodeFact.section_path.ilike(f"%{section_path}%"))
-    if node_type:
-        query = query.filter(NodeFact.node_type == node_type)
-    if spec_version:
-        query = query.filter(NodeFact.spec_version == spec_version)
-    if message_root:
-        query = query.filter(NodeFact.message_root == message_root)
+    try:
+        # Build query with filters
+        query = db.query(NodeFact).order_by(NodeFact.created_at.desc())
 
-    # Apply pagination
-    node_facts = query.offset(offset).limit(limit).all()
+        if run_id:
+            query = query.filter(NodeFact.run_id == run_id)
+        if section_path:
+            query = query.filter(NodeFact.section_path.ilike(f"%{section_path}%"))
+        if node_type:
+            query = query.filter(NodeFact.node_type == node_type)
+        if spec_version:
+            query = query.filter(NodeFact.spec_version == spec_version)
+        if message_root:
+            query = query.filter(NodeFact.message_root == message_root)
 
-    # Convert to response format
-    results = []
-    for nf in node_facts:
-        # Parse fact_json from string to dict
+        # Apply pagination
+        node_facts = query.offset(offset).limit(limit).all()
+
+        # Convert to response format
+        results = []
+        for nf in node_facts:
+            # Parse fact_json from string to dict
+            try:
+                fact_json = json.loads(nf.fact_json) if isinstance(nf.fact_json, str) else nf.fact_json
+            except (json.JSONDecodeError, TypeError):
+                fact_json = {}
+
+            results.append(NodeFactResponse(
+                id=nf.id,
+                run_id=nf.run_id,
+                spec_version=nf.spec_version,
+                message_root=nf.message_root,
+                section_path=nf.section_path,
+                node_type=nf.node_type,
+                node_ordinal=nf.node_ordinal,
+                fact_json=fact_json,
+                pii_masked=bool(nf.pii_masked),
+                created_at=nf.created_at.isoformat() if nf.created_at else ""
+            ))
+
+        logger.info(f"Retrieved {len(results)} node facts")
+        return results
+    finally:
         try:
-            fact_json = json.loads(nf.fact_json) if isinstance(nf.fact_json, str) else nf.fact_json
-        except (json.JSONDecodeError, TypeError):
-            fact_json = {}
-
-        results.append(NodeFactResponse(
-            id=nf.id,
-            run_id=nf.run_id,
-            spec_version=nf.spec_version,
-            message_root=nf.message_root,
-            section_path=nf.section_path,
-            node_type=nf.node_type,
-            node_ordinal=nf.node_ordinal,
-            fact_json=fact_json,
-            pii_masked=bool(nf.pii_masked),
-            created_at=nf.created_at.isoformat() if nf.created_at else ""
-        ))
-
-    logger.info(f"Retrieved {len(results)} node facts")
-    return results
+            next(db_generator)
+        except StopIteration:
+            pass
 
 
 @router.get("/{node_fact_id}", response_model=NodeFactResponse)

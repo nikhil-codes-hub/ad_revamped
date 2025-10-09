@@ -11,7 +11,7 @@ import structlog
 
 from app.models.schemas import PatternResponse
 from app.core.logging import get_logger
-from app.services.database import get_db_session
+from app.services.workspace_db import get_workspace_db
 from app.services.pattern_generator import create_pattern_generator
 from app.models.database import Pattern
 
@@ -29,7 +29,7 @@ async def list_patterns(
     limit: int = Query(default=50, ge=1, le=200, description="Maximum number of patterns to return"),
     offset: int = Query(default=0, ge=0, description="Number of patterns to skip for pagination"),
     min_confidence: Optional[float] = Query(None, ge=0.0, le=1.0, description="Minimum times_seen count"),
-    db: Session = Depends(get_db_session)
+    workspace: str = Query("default", description="Workspace name")
 ) -> List[PatternResponse]:
     """
     List discovered patterns with filtering and pagination.
@@ -50,98 +50,108 @@ async def list_patterns(
                 run_id=run_id,
                 airline_code=airline_code,
                 limit=limit,
-                offset=offset)
+                offset=offset,
+                workspace=workspace)
 
-    query = db.query(Pattern)
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
 
-    # Apply filters
-    if message_root:
-        query = query.filter(Pattern.message_root == message_root)
-    if section_path:
-        query = query.filter(Pattern.section_path.like(f'%{section_path}%'))
-    if spec_version:
-        query = query.filter(Pattern.spec_version == spec_version)
-    if airline_code:
-        query = query.filter(
-            (Pattern.airline_code == airline_code) | (Pattern.airline_code == None)
-        )
-    if run_id:
-        # Filter patterns generated from node_facts in this specific run
-        # Get node_fact IDs from this run, then find patterns that have examples from these facts
-        from app.models.database import NodeFact
+    try:
+        query = db.query(Pattern)
 
-        run_node_fact_ids = db.query(NodeFact.id).filter(NodeFact.run_id == run_id).all()
-        run_node_fact_ids = [nf_id[0] for nf_id in run_node_fact_ids]
+        # Apply filters
+        if message_root:
+            query = query.filter(Pattern.message_root == message_root)
+        if section_path:
+            query = query.filter(Pattern.section_path.like(f'%{section_path}%'))
+        if spec_version:
+            query = query.filter(Pattern.spec_version == spec_version)
+        if airline_code:
+            query = query.filter(
+                (Pattern.airline_code == airline_code) | (Pattern.airline_code == None)
+            )
+        if run_id:
+            # Filter patterns generated from node_facts in this specific run
+            # Get node_fact IDs from this run, then find patterns that have examples from these facts
+            from app.models.database import NodeFact
 
-        if run_node_fact_ids:
-            # Patterns are generated from node_facts, so we filter by matching:
-            # 1. spec_version and message_root from the run
-            # 2. section_path matching node_facts from this run
-            from app.models.database import Run
-            run = db.query(Run).filter(Run.id == run_id).first()
+            run_node_fact_ids = db.query(NodeFact.id).filter(NodeFact.run_id == run_id).all()
+            run_node_fact_ids = [nf_id[0] for nf_id in run_node_fact_ids]
 
-            if run:
-                # Get unique section_paths from this run's node_facts
-                run_section_paths = db.query(NodeFact.section_path).filter(
-                    NodeFact.run_id == run_id
-                ).distinct().all()
-                run_section_paths = [path[0] for path in run_section_paths]
+            if run_node_fact_ids:
+                # Patterns are generated from node_facts, so we filter by matching:
+                # 1. spec_version and message_root from the run
+                # 2. section_path matching node_facts from this run
+                from app.models.database import Run
+                run = db.query(Run).filter(Run.id == run_id).first()
 
-                # Normalize paths to match pattern format (remove leading slash)
-                normalized_paths = [path.lstrip('/') for path in run_section_paths]
+                if run:
+                    # Get unique section_paths from this run's node_facts
+                    run_section_paths = db.query(NodeFact.section_path).filter(
+                        NodeFact.run_id == run_id
+                    ).distinct().all()
+                    run_section_paths = [path[0] for path in run_section_paths]
 
-                # Filter patterns by run's version/message and section paths
-                query = query.filter(
-                    Pattern.spec_version == run.spec_version,
-                    Pattern.message_root == run.message_root,
-                    Pattern.section_path.in_(normalized_paths)
-                )
+                    # Normalize paths to match pattern format (remove leading slash)
+                    normalized_paths = [path.lstrip('/') for path in run_section_paths]
 
-                # If run has airline_code, prioritize airline-specific patterns
-                if run.airline_code:
+                    # Filter patterns by run's version/message and section paths
                     query = query.filter(
-                        (Pattern.airline_code == run.airline_code) | (Pattern.airline_code == None)
+                        Pattern.spec_version == run.spec_version,
+                        Pattern.message_root == run.message_root,
+                        Pattern.section_path.in_(normalized_paths)
                     )
+
+                    # If run has airline_code, prioritize airline-specific patterns
+                    if run.airline_code:
+                        query = query.filter(
+                            (Pattern.airline_code == run.airline_code) | (Pattern.airline_code == None)
+                        )
+                else:
+                    # Run not found, return empty
+                    logger.warning(f"Run {run_id} not found")
+                    return []
             else:
-                # Run not found, return empty
-                logger.warning(f"Run {run_id} not found")
+                # No node_facts for this run, return empty
+                logger.warning(f"No node_facts found for run {run_id}")
                 return []
-        else:
-            # No node_facts for this run, return empty
-            logger.warning(f"No node_facts found for run {run_id}")
-            return []
 
-    if min_confidence:
-        query = query.filter(Pattern.times_seen >= int(min_confidence))
+        if min_confidence:
+            query = query.filter(Pattern.times_seen >= int(min_confidence))
 
-    # Sort by times_seen (most common first)
-    query = query.order_by(Pattern.times_seen.desc(), Pattern.created_at.desc())
+        # Sort by times_seen (most common first)
+        query = query.order_by(Pattern.times_seen.desc(), Pattern.created_at.desc())
 
-    # Pagination
-    query = query.offset(offset).limit(limit)
+        # Pagination
+        query = query.offset(offset).limit(limit)
 
-    patterns = query.all()
+        patterns = query.all()
 
-    logger.info(f"Retrieved {len(patterns)} patterns")
+        logger.info(f"Retrieved {len(patterns)} patterns")
 
-    return [
-        PatternResponse(
-            id=p.id,
-            spec_version=p.spec_version,
-            message_root=p.message_root,
-            airline_code=p.airline_code,
-            section_path=p.section_path,
-            selector_xpath=p.selector_xpath,
-            decision_rule=p.decision_rule,
-            signature_hash=p.signature_hash,
-            times_seen=p.times_seen,
-            created_by_model=p.created_by_model,
-            examples=p.examples or [],
-            created_at=p.created_at.isoformat() if p.created_at else None,
-            last_seen_at=p.last_seen_at.isoformat() if p.last_seen_at else None
-        )
-        for p in patterns
-    ]
+        return [
+            PatternResponse(
+                id=p.id,
+                spec_version=p.spec_version,
+                message_root=p.message_root,
+                airline_code=p.airline_code,
+                section_path=p.section_path,
+                selector_xpath=p.selector_xpath,
+                decision_rule=p.decision_rule,
+                signature_hash=p.signature_hash,
+                times_seen=p.times_seen,
+                created_by_model=p.created_by_model,
+                examples=p.examples or [],
+                created_at=p.created_at.isoformat() if p.created_at else None,
+                last_seen_at=p.last_seen_at.isoformat() if p.last_seen_at else None
+            )
+            for p in patterns
+        ]
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
 
 
 @router.get("/{pattern_id}", response_model=PatternResponse)
@@ -248,7 +258,7 @@ async def generate_patterns(
     run_id: Optional[str] = Query(None, description="Generate patterns from specific run"),
     spec_version: Optional[str] = Query(None, description="Generate patterns for specific version"),
     message_root: Optional[str] = Query(None, description="Generate patterns for specific message type"),
-    db: Session = Depends(get_db_session)
+    workspace: str = Query("default", description="Workspace name")
 ):
     """
     Manually trigger pattern generation.
@@ -261,30 +271,40 @@ async def generate_patterns(
     logger.info("Manual pattern generation triggered",
                 run_id=run_id,
                 spec_version=spec_version,
-                message_root=message_root)
+                message_root=message_root,
+                workspace=workspace)
 
-    pattern_generator = create_pattern_generator(db)
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
 
-    if run_id:
-        # Generate from specific run
-        results = pattern_generator.generate_patterns_from_run(run_id)
-    else:
-        # Generate from all runs (with optional filters)
-        results = pattern_generator.generate_patterns_from_all_runs(
-            spec_version=spec_version,
-            message_root=message_root
-        )
+    try:
+        pattern_generator = create_pattern_generator(db)
 
-    logger.info("Pattern generation completed", results=results)
+        if run_id:
+            # Generate from specific run
+            results = pattern_generator.generate_patterns_from_run(run_id)
+        else:
+            # Generate from all runs (with optional filters)
+            results = pattern_generator.generate_patterns_from_all_runs(
+                spec_version=spec_version,
+                message_root=message_root
+            )
 
-    return {
-        "success": results.get('success', False),
-        "message": "Pattern generation completed",
-        "statistics": {
-            "node_facts_analyzed": results.get('node_facts_analyzed', 0),
-            "pattern_groups": results.get('pattern_groups', 0),
-            "patterns_created": results.get('patterns_created', 0),
-            "patterns_updated": results.get('patterns_updated', 0)
-        },
-        "errors": results.get('errors', [])
-    }
+        logger.info("Pattern generation completed", results=results)
+
+        return {
+            "success": results.get('success', False),
+            "message": "Pattern generation completed",
+            "statistics": {
+                "node_facts_analyzed": results.get('node_facts_analyzed', 0),
+                "pattern_groups": results.get('pattern_groups', 0),
+                "patterns_created": results.get('patterns_created', 0),
+                "patterns_updated": results.get('patterns_updated', 0)
+            },
+            "errors": results.get('errors', [])
+        }
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass

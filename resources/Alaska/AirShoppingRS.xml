@@ -1,0 +1,187 @@
+<IATA_AirShoppingRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<Response>
+		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<DatedMarketingSegmentList>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2023-11-02T09:46:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedMarketingSegmentId>50612655-21ee-4995-a601-3cb938006889</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>367b052c-b721-420a-9c9c-9f248a20bfd3</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2023-11-02T07:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>ORD</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>587</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+			</DatedMarketingSegmentList>
+			<DatedOperatingLegList>
+				<DatedOperatingLeg>
+					<AirlineTaxonomy>
+						<DescText>BUSINESS</DescText>
+						<TaxonomyFeature>
+							<CodesetCode>MEAL</CodesetCode>
+							<ValueText>S</ValueText>
+						</TaxonomyFeature>
+						<TaxonomyFeature>
+							<CodesetCode>AMENITY</CodesetCode>
+							<ValueText>Entertainment on demand</ValueText>
+						</TaxonomyFeature>
+						<TaxonomyFeature>
+							<CodesetCode>AMENITY</CodesetCode>
+							<ValueText>In-seat power source</ValueText>
+						</TaxonomyFeature>
+						<TaxonomyFeature>
+							<CodesetCode>AMENITY</CodesetCode>
+							<ValueText>Wi-Fi</ValueText>
+						</TaxonomyFeature>
+					</AirlineTaxonomy>
+					<AirlineTaxonomy>
+						<DescText>MAIN</DescText>
+						<TaxonomyFeature>
+							<CodesetCode>AMENITY</CodesetCode>
+							<ValueText>Entertainment on demand</ValueText>
+						</TaxonomyFeature>
+						<TaxonomyFeature>
+							<CodesetCode>AMENITY</CodesetCode>
+							<ValueText>In-seat power source</ValueText>
+						</TaxonomyFeature>
+						<TaxonomyFeature>
+							<CodesetCode>AMENITY</CodesetCode>
+							<ValueText>Wi-Fi</ValueText>
+						</TaxonomyFeature>
+					</AirlineTaxonomy>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-11-02T08:59:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Boeing 737-900 (Winglets) Passenger</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>9c296f7a-6cc0-4fdf-8358-b350a37e6eb0</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2024-11-02T08:59:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>ORD</IATA_LocationCode>
+					</Dep>
+					<DistanceMeasure UnitCode="MI">1715</DistanceMeasure>
+					<OnGroundDuration>PT5H37M</OnGroundDuration>
+				</DatedOperatingLeg>
+			</DatedOperatingLegList>
+			<DatedOperatingSegmentList>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedOperatingLegRefID>9c296f7a-6cc0-4fdf-8358-b350a37e6eb0</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>367b052c-b721-420a-9c9c-9f248a20bfd3</DatedOperatingSegmentId>
+					<Duration>PT5H37M</Duration>
+					<OperatingCarrierFlightNumberText>587</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+			</DatedOperatingSegmentList>
+			<DisclosureList>
+				<Disclosure>
+					<Desc>
+						<DescText>HORIZON AIR AS ALASKAHORIZON</DescText>
+					</Desc>
+					<DisclosureID>d88bea3a-bb0a-41a8-8187-5a2eeb8c478e</DisclosureID>
+				</Disclosure>
+			</DisclosureList>
+			<OriginDestList>
+				<OriginDest>
+					<DestCode>ORD</DestCode>
+					<OriginCode>SEA</OriginCode>
+					<OriginDestID>e5f3346f-cab9-4b0d-9faa-8b859b8e2586</OriginDestID>
+					<PaxJourneyRefID>e683d4f0-8f43-4f48-9f97-8711070f9f64</PaxJourneyRefID>
+				</OriginDest>
+				<OriginDest>
+					<DestCode>ORD</DestCode>
+					<OriginCode>SEA</OriginCode>
+					<OriginDestID>e5f3346f-cab9-4b0d-9faa-8b859b8e2586</OriginDestID>
+					<PaxJourneyRefID>e683d4f0-8f43-4f48-9f97-8711070f9f64</PaxJourneyRefID>
+				</OriginDest>
+				<OriginDest>
+					<DestCode>ORD</DestCode>
+					<OriginCode>SEA</OriginCode>
+					<OriginDestID>e5f3346f-cab9-4b0d-9faa-8b859b8e2586</OriginDestID>
+					<PaxJourneyRefID>e683d4f0-8f43-4f48-9f97-8711070f9f64</PaxJourneyRefID>
+				</OriginDest>
+			</OriginDestList>
+			<PaxJourneyList>
+				<PaxJourney>
+					<DistanceMeasure UnitCode="MI">3430</DistanceMeasure>
+					<Duration>PT5H37M</Duration>
+					<PaxJourneyID>1ca6b50d-0764-40b2-a0f8-331018c13433</PaxJourneyID>
+					<PaxSegmentRefID>422ff17a-abdc-4ad2-9088-32b5b7ef7c2f</PaxSegmentRefID>
+					<PaxSegmentRefID>0c7003e7-9acd-4742-b55c-89ce0336434a</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<Pax>
+					<PaxID>TestPaxID</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+				<Pax>
+					<PaxID>TestPaxID2</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<DatedMarketingSegmentRefId>50612655-21ee-4995-a601-3cb938006889</DatedMarketingSegmentRefId>
+					<PaxSegmentID>422ff17a-abdc-4ad2-9088-32b5b7ef7c2f</PaxSegmentID>
+				</PaxSegment>
+			</PaxSegmentList>
+		</DataLists>
+		<OffersGroup xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<CarrierOffers>
+				<Offer>
+					<OfferID>C3O30VGpDbJPbgJpeOTU1N00T</OfferID>
+					<OfferItem>
+						<FareDetail>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>1</CabinTypeCode>
+									<CabinTypeName>FIRST</CabinTypeName>
+								</CabinType>
+								<CancelRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Refundable</DescText>
+								</CancelRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Upgrade Available</DescText>
+								</ChangeRestrictions>
+								<ChangeRestrictions>
+									<AllowedModificationInd>false</AllowedModificationInd>
+									<DescText>Change Available</DescText>
+								</ChangeRestrictions>
+								<FareBasisCode>SH2OASFN</FareBasisCode>
+								<FareTypeCode>FR</FareTypeCode>
+								<PaxSegmentRefID>422ff17a-abdc-4ad2-9088-32b5b7ef7c2f</PaxSegmentRefID>
+								<PaxSegmentRefID>0c7003e7-9acd-4742-b55c-89ce0336434a</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>D</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<PaxRefID>TestPaxID</PaxRefID>
+							<PaxRefID>TestPaxID2</PaxRefID>
+						</FareDetail>
+						<OfferItemID>6d1fa804-2174-4522-b9af-e69e92b8f60d</OfferItemID>
+						<Price>
+							<TotalAmount CurCode="USD">657.80</TotalAmount>
+						</Price>
+					</OfferItem>
+					<OwnerCode>AS</OwnerCode>
+					<TotalPrice>
+						<TotalAmount CurCode="USD">651.11</TotalAmount>
+					</TotalPrice>
+				</Offer>
+			</CarrierOffers>
+		</OffersGroup>
+	</Response>
+	<PayloadAttributes>
+		<CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">37ba26cd-e1a8-470e-81fe-6e6531758041</CorrelationID>
+		<VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">21.3</VersionNumber>
+	</PayloadAttributes>
+</IATA_AirShoppingRS>

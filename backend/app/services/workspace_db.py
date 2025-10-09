@@ -13,6 +13,8 @@ Usage:
 """
 
 import os
+import logging
+import re
 from pathlib import Path
 from typing import Optional, Generator
 from contextlib import contextmanager
@@ -23,6 +25,8 @@ from sqlalchemy.pool import StaticPool
 
 from app.models.database import Base
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class WorkspaceSessionFactory:
@@ -75,12 +79,135 @@ class WorkspaceSessionFactory:
         # Create all tables if they don't exist
         Base.metadata.create_all(bind=self.engine)
 
+        # Fix SQLite AUTOINCREMENT for primary keys
+        self._fix_sqlite_autoincrement()
+
         # Create session factory
         self.SessionLocal = sessionmaker(
             bind=self.engine,
             autocommit=False,
             autoflush=False
         )
+
+    def _fix_sqlite_autoincrement(self):
+        """
+        Fix SQLite AUTOINCREMENT for tables with BigInteger primary keys.
+
+        SQLAlchemy creates BigInteger columns which don't trigger SQLite's AUTOINCREMENT.
+        This method recreates affected tables with INTEGER PRIMARY KEY AUTOINCREMENT.
+        """
+        from sqlalchemy import inspect, text
+
+        inspector = inspect(self.engine)
+        tables_to_fix = [
+            'node_configurations',
+            'reference_types',
+            'node_facts',
+            'patterns',
+            'pattern_matches',
+            'association_facts',
+            'node_relationships'
+            # Add other tables with BigInteger PKs as needed
+        ]
+
+        with self.engine.connect() as conn:
+            conn.execute(text("PRAGMA foreign_keys=OFF"))
+            for table_name in tables_to_fix:
+                if table_name not in inspector.get_table_names():
+                    continue
+
+                # Remove any abandoned backup table from previous runs
+                conn.execute(text(f"DROP TABLE IF EXISTS {table_name}_old"))
+                conn.commit()
+
+                # Check if table needs fixing
+                result = conn.execute(text(
+                    f"SELECT sql FROM sqlite_master WHERE type='table' AND name='{table_name}'"
+                ))
+                row = result.fetchone()
+
+                if not row or not row[0]:
+                    continue
+
+                table_sql = row[0]
+                table_sql_upper = table_sql.upper()
+                needs_autoincrement = 'AUTOINCREMENT' not in table_sql_upper
+                has_old_references = '_old' in table_sql
+
+                if not needs_autoincrement and not has_old_references:
+                    continue
+
+                if needs_autoincrement and has_old_references:
+                    logger.info(f"Fixing AUTOINCREMENT and cleaning _old references for table: {table_name}")
+                elif needs_autoincrement:
+                    logger.info(f"Fixing AUTOINCREMENT for table: {table_name}")
+                else:
+                    logger.info(f"Cleaning stale _old references for table: {table_name}")
+
+                fixed_sql = table_sql
+
+                if needs_autoincrement:
+                    # Step 1: Replace all BIGINT with INTEGER (for foreign keys and primary key)
+                    fixed_sql = fixed_sql.replace('BIGINT', 'INTEGER')
+
+                    # Step 2: Fix the primary key column specifically
+                    # Use regex to match ONLY the standalone 'id' column (with word boundary or tab/space before it)
+                    # This prevents matching node_fact_id, pattern_id, etc.
+                    fixed_sql = re.sub(
+                        r'(\s)id INTEGER NOT NULL',  # Match 'id' preceded by whitespace
+                        r'\1id INTEGER PRIMARY KEY AUTOINCREMENT',
+                        fixed_sql
+                    )
+
+                    # Step 3: Remove the separate PRIMARY KEY constraint
+                    fixed_sql = fixed_sql.replace(
+                        'PRIMARY KEY (id)',
+                        ''
+                    ).replace('  ,', ',').replace(' ,', ',').replace('\n\t,\n', '\n\t')
+
+                    # Clean up extra whitespace and commas
+                    fixed_sql = re.sub(r'\n\s*,\s*\n\s*', '\n\t', fixed_sql)
+
+                # Fix any stray references to *_old tables created during temporary renames
+                fixed_sql = re.sub(
+                    r'(REFERENCES\s+)("?)([A-Za-z_][A-Za-z0-9_]*?)_old("?)',
+                    lambda m: f"{m.group(1)}{m.group(2)}{m.group(3)}{m.group(4)}",
+                    fixed_sql
+                )
+                fixed_sql = re.sub(r'"([A-Za-z0-9_]+)_old"', r'"\1"', fixed_sql)
+                fixed_sql = re.sub(r'\b([A-Za-z_][A-Za-z0-9_]*)_old\b', r'\1', fixed_sql)
+
+                # Remove any trailing commas before closing parenthesis
+                fixed_sql = re.sub(r',\s*\)', '\n)', fixed_sql)
+
+                # Clean up any leftover backup tables from previous failed attempts
+                conn.execute(text(f"DROP TABLE IF EXISTS {table_name}_old"))
+                conn.commit()
+
+                # Backup data
+                conn.execute(text(f"ALTER TABLE {table_name} RENAME TO {table_name}_old"))
+
+                # Create new table
+                conn.execute(text(fixed_sql))
+
+                # Copy data if any exists
+                try:
+                    conn.execute(text(
+                        f"INSERT INTO {table_name} SELECT * FROM {table_name}_old"
+                    ))
+                    conn.execute(text(f"DROP TABLE {table_name}_old"))
+                except Exception as e:
+                    # No data to copy or copy failed
+                    logger.warning(f"Could not copy data from {table_name}_old: {e}")
+                    try:
+                        conn.execute(text(f"DROP TABLE IF EXISTS {table_name}_old"))
+                    except Exception as drop_error:
+                        logger.warning(f"Could not drop {table_name}_old: {drop_error}")
+
+                conn.commit()
+                logger.info(f"Successfully updated table definition for {table_name}")
+
+            conn.execute(text("PRAGMA foreign_keys=ON"))
 
     def get_session(self) -> Session:
         """Get a new database session."""

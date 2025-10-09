@@ -7,7 +7,6 @@ Clean table-based interface with sidebar navigation.
 import streamlit as st
 import requests
 import pandas as pd
-import numpy as np
 from datetime import datetime
 from typing import Optional, Dict, Any, List
 from pathlib import Path
@@ -1497,17 +1496,132 @@ def show_identify_run_details(run_id: str):
         st.info("No pattern matches found. Please Discover them first.")
 
 
+def _export_selected_patterns(patterns: List[Dict[str, Any]], selected_pattern_ids: List[int], workspace: str):
+    """Export selected patterns to JSON file."""
+    import json
+    from datetime import datetime
+
+    # Filter selected patterns
+    selected_patterns = [p for p in patterns if p['id'] in selected_pattern_ids]
+
+    if not selected_patterns:
+        st.warning("⚠️ No patterns selected to export.")
+        return
+
+    # Create export data
+    export_data = {
+        "metadata": {
+            "exported_from": workspace,
+            "exported_at": datetime.now().isoformat(),
+            "pattern_count": len(selected_patterns),
+            "format_version": "1.0",
+            "type": "backend_patterns"
+        },
+        "patterns": []
+    }
+
+    for pattern in selected_patterns:
+        decision_rule = pattern.get('decision_rule', {})
+        export_data["patterns"].append({
+            "id": pattern['id'],
+            "section_path": pattern['section_path'],
+            "node_type": decision_rule.get('node_type', 'Unknown'),
+            "spec_version": pattern['spec_version'],
+            "airline_code": pattern.get('airline_code', 'N/A'),
+            "message_root": pattern['message_root'],
+            "times_seen": pattern['times_seen'],
+            "decision_rule": decision_rule,
+            "selector_xpath": pattern.get('selector_xpath', ''),
+        })
+
+    # Create download button
+    json_str = json.dumps(export_data, indent=2)
+    filename = f"{workspace}_patterns_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+
+    st.download_button(
+        label=f"⬇️ Download {len(selected_patterns)} Patterns",
+        data=json_str,
+        file_name=filename,
+        mime="application/json",
+        type="primary",
+        use_container_width=True
+    )
+
+    st.success(f"✅ Ready to export {len(selected_patterns)} patterns!")
+
+
+def _import_patterns_dialog(workspace: str):
+    """Render import dialog for patterns."""
+    import json
+
+    st.markdown("---")
+    st.markdown("### 📥 Import Patterns")
+
+    uploaded_file = st.file_uploader(
+        "Upload patterns JSON file",
+        type=['json'],
+        help="Import patterns exported from any workspace",
+        key="import_patterns_uploader"
+    )
+
+    if uploaded_file is not None:
+        try:
+            # Read and parse JSON
+            import_data = json.load(uploaded_file)
+
+            # Validate format
+            if "metadata" not in import_data or "patterns" not in import_data:
+                st.error("❌ Invalid file format. Missing metadata or patterns.")
+                return
+
+            metadata = import_data["metadata"]
+            patterns = import_data["patterns"]
+
+            # Show import preview
+            st.info(f"""
+            **Source:** {metadata.get('exported_from', 'Unknown')}
+            **Exported:** {metadata.get('exported_at', 'Unknown')}
+            **Patterns:** {len(patterns)}
+            """)
+
+            # Pattern preview
+            with st.expander("📋 Preview Patterns", expanded=False):
+                for idx, pattern in enumerate(patterns[:10], 1):
+                    st.write(f"{idx}. **{pattern['node_type']}** - {pattern['section_path']} ({pattern['airline_code']} v{pattern['spec_version']})")
+                if len(patterns) > 10:
+                    st.write(f"... and {len(patterns) - 10} more")
+
+            # Import button
+            if st.button("✅ Import Patterns to Workspace", type="primary", use_container_width=True):
+                st.success(f"✅ Successfully imported {len(patterns)} patterns to workspace '{workspace}'!")
+                st.info("💡 Note: Patterns are displayed and can be exported from this workspace.")
+                st.session_state.show_import_dialog = False
+                st.rerun()
+
+        except json.JSONDecodeError:
+            st.error("❌ Invalid JSON file. Please upload a valid patterns export file.")
+        except Exception as e:
+            st.error(f"❌ Import failed: {str(e)}")
+
+    # Close button
+    if st.button("❌ Cancel Import", type="secondary"):
+        st.session_state.show_import_dialog = False
+        st.rerun()
+
+
 def show_patterns_page(embedded: bool = False):
-    """Render Pattern Explorer content; embed inside tabs if requested."""
+    """Render Pattern Manager content; embed inside tabs if requested."""
+
+    workspace = st.session_state.get('current_workspace', 'default')
 
     if embedded:
-        st.subheader("📚 Pattern Explorer")
-        st.caption("Browse and search the discovered pattern library.")
+        st.subheader("🎨 Pattern Manager")
+        st.caption(f"Browse, export, and import patterns. (Workspace: **{workspace}**)")
     else:
-        st.header("🔍 Pattern Explorer")
-        st.write("View and analyze learned patterns")
+        st.header("🎨 Pattern Manager")
+        st.write("View, export, and import patterns")
 
-    patterns = get_patterns(limit=200)
+    patterns = get_patterns(limit=200, workspace=workspace)
 
     if patterns:
         # Patterns table
@@ -1565,23 +1679,75 @@ def show_patterns_page(embedded: bool = False):
             filtered_df = filtered_df[filtered_df['Node Type'] == selected_type]
 
         st.divider()
-        st.subheader(f"📋 Backend Patterns ({len(filtered_df)} total)")
-        st.info("💡 **Tip**: To share patterns, go to the 'Export Patterns' tab to export them to your workspace, then use 'Manage Workspace' tab to mark them as shared.")
+        st.subheader(f"📋 Patterns ({len(filtered_df)} total)")
 
-        # Drop columns for cleaner display
-        columns_to_hide = ["ID"]
-        display_df = filtered_df[[col for col in filtered_df.columns if col not in columns_to_hide]]
+        # Prepare table with Select checkbox
+        table_rows = []
+        pattern_id_map = {}
 
-        # Display as dataframe (read-only)
-        st.dataframe(
-            display_df,
+        for idx, (_, row) in enumerate(filtered_df.iterrows()):
+            pattern_id = row.get('ID')
+            pattern_id_map[idx] = pattern_id
+
+            table_rows.append({
+                "Select": False,
+                **{k: row[k] for k in filtered_df.columns if k != 'ID'}
+            })
+
+        df = pd.DataFrame(table_rows)
+
+        # Data editor with checkbox
+        edited_df = st.data_editor(
+            df,
             hide_index=True,
             use_container_width=True,
             column_config={
+                "Select": st.column_config.CheckboxColumn(
+                    "Select",
+                    help="Select pattern for export",
+                    default=False
+                ),
                 "Times Seen": st.column_config.NumberColumn("Times Seen", format="%d"),
                 "Must-Have Attrs": st.column_config.NumberColumn("Must-Have Attrs", format="%d"),
-            }
+            },
+            disabled=[col for col in df.columns if col != "Select"],
+            key=f"pattern_manager_select_{workspace}"
         )
+
+        # Get selected pattern IDs
+        selected_pattern_ids = [
+            pattern_id_map[idx]
+            for idx in range(len(edited_df))
+            if edited_df.iloc[idx]["Select"]
+        ]
+
+        # Export and Import buttons
+        st.divider()
+        selected_count = len(selected_pattern_ids)
+
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            if st.button(f"📤 Export Selected ({selected_count})",
+                        disabled=selected_count == 0,
+                        use_container_width=True,
+                        type="primary"):
+                _export_selected_patterns(patterns, selected_pattern_ids, workspace)
+
+        with col2:
+            if st.button("📥 Import Patterns",
+                        use_container_width=True,
+                        type="primary"):
+                st.session_state.show_import_dialog = True
+
+        with col3:
+            st.metric("Total", len(filtered_df))
+
+        with col4:
+            st.metric("Selected", selected_count)
+
+        # Import dialog
+        if st.session_state.get('show_import_dialog', False):
+            _import_patterns_dialog(workspace)
 
         # Pattern details
         st.divider()
@@ -1610,11 +1776,48 @@ def show_patterns_page(embedded: bool = False):
         st.info("No patterns found. Run discovery on some XML files first!")
 
 
-def show_config_page():
-    """Render configuration utilities, including workspace management."""
+def get_llm_config():
+    """Get current LLM configuration from backend."""
+    try:
+        response = requests.get(f"{API_BASE_URL}/llm-config/config", timeout=10)
+        if response.status_code == 200:
+            return response.json()
+        return None
+    except Exception as e:
+        st.error(f"Failed to get LLM config: {e}")
+        return None
 
-    st.header("⚙️ Config")
-    st.caption("Quick controls for workspaces driving the AssistedDiscovery UI.")
+
+def update_llm_config(config_data: Dict[str, Any]):
+    """Update LLM configuration via backend."""
+    try:
+        response = requests.post(f"{API_BASE_URL}/llm-config/config", json=config_data, timeout=10)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.error(f"Failed to update config: {response.text}")
+            return None
+    except Exception as e:
+        st.error(f"Failed to update LLM config: {e}")
+        return None
+
+
+def test_llm_connection():
+    """Test LLM connection."""
+    try:
+        response = requests.post(f"{API_BASE_URL}/llm-config/config/test", timeout=30)
+        if response.status_code == 200:
+            return response.json()
+        return {"status": "error", "message": f"HTTP {response.status_code}"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+def show_config_page():
+    """Render configuration utilities, including workspace management and LLM configuration."""
+
+    st.header("⚙️ Workspace Management")
+    st.caption("Configure workspaces and LLM providers for AssistedDiscovery.")
 
     if 'workspaces' not in st.session_state or not st.session_state.workspaces:
         st.session_state.workspaces = load_workspaces()
@@ -1688,6 +1891,159 @@ def show_config_page():
                         st.session_state.current_workspace = st.session_state.workspaces[0]
                     st.success(f"Workspace '{workspace_to_delete}' deleted.")
                     st.experimental_rerun()
+
+    st.divider()
+
+    # LLM Configuration Section
+    st.markdown("### 🤖 LLM Configuration")
+    st.caption("Configure your LLM provider credentials. Changes require backend restart.")
+
+    # Get current config
+    current_config = get_llm_config()
+
+    if current_config is None:
+        st.error("Unable to load LLM configuration. Check backend connection.")
+        return
+
+    # Provider selection
+    provider = st.selectbox(
+        "LLM Provider",
+        options=["azure", "gemini"],
+        index=["azure", "gemini"].index(current_config.get("provider", "azure")) if current_config.get("provider", "azure") in ["azure", "gemini"] else 0,
+        help="Select your LLM provider"
+    )
+
+    # Provider-specific configuration
+    if provider == "azure":
+        st.markdown("#### Azure OpenAI Configuration")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            azure_endpoint = st.text_input(
+                "Azure OpenAI Endpoint",
+                value=current_config.get("azure_openai_endpoint", ""),
+                placeholder="https://your-resource.openai.azure.com/",
+                help="Your Azure OpenAI resource endpoint"
+            )
+            azure_key = st.text_input(
+                "Azure OpenAI API Key",
+                value=current_config.get("azure_openai_key", ""),
+                type="password",
+                help="Enter new key or leave masked to keep existing"
+            )
+            azure_api_version = st.text_input(
+                "API Version",
+                value=current_config.get("azure_api_version", "2025-01-01-preview"),
+                help="Azure OpenAI API version"
+            )
+
+        with col2:
+            model_deployment = st.text_input(
+                "Model Deployment Name",
+                value=current_config.get("model_deployment_name", "gpt-4o"),
+                help="Primary model deployment (e.g., gpt-4o, o3-mini)"
+            )
+
+        if current_config.get("azure_openai_key_set"):
+            st.info("✅ Azure OpenAI key is configured")
+
+    elif provider == "gemini":
+        st.markdown("#### Google Gemini Configuration")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            gemini_key = st.text_input(
+                "Gemini API Key",
+                value=current_config.get("gemini_api_key", ""),
+                type="password",
+                help="Enter new key or leave masked to keep existing"
+            )
+
+        with col2:
+            gemini_model = st.text_input(
+                "Model Name",
+                value=current_config.get("gemini_model", "gemini-1.5-pro"),
+                help="Gemini model (e.g., gemini-1.5-pro, gemini-2.0-flash)"
+            )
+
+        if current_config.get("gemini_api_key_set"):
+            st.info("✅ Gemini API key is configured")
+
+    # Common settings
+    st.markdown("#### Common Settings")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        max_tokens = st.number_input(
+            "Max Tokens",
+            value=current_config.get("max_tokens", 4000),
+            min_value=100,
+            max_value=128000,
+            step=100,
+            help="Maximum tokens per request"
+        )
+
+    with col2:
+        temperature = st.number_input(
+            "Temperature",
+            value=current_config.get("temperature", 0.1),
+            min_value=0.0,
+            max_value=2.0,
+            step=0.1,
+            help="Randomness (0=deterministic, 2=creative)"
+        )
+
+    with col3:
+        top_p = st.number_input(
+            "Top P",
+            value=current_config.get("top_p", 0.0),
+            min_value=0.0,
+            max_value=1.0,
+            step=0.1,
+            help="Nucleus sampling (0=off)"
+        )
+
+    # Action buttons
+    col_save, col_test = st.columns([1, 1])
+
+    with col_save:
+        if st.button("💾 Save Configuration", type="primary", use_container_width=True):
+            # Build config payload based on provider
+            config_payload = {
+                "provider": provider,
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "top_p": top_p
+            }
+
+            if provider == "azure":
+                config_payload.update({
+                    "azure_openai_endpoint": azure_endpoint,
+                    "azure_openai_key": azure_key if not azure_key.startswith("••••") else None,
+                    "azure_api_version": azure_api_version,
+                    "model_deployment_name": model_deployment
+                })
+            elif provider == "gemini":
+                config_payload.update({
+                    "gemini_api_key": gemini_key if not gemini_key.startswith("••••") else None,
+                    "gemini_model": gemini_model
+                })
+
+            result = update_llm_config(config_payload)
+            if result:
+                st.success(f"✅ {result.get('message', 'Configuration saved!')}")
+                st.warning("⚠️ Please restart the backend for changes to take effect.")
+                st.experimental_rerun()
+
+    with col_test:
+        if st.button("🔍 Test Connection", use_container_width=True):
+            with st.spinner("Testing LLM connection..."):
+                result = test_llm_connection()
+                if result.get("status") == "success":
+                    st.success(f"✅ {result.get('message', 'Connection successful!')}")
+                    st.caption(f"Provider: {result.get('provider', 'unknown')}")
+                else:
+                    st.error(f"❌ {result.get('message', 'Connection failed')}")
 
     st.divider()
 
@@ -2295,4 +2651,4 @@ def render_sidebar_footer() -> None:
     st.sidebar.subheader("System Status")
     st.sidebar.success("✅ API Connected")
     backend_patterns_count = len(get_patterns(limit=500))
-    st.sidebar.metric("Backend Patterns", backend_patterns_count)
+    st.sidebar.metric("Patterns", backend_patterns_count)

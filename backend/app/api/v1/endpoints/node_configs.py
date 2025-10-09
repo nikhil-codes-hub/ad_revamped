@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from lxml import etree
 import logging
 
-from app.services.database import get_db_session
+from app.services.workspace_db import get_workspace_db
 from app.models.database import NodeConfiguration
 from app.services.xml_parser import detect_ndc_version_fast
 
@@ -21,14 +21,17 @@ logger = logging.getLogger(__name__)
 @router.post("/analyze")
 async def analyze_xml_structure(
     file: UploadFile = File(...),
-    db: Session = Depends(get_db_session)
+    workspace: str = Query("default", description="Workspace name")
 ):
     """
     Analyze uploaded XML to discover all node types and their paths.
 
     Returns a list of discovered nodes that can be configured.
     """
-    logger.info(f"Analyzing XML structure from file: {file.filename}")
+    logger.info(f"Analyzing XML structure from file: {file.filename}, workspace: {workspace}")
+
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
 
     try:
         # Read XML content
@@ -169,6 +172,11 @@ async def analyze_xml_structure(
     except Exception as e:
         logger.error(f"Error analyzing XML: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error analyzing XML: {str(e)}")
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
 
 
 @router.get("/")
@@ -179,49 +187,66 @@ async def list_node_configurations(
     enabled_only: bool = Query(False),
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0),
-    db: Session = Depends(get_db_session)
+    workspace: str = Query("default", description="Workspace name")
 ):
     """
     List all node configurations with optional filtering.
     """
-    logger.info("Listing node configurations")
+    logger.info("Listing node configurations", extra={"workspace": workspace})
 
-    query = db.query(NodeConfiguration)
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
 
-    if spec_version:
-        query = query.filter(NodeConfiguration.spec_version == spec_version)
-    if message_root:
-        query = query.filter(NodeConfiguration.message_root == message_root)
-    if airline_code:
-        query = query.filter(NodeConfiguration.airline_code == airline_code)
-    if enabled_only:
-        query = query.filter(NodeConfiguration.enabled == True)
+    try:
+        query = db.query(NodeConfiguration)
 
-    total = query.count()
-    configs = query.order_by(NodeConfiguration.section_path).offset(offset).limit(limit).all()
+        if spec_version:
+            query = query.filter(NodeConfiguration.spec_version == spec_version)
+        if message_root:
+            query = query.filter(NodeConfiguration.message_root == message_root)
+        if airline_code:
+            query = query.filter(NodeConfiguration.airline_code == airline_code)
+        if enabled_only:
+            query = query.filter(NodeConfiguration.enabled == True)
 
-    return {
-        "total": total,
-        "limit": limit,
-        "offset": offset,
-        "configurations": [
-            {
-                "id": config.id,
-                "spec_version": config.spec_version,
-                "message_root": config.message_root,
-                "airline_code": config.airline_code,
-                "node_type": config.node_type,
-                "section_path": config.section_path,
-                "enabled": config.enabled,
-                "expected_references": config.expected_references or [],
-                "ba_remarks": config.ba_remarks,
-                "created_at": config.created_at.isoformat() if config.created_at else None,
-                "updated_at": config.updated_at.isoformat() if config.updated_at else None,
-                "created_by": config.created_by
-            }
-            for config in configs
-        ]
-    }
+        total = query.count()
+        configs = query.order_by(NodeConfiguration.section_path).offset(offset).limit(limit).all()
+
+        return {
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "configurations": [
+                {
+                    "id": config.id,
+                    "spec_version": config.spec_version,
+                    "message_root": config.message_root,
+                    "airline_code": config.airline_code,
+                    "node_type": config.node_type,
+                    "section_path": config.section_path,
+                    "enabled": config.enabled,
+                    "expected_references": config.expected_references or [],
+                    "ba_remarks": config.ba_remarks,
+                    "created_at": (
+                        config.created_at.isoformat()
+                        if config.created_at and hasattr(config.created_at, "isoformat")
+                        else str(config.created_at) if config.created_at else None
+                    ),
+                    "updated_at": (
+                        config.updated_at.isoformat()
+                        if config.updated_at and hasattr(config.updated_at, "isoformat")
+                        else str(config.updated_at) if config.updated_at else None
+                    ),
+                    "created_by": config.created_by
+                }
+                for config in configs
+            ]
+        }
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
 
 
 @router.post("/")
@@ -235,45 +260,54 @@ async def create_node_configuration(
     expected_references: Optional[List[str]] = None,
     ba_remarks: Optional[str] = None,
     created_by: Optional[str] = None,
-    db: Session = Depends(get_db_session)
+    workspace: str = Query("default", description="Workspace name")
 ):
     """
     Create a new node configuration.
     """
-    logger.info(f"Creating node configuration for {section_path}")
+    logger.info(f"Creating node configuration for {section_path}, workspace: {workspace}")
 
-    # Check if already exists
-    existing = db.query(NodeConfiguration).filter(
-        NodeConfiguration.spec_version == spec_version,
-        NodeConfiguration.message_root == message_root,
-        NodeConfiguration.airline_code == airline_code,
-        NodeConfiguration.section_path == section_path
-    ).first()
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
 
-    if existing:
-        raise HTTPException(status_code=400, detail="Configuration already exists for this node")
+    try:
+        # Check if already exists
+        existing = db.query(NodeConfiguration).filter(
+            NodeConfiguration.spec_version == spec_version,
+            NodeConfiguration.message_root == message_root,
+            NodeConfiguration.airline_code == airline_code,
+            NodeConfiguration.section_path == section_path
+        ).first()
 
-    config = NodeConfiguration(
-        spec_version=spec_version,
-        message_root=message_root,
-        airline_code=airline_code,
-        node_type=node_type,
-        section_path=section_path,
-        enabled=enabled,
-        expected_references=expected_references,
-        ba_remarks=ba_remarks,
-        created_by=created_by
-    )
+        if existing:
+            raise HTTPException(status_code=400, detail="Configuration already exists for this node")
 
-    db.add(config)
-    db.commit()
-    db.refresh(config)
+        config = NodeConfiguration(
+            spec_version=spec_version,
+            message_root=message_root,
+            airline_code=airline_code,
+            node_type=node_type,
+            section_path=section_path,
+            enabled=enabled,
+            expected_references=expected_references,
+            ba_remarks=ba_remarks,
+            created_by=created_by
+        )
 
-    return {
-        "success": True,
-        "config_id": config.id,
-        "message": "Node configuration created successfully"
-    }
+        db.add(config)
+        db.commit()
+        db.refresh(config)
+
+        return {
+            "success": True,
+            "config_id": config.id,
+            "message": "Node configuration created successfully"
+        }
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
 
 
 @router.put("/{config_id}")
@@ -283,57 +317,75 @@ async def update_node_configuration(
     expected_references: Optional[List[str]] = None,
     ba_remarks: Optional[str] = None,
     created_by: Optional[str] = None,
-    db: Session = Depends(get_db_session)
+    workspace: str = Query("default", description="Workspace name")
 ):
     """
     Update an existing node configuration.
     """
-    logger.info(f"Updating node configuration {config_id}")
+    logger.info(f"Updating node configuration {config_id}, workspace: {workspace}")
 
-    config = db.query(NodeConfiguration).filter(NodeConfiguration.id == config_id).first()
-    if not config:
-        raise HTTPException(status_code=404, detail="Configuration not found")
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
 
-    if enabled is not None:
-        config.enabled = enabled
-    if expected_references is not None:
-        config.expected_references = expected_references
-    if ba_remarks is not None:
-        config.ba_remarks = ba_remarks
-    if created_by is not None:
-        config.created_by = created_by
+    try:
+        config = db.query(NodeConfiguration).filter(NodeConfiguration.id == config_id).first()
+        if not config:
+            raise HTTPException(status_code=404, detail="Configuration not found")
 
-    db.commit()
-    db.refresh(config)
+        if enabled is not None:
+            config.enabled = enabled
+        if expected_references is not None:
+            config.expected_references = expected_references
+        if ba_remarks is not None:
+            config.ba_remarks = ba_remarks
+        if created_by is not None:
+            config.created_by = created_by
 
-    return {
-        "success": True,
-        "config_id": config.id,
-        "message": "Node configuration updated successfully"
-    }
+        db.commit()
+        db.refresh(config)
+
+        return {
+            "success": True,
+            "config_id": config.id,
+            "message": "Node configuration updated successfully"
+        }
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
 
 
 @router.delete("/{config_id}")
 async def delete_node_configuration(
     config_id: int,
-    db: Session = Depends(get_db_session)
+    workspace: str = Query("default", description="Workspace name")
 ):
     """
     Delete a node configuration.
     """
-    logger.info(f"Deleting node configuration {config_id}")
+    logger.info(f"Deleting node configuration {config_id}, workspace: {workspace}")
 
-    config = db.query(NodeConfiguration).filter(NodeConfiguration.id == config_id).first()
-    if not config:
-        raise HTTPException(status_code=404, detail="Configuration not found")
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
 
-    db.delete(config)
-    db.commit()
+    try:
+        config = db.query(NodeConfiguration).filter(NodeConfiguration.id == config_id).first()
+        if not config:
+            raise HTTPException(status_code=404, detail="Configuration not found")
 
-    return {
-        "success": True,
-        "message": "Node configuration deleted successfully"
-    }
+        db.delete(config)
+        db.commit()
+
+        return {
+            "success": True,
+            "message": "Node configuration deleted successfully"
+        }
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
 
 
 @router.post("/copy-to-versions")
@@ -343,7 +395,7 @@ async def copy_configurations_to_versions(
     target_versions: List[str] = Query(..., description="Target versions to copy to"),
     source_airline_code: Optional[str] = Query(None, description="Source airline code"),
     target_airline_code: Optional[str] = Query(None, description="Target airline code"),
-    db: Session = Depends(get_db_session)
+    workspace: str = Query("default", description="Workspace name")
 ):
     """
     Copy configurations from one version to multiple other versions.
@@ -351,157 +403,175 @@ async def copy_configurations_to_versions(
     Useful for applying 18.1 configurations to all other NDC versions.
     """
     logger.info(f"Copying configs from {source_spec_version}/{source_message_root} to versions: {target_versions}")
-    logger.info(f"Source airline: {source_airline_code}, Target airline: {target_airline_code}")
+    logger.info(f"Source airline: {source_airline_code}, Target airline: {target_airline_code}, workspace: {workspace}")
 
-    # Get source configurations
-    source_configs_query = db.query(NodeConfiguration).filter(
-        NodeConfiguration.spec_version == source_spec_version,
-        NodeConfiguration.message_root == source_message_root
-    )
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
 
-    detected_airline = None  # Track which airline was used
+    try:
+        # Get source configurations
+        source_configs_query = db.query(NodeConfiguration).filter(
+            NodeConfiguration.spec_version == source_spec_version,
+            NodeConfiguration.message_root == source_message_root
+        )
 
-    if source_airline_code:
-        # Specific airline requested
-        source_configs_query = source_configs_query.filter(NodeConfiguration.airline_code == source_airline_code)
-        source_configs = source_configs_query.all()
-        detected_airline = source_airline_code
+        detected_airline = None  # Track which airline was used
 
-        if not source_configs:
-            logger.warning(f"No configurations found for {source_spec_version}/{source_message_root}/{source_airline_code}")
-            raise HTTPException(
-                status_code=404,
-                detail=f"No configurations found for {source_spec_version}/{source_message_root}/{source_airline_code}"
-            )
-    else:
-        # No airline specified - try to find configs intelligently
-        # Priority 1: Global configs (airline_code = NULL)
-        global_configs = source_configs_query.filter(NodeConfiguration.airline_code == None).all()
+        if source_airline_code:
+            # Specific airline requested
+            source_configs_query = source_configs_query.filter(NodeConfiguration.airline_code == source_airline_code)
+            source_configs = source_configs_query.all()
+            detected_airline = source_airline_code
 
-        if global_configs:
-            source_configs = global_configs
-            detected_airline = "Global (NULL)"
-            logger.info(f"Using {len(global_configs)} global configurations (airline_code=NULL)")
-        else:
-            # Priority 2: Get configs from first available airline
-            all_configs = source_configs_query.all()
-            if all_configs:
-                # Group by airline and pick first
-                first_airline = all_configs[0].airline_code
-                source_configs = [c for c in all_configs if c.airline_code == first_airline]
-                detected_airline = first_airline
-                logger.info(f"Using {len(source_configs)} configurations from airline: {first_airline}")
-            else:
-                logger.warning(f"No configurations found for {source_spec_version}/{source_message_root}")
+            if not source_configs:
+                logger.warning(f"No configurations found for {source_spec_version}/{source_message_root}/{source_airline_code}")
                 raise HTTPException(
                     status_code=404,
-                    detail=f"No configurations found for {source_spec_version}/{source_message_root}. Please create configurations first using the Analyze XML tab."
+                    detail=f"No configurations found for {source_spec_version}/{source_message_root}/{source_airline_code}"
                 )
+        else:
+            # No airline specified - try to find configs intelligently
+            # Priority 1: Global configs (airline_code = NULL)
+            global_configs = source_configs_query.filter(NodeConfiguration.airline_code == None).all()
 
-    created_count = 0
-    skipped_count = 0
-    errors = []
+            if global_configs:
+                source_configs = global_configs
+                detected_airline = "Global (NULL)"
+                logger.info(f"Using {len(global_configs)} global configurations (airline_code=NULL)")
+            else:
+                # Priority 2: Get configs from first available airline
+                all_configs = source_configs_query.all()
+                if all_configs:
+                    # Group by airline and pick first
+                    first_airline = all_configs[0].airline_code
+                    source_configs = [c for c in all_configs if c.airline_code == first_airline]
+                    detected_airline = first_airline
+                    logger.info(f"Using {len(source_configs)} configurations from airline: {first_airline}")
+                else:
+                    logger.warning(f"No configurations found for {source_spec_version}/{source_message_root}")
+                    raise HTTPException(
+                        status_code=404,
+                        detail=f"No configurations found for {source_spec_version}/{source_message_root}. Please create configurations first using the Analyze XML tab."
+                    )
 
-    for target_version in target_versions:
-        for source_config in source_configs:
-            try:
-                # Check if config already exists for target version
-                existing = db.query(NodeConfiguration).filter(
-                    NodeConfiguration.spec_version == target_version,
-                    NodeConfiguration.message_root == source_message_root,
-                    NodeConfiguration.airline_code == (target_airline_code if target_airline_code is not None else source_config.airline_code),
-                    NodeConfiguration.section_path == source_config.section_path
-                ).first()
+        created_count = 0
+        skipped_count = 0
+        errors = []
 
-                if existing:
-                    skipped_count += 1
-                    continue
+        for target_version in target_versions:
+            for source_config in source_configs:
+                try:
+                    # Check if config already exists for target version
+                    existing = db.query(NodeConfiguration).filter(
+                        NodeConfiguration.spec_version == target_version,
+                        NodeConfiguration.message_root == source_message_root,
+                        NodeConfiguration.airline_code == (target_airline_code if target_airline_code is not None else source_config.airline_code),
+                        NodeConfiguration.section_path == source_config.section_path
+                    ).first()
 
-                # Create new config for target version
-                new_config = NodeConfiguration(
-                    spec_version=target_version,
-                    message_root=source_message_root,
-                    airline_code=target_airline_code if target_airline_code is not None else source_config.airline_code,
-                    node_type=source_config.node_type,
-                    section_path=source_config.section_path,
-                    enabled=source_config.enabled,
-                    expected_references=source_config.expected_references,
-                    ba_remarks=source_config.ba_remarks,
-                    created_by=source_config.created_by
-                )
-                db.add(new_config)
-                created_count += 1
+                    if existing:
+                        skipped_count += 1
+                        continue
 
-            except Exception as e:
-                errors.append(f"Error copying {source_config.section_path} to {target_version}: {str(e)}")
+                    # Create new config for target version
+                    new_config = NodeConfiguration(
+                        spec_version=target_version,
+                        message_root=source_message_root,
+                        airline_code=target_airline_code if target_airline_code is not None else source_config.airline_code,
+                        node_type=source_config.node_type,
+                        section_path=source_config.section_path,
+                        enabled=source_config.enabled,
+                        expected_references=source_config.expected_references,
+                        ba_remarks=source_config.ba_remarks,
+                        created_by=source_config.created_by
+                    )
+                    db.add(new_config)
+                    created_count += 1
 
-    db.commit()
+                except Exception as e:
+                    errors.append(f"Error copying {source_config.section_path} to {target_version}: {str(e)}")
 
-    logger.info(f"Copy complete: {created_count} created, {skipped_count} skipped, {len(errors)} errors")
+        db.commit()
 
-    return {
-        "success": len(errors) == 0,
-        "source_version": source_spec_version,
-        "detected_airline": detected_airline,
-        "target_versions": target_versions,
-        "source_configs": len(source_configs),
-        "created": created_count,
-        "skipped": skipped_count,
-        "errors": errors
-    }
+        logger.info(f"Copy complete: {created_count} created, {skipped_count} skipped, {len(errors)} errors")
+
+        return {
+            "success": len(errors) == 0,
+            "source_version": source_spec_version,
+            "detected_airline": detected_airline,
+            "target_versions": target_versions,
+            "source_configs": len(source_configs),
+            "created": created_count,
+            "skipped": skipped_count,
+            "errors": errors
+        }
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
 
 
 @router.post("/bulk-update")
 async def bulk_update_configurations(
     configurations: List[dict],
-    db: Session = Depends(get_db_session)
+    workspace: str = Query("default", description="Workspace name")
 ):
     """
     Bulk update multiple node configurations.
 
     Useful for saving changes from the editable table in the UI.
     """
-    logger.info(f"Bulk updating {len(configurations)} configurations")
+    logger.info(f"Bulk updating {len(configurations)} configurations, workspace: {workspace}")
 
-    updated_count = 0
-    created_count = 0
-    errors = []
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
 
-    for config_data in configurations:
+    try:
+        updated_count = 0
+        created_count = 0
+        errors = []
+
+        for config_data in configurations:
+            try:
+                config_id = config_data.get('config_id')
+
+                if config_id:
+                    # Update existing
+                    config = db.query(NodeConfiguration).filter(NodeConfiguration.id == config_id).first()
+                    if config:
+                        config.enabled = config_data.get('enabled', config.enabled)
+                        config.expected_references = config_data.get('expected_references', config.expected_references)
+                        config.ba_remarks = config_data.get('ba_remarks', config.ba_remarks)
+                        updated_count += 1
+                else:
+                    # Create new
+                    config = NodeConfiguration(
+                        spec_version=config_data['spec_version'],
+                        message_root=config_data['message_root'],
+                        airline_code=config_data.get('airline_code'),
+                        node_type=config_data['node_type'],
+                        section_path=config_data['section_path'],
+                        enabled=config_data.get('enabled', True),
+                        expected_references=config_data.get('expected_references', []),
+                        ba_remarks=config_data.get('ba_remarks', ''),
+                        created_by=config_data.get('created_by')
+                    )
+                    db.add(config)
+                    created_count += 1
+            except Exception as e:
+                errors.append(f"Error processing config for {config_data.get('section_path')}: {str(e)}")
+
+        db.commit()
+
+        return {
+            "success": len(errors) == 0,
+            "updated": updated_count,
+            "created": created_count,
+            "errors": errors
+        }
+    finally:
         try:
-            config_id = config_data.get('config_id')
-
-            if config_id:
-                # Update existing
-                config = db.query(NodeConfiguration).filter(NodeConfiguration.id == config_id).first()
-                if config:
-                    config.enabled = config_data.get('enabled', config.enabled)
-                    config.expected_references = config_data.get('expected_references', config.expected_references)
-                    config.ba_remarks = config_data.get('ba_remarks', config.ba_remarks)
-                    updated_count += 1
-            else:
-                # Create new
-                config = NodeConfiguration(
-                    spec_version=config_data['spec_version'],
-                    message_root=config_data['message_root'],
-                    airline_code=config_data.get('airline_code'),
-                    node_type=config_data['node_type'],
-                    section_path=config_data['section_path'],
-                    enabled=config_data.get('enabled', True),
-                    expected_references=config_data.get('expected_references', []),
-                    ba_remarks=config_data.get('ba_remarks', ''),
-                    created_by=config_data.get('created_by')
-                )
-                db.add(config)
-                created_count += 1
-        except Exception as e:
-            errors.append(f"Error processing config for {config_data.get('section_path')}: {str(e)}")
-
-    db.commit()
-
-    return {
-        "success": len(errors) == 0,
-        "updated": updated_count,
-        "created": created_count,
-        "errors": errors
-    }
+            next(db_generator)
+        except StopIteration:
+            pass

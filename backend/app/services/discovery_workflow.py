@@ -583,7 +583,9 @@ class DiscoveryWorkflow:
                        f"Skipped by config: {nodes_skipped_by_config}")
 
             # PHASE 2.5: Relationship Analysis (if NodeFacts were extracted)
+            logger.info(f"DEBUG: About to check Phase 2.5 condition - total_facts_extracted = {total_facts_extracted}")
             if total_facts_extracted > 0:
+                logger.info(f"DEBUG: Phase 2.5 condition TRUE - entering relationship analysis")
                 logger.info(f"Phase 2.5: Analyzing relationships between {total_facts_extracted} NodeFacts")
                 try:
                     from app.services.relationship_analyzer import create_relationship_analyzer

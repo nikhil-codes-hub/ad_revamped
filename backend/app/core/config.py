@@ -55,7 +55,13 @@ class Settings(BaseSettings):
     # LLM Configuration - OpenAI (fallback)
     OPENAI_API_KEY: str = Field(default="", description="OpenAI API key")
     LLM_MODEL: str = Field(default="gpt-4o-mini", description="OpenAI model name")
-    LLM_PROVIDER: str = Field(default="azure", description="LLM provider: azure or openai")
+
+    # LLM Configuration - Google Gemini
+    GEMINI_API_KEY: str = Field(default="", description="Google Gemini API key")
+    GEMINI_MODEL: str = Field(default="gemini-1.5-pro", description="Gemini model name")
+
+    # LLM Provider Selection
+    LLM_PROVIDER: str = Field(default="azure", description="LLM provider: azure, openai, or gemini")
 
     MAX_TOKENS_PER_REQUEST: int = Field(default=4000, description="Maximum tokens per LLM request")
     LLM_TEMPERATURE: float = Field(default=0.1, description="LLM temperature for consistent outputs")

@@ -4,7 +4,7 @@ Main API router for AssistedDiscovery v1 endpoints.
 
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import runs, patterns, node_facts, llm_test, identify, node_configs, reference_types, relationships
+from app.api.v1.endpoints import runs, patterns, node_facts, llm_test, identify, node_configs, reference_types, relationships, llm_config
 
 api_router = APIRouter()
 
@@ -17,3 +17,4 @@ api_router.include_router(node_configs.router, prefix="/node-configs", tags=["no
 api_router.include_router(reference_types.router, prefix="/reference-types", tags=["reference_types"])
 api_router.include_router(relationships.router, prefix="/relationships", tags=["relationships"])
 api_router.include_router(llm_test.router, prefix="/llm", tags=["llm_testing"])
+api_router.include_router(llm_config.router, prefix="/llm-config", tags=["llm_config"])

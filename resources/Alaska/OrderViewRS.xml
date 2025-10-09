@@ -1,0 +1,673 @@
+<IATA_OrderViewRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+    <Response>
+        <DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+            <BaggageAllowanceList>
+                <BaggageAllowance>
+                    <BaggageAllowanceID>CARRYON</BaggageAllowanceID>
+                    <DescText>Carry-on: Each passenger is limited to one carry-on bag that measures up to 22"x14"x9" plus one personal item.</DescText>
+                    <TypeCode>CarryOn</TypeCode>
+                </BaggageAllowance>
+                <BaggageAllowance>
+                    <BaggageAllowanceID>CHECKED</BaggageAllowanceID>
+                    <DescText>Checked: Your first checked bag fee is $35 and the second checked bag fee is $45.</DescText>
+                    <TypeCode>Checked</TypeCode>
+                </BaggageAllowance>
+                <BaggageAllowance>
+                    <BaggageAllowanceID>HAZMAT</BaggageAllowanceID>
+                    <DescText>The US government restricts hazardous materials like aerosols, fireworks, and flammable liquids in carry-on and checked bags.</DescText>
+                    <TypeCode>Hazmat</TypeCode>
+                </BaggageAllowance>
+            </BaggageAllowanceList>
+            <ContactInfoList>
+                <ContactInfo>
+                    <ContactInfoID>Contact_1</ContactInfoID>
+                    <ContactPurposeText>TestContactPurposeText</ContactPurposeText>
+                    <EmailAddress>
+                        <ContactTypeText>TestContactType_Email</ContactTypeText>
+                        <EmailAddressText></EmailAddressText>
+                    </EmailAddress>
+                    <Individual>
+                        <GivenName></GivenName>
+                        <Surname></Surname>
+                    </Individual>
+                    <Phone>
+                        <AreaCodeNumber>206</AreaCodeNumber>
+                        <ContactTypeText>TestContactType</ContactTypeText>
+                        <CountryDialingCode>1</CountryDialingCode>
+                        <ExtensionNumber>Ex</ExtensionNumber>
+                        <PhoneNumber>5551212</PhoneNumber>
+                    </Phone>
+                </ContactInfo>
+            </ContactInfoList>
+            <DatedMarketingSegmentList>
+                <DatedMarketingSegment>
+                    <Arrival>
+                        <AircraftScheduledDateTime>2024-12-15T09:50:00</AircraftScheduledDateTime>
+                        <IATA_LocationCode>LAX</IATA_LocationCode>
+                    </Arrival>
+                    <CarrierDesigCode>AS</CarrierDesigCode>
+                    <CarrierName />
+                    <DatedMarketingSegmentId>0eb92a3a-07f9-4877-aeed-d39e5f520776</DatedMarketingSegmentId>
+                    <DatedOperatingSegmentRefId>71925ccf-02dc-4c64-b3b0-a69ae0678369</DatedOperatingSegmentRefId>
+                    <Dep>
+                        <AircraftScheduledDateTime>2024-12-15T07:00:00</AircraftScheduledDateTime>
+                        <IATA_LocationCode>SEA</IATA_LocationCode>
+                    </Dep>
+                    <MarketingCarrierFlightNumberText>1246</MarketingCarrierFlightNumberText>
+                </DatedMarketingSegment>
+                <DatedMarketingSegment>
+                    <Arrival>
+                        <AircraftScheduledDateTime>2024-12-16T08:58:00</AircraftScheduledDateTime>
+                        <IATA_LocationCode>SEA</IATA_LocationCode>
+                    </Arrival>
+                    <CarrierDesigCode>AS</CarrierDesigCode>
+                    <CarrierName />
+                    <DatedMarketingSegmentId>3998ae44-9fb4-4fdc-82c0-7d4a9f87e635</DatedMarketingSegmentId>
+                    <DatedOperatingSegmentRefId>152e3350-33fb-4fc2-a9ed-90931a9835e8</DatedOperatingSegmentRefId>
+                    <Dep>
+                        <AircraftScheduledDateTime>2024-12-16T06:00:00</AircraftScheduledDateTime>
+                        <IATA_LocationCode>LAX</IATA_LocationCode>
+                    </Dep>
+                    <MarketingCarrierFlightNumberText>1293</MarketingCarrierFlightNumberText>
+                </DatedMarketingSegment>
+            </DatedMarketingSegmentList>
+            <DatedOperatingLegList>
+                <DatedOperatingLeg>
+                    <AirlineTaxonomy>
+                        <TaxonomyFeature>
+                            <CodesetNameCode>ENTERTAINMENT ON DEMAND</CodesetNameCode>
+                            <ValueText>ENTERTAINMENT ON DEMAND</ValueText>
+                        </TaxonomyFeature>
+                        <TaxonomyFeature>
+                            <CodesetNameCode>IN-SEAT POWER SOURCE</CodesetNameCode>
+                            <ValueText>IN-SEAT POWER SOURCE</ValueText>
+                        </TaxonomyFeature>
+                        <TaxonomyFeature>
+                            <CodesetNameCode>WI-FI</CodesetNameCode>
+                            <ValueText>WI-FI</ValueText>
+                        </TaxonomyFeature>
+                    </AirlineTaxonomy>
+                    <Arrival>
+                        <AircraftScheduledDateTime>2024-12-15T09:50:00</AircraftScheduledDateTime>
+                        <IATA_LocationCode>LAX</IATA_LocationCode>
+                    </Arrival>
+                    <CarrierAircraftType>
+                        <CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+                        <CarrierAircraftTypeName>Boeing 737-900 (Winglets)</CarrierAircraftTypeName>
+                    </CarrierAircraftType>
+                    <DatedOperatingLegID>67ef2db8-bdaf-4200-a1a3-4e322563f072</DatedOperatingLegID>
+                    <Dep>
+                        <AircraftScheduledDateTime>2024-12-15T07:00:00</AircraftScheduledDateTime>
+                        <IATA_LocationCode>SEA</IATA_LocationCode>
+                    </Dep>
+                </DatedOperatingLeg>
+                <DatedOperatingLeg>
+                    <AirlineTaxonomy>
+                        <TaxonomyFeature>
+                            <CodesetNameCode>ENTERTAINMENT ON DEMAND</CodesetNameCode>
+                            <ValueText>ENTERTAINMENT ON DEMAND</ValueText>
+                        </TaxonomyFeature>
+                        <TaxonomyFeature>
+                            <CodesetNameCode>IN-SEAT POWER SOURCE</CodesetNameCode>
+                            <ValueText>IN-SEAT POWER SOURCE</ValueText>
+                        </TaxonomyFeature>
+                        <TaxonomyFeature>
+                            <CodesetNameCode>WI-FI</CodesetNameCode>
+                            <ValueText>WI-FI</ValueText>
+                        </TaxonomyFeature>
+                    </AirlineTaxonomy>
+                    <Arrival>
+                        <AircraftScheduledDateTime>2024-12-16T08:58:00</AircraftScheduledDateTime>
+                        <IATA_LocationCode>SEA</IATA_LocationCode>
+                    </Arrival>
+                    <CarrierAircraftType>
+                        <CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+                        <CarrierAircraftTypeName>Boeing 737-900 (Winglets)</CarrierAircraftTypeName>
+                    </CarrierAircraftType>
+                    <DatedOperatingLegID>4c9b5904-d1f8-4424-8774-b294b519f4ec</DatedOperatingLegID>
+                    <Dep>
+                        <AircraftScheduledDateTime>2024-12-16T06:00:00</AircraftScheduledDateTime>
+                        <IATA_LocationCode>LAX</IATA_LocationCode>
+                    </Dep>
+                </DatedOperatingLeg>
+            </DatedOperatingLegList>
+            <DatedOperatingSegmentList>
+                <DatedOperatingSegment>
+                    <CarrierDesigCode>AS</CarrierDesigCode>
+                    <DatedOperatingLegRefID>67ef2db8-bdaf-4200-a1a3-4e322563f072</DatedOperatingLegRefID>
+                    <DatedOperatingSegmentId>71925ccf-02dc-4c64-b3b0-a69ae0678369</DatedOperatingSegmentId>
+                    <DisclosureRefID>0</DisclosureRefID>
+                    <Duration>PT2H50M</Duration>
+                    <OperatingCarrierFlightNumberText>1246</OperatingCarrierFlightNumberText>
+                </DatedOperatingSegment>
+                <DatedOperatingSegment>
+                    <CarrierDesigCode>AS</CarrierDesigCode>
+                    <DatedOperatingLegRefID>67ef2db8-bdaf-4200-a1a3-4e322563f072</DatedOperatingLegRefID>
+                    <DatedOperatingLegRefID>4c9b5904-d1f8-4424-8774-b294b519f4ec</DatedOperatingLegRefID>
+                    <DatedOperatingSegmentId>152e3350-33fb-4fc2-a9ed-90931a9835e8</DatedOperatingSegmentId>
+                    <DisclosureRefID>0</DisclosureRefID>
+                    <Duration>PT2H58M</Duration>
+                    <OperatingCarrierFlightNumberText>1293</OperatingCarrierFlightNumberText>
+                </DatedOperatingSegment>
+            </DatedOperatingSegmentList>
+            <DisclosureList>
+                <Disclosure>
+                    <Desc>
+                        <DescText />
+                    </Desc>
+                    <DisclosureID>0</DisclosureID>
+                </Disclosure>
+            </DisclosureList>
+            <OriginDestList>
+                <OriginDest>
+                    <DestCode>LAX</DestCode>
+                    <OriginCode>SEA</OriginCode>
+                    <OriginDestID>d3688343-8a3d-461c-8a2c-f29e46b54650</OriginDestID>
+                    <PaxJourneyRefID>544286fc-633c-4ae6-8fa1-da6b54d7d0f6</PaxJourneyRefID>
+                </OriginDest>
+                <OriginDest>
+                    <DestCode>SEA</DestCode>
+                    <OriginCode>LAX</OriginCode>
+                    <OriginDestID>6bf510a1-f843-49b3-89ef-64d1a6f22118</OriginDestID>
+                    <PaxJourneyRefID>7ec71181-f1d0-4f2d-9984-b57cfb051c5f</PaxJourneyRefID>
+                </OriginDest>
+            </OriginDestList>
+            <PaxJourneyList>
+                <PaxJourney>
+                    <Duration>PT2H50M</Duration>
+                    <PaxJourneyID>544286fc-633c-4ae6-8fa1-da6b54d7d0f6</PaxJourneyID>
+                    <PaxSegmentRefID>5d4a3a42-c21d-49eb-b566-cbd620b38a9d</PaxSegmentRefID>
+                    <PaxSegmentRefID>7478bef5-17a1-4ff0-af06-a1d792a71b77</PaxSegmentRefID>
+                </PaxJourney>
+                <PaxJourney>
+                    <Duration>PT2H58M</Duration>
+                    <PaxJourneyID>7ec71181-f1d0-4f2d-9984-b57cfb051c5f</PaxJourneyID>
+                    <PaxSegmentRefID>5d4a3a42-c21d-49eb-b566-cbd620b38a9d</PaxSegmentRefID>
+                    <PaxSegmentRefID>7478bef5-17a1-4ff0-af06-a1d792a71b77</PaxSegmentRefID>
+                </PaxJourney>
+            </PaxJourneyList>
+            <PaxList>
+                <Pax>
+                    <Individual>
+                        <Birthdate>1980-01-01</Birthdate>
+                        <GenderCode>F</GenderCode>
+                        <GivenName></GivenName>
+                        <IndividualID>1.1</IndividualID>
+                        <Surname></Surname>
+                    </Individual>
+                    <PaxID>1.1</PaxID>
+                    <PTC>ADT</PTC>
+                    <Remark>
+                        <RemarkText>NO REF/AS ONLY</RemarkText>
+                    </Remark>
+                </Pax>
+                <Pax>
+                    <Individual>
+                        <Birthdate>2000-01-01</Birthdate>
+                        <GenderCode>F</GenderCode>
+                        <GivenName></GivenName>
+                        <IndividualID>1.2</IndividualID>
+                        <Surname></Surname>
+                    </Individual>
+                    <PaxID>1.2</PaxID>
+                    <PTC>ADT</PTC>
+                    <Remark>
+                        <RemarkText>NO REF/AS ONLY</RemarkText>
+                    </Remark>
+                </Pax>
+            </PaxList>
+            <PaxSegmentList>
+                <PaxSegment>
+                    <CabinTypeAssociationChoice>
+                        <SegmentCabinType>
+                            <CabinTypeCode>5</CabinTypeCode>
+                            <CabinTypeName>Main</CabinTypeName>
+                        </SegmentCabinType>
+                    </CabinTypeAssociationChoice>
+                    <DatedMarketingSegmentRefId>0eb92a3a-07f9-4877-aeed-d39e5f520776</DatedMarketingSegmentRefId>
+                    <MarketingCarrierRBD_Code>O</MarketingCarrierRBD_Code>
+                    <PaxSegmentID>5d4a3a42-c21d-49eb-b566-cbd620b38a9d</PaxSegmentID>
+                </PaxSegment>
+                <PaxSegment>
+                    <CabinTypeAssociationChoice>
+                        <SegmentCabinType>
+                            <CabinTypeCode>5</CabinTypeCode>
+                            <CabinTypeName>Main</CabinTypeName>
+                        </SegmentCabinType>
+                    </CabinTypeAssociationChoice>
+                    <DatedMarketingSegmentRefId>3998ae44-9fb4-4fdc-82c0-7d4a9f87e635</DatedMarketingSegmentRefId>
+                    <MarketingCarrierRBD_Code>O</MarketingCarrierRBD_Code>
+                    <PaxSegmentID>7478bef5-17a1-4ff0-af06-a1d792a71b77</PaxSegmentID>
+                </PaxSegment>
+            </PaxSegmentList>
+            <ServiceDefinitionList>
+                <ServiceDefinition>
+                    <BookingInstructions>
+                        <SpecialService>
+                            <FreeText>SSR CTCM AS HK1/2065551212</FreeText>
+                            <SpecialServiceCode>CTCM</SpecialServiceCode>
+                        </SpecialService>
+                    </BookingInstructions>
+                    <Name>SSR</Name>
+                    <OwnerCode>AS</OwnerCode>
+                    <ServiceDefinitionID>87277043-6c4e-42d9-a14f-ee4e5717584f</ServiceDefinitionID>
+                </ServiceDefinition>
+                <ServiceDefinition>
+                    <BookingInstructions>
+                        <SpecialService>
+                            <FreeText>SSR CTCE AS HK1/LIV.RYSEMUS//ALASKAAIR.COM</FreeText>
+                            <SpecialServiceCode>CTCE</SpecialServiceCode>
+                        </SpecialService>
+                    </BookingInstructions>
+                    <Name>SSR</Name>
+                    <OwnerCode>AS</OwnerCode>
+                    <ServiceDefinitionID>9db8102e-dc59-42f9-8920-12f6f0562bfd</ServiceDefinitionID>
+                </ServiceDefinition>
+                <ServiceDefinition>
+                    <BookingInstructions>
+                        <SpecialService>
+                            <FreeText>SSR CTCM AS HK1/2065551212</FreeText>
+                            <SpecialServiceCode>CTCM</SpecialServiceCode>
+                        </SpecialService>
+                    </BookingInstructions>
+                    <Name>SSR</Name>
+                    <OwnerCode>AS</OwnerCode>
+                    <ServiceDefinitionID>363151e9-72e4-4cb7-987f-401acce91614</ServiceDefinitionID>
+                </ServiceDefinition>
+                <ServiceDefinition>
+                    <BookingInstructions>
+                        <SpecialService>
+                            <FreeText>SSR CTCE AS HK1/LIV.RYSEMUS//ALASKAAIR.COM</FreeText>
+                            <SpecialServiceCode>CTCE</SpecialServiceCode>
+                        </SpecialService>
+                    </BookingInstructions>
+                    <Name>SSR</Name>
+                    <OwnerCode>AS</OwnerCode>
+                    <ServiceDefinitionID>c2e0c1fb-3e46-4e3c-83ef-6379bed28529</ServiceDefinitionID>
+                </ServiceDefinition>
+            </ServiceDefinitionList>
+        </DataLists>
+        <Order xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+            <CreationDateTime>2024-10-16T19:56:29.4917411Z</CreationDateTime>
+            <OrderID></OrderID>
+            <OrderItem>
+                <CancelRestrictions>
+                    <DescText>For tickets purchased 24 hours or more prior to your scheduled departure time, you may also cancel and refund it to the original form of payment within 24 hours of the original purchase.</DescText>
+                </CancelRestrictions>
+                <CancelRestrictions>
+                    <DescText>Additional fares and taxes may apply.</DescText>
+                </CancelRestrictions>
+                <CancelRestrictions>
+                    <DescText>Any changes and cancelations must be made prior to the scheduled departure time.</DescText>
+                </CancelRestrictions>
+                <ChangeRestrictions>
+                    <DescText>For tickets purchased 24 hours or more prior to your scheduled departure time, you may also cancel and refund it to the original form of payment within 24 hours of the original purchase.</DescText>
+                </ChangeRestrictions>
+                <ChangeRestrictions>
+                    <DescText>Additional fares and taxes may apply.</DescText>
+                </ChangeRestrictions>
+                <ChangeRestrictions>
+                    <DescText>Any changes and cancelations must be made prior to the scheduled departure time.</DescText>
+                </ChangeRestrictions>
+                <FareDetail>
+                    <FareComponent>
+                        <CabinType>
+                            <CabinTypeCode>5</CabinTypeCode>
+                            <CabinTypeName>Main</CabinTypeName>
+                        </CabinType>
+                        <FareBasisCode></FareBasisCode>
+                        <FareRule>
+                            <RuleCode>AkM/fdom/sjMsMO1B0ezFMRWPKx3T5mJQLtu2GTzo5Es/</RuleCode>
+                        </FareRule>
+                    </FareComponent>
+                    <Price>
+                        <BaseAmount CurCode="USD">200.94</BaseAmount>
+                        <TaxSummary>
+                            <Tax>
+                                <AddlTaxCode />
+                                <Amount CurCode="USD">20.00</Amount>
+                                <DescText>United States Flight Segment Tax Domestic</DescText>
+                                <TaxCode />
+                            </Tax>
+                            <Tax>
+                                <AddlTaxCode />
+                                <Amount CurCode="USD">18.00</Amount>
+                                <DescText>US psgr. facility charge</DescText>
+                                <TaxCode />
+                            </Tax>
+                            <Tax>
+                                <AddlTaxCode />
+                                <Amount CurCode="USD">22.40</Amount>
+                                <DescText>US Sept. 11 security fee</DescText>
+                                <TaxCode />
+                            </Tax>
+                            <Tax>
+                                <AddlTaxCode />
+                                <Amount CurCode="USD">30.14</Amount>
+                                <DescText>US Transportation Tax</DescText>
+                                <TaxCode />
+                            </Tax>
+                            <TotalTaxAmount CurCode="USD">90.54</TotalTaxAmount>
+                        </TaxSummary>
+                        <TotalAmount CurCode="USD">246.21</TotalAmount>
+                    </Price>
+                </FareDetail>
+                <FareDetail>
+                    <FareComponent>
+                        <CabinType>
+                            <CabinTypeCode>5</CabinTypeCode>
+                            <CabinTypeName>Main</CabinTypeName>
+                        </CabinType>
+                        <FareBasisCode></FareBasisCode>
+                        <FareRule>
+                            <RuleCode>AkM/fdom/sjMsMO1B0ezFMRWPKx3T5mJQLtu2GTzo5Es/</RuleCode>
+                        </FareRule>
+                    </FareComponent>
+                    <Price>
+                        <BaseAmount CurCode="USD">200.94</BaseAmount>
+                        <TaxSummary>
+                            <Tax>
+                                <AddlTaxCode />
+                                <Amount CurCode="USD">20.00</Amount>
+                                <DescText>United States Flight Segment Tax Domestic</DescText>
+                                <TaxCode />
+                            </Tax>
+                            <Tax>
+                                <AddlTaxCode />
+                                <Amount CurCode="USD">18.00</Amount>
+                                <DescText>US psgr. facility charge</DescText>
+                                <TaxCode />
+                            </Tax>
+                            <Tax>
+                                <AddlTaxCode />
+                                <Amount CurCode="USD">22.40</Amount>
+                                <DescText>US Sept. 11 security fee</DescText>
+                                <TaxCode />
+                            </Tax>
+                            <Tax>
+                                <AddlTaxCode />
+                                <Amount CurCode="USD">30.14</Amount>
+                                <DescText>US Transportation Tax</DescText>
+                                <TaxCode />
+                            </Tax>
+                            <TotalTaxAmount CurCode="USD">90.54</TotalTaxAmount>
+                        </TaxSummary>
+                        <TotalAmount CurCode="USD">246.21</TotalAmount>
+                    </Price>
+                </FareDetail>
+                <OrderItemID>8deac42b-1184-4c3a-babc-0a708e59031a</OrderItemID>
+                <OwnerCode>AS</OwnerCode>
+                <Price>
+                    <BaseAmount CurCode="USD">200.94</BaseAmount>
+                    <TaxSummary>
+                        <Tax>
+                            <AddlTaxCode />
+                            <Amount CurCode="USD">20.00</Amount>
+                            <DescText>United States Flight Segment Tax Domestic</DescText>
+                            <TaxCode />
+                        </Tax>
+                        <Tax>
+                            <AddlTaxCode />
+                            <Amount CurCode="USD">18.00</Amount>
+                            <DescText>US psgr. facility charge</DescText>
+                            <TaxCode />
+                        </Tax>
+                        <Tax>
+                            <AddlTaxCode />
+                            <Amount CurCode="USD">22.40</Amount>
+                            <DescText>US Sept. 11 security fee</DescText>
+                            <TaxCode />
+                        </Tax>
+                        <Tax>
+                            <AddlTaxCode />
+                            <Amount CurCode="USD">30.14</Amount>
+                            <DescText>US Transportation Tax</DescText>
+                            <TaxCode />
+                        </Tax>
+                        <TotalTaxAmount CurCode="USD">90.54</TotalTaxAmount>
+                    </TaxSummary>
+                    <TotalAmount CurCode="USD">246.21</TotalAmount>
+                </Price>
+                <Service>
+                    <BookingRef>
+                        <BookingEntity>
+                            <Carrier>
+                                <AirlineDesigCode>AS</AirlineDesigCode>
+                                <Name>Alaska</Name>
+                            </Carrier>
+                        </BookingEntity>
+                        <BookingID></BookingID>
+                    </BookingRef>
+                    <OrderServiceAssociation>
+                        <PaxSegmentRef>
+                            <PaxSegmentRefID>5d4a3a42-c21d-49eb-b566-cbd620b38a9d</PaxSegmentRefID>
+                        </PaxSegmentRef>
+                    </OrderServiceAssociation>
+                    <PaxRefID>1.1</PaxRefID>
+                    <ServiceID>SV1</ServiceID>
+                </Service>
+                <Service>
+                    <BookingRef>
+                        <BookingEntity>
+                            <Carrier>
+                                <AirlineDesigCode>AS</AirlineDesigCode>
+                                <Name>Alaska</Name>
+                            </Carrier>
+                        </BookingEntity>
+                        <BookingID></BookingID>
+                    </BookingRef>
+                    <OrderServiceAssociation>
+                        <PaxSegmentRef>
+                            <PaxSegmentRefID>7478bef5-17a1-4ff0-af06-a1d792a71b77</PaxSegmentRefID>
+                        </PaxSegmentRef>
+                    </OrderServiceAssociation>
+                    <PaxRefID>1.1</PaxRefID>
+                    <ServiceID>SV2</ServiceID>
+                </Service>
+                <Service>
+                    <BookingRef>
+                        <BookingEntity>
+                            <Carrier>
+                                <AirlineDesigCode>AS</AirlineDesigCode>
+                                <Name>Alaska</Name>
+                            </Carrier>
+                        </BookingEntity>
+                        <BookingID></BookingID>
+                    </BookingRef>
+                    <OrderServiceAssociation>
+                        <PaxSegmentRef>
+                            <PaxSegmentRefID>5d4a3a42-c21d-49eb-b566-cbd620b38a9d</PaxSegmentRefID>
+                        </PaxSegmentRef>
+                    </OrderServiceAssociation>
+                    <PaxRefID>1.2</PaxRefID>
+                    <ServiceID>SV3</ServiceID>
+                </Service>
+                <Service>
+                    <BookingRef>
+                        <BookingEntity>
+                            <Carrier>
+                                <AirlineDesigCode>AS</AirlineDesigCode>
+                                <Name>Alaska</Name>
+                            </Carrier>
+                        </BookingEntity>
+                        <BookingID></BookingID>
+                    </BookingRef>
+                    <OrderServiceAssociation>
+                        <PaxSegmentRef>
+                            <PaxSegmentRefID>7478bef5-17a1-4ff0-af06-a1d792a71b77</PaxSegmentRefID>
+                        </PaxSegmentRef>
+                    </OrderServiceAssociation>
+                    <PaxRefID>1.2</PaxRefID>
+                    <ServiceID>SV4</ServiceID>
+                </Service>
+            </OrderItem>
+            <OrderItem>
+                <OrderItemID>5b800e8e-816c-40f3-8708-5dfea4efb80e</OrderItemID>
+                <OwnerCode>AS</OwnerCode>
+                <Price>
+                    <TotalAmount CurCode="USD">34.99</TotalAmount>
+                </Price>
+                <Service>
+                    <BookingRef>
+                        <BookingEntity>
+                            <Carrier>
+                                <AirlineDesigCode>AS</AirlineDesigCode>
+                                <Name>Alaska</Name>
+                            </Carrier>
+                        </BookingEntity>
+                        <BookingID></BookingID>
+                    </BookingRef>
+                    <OrderServiceAssociation>
+                        <SeatOnLeg>
+                            <Seat>
+                                <ColumnID>F</ColumnID>
+                                <RowNumber>7</RowNumber>
+                            </Seat>
+                            <SeatAssignmentAssociations>
+                                <PaxSegmentRef>
+                                    <PaxSegmentRefID>5d4a3a42-c21d-49eb-b566-cbd620b38a9d</PaxSegmentRefID>
+                                </PaxSegmentRef>
+                            </SeatAssignmentAssociations>
+                        </SeatOnLeg>
+                    </OrderServiceAssociation>
+                    <PaxRefID>1.1</PaxRefID>
+                    <ServiceID>918ec3da-a616-4165-9734-8f22d27a725a</ServiceID>
+                </Service>
+                <StatusCode>CONFIRMED</StatusCode>
+            </OrderItem>
+            <OrderItem>
+                <OrderItemID>5eda657b-28cb-469d-b5f4-a4cf67a23989</OrderItemID>
+                <OwnerCode>AS</OwnerCode>
+                <Service>
+                    <BookingRef>
+                        <BookingEntity>
+                            <Carrier>
+                                <AirlineDesigCode>AS</AirlineDesigCode>
+                                <Name>Alaska</Name>
+                            </Carrier>
+                        </BookingEntity>
+                        <BookingID></BookingID>
+                    </BookingRef>
+                    <OrderServiceAssociation>
+                        <SeatOnLeg>
+                            <Seat>
+                                <ColumnID>E</ColumnID>
+                                <RowNumber>20</RowNumber>
+                            </Seat>
+                            <SeatAssignmentAssociations>
+                                <PaxSegmentRef>
+                                    <PaxSegmentRefID>7478bef5-17a1-4ff0-af06-a1d792a71b77</PaxSegmentRefID>
+                                </PaxSegmentRef>
+                            </SeatAssignmentAssociations>
+                        </SeatOnLeg>
+                    </OrderServiceAssociation>
+                    <PaxRefID>1.1</PaxRefID>
+                    <ServiceID>963dc4c5-c6e5-4988-8776-74ab4b6882c5</ServiceID>
+                </Service>
+                <StatusCode>CONFIRMED</StatusCode>
+            </OrderItem>
+            <OrderItem>
+                <OrderItemID>5d963484-1865-426d-8a7f-98ebcd70f589</OrderItemID>
+                <OwnerCode>AS</OwnerCode>
+                <Price>
+                    <TotalAmount CurCode="USD">34.99</TotalAmount>
+                </Price>
+                <Service>
+                    <BookingRef>
+                        <BookingEntity>
+                            <Carrier>
+                                <AirlineDesigCode>AS</AirlineDesigCode>
+                                <Name>Alaska</Name>
+                            </Carrier>
+                        </BookingEntity>
+                        <BookingID></BookingID>
+                    </BookingRef>
+                    <OrderServiceAssociation>
+                        <SeatOnLeg>
+                            <Seat>
+                                <ColumnID>A</ColumnID>
+                                <RowNumber>8</RowNumber>
+                            </Seat>
+                            <SeatAssignmentAssociations>
+                                <PaxSegmentRef>
+                                    <PaxSegmentRefID>5d4a3a42-c21d-49eb-b566-cbd620b38a9d</PaxSegmentRefID>
+                                </PaxSegmentRef>
+                            </SeatAssignmentAssociations>
+                        </SeatOnLeg>
+                    </OrderServiceAssociation>
+                    <PaxRefID>1.2</PaxRefID>
+                    <ServiceID>c0f2e1f1-11d7-49b6-b2e8-59ad9962eddd</ServiceID>
+                </Service>
+                <StatusCode>CONFIRMED</StatusCode>
+            </OrderItem>
+            <OrderItem>
+                <OrderItemID>fdfcfa89-f4a0-4243-a745-bb09dd897e83</OrderItemID>
+                <OwnerCode>AS</OwnerCode>
+                <Service>
+                    <BookingRef>
+                        <BookingEntity>
+                            <Carrier>
+                                <AirlineDesigCode>AS</AirlineDesigCode>
+                                <Name>Alaska</Name>
+                            </Carrier>
+                        </BookingEntity>
+                        <BookingID></BookingID>
+                    </BookingRef>
+                    <OrderServiceAssociation>
+                        <SeatOnLeg>
+                            <Seat>
+                                <ColumnID>F</ColumnID>
+                                <RowNumber>20</RowNumber>
+                            </Seat>
+                            <SeatAssignmentAssociations>
+                                <PaxSegmentRef>
+                                    <PaxSegmentRefID>7478bef5-17a1-4ff0-af06-a1d792a71b77</PaxSegmentRefID>
+                                </PaxSegmentRef>
+                            </SeatAssignmentAssociations>
+                        </SeatOnLeg>
+                    </OrderServiceAssociation>
+                    <PaxRefID>1.2</PaxRefID>
+                    <ServiceID>f2731d6a-da61-4dd3-a880-9d2f42938919</ServiceID>
+                </Service>
+                <StatusCode>CONFIRMED</StatusCode>
+            </OrderItem>
+            <OwnerCode>AS</OwnerCode>
+            <StatusCode>ACTIVE</StatusCode>
+            <TotalPrice>
+                <BaseAmount CurCode="USD">401.88</BaseAmount>
+                <TaxSummary>
+                    <Tax>
+                        <AddlTaxCode />
+                        <Amount CurCode="USD">20.00</Amount>
+                        <DescText>United States Flight Segment Tax Domestic</DescText>
+                        <TaxCode />
+                    </Tax>
+                    <Tax>
+                        <AddlTaxCode />
+                        <Amount CurCode="USD">18.00</Amount>
+                        <DescText>US psgr. facility charge</DescText>
+                        <TaxCode />
+                    </Tax>
+                    <Tax>
+                        <AddlTaxCode />
+                        <Amount CurCode="USD">22.40</Amount>
+                        <DescText>US Sept. 11 security fee</DescText>
+                        <TaxCode />
+                    </Tax>
+                    <Tax>
+                        <AddlTaxCode />
+                        <Amount CurCode="USD">30.14</Amount>
+                        <DescText>US Transportation Tax</DescText>
+                        <TaxCode />
+                    </Tax>
+                    <TotalTaxAmount CurCode="USD">90.54</TotalTaxAmount>
+                </TaxSummary>
+                <TotalAmount CurCode="USD">562.40</TotalAmount>
+            </TotalPrice>
+        </Order>
+    </Response>
+    <PayloadAttributes>
+        <CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">c497f3ab-f277-43d5-9024-7815b22e0531</CorrelationID>
+        <VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">21.3</VersionNumber>
+    </PayloadAttributes>
+</IATA_OrderViewRS>
