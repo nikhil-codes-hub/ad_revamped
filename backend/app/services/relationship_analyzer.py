@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 import structlog
 import json
 from openai import AzureOpenAI, OpenAI
+import httpx
 
 from app.models.database import NodeFact, NodeRelationship, NodeConfiguration
 from app.core.config import settings
@@ -30,10 +31,18 @@ class RelationshipAnalyzer:
         """Initialize synchronous LLM client."""
         try:
             if settings.LLM_PROVIDER == "azure" and settings.AZURE_OPENAI_KEY:
+                # Create httpx client with increased timeouts
+                http_client = httpx.Client(
+                    timeout=httpx.Timeout(60.0, connect=10.0),
+                    limits=httpx.Limits(max_keepalive_connections=10, max_connections=20),
+                    follow_redirects=True
+                )
+
                 self.llm_client = AzureOpenAI(
                     api_key=settings.AZURE_OPENAI_KEY,
                     azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
-                    api_version=settings.AZURE_API_VERSION
+                    api_version=settings.AZURE_API_VERSION,
+                    http_client=http_client
                 )
                 self.model = settings.MODEL_DEPLOYMENT_NAME
                 logger.info("Initialized sync Azure OpenAI client for relationship analysis")

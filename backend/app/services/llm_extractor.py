@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from datetime import datetime
 import openai
 from openai import AsyncOpenAI, AsyncAzureOpenAI
+import httpx
 from lxml import etree
 
 from app.core.config import settings
@@ -57,10 +58,18 @@ class LLMNodeFactsExtractor:
                 logger.info(f"  API Version: {settings.AZURE_API_VERSION}")
                 logger.info(f"  Model Deployment: {settings.MODEL_DEPLOYMENT_NAME}")
 
+                # Create httpx client with increased timeouts and retries
+                http_client = httpx.AsyncClient(
+                    timeout=httpx.Timeout(60.0, connect=10.0),  # 60s total, 10s connect
+                    limits=httpx.Limits(max_keepalive_connections=10, max_connections=20),
+                    follow_redirects=True
+                )
+
                 self.client = AsyncAzureOpenAI(
                     api_key=settings.AZURE_OPENAI_KEY,
                     azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
-                    api_version=settings.AZURE_API_VERSION
+                    api_version=settings.AZURE_API_VERSION,
+                    http_client=http_client
                 )
                 self.model = settings.MODEL_DEPLOYMENT_NAME
                 logger.info(f"✅ LLM extractor initialized successfully with Azure OpenAI: {self.model}")
