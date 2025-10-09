@@ -28,13 +28,85 @@ def load_workspaces() -> List[str]:
             return json.loads(workspace_config_file.read_text())
         except Exception:
             pass
-    return ["default", "LATAM", "LH", "SQ", "VY", "AFKL"]
+    return ["default"]
 
 
 def save_workspaces(workspaces: List[str]) -> None:
     """Persist workspace list to disk."""
     workspace_config_file.parent.mkdir(parents=True, exist_ok=True)
     workspace_config_file.write_text(json.dumps(workspaces, indent=2))
+
+
+def apply_custom_theme() -> None:
+    """Inject additional CSS for a cohesive blue-forward theme."""
+    if st.session_state.get("_custom_theme_applied"):
+        return
+
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background-color: #F7FAFF;
+            color: #0B1F33;
+        }
+
+        section[data-testid="stSidebar"] {
+            background-color: #E6F0FF;
+        }
+
+        div.stButton > button {
+            background-color: #1A5DBF;
+            color: #FFFFFF;
+            border-radius: 6px;
+            border: 1px solid #0F3F80;
+        }
+
+        div.stButton > button:hover {
+            background-color: #144A99;
+            border-color: #0D366E;
+            color: #FFFFFF;
+        }
+
+        div[data-baseweb="select"] > div {
+            border-radius: 6px;
+            border: 1px solid #B5C7EB;
+            box-shadow: none;
+            background-color: #FFFFFF;
+        }
+
+        div[data-baseweb="select"] > div:hover {
+            border-color: #1A5DBF;
+        }
+
+        div[data-testid="stMetricValue"] {
+            color: #154F9A;
+        }
+
+        div[data-testid="stMetricLabel"] {
+            color: #0B1F33;
+        }
+
+        .blue-card {
+            background-color: #E6F0FF;
+            border: 1px solid #B5C7EB;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .stDataFrame thead tr th {
+            background-color: #E0EBFF;
+            color: #0B1F33;
+        }
+
+        .stDataFrame tbody tr:nth-child(even) {
+            background-color: #F2F6FF;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.session_state["_custom_theme_applied"] = True
 
 
 def check_api_health() -> bool:
@@ -2613,6 +2685,8 @@ def show_node_manager_page():
 
 def render_sidebar() -> str:
     """Render the common sidebar controls and return the active workspace."""
+
+    apply_custom_theme()
 
     st.sidebar.subheader("🗂️ Workspace")
 

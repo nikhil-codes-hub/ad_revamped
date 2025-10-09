@@ -197,14 +197,19 @@ class XmlStreamingParser:
                     detected_version = '21.3'
                     detection_source = "fallback (IATA/2015 namespace)"
                 elif 'EDIST' in self.version_info.namespace_uri:
-                    # NDC EDIST format, assume 17.2 if no other version found
-                    detected_version = '17.2'
+                    # NDC EDIST format, assume latest version if no other version found
+                    detected_version = '21.3'
                     detection_source = "fallback (EDIST namespace)"
+                    logger.warning(f"NDC version not explicitly detected in XML, defaulting to {detected_version}. "
+                                   f"Message: {self.version_info.message_root}, Namespace: {self.version_info.namespace_uri}")
 
         # 6. Final fallback for recognized message types
         if not detected_version and self.version_info.message_root in ['OrderViewRS', 'OrderCreateRQ', 'OrderChangeRQ']:
-            detected_version = '17.2'  # Most common baseline version
+            detected_version = '21.3'  # Default to latest supported version
             detection_source = "fallback (recognized NDC message type)"
+            logger.warning(f"NDC version not explicitly detected in XML, defaulting to {detected_version}. "
+                           f"Message: {self.version_info.message_root}. "
+                           f"Consider adding version info to XML for accurate processing.")
 
         # Set the detected version
         self.version_info.spec_version = detected_version
