@@ -2172,6 +2172,65 @@ def show_config_page():
 
     st.divider()
 
+    # Log File Location Section
+    st.markdown("### 📋 Application Logs")
+    st.caption("View application log files for troubleshooting and debugging")
+
+    # Get platform-specific log directory
+    import platform
+    system = platform.system()
+
+    if system == "Darwin":  # macOS
+        log_dir = Path.home() / "Library" / "Logs" / "AssistedDiscovery"
+        log_file = log_dir / "assisted_discovery.log"
+        platform_name = "macOS"
+    elif system == "Windows":
+        log_dir = Path.home() / "AppData" / "Local" / "AssistedDiscovery" / "Logs"
+        log_file = log_dir / "assisted_discovery.log"
+        platform_name = "Windows"
+    else:  # Linux
+        log_dir = Path.home() / ".local" / "share" / "AssistedDiscovery" / "logs"
+        log_file = log_dir / "assisted_discovery.log"
+        platform_name = "Linux"
+
+    col1, col2 = st.columns([2, 1])
+
+    with col1:
+        st.info(f"""
+📂 **Log Directory ({platform_name}):**
+`{log_dir}`
+
+📄 **Main Log File:**
+`{log_file.name}`
+
+ℹ️ Logs are rotated automatically (max 10MB per file, 5 backup files kept)
+        """)
+
+    with col2:
+        if log_file.exists():
+            st.success("✅ Log file exists")
+            file_size_mb = log_file.stat().st_size / (1024 * 1024)
+            st.metric("File Size", f"{file_size_mb:.2f} MB")
+
+            # Open log directory button
+            if st.button("📂 Open Log Folder", use_container_width=True):
+                import subprocess
+                try:
+                    if system == "Darwin":  # macOS
+                        subprocess.Popen(["open", str(log_dir)])
+                    elif system == "Windows":
+                        subprocess.Popen(["explorer", str(log_dir)])
+                    else:  # Linux
+                        subprocess.Popen(["xdg-open", str(log_dir)])
+                    st.success("✅ Opened log folder")
+                except Exception as e:
+                    st.error(f"❌ Failed to open folder: {e}")
+        else:
+            st.warning("⚠️ Log file not found")
+            st.caption("Logs will be created when backend starts")
+
+    st.divider()
+
 
 def run_pattern_manager_page():
     """Render Pattern Manager with embedded Pattern Explorer tab."""
