@@ -12,6 +12,7 @@ from typing import Dict, List, Any, Optional, Set, Tuple
 from datetime import datetime
 from collections import defaultdict
 from sqlalchemy.orm import Session
+from openai import AzureOpenAI, OpenAI
 
 from app.models.database import NodeFact, Pattern, Run
 from app.core.config import settings
@@ -312,8 +313,9 @@ class PatternGenerator:
         # Example: ./PassengerList or ./BaggageAllowanceList
         return f"./{node_type}"
 
-    def _generate_pattern_description(self, decision_rule: Dict[str, Any],
-                                     section_path: str) -> Optional[str]:
+    def _generate_pattern_description(self,
+                                      decision_rule: Dict[str, Any],
+                                      section_path: str) -> Optional[str]:
         """
         Generate human-readable description of pattern using LLM.
 
@@ -326,11 +328,27 @@ class PatternGenerator:
         """
         try:
             llm_extractor = get_llm_extractor()
-            if not llm_extractor.client:
+
+            sync_client = None
+            model_name = settings.LLM_MODEL
+
+            if settings.LLM_PROVIDER == "azure" and settings.AZURE_OPENAI_KEY:
+                sync_client = AzureOpenAI(
+                    api_key=settings.AZURE_OPENAI_KEY,
+                    azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
+                    api_version=settings.AZURE_API_VERSION
+                )
+                model_name = settings.MODEL_DEPLOYMENT_NAME
+            elif settings.OPENAI_API_KEY:
+                sync_client = OpenAI(api_key=settings.OPENAI_API_KEY)
+                model_name = settings.LLM_MODEL
+            elif llm_extractor.client:
+                sync_client = llm_extractor.client
+
+            if not sync_client:
                 logger.debug("LLM client not available for description generation")
                 return None
 
-            # Create a concise prompt for description generation
             node_type = decision_rule.get('node_type', 'Unknown')
             must_have = decision_rule.get('must_have_attributes', [])
             child_structure = decision_rule.get('child_structure', {})
@@ -347,18 +365,34 @@ Reference Types: {', '.join([p.get('type', '') for p in reference_patterns]) if 
 
 Description (1-2 sentences, focus on business purpose):"""
 
-            # Use LLM to generate description
-            response = llm_extractor.client.messages.create(
-                model=settings.LLM_MODEL,
-                max_tokens=150,
-                temperature=0.3,
-                messages=[{
-                    "role": "user",
-                    "content": prompt
-                }]
-            )
+            if hasattr(sync_client, "chat"):
+                response = sync_client.chat.completions.create(
+                    model=model_name,
+                    max_tokens=150,
+                    temperature=0.3,
+                    messages=[{
+                        "role": "user",
+                        "content": prompt
+                    }]
+                )
+                description = response.choices[0].message.content.strip()
+            else:
+                import asyncio
 
-            description = response.content[0].text.strip()
+                async def _async_call():
+                    resp = await sync_client.chat.completions.create(
+                        model=model_name,
+                        max_tokens=150,
+                        temperature=0.3,
+                        messages=[{
+                            "role": "user",
+                            "content": prompt
+                        }]
+                    )
+                    return resp.choices[0].message.content.strip()
+
+                description = asyncio.run(_async_call())
+
             logger.debug(f"Generated description for {node_type}: {description}")
             return description
 
