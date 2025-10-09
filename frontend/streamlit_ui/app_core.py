@@ -555,10 +555,11 @@ def bulk_update_node_configurations(configurations: List[Dict[str, Any]], worksp
 
 def get_relationships(run_id: Optional[str] = None,
                      reference_type: Optional[str] = None,
-                     is_valid: Optional[bool] = None) -> Optional[List[Dict[str, Any]]]:
+                     is_valid: Optional[bool] = None,
+                     workspace: str = "default") -> Optional[List[Dict[str, Any]]]:
     """Get discovered relationships with optional filtering."""
     try:
-        params = {"limit": 500}
+        params = {"limit": 500, "workspace": workspace}
         if run_id:
             params["run_id"] = run_id
         if reference_type:
@@ -1037,7 +1038,7 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
 
         # Full relationships table
         with st.expander("📊 All Relationships", expanded=False):
-            all_rels = get_relationships(run_id=run_id)
+            all_rels = get_relationships(run_id=run_id, workspace=workspace)
 
             if all_rels:
                 rel_data = []
