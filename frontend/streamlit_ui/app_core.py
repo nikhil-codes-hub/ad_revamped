@@ -1719,20 +1719,30 @@ def show_patterns_page(embedded: bool = False):
     patterns = get_patterns(limit=200, workspace=workspace)
 
     if patterns:
-        # Deduplicate patterns by signature_hash - keep the one with highest times_seen
+        # Deduplicate patterns by section_path + node_type
+        # Keep the one with most attributes (most complete structure)
         unique_patterns = {}
         for pattern in patterns:
-            sig_hash = pattern.get('signature_hash')
-            if sig_hash:
-                if sig_hash not in unique_patterns or pattern['times_seen'] > unique_patterns[sig_hash]['times_seen']:
-                    unique_patterns[sig_hash] = pattern
+            decision_rule = pattern.get('decision_rule', {})
+            node_type = decision_rule.get('node_type', 'Unknown')
+            section_path = pattern['section_path']
+
+            # Create unique key based on section path and node type
+            unique_key = f"{section_path}|{node_type}"
+
+            if unique_key not in unique_patterns:
+                unique_patterns[unique_key] = pattern
             else:
-                # No signature hash, treat as unique
-                unique_patterns[pattern['id']] = pattern
+                # Keep the pattern with more must_have_attributes (more specific)
+                existing_attrs = len(unique_patterns[unique_key].get('decision_rule', {}).get('must_have_attributes', []))
+                current_attrs = len(decision_rule.get('must_have_attributes', []))
+
+                if current_attrs > existing_attrs:
+                    unique_patterns[unique_key] = pattern
 
         patterns = list(unique_patterns.values())
 
-        # Patterns table
+        # Patterns table (without Times Seen column)
         pattern_data = []
         for pattern in patterns:
             decision_rule = pattern.get('decision_rule', {})
@@ -1743,7 +1753,6 @@ def show_patterns_page(embedded: bool = False):
                 "Version": pattern['spec_version'],
                 "Airline": pattern.get('airline_code', 'N/A'),
                 "Message": pattern['message_root'],
-                "Times Seen": pattern['times_seen'],
                 "Must-Have Attrs": len(decision_rule.get('must_have_attributes', [])),
                 "Has Children": "✓" if decision_rule.get('child_structure', {}).get('has_children') else ""
             })
@@ -1751,7 +1760,7 @@ def show_patterns_page(embedded: bool = False):
         df_patterns = pd.DataFrame(pattern_data)
 
         # Summary metrics
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Total Patterns", len(patterns))
         with col2:
@@ -1760,9 +1769,6 @@ def show_patterns_page(embedded: bool = False):
         with col3:
             unique_types = len(set(p.get('decision_rule', {}).get('node_type', 'Unknown') for p in patterns))
             st.metric("Node Types", unique_types)
-        with col4:
-            total_seen = sum(p['times_seen'] for p in patterns)
-            st.metric("Total Observations", total_seen)
 
         st.divider()
 
@@ -1814,7 +1820,6 @@ def show_patterns_page(embedded: bool = False):
                     help="Select pattern for export",
                     default=False
                 ),
-                "Times Seen": st.column_config.NumberColumn("Times Seen", format="%d"),
                 "Must-Have Attrs": st.column_config.NumberColumn("Must-Have Attrs", format="%d"),
             },
             disabled=[col for col in df.columns if col != "Select"],
