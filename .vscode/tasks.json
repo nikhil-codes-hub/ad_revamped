@@ -1,0 +1,164 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "AD 🚀 Start FastAPI Backend",
+            "type": "shell",
+            "command": "python",
+            "args": ["-m", "app.main"],
+            "options": {
+                "cwd": "${workspaceFolder}/backend",
+                "env": {
+                    "PYTHONPATH": "${workspaceFolder}/backend",
+                    "DEBUG": "true"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        },
+        {
+            "label": "AD 🎯 Start Streamlit Frontend",
+            "type": "shell",
+            "command": "streamlit",
+            "args": [
+                "run",
+                "${workspaceFolder}/frontend/streamlit_ui/AssistedDiscovery.py",
+                "--server.port",
+                "8501",
+                "--browser.gatherUsageStats",
+                "false"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "PYTHONPATH": "${workspaceFolder}"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AD 🔥 Start Uvicorn with Hot Reload",
+            "type": "shell",
+            "command": "uvicorn",
+            "args": [
+                "app.main:app",
+                "--host", "127.0.0.1",
+                "--port", "8000",
+                "--reload",
+                "--log-level", "debug"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/backend",
+                "env": {
+                    "PYTHONPATH": "${workspaceFolder}/backend",
+                    "DEBUG": "true"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AD 🧪 Run Tests",
+            "type": "shell",
+            "command": "python",
+            "args": ["-m", "pytest", "tests/", "-v"],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/backend"
+                }
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AD 🔍 Install Dependencies (Backend)",
+            "type": "shell",
+            "command": "pip",
+            "args": ["install", "-r", "requirements.txt"],
+            "options": {
+                "cwd": "${workspaceFolder}/backend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AD 🗄️ Reset Database",
+            "type": "shell",
+            "command": "python",
+            "args": ["-c", "from app.services.database import reset_database; reset_database()"],
+            "options": {
+                "cwd": "${workspaceFolder}/backend",
+                "env": {
+                    "PYTHONPATH": "${workspaceFolder}/backend"
+                }
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
