@@ -14,6 +14,7 @@ from app.core.logging import get_logger
 from app.services.workspace_db import get_workspace_db
 from app.services.pattern_generator import create_pattern_generator
 from app.models.database import Pattern
+import httpx
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -358,10 +359,17 @@ async def modify_pattern(
         model_name = settings.LLM_MODEL
 
         if settings.LLM_PROVIDER == "azure" and settings.AZURE_OPENAI_KEY:
+            http_client = httpx.Client(
+                    timeout=httpx.Timeout(60.0, connect=10.0),
+                    limits=httpx.Limits(max_keepalive_connections=10, max_connections=20),
+                    follow_redirects=True,
+                    verify=False  # Disable SSL verification for corporate proxies
+            )
             sync_client = AzureOpenAI(
                 api_key=settings.AZURE_OPENAI_KEY,
                 azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
-                api_version=settings.AZURE_API_VERSION
+                api_version=settings.AZURE_API_VERSION,
+                http_client=http_client
             )
             model_name = settings.MODEL_DEPLOYMENT_NAME
         elif settings.OPENAI_API_KEY:

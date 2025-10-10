@@ -11,6 +11,7 @@ from datetime import datetime
 from typing import Optional, Dict, Any, List
 from pathlib import Path
 import json
+import time
 from streamlit_tree_select import tree_select
 
 # Configuration
@@ -2151,7 +2152,9 @@ def show_config_page():
                     save_workspaces(st.session_state.workspaces)
                     st.session_state.current_workspace = candidate
                     st.session_state.pop("config_new_workspace", None)
-                    st.success(f"Workspace '{candidate}' added and activated.")
+                    st.success(f"✅ Workspace **'{candidate}'** has been created and is now active!")
+                    st.info(f"💡 The workspace is ready to use. You can now run Discovery or Identify operations in this workspace.")
+                    time.sleep(1.5)  # Brief pause to show the success message
                     st.experimental_rerun()
 
     with col_delete:
@@ -2465,10 +2468,10 @@ def show_node_manager_page():
 
                     # Store in session state for editing
                     st.session_state.analyzed_nodes = merge_existing_configs(result, workspace=current_workspace)
+                    # Select all nodes by default instead of only enabled ones
                     default_checked_raw = [
                         node['section_path']
                         for node in result.get('nodes', [])
-                        if node.get('enabled', False)
                     ]
                     st.session_state.node_checked_paths_raw = default_checked_raw
                     st.session_state.node_checked_paths_effective = compute_effective_paths(
@@ -2514,8 +2517,9 @@ def show_node_manager_page():
             node_lookup = {node['section_path']: node for node in result['nodes']}
 
             # Determine which nodes should be checked initially
+            # Select all nodes by default instead of only enabled ones
             default_checked_raw = [
-                node['section_path'] for node in result['nodes'] if node.get('enabled', False)
+                node['section_path'] for node in result['nodes']
             ]
 
             stored_raw = st.session_state.get('node_checked_paths_raw')

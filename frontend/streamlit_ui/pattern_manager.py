@@ -18,7 +18,11 @@ import sqlite3
 sys.path.insert(0, str(Path(__file__).parent / "utils"))
 
 # API Configuration
-API_BASE_URL = "http://localhost:8000/api/v1"
+API_BASE_URL = (
+    st.session_state.get("api_base_url")
+    if "api_base_url" in st.session_state
+    else "http://localhost:8000/api/v1"
+)
 
 
 class SimpleSQLDatabaseUtils:
@@ -502,6 +506,36 @@ class PatternManager:
 
         return prompt
 
+    def _load_patterns_from_backend(self, workspace: str) -> List[tuple]:
+        """Fetch patterns directly from backend when local cache is empty."""
+        try:
+            response = requests.get(
+                f"{API_BASE_URL}/patterns/",
+                params={"limit": 500, "workspace": workspace},
+                timeout=15
+            )
+            if response.status_code != 200:
+                return []
+
+            backend_patterns = response.json() or []
+            converted_patterns = []
+            for pattern in backend_patterns:
+                prompt = self._generate_pattern_prompt(pattern)
+                converted_patterns.append((
+                    pattern.get('message_root', 'Unknown'),  # api_name
+                    pattern.get('spec_version', 'Unknown'),  # version
+                    pattern.get('section_path', 'Unknown'),  # section_name
+                    pattern.get('description', ''),          # pattern_desc
+                    prompt,                                  # pattern_prompt
+                    pattern.get('id', 0),                    # pattern_id (backend)
+                    None,                                    # api_id placeholder
+                    None,                                    # section_id placeholder
+                    0                                        # is_shared
+                ))
+            return converted_patterns
+        except requests.exceptions.RequestException:
+            return []
+
     def _get_or_create_api(self, api_name: str) -> int:
         """Get or create API in workspace."""
         result = self.db_utils.run_query("SELECT api_id FROM api WHERE api_name = ?", (api_name,))
@@ -528,6 +562,9 @@ class PatternManager:
 
         # Get workspace patterns
         workspace_patterns = self.db_utils.get_all_patterns()
+
+        if not workspace_patterns:
+            workspace_patterns = self._load_patterns_from_backend(workspace)
 
         if not workspace_patterns:
             st.warning("📭 No patterns in workspace. Export patterns first in the Export tab.")
