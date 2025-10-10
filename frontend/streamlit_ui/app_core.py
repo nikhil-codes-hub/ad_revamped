@@ -2476,17 +2476,9 @@ def show_node_manager_page():
 
                     # Store in session state for editing
                     st.session_state.analyzed_nodes = merge_existing_configs(result, workspace=current_workspace)
-                    # Select all nodes by default instead of only enabled ones
-                    default_checked_raw = [
-                        node['section_path']
-                        for node in result.get('nodes', [])
-                    ]
-                    st.session_state.node_checked_paths_raw = default_checked_raw
-                    st.session_state.node_checked_paths_effective = compute_effective_paths(
-                        default_checked_raw,
-                        previous_effective=default_checked_raw,
-                        previous_raw=default_checked_raw
-                    )
+                    # Don't select any nodes by default - user must manually select
+                    st.session_state.node_checked_paths_raw = []
+                    st.session_state.node_checked_paths_effective = []
                     st.rerun()
                 else:
                     st.error("Failed to analyze XML structure")
