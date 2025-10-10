@@ -1837,14 +1837,20 @@ def show_patterns_page(embedded: bool = False):
 
         patterns = list(unique_patterns.values())
 
-        # Patterns table (without Times Seen column)
+        # Patterns table with description
         pattern_data = []
         for pattern in patterns:
             decision_rule = pattern.get('decision_rule', {})
+            # Get description, truncate if too long
+            desc = pattern.get('description', '')
+            if desc and len(desc) > 80:
+                desc = desc[:77] + "..."
+
             pattern_data.append({
                 "ID": pattern['id'],
                 "Section Path": pattern['section_path'],
                 "Node Type": decision_rule.get('node_type', 'Unknown'),
+                "Description": desc if desc else "N/A",
                 "Version": pattern['spec_version'],
                 "Airline": pattern.get('airline_code', 'N/A'),
                 "Message": pattern['message_root'],
