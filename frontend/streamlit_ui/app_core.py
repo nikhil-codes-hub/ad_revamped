@@ -2525,9 +2525,8 @@ def show_node_manager_page():
             node_lookup = {node['section_path']: node for node in result['nodes']}
 
             # Determine which nodes should be checked initially
-            default_checked_raw = [
-                node['section_path'] for node in result['nodes'] if node.get('enabled', False)
-            ]
+            # Start with no nodes selected by default
+            default_checked_raw = []
 
             stored_raw = st.session_state.get('node_checked_paths_raw')
             if stored_raw is None:
