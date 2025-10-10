@@ -560,6 +560,9 @@ class PatternManager:
         st.subheader("✅ Verify Patterns with Test XML")
         st.info("💡 Test your workspace patterns against sample XML using AI-powered verification")
 
+        # Get current workspace
+        workspace = st.session_state.get('current_workspace', 'default')
+
         # Get workspace patterns
         workspace_patterns = self.db_utils.get_all_patterns()
 
