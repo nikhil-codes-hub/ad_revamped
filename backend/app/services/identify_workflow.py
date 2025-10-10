@@ -86,6 +86,7 @@ class IdentifyWorkflow:
         total_weight += weight_must_have
 
         pattern_must_have = set(pattern_decision_rule.get('must_have_attributes', []))
+        pattern_optional = set(pattern_decision_rule.get('optional_attributes', []))
 
         # Filter out metadata fields that are added during extraction
         # These are NOT real XML attributes and should not be compared
@@ -93,12 +94,24 @@ class IdentifyWorkflow:
         all_fact_attributes = set(node_fact_structure.get('attributes', {}).keys())
         fact_attributes = all_fact_attributes - METADATA_FIELDS
 
+        # Calculate match score based on required attributes
         if pattern_must_have:
             must_have_match = len(pattern_must_have & fact_attributes) / len(pattern_must_have)
             score += weight_must_have * must_have_match
         else:
-            # No required attributes - consider it a match
+            # No required attributes - start with full score
             score += weight_must_have
+
+        # PENALTY: Reduce score for extra unexpected attributes
+        # Extra = attributes in NodeFact that are NOT in pattern's required OR optional lists
+        expected_all_attributes = pattern_must_have | pattern_optional
+        extra_attributes = fact_attributes - expected_all_attributes
+
+        if extra_attributes and expected_all_attributes:
+            # Penalize 10% per extra attribute (cap at 30% total penalty)
+            extra_penalty = min(0.3, len(extra_attributes) * 0.10)
+            score -= extra_penalty
+            logger.info(f"Found {len(extra_attributes)} unexpected attribute(s): {extra_attributes}. Applying {extra_penalty*100:.0f}% penalty.")
 
         # 3. Child structure match (25% weight)
         weight_child = 0.25
@@ -191,6 +204,19 @@ class IdentifyWorkflow:
         if not node_type_matches:
             normalized_score = min(normalized_score, 0.20)
 
+        # 5. VALIDATION: Check for broken relationships (negative scenarios!)
+        # If the NodeFact has broken/invalid relationships, this indicates a data quality issue
+        # and should reduce the confidence score significantly
+        fact_relationships = node_fact_structure.get('relationships', [])
+        if fact_relationships:
+            broken_count = sum(1 for rel in fact_relationships if not rel.get('is_valid', True))
+            if broken_count > 0:
+                # Penalize broken relationships - reduce score by 30% per broken relationship
+                penalty = min(0.6, broken_count * 0.3)  # Cap at 60% penalty
+                normalized_score = normalized_score * (1.0 - penalty)
+                logger.warning(f"Node has {broken_count} broken relationship(s), applying {penalty*100:.0f}% penalty. "
+                             f"Original score: {normalized_score/(1.0-penalty):.2f}, New score: {normalized_score:.2f}")
+
         return normalized_score
 
     def match_node_fact_to_patterns(self,
@@ -204,6 +230,8 @@ class IdentifyWorkflow:
         Returns:
             List of matches with confidence scores
         """
+        from app.models.database import NodeRelationship
+
         # Query patterns for same version/message/airline (VERSION & AIRLINE FILTERED!)
         query = self.db_session.query(Pattern).filter(
             Pattern.spec_version == spec_version,
@@ -221,6 +249,16 @@ class IdentifyWorkflow:
             logger.info(f"No patterns found for {spec_version}/{message_root}{airline_info}")
             return []
 
+        # Check for broken relationships in the database for this NodeFact
+        broken_relationships = self.db_session.query(NodeRelationship).filter(
+            NodeRelationship.source_node_fact_id == node_fact.id,
+            NodeRelationship.is_valid == False
+        ).all()
+
+        broken_count = len(broken_relationships)
+        if broken_count > 0:
+            logger.warning(f"NodeFact {node_fact.id} ({node_fact.node_type}) has {broken_count} broken relationship(s)")
+
         matches = []
 
         for pattern in patterns:
@@ -229,6 +267,14 @@ class IdentifyWorkflow:
                 node_fact.fact_json,
                 pattern.decision_rule
             )
+
+            # Apply penalty for broken relationships (NEGATIVE SCENARIO DETECTION!)
+            if broken_count > 0:
+                penalty = min(0.6, broken_count * 0.3)  # 30% penalty per broken relationship, cap at 60%
+                original_confidence = confidence
+                confidence = confidence * (1.0 - penalty)
+                logger.warning(f"Applying {penalty*100:.0f}% penalty for {broken_count} broken relationship(s). "
+                             f"Confidence: {original_confidence:.2f} → {confidence:.2f}")
 
             # Determine verdict based on confidence
             if confidence >= 0.95:
@@ -363,9 +409,8 @@ class IdentifyWorkflow:
         # PHASE 1: Extract NodeFacts (reuse Discovery workflow but mark as IDENTIFY run)
         logger.info("Phase 1: Extracting NodeFacts from XML")
 
-        # Run discovery extraction (but we'll create an IDENTIFY run manually)
-        # First, let discovery extract the facts
-        discovery_results = self.discovery.run_discovery(xml_file_path)
+        # Run discovery extraction but SKIP pattern generation (Identify only matches, doesn't create patterns)
+        discovery_results = self.discovery.run_discovery(xml_file_path, skip_pattern_generation=True)
 
         run_id = discovery_results['run_id']
 

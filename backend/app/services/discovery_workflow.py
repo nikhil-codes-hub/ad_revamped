@@ -311,15 +311,19 @@ class DiscoveryWorkflow:
             # For now, try all templates
             return template_extractor.get_available_templates()
 
-    def run_discovery(self, xml_file_path: str) -> Dict[str, Any]:
+    def run_discovery(self, xml_file_path: str, skip_pattern_generation: bool = False) -> Dict[str, Any]:
         """
         Run complete discovery workflow on XML file using optimized two-phase approach.
 
         Phase 1: Fast version detection from XML root element
         Phase 2: Targeted processing with version-specific target paths
+        Phase 2.5: Relationship analysis (always runs)
+        Phase 3: Pattern generation (skipped when called from Identify mode)
 
         Args:
             xml_file_path: Path to XML file to process
+            skip_pattern_generation: If True, skip Phase 3 (pattern generation).
+                                    Used when calling from Identify workflow.
 
         Returns:
             Dict containing workflow results and statistics
@@ -627,8 +631,8 @@ class DiscoveryWorkflow:
                         'error': str(e)
                     }
 
-            # PHASE 3: Pattern Generation (if NodeFacts were extracted)
-            if total_facts_extracted > 0:
+            # PHASE 3: Pattern Generation (if NodeFacts were extracted AND not skipped)
+            if total_facts_extracted > 0 and not skip_pattern_generation:
                 logger.info(f"Phase 3: Generating patterns from {total_facts_extracted} NodeFacts")
                 try:
                     pattern_generator = create_pattern_generator(self.db_session)
@@ -648,6 +652,8 @@ class DiscoveryWorkflow:
                         'success': False,
                         'error': str(e)
                     }
+            elif skip_pattern_generation:
+                logger.info("Phase 3: Pattern generation SKIPPED (called from Identify mode)")
 
         except Exception as e:
             error_msg = str(e)

@@ -1,0 +1,122 @@
+<IATA_AirShoppingRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<!-- NEGATIVE TEST: Broken References - PaxSegmentRefID, PaxRefID, and DatedMarketingSegmentRefId point to non-existent IDs -->
+	<Response>
+		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<DatedMarketingSegmentList>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-15T14:30:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>LAX</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedMarketingSegmentId>seg-001</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>opseg-001</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-15T11:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>123</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+			</DatedMarketingSegmentList>
+			<DatedOperatingLegList>
+				<DatedOperatingLeg>
+					<AirlineTaxonomy>
+						<DescText>ECONOMY</DescText>
+					</AirlineTaxonomy>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-15T14:30:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>LAX</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Boeing 737-900</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>opleg-001</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-15T11:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<DistanceMeasure UnitCode="MI">954</DistanceMeasure>
+					<OnGroundDuration>PT3H30M</OnGroundDuration>
+				</DatedOperatingLeg>
+			</DatedOperatingLegList>
+			<DatedOperatingSegmentList>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedOperatingLegRefID>opleg-001</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>opseg-001</DatedOperatingSegmentId>
+					<Duration>PT3H30M</Duration>
+					<OperatingCarrierFlightNumberText>123</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+			</DatedOperatingSegmentList>
+			<OriginDestList>
+				<OriginDest>
+					<DestCode>LAX</DestCode>
+					<OriginCode>SEA</OriginCode>
+					<OriginDestID>od-001</OriginDestID>
+					<PaxJourneyRefID>journey-001</PaxJourneyRefID>
+				</OriginDest>
+			</OriginDestList>
+			<PaxJourneyList>
+				<PaxJourney>
+					<DistanceMeasure UnitCode="MI">954</DistanceMeasure>
+					<Duration>PT3H30M</Duration>
+					<PaxJourneyID>journey-001</PaxJourneyID>
+					<!-- BROKEN: References non-existent paxseg-999 -->
+					<PaxSegmentRefID>paxseg-999</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<Pax>
+					<PaxID>PAX-001</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<!-- BROKEN: References non-existent seg-999 -->
+					<DatedMarketingSegmentRefId>seg-999</DatedMarketingSegmentRefId>
+					<PaxSegmentID>paxseg-001</PaxSegmentID>
+				</PaxSegment>
+			</PaxSegmentList>
+		</DataLists>
+		<OffersGroup xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<CarrierOffers>
+				<Offer>
+					<OfferID>OFFER-001</OfferID>
+					<OfferItem>
+						<FareDetail>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>2</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<FareBasisCode>YL0WSEA</FareBasisCode>
+								<FareTypeCode>FR</FareTypeCode>
+								<!-- BROKEN: References non-existent paxseg-888 -->
+								<PaxSegmentRefID>paxseg-888</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>Y</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<!-- BROKEN: References non-existent PAX-999 -->
+							<PaxRefID>PAX-999</PaxRefID>
+						</FareDetail>
+						<OfferItemID>ITEM-001</OfferItemID>
+						<Price>
+							<TotalAmount CurCode="USD">299.00</TotalAmount>
+						</Price>
+					</OfferItem>
+					<OwnerCode>AS</OwnerCode>
+					<TotalPrice>
+						<TotalAmount CurCode="USD">299.00</TotalAmount>
+					</TotalPrice>
+				</Offer>
+			</CarrierOffers>
+		</OffersGroup>
+	</Response>
+	<PayloadAttributes>
+		<CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">test-negative-001</CorrelationID>
+		<VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">21.3</VersionNumber>
+	</PayloadAttributes>
+</IATA_AirShoppingRS>

@@ -60,7 +60,7 @@ class LLMNodeFactsExtractor:
 
                 # Create httpx client with increased timeouts and retries
                 http_client = httpx.AsyncClient(
-                    timeout=httpx.Timeout(60.0, connect=10.0),  # 60s total, 10s connect
+                    timeout=httpx.Timeout(120.0, connect=10.0),  # 60s total, 10s connect
                     limits=httpx.Limits(max_keepalive_connections=10, max_connections=20),
                     follow_redirects=True,
                     verify=False  # Disable SSL verification for corporate proxies

@@ -1,0 +1,128 @@
+<IATA_AirShoppingRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<!-- NEGATIVE TEST: Mismatched Counts - FareDetail references passengers that don't exist -->
+	<Response>
+		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<DatedMarketingSegmentList>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-19T15:15:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>BOS</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedMarketingSegmentId>seg-001</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>opseg-001</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-19T08:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>234</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+			</DatedMarketingSegmentList>
+			<DatedOperatingLegList>
+				<DatedOperatingLeg>
+					<AirlineTaxonomy>
+						<DescText>ECONOMY</DescText>
+					</AirlineTaxonomy>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-19T15:15:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>BOS</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>321</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Airbus A321</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>opleg-001</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-19T08:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<DistanceMeasure UnitCode="MI">2496</DistanceMeasure>
+					<OnGroundDuration>PT5H15M</OnGroundDuration>
+				</DatedOperatingLeg>
+			</DatedOperatingLegList>
+			<DatedOperatingSegmentList>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedOperatingLegRefID>opleg-001</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>opseg-001</DatedOperatingSegmentId>
+					<Duration>PT5H15M</Duration>
+					<OperatingCarrierFlightNumberText>234</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+			</DatedOperatingSegmentList>
+			<OriginDestList>
+				<OriginDest>
+					<DestCode>BOS</DestCode>
+					<OriginCode>SEA</OriginCode>
+					<OriginDestID>od-001</OriginDestID>
+					<PaxJourneyRefID>journey-001</PaxJourneyRefID>
+				</OriginDest>
+			</OriginDestList>
+			<PaxJourneyList>
+				<PaxJourney>
+					<DistanceMeasure UnitCode="MI">2496</DistanceMeasure>
+					<Duration>PT5H15M</Duration>
+					<PaxJourneyID>journey-001</PaxJourneyID>
+					<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<!-- Only 2 passengers defined -->
+				<Pax>
+					<PaxID>PAX-001</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+				<Pax>
+					<PaxID>PAX-002</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<DatedMarketingSegmentRefId>seg-001</DatedMarketingSegmentRefId>
+					<PaxSegmentID>paxseg-001</PaxSegmentID>
+				</PaxSegment>
+			</PaxSegmentList>
+		</DataLists>
+		<OffersGroup xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<CarrierOffers>
+				<Offer>
+					<OfferID>OFFER-MISMATCH</OfferID>
+					<OfferItem>
+						<FareDetail>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>2</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<FareBasisCode>QL0WSEA</FareBasisCode>
+								<FareTypeCode>FR</FareTypeCode>
+								<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>Q</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<!-- MISMATCH: References 5 passengers but only 2 exist in PaxList -->
+							<PaxRefID>PAX-001</PaxRefID>
+							<PaxRefID>PAX-002</PaxRefID>
+							<PaxRefID>PAX-003</PaxRefID>
+							<PaxRefID>PAX-004</PaxRefID>
+							<PaxRefID>PAX-005</PaxRefID>
+						</FareDetail>
+						<OfferItemID>ITEM-MISMATCH</OfferItemID>
+						<Price>
+							<TotalAmount CurCode="USD">1499.00</TotalAmount>
+						</Price>
+					</OfferItem>
+					<OwnerCode>AS</OwnerCode>
+					<TotalPrice>
+						<TotalAmount CurCode="USD">1499.00</TotalAmount>
+					</TotalPrice>
+				</Offer>
+			</CarrierOffers>
+		</OffersGroup>
+	</Response>
+	<PayloadAttributes>
+		<CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">test-negative-005</CorrelationID>
+		<VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">21.3</VersionNumber>
+	</PayloadAttributes>
+</IATA_AirShoppingRS>

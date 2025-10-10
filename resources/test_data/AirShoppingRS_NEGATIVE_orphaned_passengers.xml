@@ -1,0 +1,129 @@
+<IATA_AirShoppingRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<!-- NEGATIVE TEST: Orphaned Passengers - Passengers exist but are never referenced in any offer -->
+	<Response>
+		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<DatedMarketingSegmentList>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-17T19:20:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>PHX</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedMarketingSegmentId>seg-001</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>opseg-001</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-17T16:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>789</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+			</DatedMarketingSegmentList>
+			<DatedOperatingLegList>
+				<DatedOperatingLeg>
+					<AirlineTaxonomy>
+						<DescText>ECONOMY</DescText>
+					</AirlineTaxonomy>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-17T19:20:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>PHX</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Boeing 737-900</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>opleg-001</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-17T16:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<DistanceMeasure UnitCode="MI">1107</DistanceMeasure>
+					<OnGroundDuration>PT2H20M</OnGroundDuration>
+				</DatedOperatingLeg>
+			</DatedOperatingLegList>
+			<DatedOperatingSegmentList>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedOperatingLegRefID>opleg-001</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>opseg-001</DatedOperatingSegmentId>
+					<Duration>PT2H20M</Duration>
+					<OperatingCarrierFlightNumberText>789</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+			</DatedOperatingSegmentList>
+			<OriginDestList>
+				<OriginDest>
+					<DestCode>PHX</DestCode>
+					<OriginCode>SEA</OriginCode>
+					<OriginDestID>od-001</OriginDestID>
+					<PaxJourneyRefID>journey-001</PaxJourneyRefID>
+				</OriginDest>
+			</OriginDestList>
+			<PaxJourneyList>
+				<PaxJourney>
+					<DistanceMeasure UnitCode="MI">1107</DistanceMeasure>
+					<Duration>PT2H20M</Duration>
+					<PaxJourneyID>journey-001</PaxJourneyID>
+					<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<!-- ORPHANED: These passengers exist but are never referenced in offers -->
+				<Pax>
+					<PaxID>PAX-ORPHAN-001</PaxID>
+				</Pax>
+				<Pax>
+					<PaxID>PAX-ORPHAN-002</PaxID>
+				</Pax>
+				<Pax>
+					<PaxID>PAX-ORPHAN-003</PaxID>
+				</Pax>
+				<!-- Only this passenger is actually used -->
+				<Pax>
+					<PaxID>PAX-VALID</PaxID>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<DatedMarketingSegmentRefId>seg-001</DatedMarketingSegmentRefId>
+					<PaxSegmentID>paxseg-001</PaxSegmentID>
+				</PaxSegment>
+			</PaxSegmentList>
+		</DataLists>
+		<OffersGroup xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<CarrierOffers>
+				<Offer>
+					<OfferID>OFFER-PARTIAL</OfferID>
+					<OfferItem>
+						<FareDetail>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>2</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<FareBasisCode>NL0WSEA</FareBasisCode>
+								<FareTypeCode>FR</FareTypeCode>
+								<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>N</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<!-- Only references one passenger, leaving 3 orphaned -->
+							<PaxRefID>PAX-VALID</PaxRefID>
+						</FareDetail>
+						<OfferItemID>ITEM-PARTIAL</OfferItemID>
+						<Price>
+							<TotalAmount CurCode="USD">249.00</TotalAmount>
+						</Price>
+					</OfferItem>
+					<OwnerCode>AS</OwnerCode>
+					<TotalPrice>
+						<TotalAmount CurCode="USD">249.00</TotalAmount>
+					</TotalPrice>
+				</Offer>
+			</CarrierOffers>
+		</OffersGroup>
+	</Response>
+	<PayloadAttributes>
+		<CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">test-negative-003</CorrelationID>
+		<VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">21.3</VersionNumber>
+	</PayloadAttributes>
+</IATA_AirShoppingRS>

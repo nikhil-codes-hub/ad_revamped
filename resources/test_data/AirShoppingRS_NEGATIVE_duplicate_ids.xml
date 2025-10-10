@@ -1,0 +1,187 @@
+<IATA_AirShoppingRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<!-- NEGATIVE TEST: Duplicate IDs - Same ID used for multiple elements -->
+	<Response>
+		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<DatedMarketingSegmentList>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-18T12:30:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>DEN</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<!-- DUPLICATE: Same ID used twice -->
+					<DatedMarketingSegmentId>seg-DUPLICATE</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>opseg-001</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-18T10:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>101</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-18T18:45:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<!-- DUPLICATE: Same ID as above -->
+					<DatedMarketingSegmentId>seg-DUPLICATE</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>opseg-002</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-18T15:30:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>DEN</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>102</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+			</DatedMarketingSegmentList>
+			<DatedOperatingLegList>
+				<DatedOperatingLeg>
+					<AirlineTaxonomy>
+						<DescText>ECONOMY</DescText>
+					</AirlineTaxonomy>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-18T12:30:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>DEN</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Boeing 737-900</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>opleg-001</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-18T10:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<DistanceMeasure UnitCode="MI">1024</DistanceMeasure>
+					<OnGroundDuration>PT2H30M</OnGroundDuration>
+				</DatedOperatingLeg>
+				<DatedOperatingLeg>
+					<AirlineTaxonomy>
+						<DescText>ECONOMY</DescText>
+					</AirlineTaxonomy>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-18T18:45:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Boeing 737-900</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>opleg-002</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-18T15:30:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>DEN</IATA_LocationCode>
+					</Dep>
+					<DistanceMeasure UnitCode="MI">1024</DistanceMeasure>
+					<OnGroundDuration>PT2H15M</OnGroundDuration>
+				</DatedOperatingLeg>
+			</DatedOperatingLegList>
+			<DatedOperatingSegmentList>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedOperatingLegRefID>opleg-001</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>opseg-001</DatedOperatingSegmentId>
+					<Duration>PT2H30M</Duration>
+					<OperatingCarrierFlightNumberText>101</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedOperatingLegRefID>opleg-002</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>opseg-002</DatedOperatingSegmentId>
+					<Duration>PT2H15M</Duration>
+					<OperatingCarrierFlightNumberText>102</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+			</DatedOperatingSegmentList>
+			<OriginDestList>
+				<OriginDest>
+					<DestCode>DEN</DestCode>
+					<OriginCode>SEA</OriginCode>
+					<OriginDestID>od-001</OriginDestID>
+					<PaxJourneyRefID>journey-001</PaxJourneyRefID>
+				</OriginDest>
+				<OriginDest>
+					<DestCode>SEA</DestCode>
+					<OriginCode>DEN</OriginCode>
+					<OriginDestID>od-002</OriginDestID>
+					<PaxJourneyRefID>journey-002</PaxJourneyRefID>
+				</OriginDest>
+			</OriginDestList>
+			<PaxJourneyList>
+				<PaxJourney>
+					<DistanceMeasure UnitCode="MI">1024</DistanceMeasure>
+					<Duration>PT2H30M</Duration>
+					<PaxJourneyID>journey-001</PaxJourneyID>
+					<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
+				</PaxJourney>
+				<PaxJourney>
+					<DistanceMeasure UnitCode="MI">1024</DistanceMeasure>
+					<Duration>PT2H15M</Duration>
+					<PaxJourneyID>journey-002</PaxJourneyID>
+					<PaxSegmentRefID>paxseg-002</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<Pax>
+					<!-- DUPLICATE: Same ID used for two different passengers -->
+					<PaxID>PAX-DUPLICATE</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+				<Pax>
+					<!-- DUPLICATE: Same ID as above -->
+					<PaxID>PAX-DUPLICATE</PaxID>
+					<PTC>CHD</PTC>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<!-- References duplicate segment ID - ambiguous which one -->
+					<DatedMarketingSegmentRefId>seg-DUPLICATE</DatedMarketingSegmentRefId>
+					<PaxSegmentID>paxseg-001</PaxSegmentID>
+				</PaxSegment>
+				<PaxSegment>
+					<!-- References duplicate segment ID - ambiguous which one -->
+					<DatedMarketingSegmentRefId>seg-DUPLICATE</DatedMarketingSegmentRefId>
+					<PaxSegmentID>paxseg-002</PaxSegmentID>
+				</PaxSegment>
+			</PaxSegmentList>
+		</DataLists>
+		<OffersGroup xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<CarrierOffers>
+				<Offer>
+					<OfferID>OFFER-DUPE</OfferID>
+					<OfferItem>
+						<FareDetail>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>2</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<FareBasisCode>VL0WSEA</FareBasisCode>
+								<FareTypeCode>FR</FareTypeCode>
+								<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
+								<PaxSegmentRefID>paxseg-002</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>V</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<!-- References duplicate passenger ID - ambiguous which one -->
+							<PaxRefID>PAX-DUPLICATE</PaxRefID>
+						</FareDetail>
+						<OfferItemID>ITEM-DUPE</OfferItemID>
+						<Price>
+							<TotalAmount CurCode="USD">389.00</TotalAmount>
+						</Price>
+					</OfferItem>
+					<OwnerCode>AS</OwnerCode>
+					<TotalPrice>
+						<TotalAmount CurCode="USD">389.00</TotalAmount>
+					</TotalPrice>
+				</Offer>
+			</CarrierOffers>
+		</OffersGroup>
+	</Response>
+	<PayloadAttributes>
+		<CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">test-negative-004</CorrelationID>
+		<VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">21.3</VersionNumber>
+	</PayloadAttributes>
+</IATA_AirShoppingRS>

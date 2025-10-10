@@ -98,6 +98,7 @@ class PatternResponse(BaseModel):
     section_path: str = Field(..., description="XML section path")
     selector_xpath: str = Field(..., description="XPath selector")
     decision_rule: Dict[str, Any] = Field(..., description="Pattern matching rule")
+    description: Optional[str] = Field(None, description="Business-friendly pattern description")
     signature_hash: str = Field(..., description="Unique signature hash")
     times_seen: int = Field(..., description="Times pattern was discovered")
     created_by_model: Optional[str] = Field(None, description="LLM model that created pattern")

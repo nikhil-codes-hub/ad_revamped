@@ -67,10 +67,29 @@ class RelationshipAnalyzer:
         Returns:
             Dictionary with statistics and discovered relationships
         """
-        logger.info("Starting relationship analysis", run_id=run_id, node_count=len(node_facts))
+        logger.info("=" * 80)
+        logger.info("🔍 STARTING RELATIONSHIP ANALYSIS")
+        logger.info("=" * 80)
+        logger.info(f"Run ID: {run_id}")
+        logger.info(f"Total NodeFacts to analyze: {len(node_facts)}")
+
+        # Log LLM client status
+        if self.llm_client:
+            logger.info(f"✅ LLM Client: INITIALIZED ({self.model})")
+        else:
+            logger.error(f"❌ LLM Client: NOT INITIALIZED - Relationship discovery will fail!")
+            return {
+                'success': False,
+                'statistics': {},
+                'relationships_count': 0,
+                'error': 'LLM client not initialized'
+            }
 
         # Group node facts by section_path for efficient processing
         node_groups = self._group_by_section(node_facts)
+        logger.info(f"Grouped into {len(node_groups)} distinct sections:")
+        for section_path, facts in node_groups.items():
+            logger.info(f"  - {section_path}: {len(facts)} nodes")
 
         relationships = []
         stats = {
@@ -88,15 +107,18 @@ class RelationshipAnalyzer:
             # Get expected references from configuration
             expected_refs = self._get_expected_references(source_path, source_facts[0])
 
-            logger.info(f"Analyzing {source_path}",
-                       fact_count=len(source_facts),
-                       expected_refs=expected_refs)
+            logger.info("")
+            logger.info("-" * 60)
+            logger.info(f"📊 Analyzing SOURCE: {source_path}")
+            logger.info(f"   Node count: {len(source_facts)}")
+            logger.info(f"   Expected references from config: {expected_refs if expected_refs else 'None (auto-discover)'}")
 
             # Check relationships with all other node types
             for target_path, target_facts in node_groups.items():
                 if source_path == target_path:
                     continue
 
+                logger.info(f"   🔗 Checking relationship: {source_path} -> {target_path}")
                 stats['total_comparisons'] += 1
 
                 # Use LLM to discover references
@@ -107,7 +129,10 @@ class RelationshipAnalyzer:
                 )
 
                 if not discovered or not discovered.get('has_references'):
+                    logger.info(f"      ❌ No references found: {source_path} -> {target_path}")
                     continue
+
+                logger.info(f"      ✅ FOUND {len(discovered.get('references', []))} reference(s)!")
 
                 # Validate discovered references for all instances
                 for ref_info in discovered.get('references', []):
@@ -135,8 +160,23 @@ class RelationshipAnalyzer:
         # Bulk insert relationships to database
         if relationships:
             self._save_relationships(relationships)
+            logger.info(f"💾 Saved {len(relationships)} relationships to database")
+        else:
+            logger.warning(f"⚠️  NO RELATIONSHIPS TO SAVE")
 
-        logger.info("Relationship analysis complete", run_id=run_id, stats=stats)
+        logger.info("")
+        logger.info("=" * 80)
+        logger.info("📊 RELATIONSHIP ANALYSIS SUMMARY")
+        logger.info("=" * 80)
+        logger.info(f"Total comparisons: {stats['total_comparisons']}")
+        logger.info(f"Relationships found: {stats['relationships_found']}")
+        logger.info(f"Valid relationships: {stats['valid_relationships']}")
+        logger.info(f"Broken relationships: {stats['broken_relationships']}")
+        logger.info(f"Expected & validated: {stats['expected_validated']}")
+        logger.info(f"Expected but missing: {stats['expected_missing']}")
+        logger.info(f"Unexpected discoveries: {stats['unexpected_discovered']}")
+        logger.info("=" * 80)
+
         return {
             'success': True,
             'statistics': stats,
@@ -231,9 +271,18 @@ class RelationshipAnalyzer:
         Returns:
             Dictionary with discovered references or None
         """
+        logger.debug(f"🤖 Calling LLM to discover references...")
+        logger.debug(f"   Source: {source_fact.node_type} (section: {source_fact.section_path})")
+        logger.debug(f"   Target: {target_fact.node_type} (section: {target_fact.section_path})")
+
         # Extract XML snippets from fact_json (handle nested structure)
         source_xml = self._extract_xml_snippet(source_fact.fact_json)
         target_xml = self._extract_xml_snippet(target_fact.fact_json)
+
+        logger.debug(f"   Source XML snippet length: {len(source_xml)} chars")
+        logger.debug(f"   Target XML snippet length: {len(target_xml)} chars")
+        logger.debug(f"   Source XML preview: {source_xml[:200]}...")
+        logger.debug(f"   Target XML preview: {target_xml[:200]}...")
 
         prompt = self._build_discovery_prompt(
             source_fact.node_type,
@@ -243,11 +292,15 @@ class RelationshipAnalyzer:
             expected_refs
         )
 
+        logger.debug(f"   Prompt length: {len(prompt)} chars")
+
         try:
             # Use synchronous LLM client
             if not self.llm_client:
-                logger.error("LLM client not initialized")
+                logger.error("❌ LLM client not initialized in _discover_references_llm")
                 return None
+
+            logger.debug(f"   Calling LLM model: {self.model}")
 
             response = self.llm_client.chat.completions.create(
                 model=self.model,
@@ -265,21 +318,31 @@ class RelationshipAnalyzer:
 
             # Parse JSON response
             content = response.choices[0].message.content
+            logger.debug(f"   LLM Response: {content}")
+
             result = json.loads(content)
 
-            # Debug logging
-            logger.info(f"LLM relationship result: {source_fact.node_type} -> {target_fact.node_type}",
-                       has_references=result.get('has_references'),
-                       references_count=len(result.get('references', [])),
-                       result=result)
+            # Enhanced debug logging
+            has_refs = result.get('has_references', False)
+            refs_count = len(result.get('references', []))
+
+            logger.info(f"      🤖 LLM Result: {source_fact.node_type} -> {target_fact.node_type}")
+            logger.info(f"         has_references: {has_refs}")
+            logger.info(f"         references_count: {refs_count}")
+
+            if has_refs and refs_count > 0:
+                for ref in result.get('references', []):
+                    logger.info(f"         - {ref.get('reference_type')}: {ref.get('reference_field')} = {ref.get('reference_value')}")
 
             return result
 
         except Exception as e:
-            logger.error("LLM reference discovery failed",
-                        error=str(e),
-                        source=source_fact.node_type,
-                        target=target_fact.node_type)
+            logger.error(f"❌ LLM reference discovery FAILED")
+            logger.error(f"   Error: {str(e)}")
+            logger.error(f"   Source: {source_fact.node_type}")
+            logger.error(f"   Target: {target_fact.node_type}")
+            import traceback
+            logger.error(f"   Traceback: {traceback.format_exc()}")
             return None
 
     def _build_discovery_prompt(
@@ -438,6 +501,18 @@ Return ONLY valid JSON (no markdown, no explanation):
                     # If reference field name matches the type, return first value
                     if ref_type.lower() in reference_field.lower() or reference_field.lower() in ref_type.lower():
                         return ref_values[0]
+                elif isinstance(ref_values, dict):
+                    # Handle nested dicts like 'other': {'DatedMarketingSegmentRefId': 'value'}
+                    for nested_key, nested_value in ref_values.items():
+                        if nested_key.lower() == reference_field.lower():
+                            logger.debug(f"Found in nested references: {nested_key} == {reference_field}")
+                            return nested_value
+                        # Check normalized match
+                        normalized_nested = nested_key.lower().replace('_', '')
+                        normalized_field = reference_field.lower().replace('_', '')
+                        if normalized_nested == normalized_field:
+                            logger.debug(f"Found in nested references (normalized): {nested_key} matches {reference_field}")
+                            return nested_value
 
         # Try in refs section at root level
         refs = fact_data.get('refs', {})
@@ -473,15 +548,26 @@ Return ONLY valid JSON (no markdown, no explanation):
                 # Check attributes for ID/Key fields
                 attributes = child.get('attributes', {})
                 for attr_key, attr_value in attributes.items():
-                    # Check if this is an ID field and matches our reference
+                    # Check if this is an ID field and matches our reference (EXACT match only)
                     if attr_value == ref_value:
                         return fact
-                    # Also check if the attribute contains part of the reference (segment matching)
+                    # Handle composite IDs: only allow partial match if one is a prefix/suffix of the other
+                    # AND they share a substantial common portion (at least 80% match)
+                    # Example: "seg0542686836-leg0" should match "seg0542686836" but NOT "seg-999" vs "seg-001"
                     if isinstance(attr_value, str) and isinstance(ref_value, str):
-                        # Handle cases like "seg0542686836-leg0" matching "seg0542686836"
-                        if ref_value in attr_value or attr_value in ref_value:
-                            if 'id' in attr_key.lower() or 'key' in attr_key.lower() or 'ref' in attr_key.lower():
-                                return fact
+                        if 'id' in attr_key.lower() or 'key' in attr_key.lower():
+                            # Calculate string similarity - only match if substantial overlap
+                            min_len = min(len(ref_value), len(attr_value))
+                            max_len = max(len(ref_value), len(attr_value))
+
+                            # Only consider partial match if:
+                            # 1. One string contains the other as a prefix/suffix (not middle substring)
+                            # 2. The shorter string is at least 80% of the longer string length
+                            if min_len >= max_len * 0.8:
+                                if attr_value.startswith(ref_value) or ref_value.startswith(attr_value):
+                                    return fact
+                                if attr_value.endswith(ref_value) or ref_value.endswith(attr_value):
+                                    return fact
 
                 # Check references section
                 references = child.get('references', {})

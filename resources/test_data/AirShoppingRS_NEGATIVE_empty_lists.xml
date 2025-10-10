@@ -1,0 +1,67 @@
+<IATA_AirShoppingRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<!-- NEGATIVE TEST: Empty Data Lists - Lists exist but contain no elements -->
+	<Response>
+		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<!-- EMPTY: No marketing segments -->
+			<DatedMarketingSegmentList>
+			</DatedMarketingSegmentList>
+			<!-- EMPTY: No operating legs -->
+			<DatedOperatingLegList>
+			</DatedOperatingLegList>
+			<!-- EMPTY: No operating segments -->
+			<DatedOperatingSegmentList>
+			</DatedOperatingSegmentList>
+			<!-- EMPTY: No origin/destinations -->
+			<OriginDestList>
+			</OriginDestList>
+			<!-- EMPTY: No journeys -->
+			<PaxJourneyList>
+			</PaxJourneyList>
+			<!-- EMPTY: No passengers -->
+			<PaxList>
+			</PaxList>
+			<!-- EMPTY: No segments -->
+			<PaxSegmentList>
+			</PaxSegmentList>
+		</DataLists>
+		<OffersGroup xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<CarrierOffers>
+				<!-- Offer exists but references empty lists -->
+				<Offer>
+					<OfferID>OFFER-EMPTY</OfferID>
+					<OfferItem>
+						<FareDetail>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>2</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<FareBasisCode>XL0WSEA</FareBasisCode>
+								<FareTypeCode>FR</FareTypeCode>
+								<!-- References non-existent segment from empty list -->
+								<PaxSegmentRefID>paxseg-ghost</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>X</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<!-- References non-existent passenger from empty list -->
+							<PaxRefID>PAX-ghost</PaxRefID>
+						</FareDetail>
+						<OfferItemID>ITEM-EMPTY</OfferItemID>
+						<Price>
+							<TotalAmount CurCode="USD">0.00</TotalAmount>
+						</Price>
+					</OfferItem>
+					<OwnerCode>AS</OwnerCode>
+					<TotalPrice>
+						<TotalAmount CurCode="USD">0.00</TotalAmount>
+					</TotalPrice>
+				</Offer>
+			</CarrierOffers>
+		</OffersGroup>
+	</Response>
+	<PayloadAttributes>
+		<CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">test-negative-006</CorrelationID>
+		<VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">21.3</VersionNumber>
+	</PayloadAttributes>
+</IATA_AirShoppingRS>

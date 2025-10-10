@@ -438,11 +438,12 @@ def get_gap_analysis(run_id: str, workspace: str = "default") -> Optional[Dict[s
         return None
 
 
-def get_detailed_explanation(match_id: int) -> Optional[Dict[str, Any]]:
+def get_detailed_explanation(match_id: int, workspace: str = "default") -> Optional[Dict[str, Any]]:
     """Generate detailed LLM explanation for a pattern match."""
     try:
         response = requests.post(
             f"{API_BASE_URL}/identify/matches/{match_id}/explain",
+            params={"workspace": workspace} if workspace else None,
             timeout=30  # LLM calls may take longer
         )
         if response.status_code == 200:
@@ -946,7 +947,11 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
     st.subheader("🔗 Discovered Relationships")
     rel_summary = get_relationship_summary(run_id, workspace)
 
-    if rel_summary and rel_summary.get('statistics', {}).get('total_relationships', 0) > 0:
+    # Check if NodeFacts were extracted
+    if run_details.get("node_facts_count", 0) == 0:
+        st.warning("⚠️ No NodeFacts were extracted during this Discovery run. Relationships cannot be analyzed without NodeFacts.")
+        st.info("💡 This usually means no target paths are configured for this NDC version and message type. Configure target paths in the Configuration page.")
+    elif rel_summary and rel_summary.get('statistics', {}).get('total_relationships', 0) > 0:
         stats = rel_summary['statistics']
 
         # Display metrics
@@ -1064,81 +1069,84 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                 st.caption("Legend: ✅ Valid | ❌ Broken | 📋 Expected | 🔍 Discovered")
             else:
                 st.info("No relationship details available")
-    else:
-        st.info("No relationships analyzed yet. Relationships are discovered during the Discovery workflow.")
+    elif run_details.get("node_facts_count", 0) > 0:
+        # NodeFacts exist but no relationships were found
+        st.info("ℹ️ No cross-references were found between data elements in this XML file.")
+        st.caption("This is normal for some XML structures that don't link different sections together.")
 
     st.divider()
 
-    # NodeFacts table
-    st.subheader("📋 Extracted NodeFacts")
-    node_facts = get_node_facts(run_id, limit=200, workspace=workspace)
+    # NodeFacts table - hidden in expander for technical users only
+    with st.expander("🔧 Technical Details: Extracted NodeFacts (Advanced)", expanded=False):
+        st.caption("Internal data structure used for pattern generation. For technical users only.")
+        node_facts = get_node_facts(run_id, limit=200, workspace=workspace)
 
-    if node_facts:
-        nf_data = []
-        for nf in node_facts:
-            fact_json = nf.get("fact_json", {})
+        if node_facts:
+            nf_data = []
+            for nf in node_facts:
+                fact_json = nf.get("fact_json", {})
 
-            # Get relationship info
-            relationships = fact_json.get("relationships", [])
-            ref_summary = ""
-            if relationships:
-                ref_types = [r.get("type", "ref") for r in relationships]
-                ref_summary = f"{len(relationships)} refs: {', '.join(set(ref_types[:3]))}"
-
-            nf_data.append({
-                "Node Type": nf["node_type"],
-                "Section Path": nf["section_path"],
-                "Attributes": len(fact_json.get("attributes", {})),
-                "Children": len(fact_json.get("children", [])),
-                "References": ref_summary if ref_summary else "-",
-                "Has BI": "✓" if fact_json.get("business_intelligence") else "",
-                "Confidence": f"{fact_json.get('confidence', 0):.0%}"
-            })
-
-        df_nf = pd.DataFrame(nf_data)
-        st.dataframe(df_nf, use_container_width=True, hide_index=True)
-
-        # Detailed view for selected NodeFact
-        st.divider()
-        st.subheader("🔎 NodeFact Details")
-
-        nf_options = {f"ID {nf['id']} - {nf['node_type']}": nf for nf in node_facts}
-        selected_nf = st.selectbox("Select NodeFact:", list(nf_options.keys()))
-
-        if selected_nf:
-            nf = nf_options[selected_nf]
-            fact_json = nf.get("fact_json", {})
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.write("**Attributes:**")
-                attrs = fact_json.get("attributes", {})
-                if attrs:
-                    st.json(attrs)
-                else:
-                    st.info("No attributes")
-
-                st.write("**Relationships:**")
+                # Get relationship info
                 relationships = fact_json.get("relationships", [])
+                ref_summary = ""
                 if relationships:
-                    for rel in relationships:
-                        ref_type = rel.get("type", "reference")
-                        target_path = rel.get("target_section_path", "unknown")
-                        target_type = rel.get("target_type", "unknown")
-                        st.write(f"- **{ref_type}** → `{target_type}` at `{target_path}`")
-                else:
-                    st.info("No relationships")
+                    ref_types = [r.get("type", "ref") for r in relationships]
+                    ref_summary = f"{len(relationships)} refs: {', '.join(set(ref_types[:3]))}"
 
-            with col2:
-                st.write("**Business Intelligence:**")
-                bi = fact_json.get("business_intelligence", {})
-                if bi:
-                    st.json(bi)
-                else:
-                    st.info("No business intelligence")
-    else:
-        st.info("No NodeFacts found for this run")
+                nf_data.append({
+                    "Node Type": nf["node_type"],
+                    "Section Path": nf["section_path"],
+                    "Attributes": len(fact_json.get("attributes", {})),
+                    "Children": len(fact_json.get("children", [])),
+                    "References": ref_summary if ref_summary else "-",
+                    "Has BI": "✓" if fact_json.get("business_intelligence") else "",
+                    "Confidence": f"{fact_json.get('confidence', 0):.0%}"
+                })
+
+            df_nf = pd.DataFrame(nf_data)
+            st.dataframe(df_nf, use_container_width=True, hide_index=True)
+
+            # Detailed view for selected NodeFact
+            st.divider()
+            st.subheader("🔎 NodeFact Details")
+
+            nf_options = {f"ID {nf['id']} - {nf['node_type']}": nf for nf in node_facts}
+            selected_nf = st.selectbox("Select NodeFact:", list(nf_options.keys()))
+
+            if selected_nf:
+                nf = nf_options[selected_nf]
+                fact_json = nf.get("fact_json", {})
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.write("**Attributes:**")
+                    attrs = fact_json.get("attributes", {})
+                    if attrs:
+                        st.json(attrs)
+                    else:
+                        st.info("No attributes")
+
+                    st.write("**Relationships:**")
+                    relationships = fact_json.get("relationships", [])
+                    if relationships:
+                        for rel in relationships:
+                            ref_type = rel.get("type", "reference")
+                            target_path = rel.get("target_section_path", "unknown")
+                            target_type = rel.get("target_type", "unknown")
+                            st.write(f"- **{ref_type}** → `{target_type}` at `{target_path}`")
+                    else:
+                        st.info("No relationships")
+
+                with col2:
+                    st.write("**Business Intelligence:**")
+                    bi = fact_json.get("business_intelligence", {})
+                    if bi:
+                        st.json(bi)
+                    else:
+                        st.info("No business intelligence")
+        else:
+            st.info("No NodeFacts found for this run")
 
 
 def show_identify_page(current_workspace: Optional[str] = None):
@@ -1330,22 +1338,49 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
         matches = matches_data['matches']
 
         match_table = []
+        seen_patterns = set()  # Track unique patterns to avoid duplicates
+
         for match in matches:
             node_fact = match.get('node_fact', {})
             pattern = match.get('pattern')
 
-            match_table.append({
-                "Node Type": node_fact.get('node_type'),
-                "Section Path": node_fact.get('section_path'),
-                "Explanation": match.get('quick_explanation', 'No explanation available'),
-                "Pattern Airline": pattern.get('airline_code', 'N/A') if pattern else "N/A",
-                "Pattern Version": pattern.get('spec_version', 'N/A') if pattern else "N/A",
-                "Pattern Message": pattern.get('message_root', 'N/A') if pattern else "N/A",
-                "Pattern Section": pattern['section_path'] if pattern else "N/A",
-                "Times Seen": pattern['times_seen'] if pattern else 0,
-                "Confidence": f"{match.get('confidence', 0):.1%}",
-                "Verdict": match.get('verdict', 'UNKNOWN')
-            })
+            if pattern:
+                # Get pattern node type from decision_rule
+                pattern_node_type = pattern.get('decision_rule', {}).get('node_type', 'Unknown')
+                pattern_section = pattern.get('section_path', 'N/A')
+
+                # Create unique key for deduplication
+                pattern_key = f"{pattern_node_type}|{pattern_section}"
+
+                # Skip if we've already shown this pattern
+                if pattern_key in seen_patterns:
+                    continue
+                seen_patterns.add(pattern_key)
+
+                match_table.append({
+                    "Node Type": pattern_node_type,  # Show pattern's node type, not the individual node
+                    "Section Path": pattern_section,
+                    "Explanation": match.get('quick_explanation', 'No explanation available'),
+                    "Pattern Airline": pattern.get('airline_code', 'N/A'),
+                    "Pattern Version": pattern.get('spec_version', 'N/A'),
+                    "Pattern Message": pattern.get('message_root', 'N/A'),
+                    "Times Seen": pattern.get('times_seen', 0),
+                    "Confidence": f"{match.get('confidence', 0):.1%}",
+                    "Verdict": match.get('verdict', 'UNKNOWN')
+                })
+            else:
+                # No pattern matched - show the node fact info
+                match_table.append({
+                    "Node Type": node_fact.get('node_type'),
+                    "Section Path": node_fact.get('section_path'),
+                    "Explanation": match.get('quick_explanation', 'No explanation available'),
+                    "Pattern Airline": "N/A",
+                    "Pattern Version": "N/A",
+                    "Pattern Message": "N/A",
+                    "Times Seen": 0,
+                    "Confidence": f"{match.get('confidence', 0):.1%}",
+                    "Verdict": match.get('verdict', 'UNKNOWN')
+                })
 
         df_matches = pd.DataFrame(match_table)
 
@@ -1368,42 +1403,61 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
             hide_index=True
         )
 
-        # Detailed match view
-        st.divider()
-        st.subheader("🔎 Match Details & Analysis")
+    # Gap Analysis section for unmatched items
+    st.subheader("📝 Gap Analysis: Unmatched Nodes")
+    gap_data = get_gap_analysis(run_id, workspace=workspace)
 
-        match_options = {f"{m['node_fact']['node_type']} @ {m['node_fact']['section_path']} - {m['verdict']} ({m.get('confidence', 0):.1%})": m for m in matches}
-        selected_match = st.selectbox("Select match to analyze:", list(match_options.keys()))
+    if gap_data and gap_data.get('unmatched_nodes'):
+        unmatched_nodes = gap_data['unmatched_nodes']
+        st.info(f"Found {len(unmatched_nodes)} unmatched node(s).")
 
-        if selected_match:
-            match = match_options[selected_match]
-            node_fact = match.get('node_fact', {})
-            pattern = match.get('pattern')
-            fact_json = node_fact.get('fact_json', {})
+        unmatched_table = [{
+            "Node Type": node.get('node_type'),
+            "Section Path": node.get('section_path'),
+            "Reason": "Not found in input XML"
+        } for node in unmatched_nodes]
 
-            # Match summary
-            st.write(f"**Match Verdict:** `{match['verdict']}` | **Confidence:** `{match.get('confidence', 0):.1%}`")
+        df_unmatched = pd.DataFrame(unmatched_table)
+        st.dataframe(df_unmatched, use_container_width=True, hide_index=True)
+    else:
+        st.success("✅ All expected nodes were found in the input XML.")
 
-            # Quick explanation
-            quick_explanation = match.get('quick_explanation', '')
-            if quick_explanation:
-                st.info(quick_explanation)
+    # Detailed match view
+    st.divider()
+    st.subheader("🔎 Match Details & Analysis")
 
-            # Detailed LLM Explanation button
-            match_id = match.get('match_id')
-            if match_id:
-                if st.button("🤖 Get Detailed AI Explanation", key=f"explain_{match_id}"):
-                    with st.spinner("Generating detailed explanation with AI..."):
-                        explanation_response = get_detailed_explanation(match_id)
-                        if explanation_response:
-                            detailed_explanation = explanation_response.get('detailed_explanation', '')
-                            is_cached = explanation_response.get('cached', False)
+    match_options = {f"{m['node_fact']['node_type']} @ {m['node_fact']['section_path']} - {m['verdict']} ({m.get('confidence', 0):.1%})": m for m in matches}
+    selected_match = st.selectbox("Select match to analyze:", list(match_options.keys()))
 
-                            cache_label = " (cached)" if is_cached else " (newly generated)"
-                            st.success(f"✨ AI Explanation{cache_label}")
-                            st.markdown(detailed_explanation)
-                        else:
-                            st.error("Failed to generate explanation. Please try again.")
+    if selected_match:
+        match = match_options[selected_match]
+        node_fact = match.get('node_fact', {})
+        pattern = match.get('pattern')
+        fact_json = node_fact.get('fact_json', {})
+
+        # Match summary
+        st.write(f"**Match Verdict:** `{match['verdict']}` | **Confidence:** `{match.get('confidence', 0):.1%}`")
+
+        # Quick explanation
+        quick_explanation = match.get('quick_explanation', '')
+        if quick_explanation:
+            st.info(quick_explanation)
+
+        # Detailed LLM Explanation button
+        match_id = match.get('match_id')
+        if match_id:
+            if st.button("🤖 Get Detailed AI Explanation", key=f"explain_{match_id}"):
+                with st.spinner("Generating detailed explanation with AI..."):
+                    explanation_response = get_detailed_explanation(match_id, workspace=workspace)
+                    if explanation_response:
+                        detailed_explanation = explanation_response.get('detailed_explanation', '')
+                        is_cached = explanation_response.get('cached', False)
+
+                        cache_label = " (cached)" if is_cached else " (newly generated)"
+                        st.success(f"✨ AI Explanation{cache_label}")
+                        st.markdown(detailed_explanation)
+                    else:
+                        st.error("Failed to generate explanation. Please try again.")
 
             if pattern:
                 decision_rule = pattern.get('decision_rule', {})
@@ -1866,25 +1920,120 @@ def show_patterns_page(embedded: bool = False):
         st.divider()
         st.subheader("🔎 Pattern Details")
 
+        # Show success message if pattern was just modified
+        if 'last_modification' in st.session_state:
+            mod = st.session_state.last_modification
+            st.success(f"✅ Pattern {mod['pattern_id']} was successfully modified!")
+            st.write(f"**Modification Summary:** {mod['modification_summary']}")
+
+            with st.expander("View Modification Details"):
+                st.write("**New Description:**")
+                st.info(mod['new_description'])
+                st.write("**New Decision Rule:**")
+                st.json(mod['new_decision_rule'])
+
+            # Clear the modification state after showing once
+            if st.button("Clear Notification"):
+                del st.session_state.last_modification
+                st.rerun()
+
         pattern_options = {f"ID {p['id']} - {p['section_path']} (seen {p['times_seen']}x)": p for p in patterns}
         selected_pattern = st.selectbox("Select pattern:", list(pattern_options.keys()))
 
         if selected_pattern:
             pattern = pattern_options[selected_pattern]
 
+            # Show business-friendly description
+            if pattern.get('description'):
+                st.info(f"📝 **Description:** {pattern['description']}")
+
             col1, col2 = st.columns(2)
 
             with col1:
                 st.write("**Pattern Info:**")
-                st.write(f"- **ID:** {pattern['id']}")
                 st.write(f"- **Section:** {pattern['section_path']}")
                 st.write(f"- **Version:** {pattern['spec_version']}")
                 st.write(f"- **Message:** {pattern['message_root']}")
-                st.write(f"- **Times Seen:** {pattern['times_seen']}")
+                if pattern.get('airline_code'):
+                    st.write(f"- **Airline:** {pattern['airline_code']}")
+                if pattern.get('description'):
+                    st.write(f"- **Description:** {pattern['description']}")
 
             with col2:
+                st.write("**Node Type:**")
+                node_type = pattern.get('decision_rule', {}).get('node_type', 'Unknown')
+                st.write(f"- **Type:** {node_type}")
+
+                # Show required attributes if available
+                must_have = pattern.get('decision_rule', {}).get('must_have_attributes', [])
+                if must_have:
+                    st.write(f"- **Required Attributes:** {', '.join(must_have[:5])}")
+                    if len(must_have) > 5:
+                        st.write(f"  _(and {len(must_have) - 5} more)_")
+
+            # Edit Pattern Section
+            st.divider()
+            st.subheader("✏️ Edit Pattern")
+            st.caption("Provide additional requirements to refine this pattern using LLM.")
+
+            additional_requirements = st.text_area(
+                "Additional Requirements:",
+                placeholder="e.g., 'Add validation for passenger age range', 'Include loyalty tier information', etc.",
+                help="Describe any modifications or additional requirements for this pattern. The LLM will update the business description and decision rule accordingly.",
+                key=f"pattern_requirements_{pattern['id']}"
+            )
+
+            col1, col2 = st.columns([1, 3])
+            with col1:
+                if st.button("🔄 Modify Pattern", type="primary", disabled=not additional_requirements):
+                    with st.spinner("🤖 LLM is modifying the pattern..."):
+                        try:
+                            # Prepare payload for LLM modification
+                            payload = {
+                                "pattern_id": pattern['id'],
+                                "current_description": pattern.get('description', ''),
+                                "current_decision_rule": pattern.get('decision_rule', {}),
+                                "additional_requirements": additional_requirements,
+                                "section_path": pattern['section_path'],
+                                "spec_version": pattern['spec_version'],
+                                "message_root": pattern['message_root']
+                            }
+
+                            # Call backend API to modify pattern
+                            response = requests.post(
+                                f"{API_BASE_URL}/patterns/{pattern['id']}/modify",
+                                json=payload,
+                                timeout=60
+                            )
+
+                            if response.status_code == 200:
+                                result = response.json()
+
+                                # Store the modification result in session state
+                                st.session_state.last_modification = {
+                                    'pattern_id': pattern['id'],
+                                    'new_description': result.get('new_description', 'N/A'),
+                                    'new_decision_rule': result.get('new_decision_rule', {}),
+                                    'modification_summary': result.get('modification_summary', 'N/A')
+                                }
+
+                                # Automatically reload to show updated data
+                                st.rerun()
+                            else:
+                                st.error(f"Failed to modify pattern: {response.text}")
+                        except Exception as e:
+                            st.error(f"Error modifying pattern: {str(e)}")
+
+            with col2:
+                if additional_requirements:
+                    st.caption(f"💡 {len(additional_requirements)} characters entered")
+
+            # Advanced details in expander (for technical users)
+            with st.expander("🔧 Technical Details (Advanced)"):
                 st.write("**Decision Rule:**")
                 st.json(pattern.get('decision_rule', {}))
+                st.write("**Pattern ID:**", pattern['id'])
+                st.write("**Signature Hash:**", pattern.get('signature_hash', 'N/A'))
     else:
         st.info("No patterns found. Run discovery on some XML files first!")
 
@@ -2825,6 +2974,21 @@ def render_sidebar() -> str:
 
     if selected_sidebar_workspace != active_workspace:
         st.session_state.current_workspace = selected_sidebar_workspace
+
+        # Clear workspace-specific session state when switching workspaces
+        # This prevents data from one workspace appearing in another
+        workspace_specific_keys = [
+            'analyzed_nodes',
+            'node_checked_paths_raw',
+            'node_checked_paths_effective',
+            'node_configs',
+            'discovery_selected_run',
+            'identify_current_run'
+        ]
+
+        for key in workspace_specific_keys:
+            st.session_state.pop(key, None)
+
         st.experimental_rerun()
 
     st.sidebar.markdown(

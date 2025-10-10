@@ -138,6 +138,7 @@ async def list_patterns(
                 section_path=p.section_path,
                 selector_xpath=p.selector_xpath,
                 decision_rule=p.decision_rule,
+                description=p.description,
                 signature_hash=p.signature_hash,
                 times_seen=p.times_seen,
                 created_by_model=p.created_by_model,
@@ -303,6 +304,197 @@ async def generate_patterns(
             },
             "errors": results.get('errors', [])
         }
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
+
+
+@router.post("/{pattern_id}/modify")
+async def modify_pattern(
+    pattern_id: int,
+    payload: dict,
+    workspace: str = Query("default", description="Workspace name")
+):
+    """
+    Modify a pattern using LLM based on additional requirements.
+
+    Takes current pattern description, decision rule, and additional requirements,
+    then uses LLM to generate updated description and decision rule.
+
+    - **pattern_id**: Pattern ID to modify
+    - **payload**: Contains current_description, current_decision_rule, additional_requirements, section_path, spec_version, message_root
+    """
+    from app.services.llm_extractor import get_llm_extractor
+    from app.core.config import settings
+    from openai import AzureOpenAI, OpenAI
+    from datetime import datetime
+    import json
+
+    logger.info("Modifying pattern with LLM", pattern_id=pattern_id, workspace=workspace)
+
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
+
+    try:
+        # Get the pattern from database
+        pattern = db.query(Pattern).filter(Pattern.id == pattern_id).first()
+
+        if not pattern:
+            raise HTTPException(status_code=404, detail=f"Pattern {pattern_id} not found")
+
+        # Extract payload data
+        current_description = payload.get('current_description', '')
+        current_decision_rule = payload.get('current_decision_rule', {})
+        additional_requirements = payload.get('additional_requirements', '')
+        section_path = payload.get('section_path', '')
+        spec_version = payload.get('spec_version', '')
+        message_root = payload.get('message_root', '')
+
+        # Get LLM client
+        llm_extractor = get_llm_extractor()
+        sync_client = None
+        model_name = settings.LLM_MODEL
+
+        if settings.LLM_PROVIDER == "azure" and settings.AZURE_OPENAI_KEY:
+            sync_client = AzureOpenAI(
+                api_key=settings.AZURE_OPENAI_KEY,
+                azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
+                api_version=settings.AZURE_API_VERSION
+            )
+            model_name = settings.MODEL_DEPLOYMENT_NAME
+        elif settings.OPENAI_API_KEY:
+            sync_client = OpenAI(api_key=settings.OPENAI_API_KEY)
+            model_name = settings.LLM_MODEL
+        elif llm_extractor.client:
+            sync_client = llm_extractor.client
+
+        if not sync_client:
+            raise HTTPException(status_code=503, detail="LLM client not available")
+
+        # Prepare LLM prompt
+        node_type = current_decision_rule.get('node_type', 'Unknown')
+        must_have_attrs = current_decision_rule.get('must_have_attributes', [])
+        optional_attrs = current_decision_rule.get('optional_attributes', [])
+        child_structure = current_decision_rule.get('child_structure', {})
+        reference_patterns = current_decision_rule.get('reference_patterns', [])
+
+        prompt = f"""You are an NDC XML pattern expert. You need to modify a pattern definition based on additional business requirements.
+
+**Current Pattern:**
+- Location: {section_path}
+- Node Type: {node_type}
+- Version: {spec_version} / {message_root}
+- Current Description: {current_description or 'Not provided'}
+
+**Current Decision Rule:**
+```json
+{json.dumps(current_decision_rule, indent=2)}
+```
+
+**Additional Requirements from User:**
+{additional_requirements}
+
+**Your Task:**
+1. Update the business description to reflect the additional requirements in simple, non-technical language
+2. Modify the decision rule to incorporate the new requirements:
+   - Add new required attributes if needed
+   - Update optional attributes
+   - Modify child structure if needed
+   - Add or update reference patterns
+   - Update business intelligence schema if applicable
+
+**Important Guidelines:**
+- Keep the node_type unchanged unless explicitly requested
+- Maintain backward compatibility when possible
+- Use clear, business-friendly language in the description
+- Ensure the decision rule is technically accurate for XML pattern matching
+
+**Output Format (JSON only, no additional text):**
+```json
+{{
+  "new_description": "Updated 1-2 sentence business description",
+  "new_decision_rule": {{
+    "node_type": "{node_type}",
+    "must_have_attributes": ["attr1", "attr2"],
+    "optional_attributes": ["opt1"],
+    "child_structure": {{}},
+    "reference_patterns": [],
+    "business_intelligence_schema": {{}}
+  }},
+  "modification_summary": "Brief summary of what was changed"
+}}
+```"""
+
+        # Call LLM
+        if hasattr(sync_client, "chat"):
+            response = sync_client.chat.completions.create(
+                model=model_name,
+                max_tokens=2000,
+                temperature=0.3,
+                messages=[{
+                    "role": "user",
+                    "content": prompt
+                }]
+            )
+            result_text = response.choices[0].message.content.strip()
+        else:
+            import asyncio
+
+            async def _async_call():
+                resp = await sync_client.chat.completions.create(
+                    model=model_name,
+                    max_tokens=2000,
+                    temperature=0.3,
+                    messages=[{
+                        "role": "user",
+                        "content": prompt
+                    }]
+                )
+                return resp.choices[0].message.content.strip()
+
+            result_text = asyncio.run(_async_call())
+
+        # Parse LLM response (extract JSON from markdown code blocks if present)
+        if "```json" in result_text:
+            result_text = result_text.split("```json")[1].split("```")[0].strip()
+        elif "```" in result_text:
+            result_text = result_text.split("```")[1].split("```")[0].strip()
+
+        result = json.loads(result_text)
+
+        new_description = result.get('new_description', current_description)
+        new_decision_rule = result.get('new_decision_rule', current_decision_rule)
+        modification_summary = result.get('modification_summary', 'Pattern modified via LLM')
+
+        # Update pattern in database
+        pattern.description = new_description
+        pattern.decision_rule = new_decision_rule
+        pattern.last_seen_at = datetime.utcnow()
+
+        # Add modification history to metadata (if examples field can be repurposed)
+        # Or we could add a modification_log field to the pattern
+        db.commit()
+
+        logger.info(f"Pattern {pattern_id} modified successfully", modification_summary=modification_summary)
+
+        return {
+            "success": True,
+            "pattern_id": pattern_id,
+            "new_description": new_description,
+            "new_decision_rule": new_decision_rule,
+            "modification_summary": modification_summary,
+            "updated_at": datetime.utcnow().isoformat()
+        }
+
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse LLM response: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to parse LLM response: {str(e)}")
+    except Exception as e:
+        logger.error(f"Failed to modify pattern: {e}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to modify pattern: {str(e)}")
     finally:
         try:
             next(db_generator)

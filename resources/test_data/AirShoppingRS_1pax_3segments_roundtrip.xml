@@ -1,0 +1,253 @@
+<IATA_AirShoppingRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<Response>
+		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<DatedMarketingSegmentList>
+				<!-- Outbound Segment 1: SEA -> ORD -->
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-20T18:45:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>ORD</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedMarketingSegmentId>seg-001</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>opseg-001</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-20T08:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>587</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+				<!-- Outbound Segment 2: ORD -> JFK (connection) -->
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-20T23:30:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>JFK</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedMarketingSegmentId>seg-002</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>opseg-002</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-20T20:15:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>ORD</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>318</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+				<!-- Return Segment: JFK -> SEA (direct) -->
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-27T14:20:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedMarketingSegmentId>seg-003</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>opseg-003</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-27T06:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>JFK</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>20</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+			</DatedMarketingSegmentList>
+			<DatedOperatingLegList>
+				<DatedOperatingLeg>
+					<AirlineTaxonomy>
+						<DescText>ECONOMY</DescText>
+						<TaxonomyFeature>
+							<CodesetCode>MEAL</CodesetCode>
+							<ValueText>M</ValueText>
+						</TaxonomyFeature>
+						<TaxonomyFeature>
+							<CodesetCode>AMENITY</CodesetCode>
+							<ValueText>Wi-Fi</ValueText>
+						</TaxonomyFeature>
+					</AirlineTaxonomy>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-20T18:45:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>ORD</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Boeing 737-900</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>opleg-001</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-20T08:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<DistanceMeasure UnitCode="MI">1715</DistanceMeasure>
+					<OnGroundDuration>PT3H45M</OnGroundDuration>
+				</DatedOperatingLeg>
+				<DatedOperatingLeg>
+					<AirlineTaxonomy>
+						<DescText>ECONOMY</DescText>
+						<TaxonomyFeature>
+							<CodesetCode>MEAL</CodesetCode>
+							<ValueText>S</ValueText>
+						</TaxonomyFeature>
+					</AirlineTaxonomy>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-20T23:30:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>JFK</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Boeing 737-900</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>opleg-002</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-20T20:15:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>ORD</IATA_LocationCode>
+					</Dep>
+					<DistanceMeasure UnitCode="MI">740</DistanceMeasure>
+					<OnGroundDuration>PT2H15M</OnGroundDuration>
+				</DatedOperatingLeg>
+				<DatedOperatingLeg>
+					<AirlineTaxonomy>
+						<DescText>ECONOMY</DescText>
+						<TaxonomyFeature>
+							<CodesetCode>MEAL</CodesetCode>
+							<ValueText>M</ValueText>
+						</TaxonomyFeature>
+						<TaxonomyFeature>
+							<CodesetCode>AMENITY</CodesetCode>
+							<ValueText>Wi-Fi</ValueText>
+						</TaxonomyFeature>
+						<TaxonomyFeature>
+							<CodesetCode>AMENITY</CodesetCode>
+							<ValueText>In-seat entertainment</ValueText>
+						</TaxonomyFeature>
+					</AirlineTaxonomy>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-27T14:20:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>321</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Airbus A321</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>opleg-003</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-27T06:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>JFK</IATA_LocationCode>
+					</Dep>
+					<DistanceMeasure UnitCode="MI">2421</DistanceMeasure>
+					<OnGroundDuration>PT5H20M</OnGroundDuration>
+				</DatedOperatingLeg>
+			</DatedOperatingLegList>
+			<DatedOperatingSegmentList>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedOperatingLegRefID>opleg-001</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>opseg-001</DatedOperatingSegmentId>
+					<Duration>PT3H45M</Duration>
+					<OperatingCarrierFlightNumberText>587</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedOperatingLegRefID>opleg-002</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>opseg-002</DatedOperatingSegmentId>
+					<Duration>PT2H15M</Duration>
+					<OperatingCarrierFlightNumberText>318</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedOperatingLegRefID>opleg-003</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>opseg-003</DatedOperatingSegmentId>
+					<Duration>PT5H20M</Duration>
+					<OperatingCarrierFlightNumberText>20</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+			</DatedOperatingSegmentList>
+			<OriginDestList>
+				<!-- Outbound Journey OD -->
+				<OriginDest>
+					<DestCode>JFK</DestCode>
+					<OriginCode>SEA</OriginCode>
+					<OriginDestID>od-001</OriginDestID>
+					<PaxJourneyRefID>journey-001</PaxJourneyRefID>
+				</OriginDest>
+				<!-- Return Journey OD -->
+				<OriginDest>
+					<DestCode>SEA</DestCode>
+					<OriginCode>JFK</OriginCode>
+					<OriginDestID>od-002</OriginDestID>
+					<PaxJourneyRefID>journey-002</PaxJourneyRefID>
+				</OriginDest>
+			</OriginDestList>
+			<PaxJourneyList>
+				<!-- Outbound Journey: SEA -> ORD -> JFK -->
+				<PaxJourney>
+					<DistanceMeasure UnitCode="MI">2455</DistanceMeasure>
+					<Duration>PT9H30M</Duration>
+					<PaxJourneyID>journey-001</PaxJourneyID>
+					<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
+					<PaxSegmentRefID>paxseg-002</PaxSegmentRefID>
+				</PaxJourney>
+				<!-- Return Journey: JFK -> SEA -->
+				<PaxJourney>
+					<DistanceMeasure UnitCode="MI">2421</DistanceMeasure>
+					<Duration>PT5H20M</Duration>
+					<PaxJourneyID>journey-002</PaxJourneyID>
+					<PaxSegmentRefID>paxseg-003</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<Pax>
+					<PaxID>PAX-001</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<DatedMarketingSegmentRefId>seg-001</DatedMarketingSegmentRefId>
+					<PaxSegmentID>paxseg-001</PaxSegmentID>
+				</PaxSegment>
+				<PaxSegment>
+					<DatedMarketingSegmentRefId>seg-002</DatedMarketingSegmentRefId>
+					<PaxSegmentID>paxseg-002</PaxSegmentID>
+				</PaxSegment>
+				<PaxSegment>
+					<DatedMarketingSegmentRefId>seg-003</DatedMarketingSegmentRefId>
+					<PaxSegmentID>paxseg-003</PaxSegmentID>
+				</PaxSegment>
+			</PaxSegmentList>
+		</DataLists>
+		<OffersGroup xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<CarrierOffers>
+				<Offer>
+					<OfferID>OFFER-RT-001</OfferID>
+					<OfferItem>
+						<FareDetail>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>2</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<FareBasisCode>KL0WSEA</FareBasisCode>
+								<FareTypeCode>FR</FareTypeCode>
+								<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
+								<PaxSegmentRefID>paxseg-002</PaxSegmentRefID>
+								<PaxSegmentRefID>paxseg-003</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>K</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<PaxRefID>PAX-001</PaxRefID>
+						</FareDetail>
+						<OfferItemID>ITEM-RT-001</OfferItemID>
+						<Price>
+							<TotalAmount CurCode="USD">487.50</TotalAmount>
+						</Price>
+					</OfferItem>
+					<OwnerCode>AS</OwnerCode>
+					<TotalPrice>
+						<TotalAmount CurCode="USD">487.50</TotalAmount>
+					</TotalPrice>
+				</Offer>
+			</CarrierOffers>
+		</OffersGroup>
+	</Response>
+	<PayloadAttributes>
+		<CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">test-corr-002</CorrelationID>
+		<VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">21.3</VersionNumber>
+	</PayloadAttributes>
+</IATA_AirShoppingRS>

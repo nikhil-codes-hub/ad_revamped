@@ -333,15 +333,26 @@ class PatternGenerator:
             model_name = settings.LLM_MODEL
 
             if settings.LLM_PROVIDER == "azure" and settings.AZURE_OPENAI_KEY:
+                # Create httpx client with increased timeouts
+                http_client = httpx.Client(
+                    timeout=httpx.Timeout(60.0, connect=10.0),
+                    limits=httpx.Limits(max_keepalive_connections=10, max_connections=20),
+                    follow_redirects=True,
+                    verify=False  # Disable SSL verification for corporate proxies
+                )
+
                 sync_client = AzureOpenAI(
                     api_key=settings.AZURE_OPENAI_KEY,
                     azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
-                    api_version=settings.AZURE_API_VERSION
+                    api_version=settings.AZURE_API_VERSION,
+                    http_client=http_client
                 )
                 model_name = settings.MODEL_DEPLOYMENT_NAME
+                logger.debug("Using Azure OpenAI for description generation")
             elif settings.OPENAI_API_KEY:
                 sync_client = OpenAI(api_key=settings.OPENAI_API_KEY)
                 model_name = settings.LLM_MODEL
+                logger.debug("Using OpenAI for description generation")
             elif llm_extractor.client:
                 sync_client = llm_extractor.client
 
@@ -354,16 +365,22 @@ class PatternGenerator:
             child_structure = decision_rule.get('child_structure', {})
             reference_patterns = decision_rule.get('reference_patterns', [])
 
-            prompt = f"""Generate a concise 1-2 sentence description of this XML node pattern for business analysts.
+            prompt = f"""You are explaining an NDC XML structure to non-technical business analysts. Generate a clear, simple description in plain English.
 
 Node Type: {node_type}
-Section Path: {section_path}
+Location: {section_path}
 Required Attributes: {', '.join(must_have) if must_have else 'None'}
-Has Children: {child_structure.get('has_children', False)}
-Child Types: {', '.join(child_structure.get('child_types', [])) if child_structure.get('child_types') else 'None'}
-Reference Types: {', '.join([p.get('type', '') for p in reference_patterns]) if reference_patterns else 'None'}
+Contains Children: {'Yes' if child_structure.get('has_children', False) else 'No'}
+Child Elements: {', '.join(child_structure.get('child_types', [])) if child_structure.get('child_types') else 'None'}
+References: {', '.join([p.get('type', '') for p in reference_patterns]) if reference_patterns else 'None'}
 
-Description (1-2 sentences, focus on business purpose):"""
+Instructions:
+- Write 1-2 sentences maximum
+- Use simple business language (avoid technical XML terms)
+- Explain WHAT this data represents and WHY it matters
+- Focus on the business meaning (e.g., "passenger information", "flight details", "pricing data")
+
+Business Description:"""
 
             if hasattr(sync_client, "chat"):
                 response = sync_client.chat.completions.create(
@@ -393,11 +410,13 @@ Description (1-2 sentences, focus on business purpose):"""
 
                 description = asyncio.run(_async_call())
 
-            logger.debug(f"Generated description for {node_type}: {description}")
+            logger.info(f"Generated description for {node_type}: {description}")
             return description
 
         except Exception as e:
             logger.warning(f"Failed to generate pattern description: {e}")
+            import traceback
+            logger.warning(f"Description generation traceback: {traceback.format_exc()}")
             return None
 
     def find_or_create_pattern(self,
@@ -440,6 +459,11 @@ Description (1-2 sentences, focus on business purpose):"""
                 'timestamp': datetime.utcnow().isoformat()
             })
             existing.examples = examples[-5:]  # Keep last 5 examples
+
+            # Generate description if missing (for patterns created before this feature)
+            if not existing.description:
+                logger.info(f"Generating missing description for pattern {existing.id}")
+                existing.description = self._generate_pattern_description(decision_rule, section_path)
 
             logger.info(f"Updated existing pattern {existing.id}: {signature_hash} "
                        f"(times_seen: {existing.times_seen})")

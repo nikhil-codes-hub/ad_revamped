@@ -1,0 +1,185 @@
+<IATA_AirShoppingRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<Response>
+		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<DatedMarketingSegmentList>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-22T16:35:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>MIA</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedMarketingSegmentId>seg-001</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>opseg-001</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-22T09:15:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>45</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+			</DatedMarketingSegmentList>
+			<DatedOperatingLegList>
+				<DatedOperatingLeg>
+					<AirlineTaxonomy>
+						<DescText>ECONOMY</DescText>
+						<TaxonomyFeature>
+							<CodesetCode>MEAL</CodesetCode>
+							<ValueText>M</ValueText>
+						</TaxonomyFeature>
+						<TaxonomyFeature>
+							<CodesetCode>AMENITY</CodesetCode>
+							<ValueText>Wi-Fi</ValueText>
+						</TaxonomyFeature>
+						<TaxonomyFeature>
+							<CodesetCode>AMENITY</CodesetCode>
+							<ValueText>In-seat entertainment</ValueText>
+						</TaxonomyFeature>
+					</AirlineTaxonomy>
+					<Arrival>
+						<AircraftScheduledDateTime>2024-12-22T16:35:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>MIA</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Boeing 737-900</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>opleg-001</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2024-12-22T09:15:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<DistanceMeasure UnitCode="MI">2724</DistanceMeasure>
+					<OnGroundDuration>PT5H20M</OnGroundDuration>
+				</DatedOperatingLeg>
+			</DatedOperatingLegList>
+			<DatedOperatingSegmentList>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedOperatingLegRefID>opleg-001</DatedOperatingLegRefID>
+					<DatedOperatingSegmentId>opseg-001</DatedOperatingSegmentId>
+					<Duration>PT5H20M</Duration>
+					<OperatingCarrierFlightNumberText>45</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+			</DatedOperatingSegmentList>
+			<OriginDestList>
+				<OriginDest>
+					<DestCode>MIA</DestCode>
+					<OriginCode>SEA</OriginCode>
+					<OriginDestID>od-001</OriginDestID>
+					<PaxJourneyRefID>journey-001</PaxJourneyRefID>
+				</OriginDest>
+			</OriginDestList>
+			<PaxJourneyList>
+				<PaxJourney>
+					<DistanceMeasure UnitCode="MI">2724</DistanceMeasure>
+					<Duration>PT5H20M</Duration>
+					<PaxJourneyID>journey-001</PaxJourneyID>
+					<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<!-- Adult Passenger 1 -->
+				<Pax>
+					<PaxID>PAX-001</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+				<!-- Adult Passenger 2 -->
+				<Pax>
+					<PaxID>PAX-002</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+				<!-- Child Passenger -->
+				<Pax>
+					<PaxID>PAX-003</PaxID>
+					<PTC>CHD</PTC>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<DatedMarketingSegmentRefId>seg-001</DatedMarketingSegmentRefId>
+					<PaxSegmentID>paxseg-001</PaxSegmentID>
+				</PaxSegment>
+			</PaxSegmentList>
+		</DataLists>
+		<OffersGroup xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<CarrierOffers>
+				<Offer>
+					<OfferID>OFFER-3PAX-001</OfferID>
+					<!-- Offer Item for Adult 1 -->
+					<OfferItem>
+						<FareDetail>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>2</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<FareBasisCode>HL0WSEA</FareBasisCode>
+								<FareTypeCode>FR</FareTypeCode>
+								<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>H</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<PaxRefID>PAX-001</PaxRefID>
+						</FareDetail>
+						<OfferItemID>ITEM-001</OfferItemID>
+						<Price>
+							<TotalAmount CurCode="USD">425.00</TotalAmount>
+						</Price>
+					</OfferItem>
+					<!-- Offer Item for Adult 2 -->
+					<OfferItem>
+						<FareDetail>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>2</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<FareBasisCode>HL0WSEA</FareBasisCode>
+								<FareTypeCode>FR</FareTypeCode>
+								<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>H</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<PaxRefID>PAX-002</PaxRefID>
+						</FareDetail>
+						<OfferItemID>ITEM-002</OfferItemID>
+						<Price>
+							<TotalAmount CurCode="USD">425.00</TotalAmount>
+						</Price>
+					</OfferItem>
+					<!-- Offer Item for Child -->
+					<OfferItem>
+						<FareDetail>
+							<FareComponent>
+								<CabinType>
+									<CabinTypeCode>2</CabinTypeCode>
+									<CabinTypeName>ECONOMY</CabinTypeName>
+								</CabinType>
+								<FareBasisCode>HL0WSCHD</FareBasisCode>
+								<FareTypeCode>FR</FareTypeCode>
+								<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
+								<RBD>
+									<RBD_Code>H</RBD_Code>
+								</RBD>
+							</FareComponent>
+							<PaxRefID>PAX-003</PaxRefID>
+						</FareDetail>
+						<OfferItemID>ITEM-003</OfferItemID>
+						<Price>
+							<TotalAmount CurCode="USD">340.00</TotalAmount>
+						</Price>
+					</OfferItem>
+					<OwnerCode>AS</OwnerCode>
+					<TotalPrice>
+						<TotalAmount CurCode="USD">1190.00</TotalAmount>
+					</TotalPrice>
+				</Offer>
+			</CarrierOffers>
+		</OffersGroup>
+	</Response>
+	<PayloadAttributes>
+		<CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">test-corr-003</CorrelationID>
+		<VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">21.3</VersionNumber>
+	</PayloadAttributes>
+</IATA_AirShoppingRS>
