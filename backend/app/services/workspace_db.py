@@ -25,6 +25,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.models.database import Base
 from app.core.config import settings
+from app.models.database import PatternMatch
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +74,9 @@ class WorkspaceSessionFactory:
 
         # Fix SQLite AUTOINCREMENT for primary keys
         self._fix_sqlite_autoincrement()
+
+        # Ensure pattern_matches.pattern_id allows NULL for unmatched nodes
+        self._ensure_pattern_match_nullable()
 
         # Create session factory
         self.SessionLocal = sessionmaker(
@@ -200,6 +204,41 @@ class WorkspaceSessionFactory:
                 logger.info(f"Successfully updated table definition for {table_name}")
 
             conn.execute(text("PRAGMA foreign_keys=ON"))
+
+    def _ensure_pattern_match_nullable(self):
+        """Ensure pattern_matches.pattern_id column allows NULL values."""
+        from sqlalchemy import inspect, text
+
+        inspector = inspect(self.engine)
+        if "pattern_matches" not in inspector.get_table_names():
+            return
+
+        with self.engine.connect() as conn:
+            info = conn.execute(text("PRAGMA table_info(pattern_matches)")).fetchall()
+            pattern_column = next((row for row in info if row[1] == "pattern_id"), None)
+
+            if not pattern_column:
+                return
+
+            not_null = pattern_column[3] == 1  # PRAGMA table_info: 3rd index is notnull flag
+            if not_null:
+                logger.info("Updating pattern_matches table to allow NULL pattern_id values")
+                conn.execute(text("PRAGMA foreign_keys=OFF"))
+                conn.execute(text("ALTER TABLE pattern_matches RENAME TO pattern_matches_old"))
+
+                # Recreate table using SQLAlchemy metadata (now nullable=True)
+                PatternMatch.__table__.create(bind=self.engine, checkfirst=False)
+
+                # Copy data back
+                conn.execute(text(
+                    "INSERT INTO pattern_matches (id, run_id, node_fact_id, pattern_id, confidence, verdict, match_metadata, created_at) "
+                    "SELECT id, run_id, node_fact_id, pattern_id, confidence, verdict, match_metadata, created_at "
+                    "FROM pattern_matches_old"
+                ))
+
+                conn.execute(text("DROP TABLE pattern_matches_old"))
+                conn.execute(text("PRAGMA foreign_keys=ON"))
+                conn.commit()
 
     def get_session(self) -> Session:
         """Get a new database session."""

@@ -266,7 +266,7 @@ class PatternMatch(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     run_id = Column(String(50), ForeignKey("runs.id", ondelete="CASCADE"), nullable=False)
     node_fact_id = Column(BigInteger, ForeignKey("node_facts.id", ondelete="CASCADE"), nullable=False)
-    pattern_id = Column(BigInteger, ForeignKey("patterns.id", ondelete="CASCADE"), nullable=False)
+    pattern_id = Column(BigInteger, ForeignKey("patterns.id", ondelete="CASCADE"), nullable=True)
     confidence = Column(DECIMAL(4, 3), nullable=False, comment="Confidence score 0.000-1.000")
     verdict = Column(String(20), nullable=False, comment="Classification verdict")
     match_metadata = Column(JSON, comment="Additional matching details and scores")
