@@ -184,14 +184,16 @@ async def get_gap_analysis(
         # First identify required nodes that never appeared in the XML
         unmatched_nodes_map = {}
 
+        def _normalize_path(path_value: Optional[str]) -> str:
+            if not path_value:
+                return ""
+            normalized = normalize_iata_prefix(path_value.strip("/"), run.message_root or "")
+            return normalized.strip("/").lower()
+
+        expected_configs = {}
+
         try:
             from sqlalchemy import or_
-
-            def _normalize_path(path_value: str) -> str:
-                if not path_value:
-                    return ""
-                normalized = normalize_iata_prefix(path_value.strip("/"), run.message_root or "")
-                return normalized.strip("/").lower()
 
             config_query = db.query(NodeConfiguration).filter(
                 NodeConfiguration.enabled == True,
@@ -209,7 +211,6 @@ async def get_gap_analysis(
             else:
                 config_query = config_query.filter(NodeConfiguration.airline_code.is_(None))
 
-            expected_configs = {}
             for config in config_query.all():
                 normalized_path = _normalize_path(config.section_path)
                 if not normalized_path:
@@ -249,7 +250,8 @@ async def get_gap_analysis(
                         "verdict": "NO_DATA",
                         "confidence": None,
                         "pattern_section": None,
-                        "quick_explanation": "Expected node was not found in the uploaded XML."
+                        "quick_explanation": "Expected node was not found in the uploaded XML.",
+                        "actual_node_type": None
                     }
         except Exception as missing_error:
             logger.warning(f"Could not compute missing nodes for run {run_id}: {missing_error}")
@@ -278,7 +280,10 @@ async def get_gap_analysis(
             if not node_fact:
                 continue
 
-            key = (node_fact.section_path, node_fact.node_type)
+            normalized_section = _normalize_path(node_fact.section_path)
+            expected_config = expected_configs.get(normalized_section)
+
+            key = (node_fact.section_path, expected_config["node_type"] if expected_config else node_fact.node_type)
             existing_entry = unmatched_nodes_map.get(key)
 
             current_severity = severity_order.get(verdict, 1 if is_low_confidence else 0)
@@ -287,15 +292,19 @@ async def get_gap_analysis(
             if existing_entry and existing_severity >= current_severity:
                 continue
 
+            expected_node_type = expected_config["node_type"] if expected_config else node_fact.node_type
+            expected_section_path = expected_config["section_path"] if expected_config else node_fact.section_path
+
             unmatched_nodes_map[key] = {
-                "node_type": node_fact.node_type,
-                "section_path": node_fact.section_path,
+                "node_type": expected_node_type,
+                "section_path": expected_section_path,
                 "reason": "low_confidence" if not is_negative_verdict else "mismatch",
                 "airline_code": match.pattern.airline_code if match.pattern else None,
                 "verdict": verdict or ("LOW_MATCH" if is_low_confidence else "UNKNOWN"),
                 "confidence": round(confidence_value, 3),
                 "pattern_section": match.pattern.section_path if match.pattern else None,
-                "quick_explanation": (match.match_metadata or {}).get("quick_explanation")
+                "quick_explanation": (match.match_metadata or {}).get("quick_explanation"),
+                "actual_node_type": node_fact.node_type
             }
 
         unmatched_nodes = sorted(unmatched_nodes_map.values(), key=lambda item: item["section_path"])

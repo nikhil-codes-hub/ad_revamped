@@ -7,6 +7,7 @@ Implements Phase 3: Pattern Identification.
 
 import logging
 import uuid
+import json
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 from pathlib import Path
@@ -33,6 +34,24 @@ class IdentifyWorkflow:
         self.discovery = DiscoveryWorkflow(db_session)
         self.pattern_gen = PatternGenerator(db_session)
 
+    @staticmethod
+    def _normalize_node_type(node_type: Optional[str]) -> str:
+        """Normalize node type names for flexible matching and comparison."""
+        if not node_type:
+            return ""
+
+        nt = node_type.lower()
+
+        # Only normalize explicit synonyms; keep other types distinct
+        if nt in {'paxlist', 'passengerlist'}:
+            return 'pax_list'
+        if nt in {'paxjourneylist', 'passengerjourneylist'}:
+            return 'pax_journey_list'
+        if nt in {'paxsegmentlist', 'passengersegmentlist'}:
+            return 'pax_segment_list'
+
+        return nt
+
     def calculate_pattern_similarity(self,
                                      node_fact_structure: Dict[str, Any],
                                      pattern_decision_rule: Dict[str, Any]) -> float:
@@ -50,26 +69,8 @@ class IdentifyWorkflow:
         weight_node_type = 0.3
         total_weight += weight_node_type
 
-        def normalize_node_type(node_type):
-            """Normalize node type names for flexible matching."""
-            if not node_type:
-                return ""
-            nt = node_type.lower()
-
-            # Only normalize exact synonyms, preserve specific types
-            # PaxList and PassengerList are the same
-            # But PaxJourneyList is different from PaxList!
-            if nt in ['paxlist', 'passengerlist']:
-                return 'pax_list'
-            elif nt in ['paxjourneylist', 'passengerjourneylist']:
-                return 'pax_journey_list'
-            elif nt in ['paxsegmentlist', 'passengersegmentlist']:
-                return 'pax_segment_list'
-
-            return nt
-
-        pattern_node = normalize_node_type(pattern_decision_rule.get('node_type'))
-        fact_node = normalize_node_type(node_fact_structure.get('node_type'))
+        pattern_node = self._normalize_node_type(pattern_decision_rule.get('node_type'))
+        fact_node = self._normalize_node_type(node_fact_structure.get('node_type'))
 
         node_type_matches = (pattern_node == fact_node) or \
                            (node_fact_structure.get('node_type') == pattern_decision_rule.get('node_type'))
@@ -261,11 +262,33 @@ class IdentifyWorkflow:
 
         matches = []
 
+        fact_structure = node_fact.fact_json
+        if isinstance(fact_structure, str):
+            try:
+                fact_structure = json.loads(fact_structure)
+            except json.JSONDecodeError:
+                logger.warning("Failed to decode NodeFact fact_json for node %s", node_fact.id)
+                fact_structure = {}
+
+        fact_node_normalized = self._normalize_node_type(
+            fact_structure.get('node_type') or node_fact.node_type
+        )
+
         for pattern in patterns:
+            pattern_decision_rule = pattern.decision_rule or {}
+
+            pattern_node_normalized = self._normalize_node_type(
+                pattern_decision_rule.get('node_type')
+            )
+
+            # Skip patterns with incompatible node types to avoid unrelated matches
+            if fact_node_normalized and pattern_node_normalized and fact_node_normalized != pattern_node_normalized:
+                continue
+
             # Calculate similarity
             confidence = self.calculate_pattern_similarity(
-                node_fact.fact_json,
-                pattern.decision_rule
+                fact_structure,
+                pattern_decision_rule
             )
 
             # Apply penalty for broken relationships (NEGATIVE SCENARIO DETECTION!)

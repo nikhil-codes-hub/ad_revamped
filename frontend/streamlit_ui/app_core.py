@@ -1415,20 +1415,26 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
             reason = node.get('reason')
             verdict = node.get('verdict')
             confidence = node.get('confidence')
+            actual_type = node.get('actual_node_type')
 
             if reason == "missing":
                 return "Not found in input XML"
             if reason == "mismatch":
                 verdict_label = verdict or "NO_MATCH"
+                if actual_type and actual_type != node.get('node_type'):
+                    return f"{verdict_label} (actual: {actual_type})"
                 return f"{verdict_label} against expected pattern"
             if reason == "low_confidence":
                 pct = f"{confidence * 100:.1f}%" if isinstance(confidence, (float, int)) else "n/a"
                 verdict_label = verdict or "LOW_MATCH"
+                if actual_type and actual_type != node.get('node_type'):
+                    return f"Low confidence ({pct}) - verdict {verdict_label} (actual: {actual_type})"
                 return f"Low confidence ({pct}) - verdict {verdict_label}"
             return "Review required"
 
         unmatched_table = [{
             "Node Type": node.get('node_type'),
+            "Actual Node Type": node.get('actual_node_type') or "N/A",
             "Section Path": node.get('section_path'),
             "Reason": describe_reason(node),
             "Expected Pattern": node.get('pattern_section') or "N/A"
