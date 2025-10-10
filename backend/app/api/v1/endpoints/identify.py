@@ -15,7 +15,9 @@ from app.models.database import (
     Pattern,
     RunKind,
     NodeRelationship,
+    NodeConfiguration,
 )
+from app.services.utils import normalize_iata_prefix
 from app.services.llm_extractor import get_llm_extractor
 import logging
 
@@ -179,9 +181,80 @@ async def get_gap_analysis(
         match_rate = (matched_count / total_facts * 100) if total_facts > 0 else 0
         high_confidence_rate = (high_confidence_count / total_facts * 100) if total_facts > 0 else 0
 
-        # Collect nodes that failed to match confidently (confidence < 0.70 or explicit negative verdicts)
+        # First identify required nodes that never appeared in the XML
         unmatched_nodes_map = {}
 
+        try:
+            from sqlalchemy import or_
+
+            def _normalize_path(path_value: str) -> str:
+                if not path_value:
+                    return ""
+                normalized = normalize_iata_prefix(path_value.strip("/"), run.message_root or "")
+                return normalized.strip("/").lower()
+
+            config_query = db.query(NodeConfiguration).filter(
+                NodeConfiguration.enabled == True,
+                NodeConfiguration.spec_version == run.spec_version,
+                NodeConfiguration.message_root == run.message_root
+            )
+
+            if run.airline_code:
+                config_query = config_query.filter(
+                    or_(
+                        NodeConfiguration.airline_code == run.airline_code,
+                        NodeConfiguration.airline_code.is_(None)
+                    )
+                )
+            else:
+                config_query = config_query.filter(NodeConfiguration.airline_code.is_(None))
+
+            expected_configs = {}
+            for config in config_query.all():
+                normalized_path = _normalize_path(config.section_path)
+                if not normalized_path:
+                    continue
+
+                existing = expected_configs.get(normalized_path)
+                is_airline_specific = bool(config.airline_code and run.airline_code and config.airline_code == run.airline_code)
+
+                if existing:
+                    # Prefer airline-specific expectation if available
+                    if existing.get("airline_specific"):
+                        continue
+                    if not is_airline_specific:
+                        continue
+
+                expected_configs[normalized_path] = {
+                    "node_type": config.node_type,
+                    "section_path": "/" + normalize_iata_prefix(config.section_path.strip("/"), run.message_root or ""),
+                    "airline_specific": is_airline_specific,
+                    "airline_code": config.airline_code
+                }
+
+            observed_paths = {
+                _normalize_path(section_path)
+                for (section_path,) in db.query(NodeFact.section_path).filter(NodeFact.run_id == run_id).all()
+                if section_path
+            }
+
+            for normalized_path, config_info in expected_configs.items():
+                if normalized_path not in observed_paths:
+                    key = (config_info["section_path"], config_info["node_type"])
+                    unmatched_nodes_map[key] = {
+                        "node_type": config_info["node_type"],
+                        "section_path": config_info["section_path"],
+                        "reason": "missing",
+                        "airline_code": config_info["airline_code"],
+                        "verdict": "NO_DATA",
+                        "confidence": None,
+                        "pattern_section": None,
+                        "quick_explanation": "Expected node was not found in the uploaded XML."
+                    }
+        except Exception as missing_error:
+            logger.warning(f"Could not compute missing nodes for run {run_id}: {missing_error}")
+
+        # Next, capture nodes that were present but failed to match confidently
         severity_order = {
             "NEW_PATTERN": 3,
             "NO_MATCH": 2,
@@ -208,7 +281,6 @@ async def get_gap_analysis(
             key = (node_fact.section_path, node_fact.node_type)
             existing_entry = unmatched_nodes_map.get(key)
 
-            # Prefer the most severe verdict for the same node
             current_severity = severity_order.get(verdict, 1 if is_low_confidence else 0)
             existing_severity = severity_order.get(existing_entry["verdict"], -1) if existing_entry else -1
 
@@ -218,7 +290,9 @@ async def get_gap_analysis(
             unmatched_nodes_map[key] = {
                 "node_type": node_fact.node_type,
                 "section_path": node_fact.section_path,
-                "verdict": verdict,
+                "reason": "low_confidence" if not is_negative_verdict else "mismatch",
+                "airline_code": match.pattern.airline_code if match.pattern else None,
+                "verdict": verdict or ("LOW_MATCH" if is_low_confidence else "UNKNOWN"),
                 "confidence": round(confidence_value, 3),
                 "pattern_section": match.pattern.section_path if match.pattern else None,
                 "quick_explanation": (match.match_metadata or {}).get("quick_explanation")

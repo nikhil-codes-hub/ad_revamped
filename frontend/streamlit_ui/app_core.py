@@ -1409,12 +1409,29 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
 
     if gap_data and gap_data.get('unmatched_nodes'):
         unmatched_nodes = gap_data['unmatched_nodes']
-        st.info(f"Found {len(unmatched_nodes)} unmatched node(s).")
+        st.info(f"Found {len(unmatched_nodes)} issue(s) requiring review.")
+
+        def describe_reason(node: Dict[str, Any]) -> str:
+            reason = node.get('reason')
+            verdict = node.get('verdict')
+            confidence = node.get('confidence')
+
+            if reason == "missing":
+                return "Not found in input XML"
+            if reason == "mismatch":
+                verdict_label = verdict or "NO_MATCH"
+                return f"{verdict_label} against expected pattern"
+            if reason == "low_confidence":
+                pct = f"{confidence * 100:.1f}%" if isinstance(confidence, (float, int)) else "n/a"
+                verdict_label = verdict or "LOW_MATCH"
+                return f"Low confidence ({pct}) - verdict {verdict_label}"
+            return "Review required"
 
         unmatched_table = [{
             "Node Type": node.get('node_type'),
             "Section Path": node.get('section_path'),
-            "Reason": "Not found in input XML"
+            "Reason": describe_reason(node),
+            "Expected Pattern": node.get('pattern_section') or "N/A"
         } for node in unmatched_nodes]
 
         df_unmatched = pd.DataFrame(unmatched_table)
