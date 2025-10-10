@@ -310,7 +310,7 @@ def upload_file_for_run(file, run_kind: str, workspace: str = "default", target_
             f"{API_BASE_URL}/runs/",
             files=files,
             params=params,
-            timeout=300
+            timeout=600  # Increased to 10 minutes for large XML files with many nodes
         )
 
         if response.status_code == 200:
@@ -342,8 +342,16 @@ def upload_file_for_run(file, run_kind: str, workspace: str = "default", target_
             return None
 
     except requests.exceptions.Timeout:
-        st.error(f"❌ **Request Timeout**: The server took too long to respond")
-        st.info("💡 The XML file might be too large. Try with a smaller file.")
+        st.error(f"❌ **Request Timeout**: The server took too long to respond (> 10 minutes)")
+        st.warning("**This happens when:**")
+        st.write("- Too many nodes are selected for extraction in Node Manager")
+        st.write("- Large XML file with complex structure")
+        st.write("- LLM API is responding slowly")
+        st.info("💡 **Solutions:**")
+        st.write("1. **Best**: Go to Node Manager and select only specific nodes you need")
+        st.write("2. Try with a smaller XML file first")
+        st.write("3. Check if backend logs show progress (it might still be processing)")
+        st.write("4. Restart the backend and try again")
         return None
 
     except requests.exceptions.ConnectionError as e:
