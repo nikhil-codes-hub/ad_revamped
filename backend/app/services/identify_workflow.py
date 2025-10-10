@@ -21,6 +21,7 @@ from app.services.xml_parser import detect_ndc_version_fast
 from app.services.discovery_workflow import DiscoveryWorkflow
 from app.services.pattern_generator import PatternGenerator
 from app.services.llm_extractor import get_llm_extractor
+from app.services.utils import normalize_iata_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -273,6 +274,10 @@ class IdentifyWorkflow:
         fact_node_normalized = self._normalize_node_type(
             fact_structure.get('node_type') or node_fact.node_type
         )
+        fact_section_normalized = normalize_iata_prefix(
+            (node_fact.section_path or "").strip("/"),
+            message_root or ""
+        ).strip("/").lower()
 
         for pattern in patterns:
             pattern_decision_rule = pattern.decision_rule or {}
@@ -281,15 +286,30 @@ class IdentifyWorkflow:
                 pattern_decision_rule.get('node_type')
             )
 
+            node_type_override = False
+
             # Skip patterns with incompatible node types to avoid unrelated matches
             if fact_node_normalized and pattern_node_normalized and fact_node_normalized != pattern_node_normalized:
-                continue
+                pattern_section_normalized = normalize_iata_prefix(
+                    (pattern.section_path or "").strip("/"),
+                    message_root or ""
+                ).strip("/").lower()
+
+                # Allow mismatched node types when section path is identical (signals structural differences)
+                if pattern_section_normalized and pattern_section_normalized == fact_section_normalized:
+                    node_type_override = True
+                else:
+                    continue
 
             # Calculate similarity
             confidence = self.calculate_pattern_similarity(
                 fact_structure,
                 pattern_decision_rule
             )
+
+            if node_type_override:
+                # Ensure mismatch-driven comparisons remain low confidence
+                confidence = min(confidence, 0.4)
 
             # Apply penalty for broken relationships (NEGATIVE SCENARIO DETECTION!)
             if broken_count > 0:

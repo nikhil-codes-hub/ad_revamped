@@ -212,7 +212,11 @@ class TemplateExtractorEngine:
     def _extract_passenger(self, element: Element, section_path: str) -> List[NodeFact]:
         """Extract passenger information."""
         facts = []
-        passengers = element.findall(".//Passenger")
+        passengers = []
+        for candidate in element.iter():
+            local_name = candidate.tag.split('}')[-1] if '}' in candidate.tag else candidate.tag
+            if local_name in {"Passenger", "Pax"}:
+                passengers.append(candidate)
 
         for idx, pax_elem in enumerate(passengers):
             fact = NodeFact(
@@ -222,36 +226,75 @@ class TemplateExtractorEngine:
             )
 
             # Extract passenger ID
-            id_elem = pax_elem.find(".//PassengerID")
+            id_elem = None
+            for child in pax_elem.iter():
+                if child is pax_elem:
+                    continue
+                local_name = child.tag.split('}')[-1] if '}' in child.tag else child.tag
+                if local_name in {"PassengerID", "PaxID"}:
+                    id_elem = child
+                    break
             if id_elem is not None and id_elem.text:
                 fact.attributes["passenger_id"] = id_elem.text.strip()
 
             # Extract name information
-            given_name = pax_elem.find(".//GivenName")
+            given_name = None
+            surname = None
+            for child in pax_elem.iter():
+                if child is pax_elem:
+                    continue
+                local_name = child.tag.split('}')[-1] if '}' in child.tag else child.tag
+                if local_name == "GivenName" and given_name is None:
+                    given_name = child
+                elif local_name == "Surname" and surname is None:
+                    surname = child
+                if given_name is not None and surname is not None:
+                    break
+
             if given_name is not None and given_name.text:
                 fact.attributes["given_name"] = given_name.text.strip()
 
-            surname = pax_elem.find(".//Surname")
             if surname is not None and surname.text:
                 fact.attributes["surname"] = surname.text.strip()
 
             # Extract birth date
-            birthdate = pax_elem.find(".//Birthdate")
+            birthdate = None
+            for child in pax_elem.iter():
+                if child is pax_elem:
+                    continue
+                local_name = child.tag.split('}')[-1] if '}' in child.tag else child.tag
+                if local_name == "Birthdate":
+                    birthdate = child
+                    break
+
             if birthdate is not None and birthdate.text:
                 fact.attributes["birth_date"] = birthdate.text.strip()
 
             # Extract passenger type
-            pax_type = pax_elem.find(".//PTC")  # Passenger Type Code
+            pax_type = None
+            for child in pax_elem.iter():
+                if child is pax_elem:
+                    continue
+                local_name = child.tag.split('}')[-1] if '}' in child.tag else child.tag
+                if local_name == "PTC":
+                    pax_type = child
+                    break
             if pax_type is not None and pax_type.text:
                 fact.attributes["passenger_type"] = pax_type.text.strip()
 
             # Extract any references/IDs
-            for ref_elem in pax_elem.findall(".//*[@*]"):  # Elements with attributes
+            for ref_elem in pax_elem.iter():
+                if not ref_elem.attrib:
+                    continue
+                local_name = ref_elem.tag.split('}')[-1] if '}' in ref_elem.tag else ref_elem.tag
                 for attr_name, attr_value in ref_elem.attrib.items():
                     if "ref" in attr_name.lower() or "id" in attr_name.lower():
-                        fact.references[f"{ref_elem.tag}_{attr_name}"] = attr_value
+                        fact.references[f"{local_name}_{attr_name}"] = attr_value
 
-            fact.child_elements = [child.tag for child in pax_elem]
+            fact.child_elements = [
+                child.tag.split('}')[-1] if '}' in child.tag else child.tag
+                for child in pax_elem
+            ]
             facts.append(fact)
 
         return facts
