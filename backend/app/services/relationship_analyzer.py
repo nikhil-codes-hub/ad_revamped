@@ -27,6 +27,22 @@ class RelationshipAnalyzer:
         self.model = settings.LLM_MODEL
         self._init_sync_client()
 
+    @staticmethod
+    def _normalize_reference_value(value: Any) -> Optional[str]:
+        """Convert reference values to a comparable string representation."""
+        if value is None:
+            return None
+        if isinstance(value, str):
+            return value
+        if isinstance(value, (int, float)):
+            return str(value)
+        if isinstance(value, (dict, list)):
+            try:
+                return json.dumps(value, sort_keys=True)
+            except TypeError:
+                return str(value)
+        return str(value)
+
     def _init_sync_client(self):
         """Initialize synchronous LLM client."""
         try:
@@ -462,12 +478,12 @@ Return ONLY valid JSON (no markdown, no explanation):
 
         # Try direct field lookup
         if reference_field in fact_data:
-            return fact_data[reference_field]
+            return self._normalize_reference_value(fact_data[reference_field])
 
         # Try nested lookup in child_references
         child_refs = fact_data.get('child_references', {})
         if reference_field in child_refs:
-            return child_refs[reference_field]
+            return self._normalize_reference_value(child_refs[reference_field])
 
         # Search in children structure
         children = fact_data.get('children', [])
@@ -479,20 +495,20 @@ Return ONLY valid JSON (no markdown, no explanation):
             for attr_key, attr_value in attributes.items():
                 if attr_key.lower() == reference_field.lower():
                     logger.debug(f"Exact match found: {attr_key} == {reference_field}")
-                    return attr_value
+                    return self._normalize_reference_value(attr_value)
                 # Also check for common variations (e.g., operating_leg_ref_id vs DatedOperatingLegRefID)
                 # Remove underscores and compare
                 normalized_attr = attr_key.lower().replace('_', '')
                 normalized_field = reference_field.lower().replace('_', '')
                 if normalized_attr == normalized_field:
                     logger.debug(f"Normalized match found: {attr_key} matches {reference_field}")
-                    return attr_value
+                    return self._normalize_reference_value(attr_value)
                 # Check if the field name is contained in the attribute (e.g., "legrefid" in "operating_leg_ref_id")
                 # But only if the match is substantial (at least 5 characters)
                 if normalized_field in normalized_attr or normalized_attr in normalized_field:
                     if ('id' in normalized_field or 'ref' in normalized_field) and min(len(normalized_field), len(normalized_attr)) >= 5:
                         logger.debug(f"Partial match found: {attr_key} contains {reference_field}")
-                        return attr_value
+                        return self._normalize_reference_value(attr_value)
 
             # Check references
             references = child.get('references', {})
@@ -500,46 +516,50 @@ Return ONLY valid JSON (no markdown, no explanation):
                 if isinstance(ref_values, list) and len(ref_values) > 0:
                     # If reference field name matches the type, return first value
                     if ref_type.lower() in reference_field.lower() or reference_field.lower() in ref_type.lower():
-                        return ref_values[0]
+                        return self._normalize_reference_value(ref_values[0])
                 elif isinstance(ref_values, dict):
                     # Handle nested dicts like 'other': {'DatedMarketingSegmentRefId': 'value'}
                     for nested_key, nested_value in ref_values.items():
                         if nested_key.lower() == reference_field.lower():
                             logger.debug(f"Found in nested references: {nested_key} == {reference_field}")
-                            return nested_value
+                            return self._normalize_reference_value(nested_value)
                         # Check normalized match
                         normalized_nested = nested_key.lower().replace('_', '')
                         normalized_field = reference_field.lower().replace('_', '')
                         if normalized_nested == normalized_field:
                             logger.debug(f"Found in nested references (normalized): {nested_key} matches {reference_field}")
-                            return nested_value
+                            return self._normalize_reference_value(nested_value)
 
         # Try in refs section at root level
         refs = fact_data.get('refs', {})
         if reference_field in refs:
             ref_value = refs[reference_field]
             if isinstance(ref_value, list) and len(ref_value) > 0:
-                return ref_value[0]
-            elif isinstance(ref_value, str):
-                return ref_value
+                return self._normalize_reference_value(ref_value[0])
+            else:
+                return self._normalize_reference_value(ref_value)
 
         return None
 
-    def _find_target_by_reference(self, target_facts: List[NodeFact], ref_value: str) -> Optional[NodeFact]:
+    def _find_target_by_reference(self, target_facts: List[NodeFact], ref_value: Any) -> Optional[NodeFact]:
         """
         Find target node that matches the reference value.
 
         Searches in nested structure (children[].attributes, children[].references) for matching IDs.
         """
+        normalized_ref = self._normalize_reference_value(ref_value)
+        if normalized_ref is None:
+            return None
+
         for fact in target_facts:
             fact_data = fact.fact_json
 
             # Check common ID fields at root level
-            if fact_data.get('ID') == ref_value:
+            if self._normalize_reference_value(fact_data.get('ID')) == normalized_ref:
                 return fact
-            if fact_data.get('Key') == ref_value:
+            if self._normalize_reference_value(fact_data.get('Key')) == normalized_ref:
                 return fact
-            if fact_data.get('ObjectKey') == ref_value:
+            if self._normalize_reference_value(fact_data.get('ObjectKey')) == normalized_ref:
                 return fact
 
             # Search in children structure
@@ -548,54 +568,60 @@ Return ONLY valid JSON (no markdown, no explanation):
                 # Check attributes for ID/Key fields
                 attributes = child.get('attributes', {})
                 for attr_key, attr_value in attributes.items():
+                    normalized_attr = self._normalize_reference_value(attr_value)
+
                     # Check if this is an ID field and matches our reference (EXACT match only)
-                    if attr_value == ref_value:
+                    if normalized_attr == normalized_ref:
                         return fact
                     # Handle composite IDs: only allow partial match if one is a prefix/suffix of the other
                     # AND they share a substantial common portion (at least 80% match)
                     # Example: "seg0542686836-leg0" should match "seg0542686836" but NOT "seg-999" vs "seg-001"
-                    if isinstance(attr_value, str) and isinstance(ref_value, str):
+                    if isinstance(normalized_attr, str) and isinstance(normalized_ref, str):
                         if 'id' in attr_key.lower() or 'key' in attr_key.lower():
                             # Calculate string similarity - only match if substantial overlap
-                            min_len = min(len(ref_value), len(attr_value))
-                            max_len = max(len(ref_value), len(attr_value))
+                            min_len = min(len(normalized_ref), len(normalized_attr))
+                            max_len = max(len(normalized_ref), len(normalized_attr))
 
                             # Only consider partial match if:
                             # 1. One string contains the other as a prefix/suffix (not middle substring)
                             # 2. The shorter string is at least 80% of the longer string length
                             if min_len >= max_len * 0.8:
-                                if attr_value.startswith(ref_value) or ref_value.startswith(attr_value):
+                                if normalized_attr.startswith(normalized_ref) or normalized_ref.startswith(normalized_attr):
                                     return fact
-                                if attr_value.endswith(ref_value) or ref_value.endswith(attr_value):
+                                if normalized_attr.endswith(normalized_ref) or normalized_ref.endswith(normalized_attr):
                                     return fact
 
                 # Check references section
                 references = child.get('references', {})
                 for ref_type, ref_values in references.items():
                     if isinstance(ref_values, list):
-                        if ref_value in ref_values:
-                            return fact
-                        # Check partial matches
                         for rv in ref_values:
-                            if isinstance(rv, str) and (ref_value in rv or rv in ref_value):
+                            normalized_rv = self._normalize_reference_value(rv)
+                            if normalized_rv == normalized_ref:
                                 return fact
+                            # Check partial matches
+                            if isinstance(normalized_rv, str) and isinstance(normalized_ref, str):
+                                if normalized_ref in normalized_rv or normalized_rv in normalized_ref:
+                                    return fact
 
             # Check in refs section at root level
             refs = fact_data.get('refs', {})
             for ref_key, ref_vals in refs.items():
                 if isinstance(ref_vals, list):
-                    if ref_value in ref_vals:
-                        return fact
-                    # Check partial matches
                     for rv in ref_vals:
-                        if isinstance(rv, str) and (ref_value in rv or rv in ref_value):
+                        normalized_rv = self._normalize_reference_value(rv)
+                        if normalized_rv == normalized_ref:
                             return fact
-                elif ref_vals == ref_value:
+                        # Check partial matches
+                        if isinstance(normalized_rv, str) and isinstance(normalized_ref, str):
+                            if normalized_ref in normalized_rv or normalized_rv in normalized_ref:
+                                return fact
+                elif self._normalize_reference_value(ref_vals) == normalized_ref:
                     return fact
 
             # Check in child_values at root level
             for key, value in fact_data.items():
-                if value == ref_value and ('ID' in key or 'Key' in key):
+                if self._normalize_reference_value(value) == normalized_ref and ('ID' in key or 'Key' in key):
                     return fact
 
         return None

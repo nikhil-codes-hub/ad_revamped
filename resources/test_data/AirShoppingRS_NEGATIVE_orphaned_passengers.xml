@@ -72,13 +72,16 @@
 				</Pax>
 				<Pax>
 					<PaxID>PAX-ORPHAN-002</PaxID>
+					<PTC>CHD</PTC>
 				</Pax>
 				<Pax>
 					<PaxID>PAX-ORPHAN-003</PaxID>
+					<PTC>INF</PTC>
 				</Pax>
 				<!-- Only this passenger is actually used -->
 				<Pax>
 					<PaxID>PAX-VALID</PaxID>
+					<PTC>ADT</PTC>
 				</Pax>
 			</PaxList>
 			<PaxSegmentList>

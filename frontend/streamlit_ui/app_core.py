@@ -1333,6 +1333,7 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
     st.subheader("🔍 Pattern Matches")
 
     matches_data = get_identify_matches(run_id, limit=200, workspace=workspace)
+    matches: List[Dict[str, Any]] = []
 
     if matches_data and matches_data.get('matches'):
         matches = matches_data['matches']
@@ -1449,7 +1450,14 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
     st.divider()
     st.subheader("🔎 Match Details & Analysis")
 
-    match_options = {f"{m['node_fact']['node_type']} @ {m['node_fact']['section_path']} - {m['verdict']} ({m.get('confidence', 0):.1%})": m for m in matches}
+    if not matches:
+        st.info("No matches were generated for this run.")
+        return
+
+    match_options = {
+        f"{m['node_fact']['node_type']} @ {m['node_fact']['section_path']} - {m['verdict']} ({m.get('confidence', 0):.1%})": m
+        for m in matches
+    }
     selected_match = st.selectbox("Select match to analyze:", list(match_options.keys()))
 
     if selected_match:
