@@ -2033,6 +2033,7 @@ def show_patterns_page(embedded: bool = False):
                             # Call backend API to modify pattern
                             response = requests.post(
                                 f"{API_BASE_URL}/patterns/{pattern['id']}/modify",
+                                params={"workspace": workspace},
                                 json=payload,
                                 timeout=60
                             )

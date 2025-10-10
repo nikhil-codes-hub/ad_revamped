@@ -25,7 +25,6 @@ from sqlalchemy.pool import StaticPool
 
 from app.models.database import Base
 from app.core.config import settings
-from app.models.database import PatternMatch
 
 logger = logging.getLogger(__name__)
 
@@ -75,8 +74,8 @@ class WorkspaceSessionFactory:
         # Fix SQLite AUTOINCREMENT for primary keys
         self._fix_sqlite_autoincrement()
 
-        # Ensure pattern_matches.pattern_id allows NULL for unmatched nodes
-        self._ensure_pattern_match_nullable()
+        # Ensure pattern_matches table has expected schema (nullable pattern_id + autoincrement id)
+        self._ensure_pattern_matches_schema()
 
         # Create session factory
         self.SessionLocal = sessionmaker(
@@ -205,8 +204,8 @@ class WorkspaceSessionFactory:
 
             conn.execute(text("PRAGMA foreign_keys=ON"))
 
-    def _ensure_pattern_match_nullable(self):
-        """Ensure pattern_matches.pattern_id column allows NULL values."""
+    def _ensure_pattern_matches_schema(self):
+        """Ensure pattern_matches table supports nullable pattern_id and autoincrement IDs."""
         from sqlalchemy import inspect, text
 
         inspector = inspect(self.engine)
@@ -216,29 +215,54 @@ class WorkspaceSessionFactory:
         with self.engine.connect() as conn:
             info = conn.execute(text("PRAGMA table_info(pattern_matches)")).fetchall()
             pattern_column = next((row for row in info if row[1] == "pattern_id"), None)
+            id_column = next((row for row in info if row[1] == "id"), None)
 
             if not pattern_column:
                 return
 
-            not_null = pattern_column[3] == 1  # PRAGMA table_info: 3rd index is notnull flag
-            if not_null:
-                logger.info("Updating pattern_matches table to allow NULL pattern_id values")
-                conn.execute(text("PRAGMA foreign_keys=OFF"))
-                conn.execute(text("ALTER TABLE pattern_matches RENAME TO pattern_matches_old"))
+            need_nullable_pattern = pattern_column[3] == 1  # notnull flag
 
-                # Recreate table using SQLAlchemy metadata (now nullable=True)
-                PatternMatch.__table__.create(bind=self.engine, checkfirst=False)
+            create_sql = conn.execute(
+                text("SELECT sql FROM sqlite_master WHERE type='table' AND name='pattern_matches'")
+            ).scalar() or ""
+            needs_autoincrement = "PRIMARY KEY AUTOINCREMENT" not in create_sql.upper()
+            if id_column:
+                id_type = (id_column[2] or "").upper()
+                if id_type not in ("INTEGER", "INT"):
+                    needs_autoincrement = True
 
-                # Copy data back
-                conn.execute(text(
-                    "INSERT INTO pattern_matches (id, run_id, node_fact_id, pattern_id, confidence, verdict, match_metadata, created_at) "
-                    "SELECT id, run_id, node_fact_id, pattern_id, confidence, verdict, match_metadata, created_at "
-                    "FROM pattern_matches_old"
-                ))
+            if not need_nullable_pattern and not needs_autoincrement:
+                return
 
-                conn.execute(text("DROP TABLE pattern_matches_old"))
-                conn.execute(text("PRAGMA foreign_keys=ON"))
-                conn.commit()
+            logger.info("Rebuilding pattern_matches table to enforce nullable pattern_id and autoincrement id")
+            conn.execute(text("PRAGMA foreign_keys=OFF"))
+            conn.execute(text("ALTER TABLE pattern_matches RENAME TO pattern_matches_old"))
+
+            conn.execute(text("""
+                CREATE TABLE pattern_matches (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    run_id VARCHAR(50) NOT NULL,
+                    node_fact_id INTEGER NOT NULL,
+                    pattern_id INTEGER,
+                    confidence DECIMAL(4, 3) NOT NULL,
+                    verdict VARCHAR(20) NOT NULL,
+                    match_metadata JSON,
+                    created_at DATETIME,
+                    FOREIGN KEY(run_id) REFERENCES runs (id) ON DELETE CASCADE,
+                    FOREIGN KEY(node_fact_id) REFERENCES node_facts (id) ON DELETE CASCADE,
+                    FOREIGN KEY(pattern_id) REFERENCES patterns (id) ON DELETE CASCADE
+                )
+            """))
+
+            conn.execute(text("""
+                INSERT INTO pattern_matches (id, run_id, node_fact_id, pattern_id, confidence, verdict, match_metadata, created_at)
+                SELECT id, run_id, node_fact_id, pattern_id, confidence, verdict, match_metadata, created_at
+                FROM pattern_matches_old
+            """))
+
+            conn.execute(text("DROP TABLE pattern_matches_old"))
+            conn.execute(text("PRAGMA foreign_keys=ON"))
+            conn.commit()
 
     def get_session(self) -> Session:
         """Get a new database session."""
