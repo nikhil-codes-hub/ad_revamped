@@ -8,8 +8,11 @@ XML Content:
 
 Extract ALL relevant facts as JSON objects. For each fact found, create an object with:
 
+**CRITICAL**: Use EXACT XML element tag names for node_type - do NOT translate or interpret them.
+For example: if XML has <Pax>, use "Pax" NOT "Passenger"; if XML has <ContactInfo>, use "ContactInfo" exactly as shown.
+
 {{
-  "node_type": "descriptive name (e.g., 'ContactInfo', 'BaggageAllowance', 'Passenger', 'FlightSegment')",
+  "node_type": "EXACT XML element name (e.g., 'ContactInfo', 'BaggageAllowance', 'Pax', 'FlightSegment')",
   "node_ordinal": 1,
   "attributes": {{
     "field_name": "extracted_value",
@@ -34,6 +37,7 @@ EXTRACTION RULES:
 8. Extract any ID references between elements
 
 IMPORTANT:
+- **Use EXACT XML tag names for node_type** - do NOT translate (e.g., <Pax> stays "Pax", NOT "Passenger")
 - Return ONLY valid JSON array
 - Include confidence score (0.0-1.0) for each fact
 - Mask PII: replace sensitive data with patterns like "****@****.com" for emails, "****-**-**" for dates

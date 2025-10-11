@@ -281,8 +281,6 @@ def merge_existing_configs(result: Dict[str, Any], workspace: Optional[str] = No
 
         if 'enabled' in cfg:
             node['enabled'] = cfg['enabled']
-        if 'expected_references' in cfg:
-            node['expected_references'] = cfg['expected_references'] or []
         if 'ba_remarks' in cfg:
             node['ba_remarks'] = cfg['ba_remarks'] or ''
 
@@ -756,13 +754,8 @@ def show_discovery_page():
                                 with st.expander(f"**{cfg['node_type']}**", expanded=False):
                                     st.write(f"**Path:** `{cfg['section_path']}`")
 
-                                    if cfg.get('expected_references'):
-                                        st.write(f"**Expected References:**")
-                                        for ref in cfg['expected_references']:
-                                            st.write(f"  • `{ref}`")
-
                                     if cfg.get('ba_remarks'):
-                                        st.write(f"**BA Remarks:** {cfg['ba_remarks']}")
+                                        st.write(f"**Expert Remarks:** {cfg['ba_remarks']}")
 
                             if len(enabled_configs) > 10:
                                 st.caption(f"...and {len(enabled_configs) - 10} more")
@@ -2446,7 +2439,7 @@ def show_node_manager_page():
     st.write("Configure which nodes to extract during Discovery and define expected references")
     st.caption(f"Workspace: `{current_workspace}`")
 
-    tab1, tab2, tab3, tab4 = st.tabs(["📤 Analyze XML", "⚙️ Manage Configurations", "📋 Copy to Versions", "🔖 Reference Types"])
+    tab1, tab2 = st.tabs(["📤 Analyze XML", "⚙️ Manage Configurations"])
 
     with tab1:
         st.subheader("Upload XML to Discover Nodes")
@@ -2562,7 +2555,7 @@ def show_node_manager_page():
 
             with col1:
                 st.write("**🌳 Node Hierarchy**")
-                st.caption("Check nodes to enable extraction")
+                st.caption("Check nodes to enable extraction. Parent nodes auto-enable all descendants.")
 
                 # Tree select component
                 try:
@@ -2571,7 +2564,7 @@ def show_node_manager_page():
                         checked=pre_checked_display,
                         only_leaf_checkboxes=False,
                         expand_on_click=True,
-                        no_cascade=True,
+                        no_cascade=False,  # Enable cascading to visually show parent-child selection
                         expanded=[node['value'] for node in tree_data if node.get('value')],
                         key="node_manager_tree"
                     )
@@ -2604,13 +2597,12 @@ def show_node_manager_page():
 
                 # Show configuration form for selected nodes
                 if checked_paths:
-                    st.info(f"✅ {len(checked_paths)} nodes selected for extraction")
+                    st.info(f"✅ {len(checked_paths)} nodes enabled for extraction")
 
                     raw_selection = st.session_state.get('node_checked_paths_raw', [])
                     auto_enabled = [path for path in checked_paths if path not in raw_selection]
                     if auto_enabled:
-                        auto_display = ", ".join(f"`{path}`" for path in auto_enabled)
-                        st.caption(f"🔁 Parent selections also keep these nodes enabled: {auto_display}")
+                        st.caption(f"🔁 {len(auto_enabled)} nodes auto-enabled by parent selection")
 
                     # Get first checked node for editing
                     selected_path = checked_paths[0] if checked_paths else None
@@ -2627,19 +2619,11 @@ def show_node_manager_page():
 
                         # Get current config or defaults
                         current_config = st.session_state.node_configs.get(selected_path, {
-                            'expected_references': selected_node.get('expected_references', []),
                             'ba_remarks': selected_node.get('ba_remarks', '')
                         })
 
                         # Form for editing node properties
                         with st.form(key=f"edit_form_{selected_path}"):
-                            expected_refs_str = st.text_input(
-                                "Expected References",
-                                value=", ".join(current_config['expected_references']),
-                                help="Comma-separated: infant_parent, segment_reference, etc.",
-                                placeholder="e.g., segment_reference, pax_reference"
-                            )
-
                             ba_remarks_str = st.text_area(
                                 "BA Remarks",
                                 value=current_config['ba_remarks'],
@@ -2648,10 +2632,8 @@ def show_node_manager_page():
                             )
 
                             if st.form_submit_button("💾 Update This Node"):
-                                # Parse and store config
-                                refs = [r.strip() for r in expected_refs_str.split(',') if r.strip()]
+                                # Store config
                                 st.session_state.node_configs[selected_path] = {
-                                    'expected_references': refs,
                                     'ba_remarks': ba_remarks_str
                                 }
                                 st.success(f"✅ Updated {selected_node['node_type']}")
@@ -2689,7 +2671,6 @@ def show_node_manager_page():
 
                         # Get config for this node
                         config_data = node_configs.get(section_path, {
-                            'expected_references': node.get('expected_references', []),
                             'ba_remarks': node.get('ba_remarks', '')
                         })
 
@@ -2701,7 +2682,7 @@ def show_node_manager_page():
                             'node_type': node['node_type'],
                             'section_path': section_path,
                             'enabled': enabled,
-                            'expected_references': config_data['expected_references'],
+                            'expected_references': [],  # Always empty - LLM auto-discovers relationships
                             'ba_remarks': config_data['ba_remarks']
                         }
                         configurations.append(config)
@@ -2717,7 +2698,7 @@ def show_node_manager_page():
                         st.error("Failed to save configurations")
 
             with col2:
-                st.caption("💡 **Tip**: See available reference types in the 'Reference Types' tab →")
+                st.caption("💡 **Tip**: Relationships will be auto-discovered by the LLM during Discovery")
 
     with tab2:
         st.subheader("⚙️ Existing Configurations")
@@ -2787,200 +2768,6 @@ def show_node_manager_page():
             else:
                 st.info(f"No configurations found in workspace `{current_workspace}`. Upload an XML in the 'Analyze XML' tab to create configurations or adjust your filters.")
 
-    with tab3:
-        st.subheader("📋 Copy Configurations to Other Versions")
-        st.write("Apply your configurations from one version to multiple other NDC versions")
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.write("**Source Configuration**")
-            source_version = st.text_input("Source Version", value="18.1", placeholder="e.g., 18.1")
-            source_message = st.text_input("Source Message Root", value="OrderViewRS", placeholder="e.g., OrderViewRS")
-            source_airline = st.text_input("Source Airline (optional)", placeholder="Leave empty to auto-detect", help="Leave empty to use global configs or first available airline (e.g., SQ)")
-
-        with col2:
-            st.write("**Target Versions**")
-            st.caption("Enter versions separated by commas")
-            target_versions_input = st.text_area(
-                "Target Versions",
-                value="17.2, 19.2, 21.3, 23.1",
-                placeholder="e.g., 17.2, 19.2, 21.3",
-                height=100
-            )
-            target_airline = st.text_input("Target Airline (optional)", placeholder="Leave empty to keep same as source")
-
-        st.divider()
-
-        if st.button("🚀 Copy Configurations to All Versions", type="primary"):
-            # Parse target versions
-            target_versions = [v.strip() for v in target_versions_input.split(',') if v.strip()]
-
-            if not target_versions:
-                st.error("Please enter at least one target version")
-            elif not source_version or not source_message:
-                st.error("Please enter source version and message root")
-            else:
-                with st.spinner(f"Copying configurations from {source_version} to {len(target_versions)} versions..."):
-                    result = copy_configurations_to_versions(
-                        source_spec_version=source_version,
-                        source_message_root=source_message,
-                        target_versions=target_versions,
-                        source_airline_code=source_airline if source_airline else None,
-                        target_airline_code=target_airline if target_airline else None
-                    )
-
-                if result:
-                    st.success(f"✅ Successfully copied configurations!")
-                    col_a, col_b, col_c = st.columns(3)
-                    with col_a:
-                        st.metric("Source Configs", result['source_configs'])
-                    with col_b:
-                        st.metric("Created", result['created'])
-                    with col_c:
-                        st.metric("Skipped (already exist)", result['skipped'])
-
-                    # Show which airline was used
-                    detected = result.get('detected_airline', 'Unknown')
-                    airline_info = f" (Airline: {detected})"
-                    st.info(f"📋 Copied from **{result['source_version']}{airline_info}** to: {', '.join(result['target_versions'])}")
-
-                    if result.get('errors'):
-                        st.warning("Some errors occurred:")
-                        for error in result['errors']:
-                            st.text(error)
-                else:
-                    st.error("Failed to copy configurations. Please check:\n- Source version and message root are correct\n- Configurations exist for the source version")
-
-    with tab4:
-        st.subheader("🔖 Reference Types Glossary")
-        st.write("Manage reference types used in node configurations")
-
-        # Add new reference type section
-        with st.expander("➕ Add New Reference Type", expanded=False):
-            col1, col2 = st.columns(2)
-
-            with col1:
-                new_ref_type = st.text_input("Reference Type ID*", placeholder="e.g., document_reference",
-                                            help="Unique identifier (lowercase, underscores)")
-                new_display_name = st.text_input("Display Name*", placeholder="e.g., Document Reference")
-                new_category = st.selectbox("Category*",
-                    ["passenger", "segment", "journey", "baggage", "price", "service", "order", "document", "other"])
-
-            with col2:
-                new_description = st.text_area("Description*", placeholder="Describe what this reference represents", height=100)
-                new_example = st.text_input("Example", placeholder="e.g., Ticket references DocumentID:DOC123")
-
-            if st.button("✅ Add Reference Type", type="primary"):
-                if not new_ref_type or not new_display_name or not new_description:
-                    st.error("Please fill in all required fields (marked with *)")
-                else:
-                    try:
-                        response = requests.post(
-                            f"{API_BASE_URL}/reference-types/",
-                            params={
-                                "reference_type": new_ref_type,
-                                "display_name": new_display_name,
-                                "description": new_description,
-                                "example": new_example if new_example else None,
-                                "category": new_category,
-                                "created_by": "user"
-                            },
-                            timeout=10
-                        )
-
-                        if response.status_code == 200:
-                            st.success(f"✅ Reference type '{new_ref_type}' added successfully!")
-                            st.rerun()
-                        else:
-                            error_data = response.json()
-                            st.error(f"Failed to add reference type: {error_data.get('detail', response.text)}")
-                    except Exception as e:
-                        st.error(f"Error: {str(e)}")
-
-        st.divider()
-
-        # Filter section
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            filter_category = st.selectbox("Filter by Category", ["All"] + ["passenger", "segment", "journey", "baggage", "price", "service", "order", "document", "other"])
-        with col2:
-            show_inactive = st.checkbox("Show Inactive", value=False)
-
-        # Load reference types
-        try:
-            params = {}
-            if filter_category != "All":
-                params["category"] = filter_category
-            if not show_inactive:
-                params["is_active"] = True
-
-            response = requests.get(
-                f"{API_BASE_URL}/reference-types/",
-                params=params,
-                timeout=10
-            )
-
-            if response.status_code == 200:
-                data = response.json()
-                ref_types = data.get('reference_types', [])
-
-                if ref_types:
-                    st.success(f"📚 Found {len(ref_types)} reference types")
-
-                    # Group by category
-                    categories = {}
-                    for ref_type in ref_types:
-                        cat = ref_type.get('category', 'other')
-                        if cat not in categories:
-                            categories[cat] = []
-                        categories[cat].append(ref_type)
-
-                    # Display by category
-                    for category, items in sorted(categories.items()):
-                        st.subheader(f"📂 {category.title()}")
-
-                        for ref_type in items:
-                            with st.expander(f"**{ref_type['display_name']}** (`{ref_type['reference_type']}`)", expanded=False):
-                                col1, col2 = st.columns([3, 1])
-
-                                with col1:
-                                    st.write("**Description:**")
-                                    st.write(ref_type['description'])
-
-                                    if ref_type.get('example'):
-                                        st.write("**Example:**")
-                                        st.code(ref_type['example'])
-
-                                    st.caption(f"Created by: {ref_type.get('created_by', 'Unknown')}")
-
-                                with col2:
-                                    status_icon = "✅" if ref_type['is_active'] else "⏸️"
-                                    st.write(f"**Status:** {status_icon}")
-
-                                    if ref_type.get('created_by') != 'system':
-                                        if st.button("🗑️ Delete", key=f"del_{ref_type['id']}"):
-                                            try:
-                                                del_response = requests.delete(
-                                                    f"{API_BASE_URL}/reference-types/{ref_type['id']}",
-                                                    timeout=10
-                                                )
-                                                if del_response.status_code == 200:
-                                                    st.success("Deleted!")
-                                                    st.rerun()
-                                                else:
-                                                    st.error("Delete failed")
-                                            except Exception as e:
-                                                st.error(f"Error: {str(e)}")
-
-                        st.divider()
-                else:
-                    st.info("No reference types found. Add one using the form above.")
-            else:
-                st.error(f"Failed to load reference types: {response.status_code}")
-
-        except Exception as e:
-            st.error(f"Error loading reference types: {str(e)}")
 
 
 # ========== MAIN APP ==========

@@ -13,6 +13,7 @@ from datetime import datetime
 from collections import defaultdict
 from sqlalchemy.orm import Session
 from openai import AzureOpenAI, OpenAI
+import httpx
 
 from app.models.database import NodeFact, Pattern, Run
 from app.core.config import settings

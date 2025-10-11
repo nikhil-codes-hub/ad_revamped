@@ -206,7 +206,7 @@ class NodeRelationship(Base):
 
     # Validation and discovery metadata
     is_valid = Column(Boolean, default=True, comment="Does reference resolve to target?")
-    was_expected = Column(Boolean, default=False, comment="Was this in expected_references?")
+    was_expected = Column(Boolean, default=False, comment="DEPRECATED: Always FALSE - expected_references no longer used.")
     confidence = Column(DECIMAL(3, 2), default=1.0, comment="LLM confidence (0.0-1.0)")
 
     # Discovery source
@@ -303,7 +303,7 @@ class NodeConfiguration(Base):
     node_type = Column(String(100), nullable=False, comment="Node type name (e.g., PaxList, BaggageAllowanceList)")
     section_path = Column(String(500), nullable=False, comment="Full XML path to this node")
     enabled = Column(Boolean, default=True, comment="Should this node be extracted during Discovery?")
-    expected_references = Column(JSON, comment="Array of reference types expected (e.g., ['infant_parent', 'segment_reference'])")
+    expected_references = Column(JSON, comment="DEPRECATED: Always empty - LLM auto-discovers all relationships. Kept for backward compatibility.")
     ba_remarks = Column(Text, comment="Business analyst notes and instructions")
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
@@ -326,7 +326,11 @@ class NodeConfiguration(Base):
 
 
 class ReferenceType(Base):
-    """Glossary of reference types used in NDC XML node relationships."""
+    """
+    DEPRECATED: Glossary of reference types - no longer used.
+    LLM auto-discovers all relationship types during analysis.
+    Table kept for backward compatibility only.
+    """
 
     __tablename__ = "reference_types"
 

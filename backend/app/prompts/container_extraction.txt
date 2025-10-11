@@ -71,8 +71,12 @@ IMPORTANT RULES:
 1. Extract ONE container fact (not multiple facts)
 2. Include ALL children in the "children" array
 3. Each child MUST have: node_type, ordinal, attributes, references, snippet
-4. Extract key attributes from each child (IDs, codes, values)
-5. Extract ALL reference elements: look for elements ending with "Ref", "RefID", "ID" that point to other nodes
+4. **CRITICAL**: Use EXACT XML tag names for node_type - do NOT translate or interpret them
+   - If the XML tag is <Pax>, use "Pax" NOT "Passenger"
+   - If the XML tag is <Passenger>, use "Passenger" NOT "Pax"
+   - Use the actual XML element name: {repeating_tag}
+5. Extract key attributes from each child (IDs, codes, values)
+6. Extract ALL reference elements: look for elements ending with "Ref", "RefID", "ID" that point to other nodes
 6. Build business_intelligence object with relevant aggregations:
    - For PassengerList/PaxList: count ADT/CHD/INF from PTC values
    - For BaggageAllowanceList: count by TypeCode (Checked/CarryOn)
