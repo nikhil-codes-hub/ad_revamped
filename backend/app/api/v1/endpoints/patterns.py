@@ -4,9 +4,10 @@ Pattern management endpoints for AssistedDiscovery.
 Handles retrieval and querying of discovered patterns.
 """
 
-from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException, Query
+from typing import Optional, List, Dict, Any
+from fastapi import APIRouter, Depends, HTTPException, Query, Body
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 import structlog
 
 from app.models.schemas import PatternResponse
@@ -14,6 +15,7 @@ from app.core.logging import get_logger
 from app.services.workspace_db import get_workspace_db
 from app.services.pattern_generator import create_pattern_generator
 from app.models.database import Pattern
+from app.services.llm_extractor import get_llm_client
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -304,6 +306,130 @@ async def generate_patterns(
             },
             "errors": results.get('errors', [])
         }
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
+
+
+class ModifyPatternRequest(BaseModel):
+    """Request model for pattern modification."""
+    pattern_id: int
+    current_description: str
+    current_decision_rule: Dict[str, Any]
+    additional_requirements: str
+    section_path: str
+    spec_version: str
+    message_root: str
+
+
+@router.post("/{pattern_id}/modify")
+async def modify_pattern(
+    pattern_id: int,
+    request: ModifyPatternRequest = Body(...),
+    workspace: str = Query("default", description="Workspace name")
+):
+    """
+    Modify a pattern using LLM to incorporate additional requirements.
+
+    - **pattern_id**: ID of the pattern to modify
+    - **additional_requirements**: User-provided requirements to incorporate
+    """
+    logger.info("Modifying pattern", pattern_id=pattern_id, workspace=workspace)
+
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
+
+    try:
+        # Get the pattern from database
+        pattern = db.query(Pattern).filter(Pattern.id == pattern_id).first()
+        if not pattern:
+            raise HTTPException(status_code=404, detail=f"Pattern {pattern_id} not found")
+
+        # Build LLM prompt for pattern modification
+        llm_client = get_llm_client()
+
+        prompt = f"""You are an XML pattern expert. Modify the following pattern to incorporate the user's additional requirements.
+
+**Current Pattern:**
+- Section: {request.section_path}
+- Specification Version: {request.spec_version}
+- Message Root: {request.message_root}
+- Description: {request.current_description}
+
+**Current Decision Rule:**
+```json
+{request.current_decision_rule}
+```
+
+**User's Additional Requirements:**
+{request.additional_requirements}
+
+**Task:**
+1. Analyze the current pattern and the additional requirements
+2. Update the decision_rule to incorporate the new requirements
+3. Update the description to reflect the changes
+4. Provide a brief modification summary
+
+Return a JSON object with:
+{{
+  "new_description": "Updated description including the new requirements",
+  "new_decision_rule": {{ ... updated decision rule ... }},
+  "modification_summary": "Brief summary of what changed (2-3 sentences)"
+}}
+
+**Important:**
+- Preserve the existing structure (node_type, must_have_attributes, child_structure, etc.)
+- Only add/modify fields that are affected by the new requirements
+- Keep the decision_rule consistent with the pattern schema
+- If adding attributes, add them to must_have_attributes or optional_attributes
+- If adding child elements, update child_structure accordingly
+"""
+
+        try:
+            response = llm_client.chat.completions.create(
+                model=llm_client.model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are an XML pattern modification expert. Analyze patterns and incorporate new requirements while maintaining structural consistency."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                temperature=0.3,
+                max_tokens=2000,
+                response_format={"type": "json_object"}
+            )
+
+            import json
+            result = json.loads(response.choices[0].message.content)
+
+            # Update the pattern in database
+            pattern.description = result.get('new_description', pattern.description)
+            pattern.decision_rule = result.get('new_decision_rule', pattern.decision_rule)
+
+            db.commit()
+            db.refresh(pattern)
+
+            logger.info("Pattern modified successfully", pattern_id=pattern_id)
+
+            return {
+                "success": True,
+                "pattern_id": pattern_id,
+                "new_description": result.get('new_description'),
+                "new_decision_rule": result.get('new_decision_rule'),
+                "modification_summary": result.get('modification_summary'),
+                "tokens_used": response.usage.total_tokens
+            }
+
+        except Exception as e:
+            logger.error("LLM modification failed", error=str(e))
+            raise HTTPException(status_code=500, detail=f"LLM modification failed: {str(e)}")
+
     finally:
         try:
             next(db_generator)
