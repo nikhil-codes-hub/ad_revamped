@@ -2146,23 +2146,6 @@ def _render_verify_tab(patterns, workspace=None):
     st.divider()
     st.subheader("🔎 Pattern Details")
 
-    # Show success message if pattern was just modified
-    if 'last_modification' in st.session_state:
-        mod = st.session_state.last_modification
-        st.success(f"✅ Pattern {mod['pattern_id']} was successfully modified!")
-        st.write(f"**Modification Summary:** {mod['modification_summary']}")
-
-        with st.expander("View Modification Details"):
-            st.write("**New Description:**")
-            st.info(mod['new_description'])
-            st.write("**New Decision Rule:**")
-            st.json(mod['new_decision_rule'])
-
-        # Clear the modification state after showing once
-        if st.button("Clear Notification"):
-            del st.session_state.last_modification
-            st.rerun()
-
     pattern_options = {f"ID {p['id']} - {p['section_path']} (seen {p['times_seen']}x)": p for p in patterns}
     selected_pattern = st.selectbox("Select pattern:", list(pattern_options.keys()))
 
