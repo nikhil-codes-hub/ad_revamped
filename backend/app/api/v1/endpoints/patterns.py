@@ -15,7 +15,7 @@ from app.core.logging import get_logger
 from app.services.workspace_db import get_workspace_db
 from app.services.pattern_generator import create_pattern_generator
 from app.models.database import Pattern
-from app.services.llm_extractor import get_llm_client
+from app.services.llm_extractor import get_llm_extractor
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -348,7 +348,10 @@ async def modify_pattern(
             raise HTTPException(status_code=404, detail=f"Pattern {pattern_id} not found")
 
         # Build LLM prompt for pattern modification
-        llm_client = get_llm_client()
+        llm_extractor = get_llm_extractor()
+
+        if not llm_extractor.client:
+            raise HTTPException(status_code=500, detail="LLM client not initialized. Check API keys configuration.")
 
         prompt = f"""You are an XML pattern expert. Modify the following pattern to incorporate the user's additional requirements.
 
@@ -388,8 +391,9 @@ Return a JSON object with:
 """
 
         try:
-            response = llm_client.chat.completions.create(
-                model=llm_client.model,
+            # Call LLM asynchronously
+            response = await llm_extractor.client.chat.completions.create(
+                model=llm_extractor.model,
                 messages=[
                     {
                         "role": "system",
