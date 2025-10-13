@@ -22,6 +22,59 @@ HEALTH_URL = "http://localhost:8000/health"
 workspace_config_file = Path(__file__).parent / "data" / "workspaces" / "workspaces.json"
 
 
+def show_error_with_logs(error_message: str, additional_context: Optional[str] = None,
+                         error_type: str = "general", run_id: Optional[str] = None):
+    """
+    Display a user-friendly error message with log file location.
+
+    Args:
+        error_message: The main error message to display
+        additional_context: Optional additional context or details
+        error_type: Type of error - "llm", "xml", "network", "general"
+        run_id: Optional run ID for tracking in logs
+    """
+    st.error(f"❌ {error_message}")
+
+    if additional_context:
+        st.error(f"**Details:** {additional_context}")
+
+    if run_id:
+        st.info(f"📋 **Run ID:** `{run_id}` (use this to search logs)")
+
+    st.warning("💡 **Troubleshooting:**")
+
+    # Type-specific troubleshooting tips
+    if error_type == "llm":
+        st.write("- Check your API keys in `.env` file")
+        st.write("- Verify AZURE_OPENAI_KEY or OPENAI_API_KEY is set correctly")
+        st.write("- Check if you have exceeded rate limits")
+        st.write("- Test your API credentials independently")
+    elif error_type == "xml":
+        st.write("- Verify the XML file is well-formed")
+        st.write("- Check if the file is a valid NDC message format")
+        st.write("- Try validating the XML with an online validator")
+        st.write("- Look for unclosed tags or special characters")
+    elif error_type == "network":
+        st.write("- Make sure the backend is running")
+        st.write("- Check if the backend URL is correct")
+        st.write("- Verify network connectivity")
+
+    st.write("- **Check the log files for detailed error information:**")
+
+    # Platform-specific log location
+    import platform
+    system = platform.system()
+    if system == "Darwin":  # macOS
+        log_path = "~/Library/Logs/AssistedDiscovery/assisted_discovery.log"
+        st.code(f"📂 Log File (macOS):\n{log_path}", language="bash")
+    elif system == "Windows":
+        log_path = "%LOCALAPPDATA%\\AssistedDiscovery\\Logs\\assisted_discovery.log"
+        st.code(f"📂 Log File (Windows):\n{log_path}", language="bash")
+    else:  # Linux
+        log_path = "~/.local/share/AssistedDiscovery/logs/assisted_discovery.log"
+        st.code(f"📂 Log File (Linux):\n{log_path}", language="bash")
+
+
 def load_workspaces() -> List[str]:
     """Load workspaces from disk or return defaults."""
     if workspace_config_file.exists():
@@ -188,16 +241,34 @@ def _path_ancestors(path: str) -> List[str]:
 
 def filter_raw_paths(raw_paths: List[str], previous_raw: Optional[List[str]] = None,
                      previous_effective: Optional[List[str]] = None) -> List[str]:
-    """Remove auto-selected descendants when parent is newly chosen."""
+    """Remove auto-selected descendants when parent is newly chosen,
+    and remove auto-selected parents when all children are manually selected."""
     unique_paths = list(dict.fromkeys(raw_paths or []))
     prev_selected = set(previous_raw or []) | set(previous_effective or [])
     raw_set = set(unique_paths)
 
     filtered = []
     for path in unique_paths:
+        # Check if parent is selected
         has_parent_selected = any(parent in raw_set for parent in _path_ancestors(path))
         if has_parent_selected and path not in prev_selected:
             continue  # Skip descendants implicitly checked via parent
+
+        # NEW: Check if this parent was auto-selected by the tree component
+        # When user selects all children, tree component auto-checks the parent
+        # We detect this by checking if:
+        # 1. This path has children (descendants) in the selection
+        # 2. This path was NOT in the previous selection (it's newly appeared)
+        # 3. At least one child was in the previous selection (user was selecting children)
+        if path not in prev_selected:
+            has_children_selected = any(p.startswith(f"{path}/") for p in raw_set)
+            if has_children_selected:
+                # Check if any child was previously selected (indicating user is selecting children, not parent)
+                any_child_was_selected = any(p.startswith(f"{path}/") for p in prev_selected)
+                if any_child_was_selected:
+                    # This parent was auto-checked by tree component, skip it
+                    continue
+
         filtered.append(path)
 
     return filtered
@@ -514,9 +585,17 @@ def analyze_xml_for_nodes(file, workspace: Optional[str] = None) -> Optional[Dic
         )
         if response.status_code == 200:
             return response.json()
-        return None
-    except requests.exceptions.RequestException:
-        return None
+
+        # Return error details for non-200 responses
+        try:
+            error_data = response.json()
+            error_detail = error_data.get('detail', 'Unknown error')
+        except:
+            error_detail = response.text or f"HTTP {response.status_code}"
+
+        return {"error": error_detail, "status_code": response.status_code}
+    except requests.exceptions.RequestException as e:
+        return {"error": f"Network error: {str(e)}", "status_code": None}
 
 
 def get_node_configurations(spec_version: Optional[str] = None,
@@ -593,6 +672,26 @@ def get_relationship_summary(run_id: str, workspace: str = "default") -> Optiona
         response = requests.get(
             f"{API_BASE_URL}/relationships/run/{run_id}/summary",
             params={"workspace": workspace},
+            timeout=15
+        )
+        if response.status_code == 200:
+            return response.json()
+        return None
+    except requests.exceptions.RequestException:
+        return None
+
+
+def get_relationships_by_node_type(source_node_type: str, workspace: str = "default") -> Optional[List[Dict[str, Any]]]:
+    """Get discovered relationships for a specific source node type."""
+    try:
+        params = {
+            "source_node_type": source_node_type,
+            "limit": 100,
+            "workspace": workspace
+        }
+        response = requests.get(
+            f"{API_BASE_URL}/relationships/",
+            params=params,
             timeout=15
         )
         if response.status_code == 200:
@@ -956,18 +1055,14 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
     elif rel_summary and rel_summary.get('statistics', {}).get('total_relationships', 0) > 0:
         stats = rel_summary['statistics']
 
-        # Display metrics
-        col1, col2, col3, col4, col5 = st.columns(5)
+        # Display metrics (simplified - removed Expected/Discovered distinction)
+        col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Total", stats['total_relationships'])
         with col2:
             st.metric("✅ Valid", stats['valid_relationships'])
         with col3:
             st.metric("❌ Broken", stats['broken_relationships'])
-        with col4:
-            st.metric("Expected", stats['expected_relationships'])
-        with col5:
-            st.metric("🔍 Discovered", stats['discovered_relationships'])
 
         # Validation rate
         if stats['total_relationships'] > 0:
@@ -979,7 +1074,7 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
             else:
                 st.error(f"❌ Only {validation_rate}% of relationships are valid")
 
-        # Reference type breakdown
+        # Reference type breakdown (simplified)
         st.write("**Reference Types Breakdown:**")
         ref_types = rel_summary.get('reference_types', {})
 
@@ -990,87 +1085,39 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                     "Reference Type": ref_type,
                     "Total": counts['total'],
                     "Valid": counts['valid'],
-                    "Broken": counts['broken'],
-                    "Expected": counts['expected'],
-                    "Discovered": counts['discovered']
+                    "Broken": counts['broken']
                 })
 
             df_types = pd.DataFrame(type_data)
             st.dataframe(df_types, use_container_width=True, hide_index=True)
 
-        # Broken references table
-        broken_refs = rel_summary.get('broken_references', [])
-        if broken_refs:
-            st.warning(f"⚠️ {len(broken_refs)} broken reference(s) found")
+        # All relationships table (always expanded, no separate broken/unexpected sections)
+        st.write("**📊 All Relationships**")
+        all_rels = get_relationships(run_id=run_id, workspace=workspace)
 
-            with st.expander("View Broken References", expanded=False):
-                broken_data = []
-                for br in broken_refs:
-                    status = "Expected" if br.get('was_expected') else "Discovered"
-                    broken_data.append({
-                        "Source": br['source'],
-                        "→ Target": br['target'],
-                        "Type": br['reference_type'],
-                        "Field": br.get('reference_field', 'N/A'),
-                        "Value": br.get('reference_value', 'N/A'),
-                        "Status": status
-                    })
+        if all_rels:
+            rel_data = []
+            for r in all_rels:
+                status_icon = "✅" if r.get('is_valid') else "❌"
+                conf = r.get('confidence')
+                conf_str = f"{conf:.0%}" if conf is not None else "N/A"
 
-                df_broken = pd.DataFrame(broken_data)
-                st.dataframe(df_broken, use_container_width=True, hide_index=True)
+                rel_data.append({
+                    "Status": status_icon,
+                    "Source": r['source_node_type'],
+                    "→ Target": r['target_node_type'],
+                    "Type": r['reference_type'],
+                    "Field": r.get('reference_field', 'N/A'),
+                    "Value": r.get('reference_value', 'N/A'),
+                    "Confidence": conf_str
+                })
 
-        # Unexpected discoveries table
-        discoveries = rel_summary.get('unexpected_discoveries', [])
-        if discoveries:
-            st.info(f"🔍 {len(discoveries)} unexpected relationship(s) discovered by LLM")
+            df_all = pd.DataFrame(rel_data)
+            st.dataframe(df_all, use_container_width=True, hide_index=True)
 
-            with st.expander("View Unexpected Discoveries", expanded=False):
-                disc_data = []
-                for d in discoveries:
-                    status = "✅ Valid" if d.get('is_valid') else "❌ Broken"
-                    conf = d.get('confidence')
-                    conf_str = f"{conf:.0%}" if conf is not None else "N/A"
-
-                    disc_data.append({
-                        "Source": d['source'],
-                        "→ Target": d['target'],
-                        "Type": d['reference_type'],
-                        "Field": d.get('reference_field', 'N/A'),
-                        "Confidence": conf_str,
-                        "Status": status
-                    })
-
-                df_disc = pd.DataFrame(disc_data)
-                st.dataframe(df_disc, use_container_width=True, hide_index=True)
-
-        # Full relationships table
-        with st.expander("📊 All Relationships", expanded=False):
-            all_rels = get_relationships(run_id=run_id, workspace=workspace)
-
-            if all_rels:
-                rel_data = []
-                for r in all_rels:
-                    status_icon = "✅" if r.get('is_valid') else "❌"
-                    origin_icon = "📋" if r.get('was_expected') else "🔍"
-                    conf = r.get('confidence')
-                    conf_str = f"{conf:.0%}" if conf is not None else "N/A"
-
-                    rel_data.append({
-                        "": f"{status_icon} {origin_icon}",
-                        "Source": r['source_node_type'],
-                        "→ Target": r['target_node_type'],
-                        "Type": r['reference_type'],
-                        "Field": r.get('reference_field', 'N/A'),
-                        "Value": r.get('reference_value', 'N/A'),
-                        "Confidence": conf_str
-                    })
-
-                df_all = pd.DataFrame(rel_data)
-                st.dataframe(df_all, use_container_width=True, hide_index=True)
-
-                st.caption("Legend: ✅ Valid | ❌ Broken | 📋 Expected | 🔍 Discovered")
-            else:
-                st.info("No relationship details available")
+            st.caption("Legend: ✅ Valid relationship | ❌ Broken relationship (target not found)")
+        else:
+            st.info("No relationship details available")
     elif run_details.get("node_facts_count", 0) > 0:
         # NodeFacts exist but no relationships were found
         st.info("ℹ️ No cross-references were found between data elements in this XML file.")
@@ -1270,6 +1317,27 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
         st.error("Failed to load run details")
         return
 
+    def summarize_missing_elements(elements: Any) -> str:
+        """Format missing element metadata for display."""
+        if not elements:
+            return "—"
+        if isinstance(elements, list):
+            parts = []
+            for item in elements:
+                if isinstance(item, dict):
+                    path = item.get("path")
+                    reason = item.get("reason")
+                    if path and reason:
+                        parts.append(f"{path} ({reason})")
+                    elif path:
+                        parts.append(path)
+                    elif reason:
+                        parts.append(reason)
+                else:
+                    parts.append(str(item))
+            return "; ".join(parts) if parts else "—"
+        return str(elements)
+
     # Show basic run info first
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -1288,6 +1356,7 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
     if gap_analysis:
         stats = gap_analysis.get('statistics', {})
         verdict_breakdown = gap_analysis.get('verdict_breakdown', {})
+        quality_alerts = gap_analysis.get('quality_alerts', [])
 
         # Summary metrics
         col1, col2, col3, col4, col5 = st.columns(5)
@@ -1296,38 +1365,39 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
         with col2:
             st.metric("Match Rate", f"{stats.get('match_rate', 0):.1f}%")
         with col3:
-            st.metric("High Confidence", stats.get('high_confidence_matches', 0))
+            coverage = stats.get('quality_match_rate', stats.get('match_rate', 0))
+            st.metric("Quality Coverage", f"{coverage:.1f}%")
         with col4:
-            st.metric("New Patterns", stats.get('new_patterns', 0))
-        with col5:
             st.metric("Unmatched", stats.get('unmatched_facts', 0))
+        with col5:
+            st.metric("Quality Breaks", stats.get('quality_breaks', 0))
+
+        col6, col7 = st.columns(2)
+        with col6:
+            st.metric("High Confidence", stats.get('high_confidence_matches', 0))
+        with col7:
+            st.metric("New Patterns", stats.get('new_patterns', 0))
 
         st.divider()
 
-        # Verdict breakdown
-        st.subheader("📊 Match Quality Breakdown")
+        # Quality alerts section
+        if quality_alerts:
+            st.warning(f"Detected {len(quality_alerts)} quality break(s) requiring review.")
 
-        verdict_colors = {
-            "EXACT_MATCH": "🟢",
-            "HIGH_MATCH": "🟡",
-            "PARTIAL_MATCH": "🟠",
-            "LOW_MATCH": "🔵",
-            "NO_MATCH": "⚪",
-            "NEW_PATTERN": "🔴"
-        }
-
-        verdict_data = []
-        for verdict, count in verdict_breakdown.items():
-            if count > 0:
-                verdict_data.append({
-                    "Verdict": f"{verdict_colors.get(verdict, '⚪')} {verdict.replace('_', ' ')}",
-                    "Count": count,
-                    "Percentage": f"{(count / stats.get('total_node_facts', 1) * 100):.1f}%"
+            alert_table = []
+            for alert in quality_alerts:
+                qc = alert.get("quality_checks", {}) or {}
+                coverage = alert.get("match_percentage", qc.get("match_percentage", 0))
+                alert_table.append({
+                    "Node Type": alert.get("node_type", "Unknown"),
+                    "Section Path": alert.get("section_path", "N/A"),
+                    "Coverage": f"{coverage:.1f}%",
+                    "Status": qc.get("status", "unknown").upper(),
+                    "Missing Elements": summarize_missing_elements(qc.get("missing_elements"))
                 })
 
-        if verdict_data:
-            df_verdict = pd.DataFrame(verdict_data)
-            st.dataframe(df_verdict, use_container_width=True, hide_index=True)
+            df_quality = pd.DataFrame(alert_table)
+            st.dataframe(df_quality, use_container_width=True, hide_index=True)
 
     st.divider()
 
@@ -1346,6 +1416,21 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
         for match in matches:
             node_fact = match.get('node_fact', {})
             pattern = match.get('pattern')
+            quality_checks = match.get('quality_checks') or {}
+            quality_status = str(quality_checks.get('status', 'ok')).lower() if isinstance(quality_checks, dict) else 'ok'
+            match_percentage = 100.0
+            if isinstance(quality_checks, dict):
+                try:
+                    match_percentage = float(quality_checks.get('match_percentage', 100))
+                except (TypeError, ValueError):
+                    match_percentage = 0.0 if quality_status == 'error' else 100.0
+            missing_summary = summarize_missing_elements(quality_checks.get('missing_elements') if isinstance(quality_checks, dict) else None)
+            if quality_status == 'error':
+                quality_display = f"⚠️ {match_percentage:.1f}%"
+                if missing_summary and missing_summary != "—":
+                    quality_display += f" • {missing_summary}"
+            else:
+                quality_display = f"✅ {match_percentage:.1f}%"
 
             if pattern:
                 # Get pattern node type from decision_rule
@@ -1369,7 +1454,8 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
                     "Pattern Message": pattern.get('message_root', 'N/A'),
                     "Times Seen": pattern.get('times_seen', 0),
                     "Confidence": f"{match.get('confidence', 0):.1%}",
-                    "Verdict": match.get('verdict', 'UNKNOWN')
+                    "Verdict": match.get('verdict', 'UNKNOWN'),
+                    "Quality": quality_display
                 })
             else:
                 # No pattern matched - show the node fact info
@@ -1382,7 +1468,8 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
                     "Pattern Message": "N/A",
                     "Times Seen": 0,
                     "Confidence": f"{match.get('confidence', 0):.1%}",
-                    "Verdict": match.get('verdict', 'UNKNOWN')
+                    "Verdict": match.get('verdict', 'UNKNOWN'),
+                    "Quality": quality_display
                 })
 
         df_matches = pd.DataFrame(match_table)
@@ -1396,6 +1483,8 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
                 return ['background-color: #fff3cd'] * len(row)
             elif verdict in ["PARTIAL_MATCH", "LOW_MATCH"]:
                 return ['background-color: #f8d7da'] * len(row)
+            elif verdict == "QUALITY_BREAK":
+                return ['background-color: #f5b7b1'] * len(row)
             elif verdict == "NEW_PATTERN":
                 return ['background-color: #f5c6cb'] * len(row)
             return [''] * len(row)
@@ -1408,7 +1497,7 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
 
     # Gap Analysis section for unmatched items
     st.subheader("📝 Gap Analysis: Unmatched Nodes")
-    gap_data = get_gap_analysis(run_id, workspace=workspace)
+    gap_data = gap_analysis or {}
 
     if gap_data and gap_data.get('unmatched_nodes'):
         unmatched_nodes = gap_data['unmatched_nodes']
@@ -1445,6 +1534,8 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
 
         df_unmatched = pd.DataFrame(unmatched_table)
         st.dataframe(df_unmatched, use_container_width=True, hide_index=True)
+    elif quality_alerts:
+        st.warning("⚠️ Review the quality breaks listed above.")
     else:
         st.success("✅ All expected nodes were found in the input XML.")
 
@@ -1456,10 +1547,25 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
         st.info("No matches were generated for this run.")
         return
 
-    match_options = {
-        f"{m['node_fact']['node_type']} @ {m['node_fact']['section_path']} - {m['verdict']} ({m.get('confidence', 0):.1%})": m
-        for m in matches
-    }
+    match_options = {}
+    for m in matches:
+        node_label = f"{m['node_fact']['node_type']} @ {m['node_fact']['section_path']}"
+        verdict_label = m['verdict']
+        confidence_label = f"{m.get('confidence', 0):.1%}"
+        coverage = None
+        quality_checks = m.get('quality_checks') or {}
+        if isinstance(quality_checks, dict):
+            try:
+                coverage = float(quality_checks.get('match_percentage'))
+            except (TypeError, ValueError):
+                coverage = None
+
+        if coverage is not None:
+            option_label = f"{node_label} - {verdict_label} ({confidence_label}, {coverage:.0f}% coverage)"
+        else:
+            option_label = f"{node_label} - {verdict_label} ({confidence_label})"
+
+        match_options[option_label] = m
     selected_match = st.selectbox("Select match to analyze:", list(match_options.keys()))
 
     if selected_match:
@@ -1476,6 +1582,32 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
         if quick_explanation:
             st.info(quick_explanation)
 
+        quality_checks = match.get('quality_checks') or {}
+        if isinstance(quality_checks, dict) and quality_checks:
+            status_label = quality_checks.get('status', 'ok')
+            coverage_value = quality_checks.get('match_percentage')
+            if coverage_value is not None:
+                try:
+                    coverage_value = float(coverage_value)
+                except (TypeError, ValueError):
+                    coverage_value = None
+            coverage_text = f"{coverage_value:.1f}%" if isinstance(coverage_value, (int, float)) else "n/a"
+            st.write(f"**Quality Status:** `{status_label}` | **Coverage:** `{coverage_text}`")
+
+            missing_items = quality_checks.get('missing_elements')
+            if missing_items:
+                st.write("**Missing Elements:**")
+                if isinstance(missing_items, list):
+                    for item in missing_items:
+                        if isinstance(item, dict):
+                            path = item.get("path", "unknown path")
+                            reason = item.get("reason", "unspecified reason")
+                            st.write(f"- `{path}` • {reason}")
+                        else:
+                            st.write(f"- {item}")
+                else:
+                    st.write(f"- {missing_items}")
+
         # Detailed LLM Explanation button
         match_id = match.get('match_id')
         if match_id:
@@ -1486,8 +1618,8 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
                         detailed_explanation = explanation_response.get('detailed_explanation', '')
                         is_cached = explanation_response.get('cached', False)
 
-                        cache_label = " (cached)" if is_cached else " (newly generated)"
-                        st.success(f"✨ AI Explanation{cache_label}")
+                        # cache_label = " (cached)" if is_cached else " (newly generated)"
+                        st.success(f"✨ AI Explanation")
                         st.markdown(detailed_explanation)
                     else:
                         st.error("Failed to generate explanation. Please try again.")
@@ -1500,143 +1632,6 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
                 msg_root = pattern.get('message_root', 'Unknown')
                 times_seen = pattern.get('times_seen', 0)
                 st.info(f"🎯 Matched Pattern from **{spec_ver}/{msg_root}** (seen {times_seen} times)")
-
-                st.divider()
-
-                # Comparison breakdown
-                st.subheader("📊 Match Breakdown")
-
-                # 1. Node Type Match
-                st.write("**1️⃣ Node Type Match**")
-                nf_type = fact_json.get('node_type', 'Unknown')
-                pattern_type = decision_rule.get('node_type', 'Unknown')
-                if nf_type == pattern_type:
-                    st.success(f"✅ Both are `{nf_type}`")
-                else:
-                    st.error(f"❌ NodeFact: `{nf_type}` vs Pattern: `{pattern_type}`")
-
-                # 2. Attributes Match
-                st.write("**2️⃣ Attributes Match**")
-                nf_attrs = set(fact_json.get('attributes', {}).keys())
-                required_attrs = set(decision_rule.get('must_have_attributes', []))
-                optional_attrs = set(decision_rule.get('optional_attributes', []))
-
-                if required_attrs:
-                    matched_attrs = nf_attrs & required_attrs
-                    missing_attrs = required_attrs - nf_attrs
-                    extra_attrs = nf_attrs - required_attrs - optional_attrs
-
-                    col1, col2, col3 = st.columns(3)
-                    with col1:
-                        st.metric("Required Matched", f"{len(matched_attrs)}/{len(required_attrs)}")
-                        if matched_attrs:
-                            st.write("✅ " + ", ".join(f"`{a}`" for a in matched_attrs))
-                    with col2:
-                        if missing_attrs:
-                            st.metric("Missing", len(missing_attrs), delta_color="inverse")
-                            st.write("❌ " + ", ".join(f"`{a}`" for a in missing_attrs))
-                        else:
-                            st.metric("Missing", 0)
-                    with col3:
-                        if extra_attrs:
-                            st.metric("Extra", len(extra_attrs))
-                            st.write("➕ " + ", ".join(f"`{a}`" for a in extra_attrs))
-                else:
-                    st.info("No required attributes for this pattern")
-
-                # 3. Children Structure Match
-                st.write("**3️⃣ Children Structure Match**")
-                nf_children = fact_json.get('children', [])
-                pattern_child = decision_rule.get('child_structure', {})
-
-                pattern_has_children = pattern_child.get('has_children', False)
-                nf_has_children = len(nf_children) > 0
-
-                if pattern_has_children == nf_has_children:
-                    if nf_has_children:
-                        st.success(f"✅ Both have children ({len(nf_children)} children in NodeFact)")
-
-                        # Check child types if container
-                        if pattern_child.get('is_container') and isinstance(nf_children[0], dict):
-                            pattern_child_types = set(pattern_child.get('child_types', []))
-                            nf_child_types = set(c.get('node_type', '') for c in nf_children if isinstance(c, dict))
-
-                            if pattern_child_types:
-                                matched_types = pattern_child_types & nf_child_types
-                                st.write(f"  Child types: {', '.join(f'`{t}`' for t in matched_types)}")
-                    else:
-                        st.success("✅ Both have no children")
-                else:
-                    st.warning(f"⚠️ Pattern expects children: {pattern_has_children}, NodeFact has children: {nf_has_children}")
-
-                # 4. Relationships Match
-                st.write("**4️⃣ Relationships Match**")
-                nf_relationships = fact_json.get('relationships', [])
-                pattern_refs = decision_rule.get('reference_patterns', [])
-
-                if pattern_refs or nf_relationships:
-                    # Build detailed relationship info
-                    nf_ref_details = {}
-                    for rel in nf_relationships:
-                        ref_type = rel.get('type', '')
-                        nf_ref_details[ref_type] = {
-                            'target_type': rel.get('target_type', 'Unknown'),
-                            'target_path': rel.get('target_section_path', 'Unknown')
-                        }
-
-                    pattern_ref_details = {}
-                    for ref in pattern_refs:
-                        ref_type = ref.get('type', '')
-
-                        # Handle different reference pattern structures
-                        if ref_type == 'child_references':
-                            pattern_ref_details[ref_type] = {
-                                'description': f"Children with reference fields: {', '.join(ref.get('fields', []))}",
-                                'fields': ref.get('fields', [])
-                            }
-                        elif 'parent' in ref and 'child' in ref:
-                            # Relationship type (parent/child)
-                            pattern_ref_details[ref_type] = {
-                                'description': f"{ref.get('parent', 'Unknown')} → {ref.get('child', 'Unknown')} ({ref.get('direction', 'unknown')})",
-                                'parent': ref.get('parent'),
-                                'child': ref.get('child')
-                            }
-                        else:
-                            # Cross-reference or other type
-                            pattern_ref_details[ref_type] = {
-                                'description': ref.get('reference', ref_type),
-                                'data': ref
-                            }
-
-                    nf_ref_types = set(nf_ref_details.keys())
-                    pattern_ref_types = set(pattern_ref_details.keys())
-
-                    matched_refs = nf_ref_types & pattern_ref_types
-                    missing_refs = pattern_ref_types - nf_ref_types
-                    extra_refs = nf_ref_types - pattern_ref_types
-
-                    if matched_refs:
-                        st.success(f"✅ **Matched References:**")
-                        for ref in matched_refs:
-                            nf_info = nf_ref_details[ref]
-                            st.write(f"  - `{ref}` → {nf_info['target_type']} at `{nf_info['target_path']}`")
-
-                    if missing_refs:
-                        st.warning(f"⚠️ **Missing References (Pattern expects these):**")
-                        for ref in missing_refs:
-                            pattern_info = pattern_ref_details[ref]
-                            st.write(f"  - `{ref}`: {pattern_info['description']}")
-
-                    if extra_refs:
-                        st.info(f"➕ **Extra References (NodeFact has these):**")
-                        for ref in extra_refs:
-                            nf_info = nf_ref_details[ref]
-                            st.write(f"  - `{ref}` → {nf_info['target_type']} at `{nf_info['target_path']}`")
-
-                    if not matched_refs and not missing_refs and not extra_refs:
-                        st.info("Both have no relationship patterns")
-                else:
-                    st.info("No relationship patterns")
 
                 st.divider()
 
@@ -1781,10 +1776,18 @@ def _import_patterns_dialog(workspace: str):
                 st.session_state.show_import_dialog = False
                 st.rerun()
 
-        except json.JSONDecodeError:
-            st.error("❌ Invalid JSON file. Please upload a valid patterns export file.")
+        except json.JSONDecodeError as e:
+            show_error_with_logs(
+                "Invalid JSON file format",
+                f"Please upload a valid patterns export file. Parse error: {str(e)}",
+                error_type="general"
+            )
         except Exception as e:
-            st.error(f"❌ Import failed: {str(e)}")
+            show_error_with_logs(
+                "Pattern import failed",
+                str(e),
+                error_type="general"
+            )
 
     # Close button
     if st.button("❌ Cancel Import", type="secondary"):
@@ -1794,288 +1797,679 @@ def _import_patterns_dialog(workspace: str):
 
 def show_patterns_page(embedded: bool = False):
     """Render Pattern Manager content; embed inside tabs if requested."""
-
+    import sys
+    import os
+    
+    # Add the project root to the Python path (go up two levels from the current file)
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+    if project_root not in sys.path:
+        sys.path.append(project_root)
+    assisted_root = os.path.join(project_root, 'AssistedDiscovery')
+    if os.path.isdir(assisted_root) and assisted_root not in sys.path:
+        sys.path.append(assisted_root)
+    
     workspace = st.session_state.get('current_workspace', 'default')
 
-    if embedded:
-        st.subheader("🎨 Pattern Manager")
-        st.caption(f"Browse, export, and import patterns. (Workspace: **{workspace}**)")
-    else:
+    if not embedded:
         st.header("🎨 Pattern Manager")
-        st.write("View, export, and import patterns")
+        st.write("View, export, and verify patterns")
 
+    # Get patterns first
     patterns = get_patterns(limit=200, workspace=workspace)
+    
+    if not patterns:
+        st.info("No patterns found. Run discovery on some XML files first!")
+        return
+    # Deduplicate patterns by section_path + node_type
+    # Keep the one with most attributes (most complete structure)
+    unique_patterns = {}
+    for pattern in patterns:
+        decision_rule = pattern.get('decision_rule', {})
+        node_type = decision_rule.get('node_type', 'Unknown')
+        section_path = pattern['section_path']
+        
+        # Create unique key based on section path and node type
+        unique_key = f"{section_path}|{node_type}"
 
-    if patterns:
-        # Deduplicate patterns by section_path + node_type
-        # Keep the one with most attributes (most complete structure)
-        unique_patterns = {}
-        for pattern in patterns:
-            decision_rule = pattern.get('decision_rule', {})
-            node_type = decision_rule.get('node_type', 'Unknown')
-            section_path = pattern['section_path']
+        if unique_key not in unique_patterns:
+            unique_patterns[unique_key] = pattern
+        else:
+            # Keep the pattern with more must_have_attributes (more specific)
+            existing_attrs = len(unique_patterns[unique_key].get('decision_rule', {}).get('must_have_attributes', []))
+            current_attrs = len(decision_rule.get('must_have_attributes', []))
 
-            # Create unique key based on section path and node type
-            unique_key = f"{section_path}|{node_type}"
-
-            if unique_key not in unique_patterns:
+            if current_attrs > existing_attrs:
                 unique_patterns[unique_key] = pattern
-            else:
-                # Keep the pattern with more must_have_attributes (more specific)
-                existing_attrs = len(unique_patterns[unique_key].get('decision_rule', {}).get('must_have_attributes', []))
-                current_attrs = len(decision_rule.get('must_have_attributes', []))
 
-                if current_attrs > existing_attrs:
-                    unique_patterns[unique_key] = pattern
+    patterns = list(unique_patterns.values())
 
-        patterns = list(unique_patterns.values())
+    # Only create tabs if not embedded (when embedded, parent already provides tab structure)
+    if not embedded:
+        tab1, tab2 = st.tabs(["📋 Manage Patterns ", "✅ Verify Patterns"])
 
-        # Patterns table with description
-        pattern_data = []
-        for pattern in patterns:
-            decision_rule = pattern.get('decision_rule', {})
-            # Get description, truncate if too long
-            desc = pattern.get('description', '')
-            if desc and len(desc) > 80:
-                desc = desc[:77] + "..."
+        with tab1:
+            _render_patterns_tab(patterns, workspace)
 
-            pattern_data.append({
-                "ID": pattern['id'],
-                "Section Path": pattern['section_path'],
-                "Node Type": decision_rule.get('node_type', 'Unknown'),
-                "Description": desc if desc else "N/A",
-                "Version": pattern['spec_version'],
-                "Airline": pattern.get('airline_code', 'N/A'),
-                "Message": pattern['message_root'],
-                "Must-Have Attrs": len(decision_rule.get('must_have_attributes', [])),
-                "Has Children": "✓" if decision_rule.get('child_structure', {}).get('has_children') else ""
-            })
+        with tab2:
+            _render_verify_tab(patterns, workspace)
+    else:
+        # When embedded, just render the patterns tab content directly
+        _render_patterns_tab(patterns, workspace)
 
-        df_patterns = pd.DataFrame(pattern_data)
 
-        # Summary metrics
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Total Patterns", len(patterns))
-        with col2:
-            unique_versions = len(set(p['spec_version'] for p in patterns))
-            st.metric("Versions", unique_versions)
-        with col3:
-            unique_types = len(set(p.get('decision_rule', {}).get('node_type', 'Unknown') for p in patterns))
-            st.metric("Node Types", unique_types)
+def _render_patterns_tab(patterns, workspace):
+    """Render the patterns tab content."""
+    # Convert patterns to DataFrame for display
+    pattern_data = []
+    for pattern in patterns:
+        decision_rule = pattern.get('decision_rule', {})
+        # Get description, truncate if too long
+        desc = pattern.get('description', '')
+        if desc and len(desc) > 80:
+            desc = desc[:77] + "..."
 
-        st.divider()
+        pattern_data.append({
+            "ID": pattern['id'],
+            "Section Path": pattern['section_path'],
+            "Node Type": decision_rule.get('node_type', 'Unknown'),
+            "Description": desc if desc else "N/A",
+            "Version": pattern['spec_version'],
+            "Airline": pattern.get('airline_code', 'N/A'),
+            "Message": pattern['message_root'],
+            "Must-Have Attrs": len(decision_rule.get('must_have_attributes', [])),
+            "Has Children": "✓" if decision_rule.get('child_structure', {}).get('has_children') else ""
+        })
 
-        # Filters
-        st.subheader("🔧 Filters")
+    df_patterns = pd.DataFrame(pattern_data)
+
+    # Summary metrics
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Total Patterns", len(patterns))
+    with col2:
+        unique_versions = len(set(p['spec_version'] for p in patterns))
+        st.metric("Versions", unique_versions)
+    with col3:
+        unique_types = len(set(p.get('decision_rule', {}).get('node_type', 'Unknown') for p in patterns))
+        st.metric("Node Types", unique_types)
+
+    st.divider()
+    
+    # Filters
+    st.subheader("🔧 Filters")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        versions = ["All"] + sorted(list(set(p['spec_version'] for p in patterns)))
+        selected_version = st.selectbox("Version:", versions)
+
+    with col2:
+        node_types = ["All"] + sorted(list(set(p.get('decision_rule', {}).get('node_type', 'Unknown') for p in patterns)))
+        selected_type = st.selectbox("Node Type:", node_types)
+
+    # Apply filters
+    filtered_df = df_patterns.copy()
+    if selected_version != "All":
+        filtered_df = filtered_df[filtered_df['Version'] == selected_version]
+    if selected_type != "All":
+        filtered_df = filtered_df[filtered_df['Node Type'] == selected_type]
+
+    st.divider()
+    st.subheader(f"📋 Patterns ({len(filtered_df)} total)")
+
+    # Prepare table with Select checkbox
+    table_rows = []
+    pattern_id_map = {}
+
+    for idx, (_, row) in enumerate(filtered_df.iterrows()):
+        pattern_id = row.get('ID')
+        pattern_id_map[idx] = pattern_id
+
+        table_rows.append({
+            "Select": False,
+            **{k: row[k] for k in filtered_df.columns if k != 'ID'}
+        })
+
+    df = pd.DataFrame(table_rows)
+
+    # Data editor with checkbox
+    edited_df = st.data_editor(
+        df,
+        hide_index=True,
+        use_container_width=True,
+        column_config={
+            "Select": st.column_config.CheckboxColumn(
+                "Select",
+                help="Select pattern for export",
+                default=False
+            ),
+            "Must-Have Attrs": st.column_config.NumberColumn("Must-Have Attrs", format="%d"),
+        },
+        disabled=[col for col in df.columns if col != "Select"],
+        key=f"pattern_manager_select_primary_{workspace}")
+
+    # Get selected pattern IDs
+    selected_pattern_ids = [
+        pattern_id_map[idx]
+        for idx in range(len(edited_df))
+        if edited_df.iloc[idx]["Select"]
+    ]
+
+    # Export and Import buttons
+    st.divider()
+    selected_count = len(selected_pattern_ids)
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        if st.button(f"📤 Export Selected ({selected_count})",
+                    disabled=selected_count == 0,
+                    use_container_width=True,
+                    type="primary"):
+            _export_selected_patterns(patterns, selected_pattern_ids, workspace)
+
+    with col2:
+        if st.button("📥 Import Patterns",
+                    use_container_width=True,
+                    type="primary"):
+            st.session_state.show_import_dialog = True
+
+    with col3:
+        st.metric("Total", len(filtered_df))
+
+    with col4:
+        st.metric("Selected", selected_count)
+
+    # Import dialog
+    if st.session_state.get('show_import_dialog', False):
+        _import_patterns_dialog(workspace)
+
+    # Edit Pattern Section
+    st.divider()
+    st.subheader("✏️ Edit Pattern")
+    st.caption("Select a pattern and provide additional requirements to refine it using LLM.")
+
+    # Show success message if pattern was just modified
+    if 'last_modification' in st.session_state:
+        mod = st.session_state.last_modification
+        st.success(f"✅ Pattern {mod['pattern_id']} was successfully modified!")
+        st.write(f"**Modification Summary:** {mod['modification_summary']}")
+
+        with st.expander("View Modification Details"):
+            st.write("**New Description:**")
+            st.info(mod['new_description'])
+            st.write("**New Decision Rule:**")
+            st.json(mod['new_decision_rule'])
+
+        # Clear the modification state after showing once
+        if st.button("Clear Notification"):
+            del st.session_state.last_modification
+            st.rerun()
+
+    # Pattern selection for editing
+    pattern_options = {f"ID {p['id']} - {p['section_path']} (seen {p['times_seen']}x)": p for p in patterns}
+    selected_pattern = st.selectbox("Select pattern to edit:", list(pattern_options.keys()), key="edit_pattern_select")
+
+    if selected_pattern:
+        pattern = pattern_options[selected_pattern]
+
+        # Show business-friendly description
+        if pattern.get('description'):
+            st.info(f"📝 **Description:** {pattern['description']}")
+
         col1, col2 = st.columns(2)
 
         with col1:
-            versions = ["All"] + sorted(list(set(p['spec_version'] for p in patterns)))
-            selected_version = st.selectbox("Version:", versions)
+            st.write("**Pattern Info:**")
+            st.write(f"- **Section:** {pattern['section_path']}")
+            st.write(f"- **Version:** {pattern['spec_version']}")
+            st.write(f"- **Message:** {pattern['message_root']}")
+            if pattern.get('airline_code'):
+                st.write(f"- **Airline:** {pattern['airline_code']}")
 
         with col2:
-            node_types = ["All"] + sorted(list(set(p.get('decision_rule', {}).get('node_type', 'Unknown') for p in patterns)))
-            selected_type = st.selectbox("Node Type:", node_types)
+            st.write("**Node Type:**")
+            node_type = pattern.get('decision_rule', {}).get('node_type', 'Unknown')
+            st.write(f"- **Type:** {node_type}")
 
-        # Apply filters
-        filtered_df = df_patterns.copy()
-        if selected_version != "All":
-            filtered_df = filtered_df[filtered_df['Version'] == selected_version]
-        if selected_type != "All":
-            filtered_df = filtered_df[filtered_df['Node Type'] == selected_type]
+            # Show required attributes if available
+            must_have = pattern.get('decision_rule', {}).get('must_have_attributes', [])
+            if must_have:
+                st.write(f"- **Required Attributes:** {', '.join(must_have[:5])}")
+                if len(must_have) > 5:
+                    st.write(f"  _(and {len(must_have) - 5} more)_")
 
         st.divider()
-        st.subheader(f"📋 Patterns ({len(filtered_df)} total)")
 
-        # Prepare table with Select checkbox
-        table_rows = []
-        pattern_id_map = {}
-
-        for idx, (_, row) in enumerate(filtered_df.iterrows()):
-            pattern_id = row.get('ID')
-            pattern_id_map[idx] = pattern_id
-
-            table_rows.append({
-                "Select": False,
-                **{k: row[k] for k in filtered_df.columns if k != 'ID'}
-            })
-
-        df = pd.DataFrame(table_rows)
-
-        # Data editor with checkbox
-        edited_df = st.data_editor(
-            df,
-            hide_index=True,
-            use_container_width=True,
-            column_config={
-                "Select": st.column_config.CheckboxColumn(
-                    "Select",
-                    help="Select pattern for export",
-                    default=False
-                ),
-                "Must-Have Attrs": st.column_config.NumberColumn("Must-Have Attrs", format="%d"),
-            },
-            disabled=[col for col in df.columns if col != "Select"],
-            key=f"pattern_manager_select_{workspace}"
+        additional_requirements = st.text_area(
+            "Additional Requirements:",
+            placeholder="e.g., 'Add validation for passenger age range', 'Include loyalty tier information', etc.",
+            help="Describe any modifications or additional requirements for this pattern. The LLM will update the business description and decision rule accordingly.",
+            key=f"pattern_requirements_{pattern['id']}"
         )
 
-        # Get selected pattern IDs
-        selected_pattern_ids = [
-            pattern_id_map[idx]
-            for idx in range(len(edited_df))
-            if edited_df.iloc[idx]["Select"]
-        ]
-
-        # Export and Import buttons
-        st.divider()
-        selected_count = len(selected_pattern_ids)
-
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2 = st.columns([1, 3])
         with col1:
-            if st.button(f"📤 Export Selected ({selected_count})",
-                        disabled=selected_count == 0,
-                        use_container_width=True,
-                        type="primary"):
-                _export_selected_patterns(patterns, selected_pattern_ids, workspace)
+            if st.button("🔄 Modify Pattern", type="primary", disabled=not additional_requirements):
+                with st.spinner("🤖 LLM is modifying the pattern..."):
+                    try:
+                        # Prepare payload for LLM modification
+                        payload = {
+                            "pattern_id": pattern['id'],
+                            "current_description": pattern.get('description', ''),
+                            "current_decision_rule": pattern.get('decision_rule', {}),
+                            "additional_requirements": additional_requirements,
+                            "section_path": pattern['section_path'],
+                            "spec_version": pattern['spec_version'],
+                            "message_root": pattern['message_root']
+                        }
 
-        with col2:
-            if st.button("📥 Import Patterns",
-                        use_container_width=True,
-                        type="primary"):
-                st.session_state.show_import_dialog = True
+                        # Call backend API to modify pattern
+                        response = requests.post(
+                            f"{API_BASE_URL}/patterns/{pattern['id']}/modify",
+                            params={"workspace": workspace},
+                            json=payload,
+                            timeout=60
+                        )
 
-        with col3:
-            st.metric("Total", len(filtered_df))
+                        if response.status_code == 200:
+                            result = response.json()
 
-        with col4:
-            st.metric("Selected", selected_count)
-
-        # Import dialog
-        if st.session_state.get('show_import_dialog', False):
-            _import_patterns_dialog(workspace)
-
-        # Pattern details
-        st.divider()
-        st.subheader("🔎 Pattern Details")
-
-        # Show success message if pattern was just modified
-        if 'last_modification' in st.session_state:
-            mod = st.session_state.last_modification
-            st.success(f"✅ Pattern {mod['pattern_id']} was successfully modified!")
-            st.write(f"**Modification Summary:** {mod['modification_summary']}")
-
-            with st.expander("View Modification Details"):
-                st.write("**New Description:**")
-                st.info(mod['new_description'])
-                st.write("**New Decision Rule:**")
-                st.json(mod['new_decision_rule'])
-
-            # Clear the modification state after showing once
-            if st.button("Clear Notification"):
-                del st.session_state.last_modification
-                st.rerun()
-
-        pattern_options = {f"ID {p['id']} - {p['section_path']} (seen {p['times_seen']}x)": p for p in patterns}
-        selected_pattern = st.selectbox("Select pattern:", list(pattern_options.keys()))
-
-        if selected_pattern:
-            pattern = pattern_options[selected_pattern]
-
-            # Show business-friendly description
-            if pattern.get('description'):
-                st.info(f"📝 **Description:** {pattern['description']}")
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.write("**Pattern Info:**")
-                st.write(f"- **Section:** {pattern['section_path']}")
-                st.write(f"- **Version:** {pattern['spec_version']}")
-                st.write(f"- **Message:** {pattern['message_root']}")
-                if pattern.get('airline_code'):
-                    st.write(f"- **Airline:** {pattern['airline_code']}")
-                if pattern.get('description'):
-                    st.write(f"- **Description:** {pattern['description']}")
-
-            with col2:
-                st.write("**Node Type:**")
-                node_type = pattern.get('decision_rule', {}).get('node_type', 'Unknown')
-                st.write(f"- **Type:** {node_type}")
-
-                # Show required attributes if available
-                must_have = pattern.get('decision_rule', {}).get('must_have_attributes', [])
-                if must_have:
-                    st.write(f"- **Required Attributes:** {', '.join(must_have[:5])}")
-                    if len(must_have) > 5:
-                        st.write(f"  _(and {len(must_have) - 5} more)_")
-
-            # Edit Pattern Section
-            st.divider()
-            st.subheader("✏️ Edit Pattern")
-            st.caption("Provide additional requirements to refine this pattern using LLM.")
-
-            additional_requirements = st.text_area(
-                "Additional Requirements:",
-                placeholder="e.g., 'Add validation for passenger age range', 'Include loyalty tier information', etc.",
-                help="Describe any modifications or additional requirements for this pattern. The LLM will update the business description and decision rule accordingly.",
-                key=f"pattern_requirements_{pattern['id']}"
-            )
-
-            col1, col2 = st.columns([1, 3])
-            with col1:
-                if st.button("🔄 Modify Pattern", type="primary", disabled=not additional_requirements):
-                    with st.spinner("🤖 LLM is modifying the pattern..."):
-                        try:
-                            # Prepare payload for LLM modification
-                            payload = {
-                                "pattern_id": pattern['id'],
-                                "current_description": pattern.get('description', ''),
-                                "current_decision_rule": pattern.get('decision_rule', {}),
-                                "additional_requirements": additional_requirements,
-                                "section_path": pattern['section_path'],
-                                "spec_version": pattern['spec_version'],
-                                "message_root": pattern['message_root']
+                            # Store the modification result in session state
+                            st.session_state.last_modification = {
+                                'pattern_id': pattern['id'],
+                                'new_description': result.get('new_description', 'N/A'),
+                                'new_decision_rule': result.get('new_decision_rule', {}),
+                                'modification_summary': result.get('modification_summary', 'N/A')
                             }
 
-                            # Call backend API to modify pattern
-                            response = requests.post(
-                                f"{API_BASE_URL}/patterns/{pattern['id']}/modify",
-                                params={"workspace": workspace},
-                                json=payload,
-                                timeout=60
+                            # Automatically reload to show updated data
+                            st.rerun()
+                        else:
+                            show_error_with_logs(
+                                "Failed to modify pattern",
+                                f"Server response: {response.text}",
+                                error_type="general"
                             )
+                    except Exception as e:
+                        show_error_with_logs(
+                            "Error modifying pattern",
+                            str(e),
+                            error_type="general"
+                        )
 
-                            if response.status_code == 200:
-                                result = response.json()
+        with col2:
+            if additional_requirements:
+                st.caption(f"💡 {len(additional_requirements)} characters entered")
 
-                                # Store the modification result in session state
-                                st.session_state.last_modification = {
-                                    'pattern_id': pattern['id'],
-                                    'new_description': result.get('new_description', 'N/A'),
-                                    'new_decision_rule': result.get('new_decision_rule', {}),
-                                    'modification_summary': result.get('modification_summary', 'N/A')
-                                }
+        # Advanced details in expander (for technical users)
+        with st.expander("🔧 Technical Details (Advanced)"):
+            st.write("**Decision Rule:**")
+            st.json(pattern.get('decision_rule', {}))
+            st.write("**Pattern ID:**", pattern['id'])
+            st.write("**Signature Hash:**", pattern.get('signature_hash', 'N/A'))
 
-                                # Automatically reload to show updated data
-                                st.rerun()
-                            else:
-                                st.error(f"Failed to modify pattern: {response.text}")
-                        except Exception as e:
-                            st.error(f"Error modifying pattern: {str(e)}")
 
+def _render_verify_tab(patterns, workspace=None):
+    """Render the verify patterns tab content."""
+    if workspace is None:
+        workspace = st.session_state.get('current_workspace', 'default')
+
+    st.subheader("🔍 Verify Patterns")
+    st.info("Verify patterns against XML content to ensure they match as expected.")
+    
+    # Initialize session state for pattern verification if not exists
+    if 'pattern_responses' not in st.session_state:
+        st.session_state.pattern_responses = {}
+    
+    # Convert patterns to the format expected by the verifier
+    if patterns:
+        for pattern in patterns:
+            if pattern['section_path'] not in st.session_state.pattern_responses:
+                st.session_state.pattern_responses[pattern['section_path']] = {
+                    'name': pattern.get('section_path', 'Unnamed Pattern'),
+                    'description': pattern.get('description', 'No description available'),
+                    'prompt': f"Pattern for {pattern.get('section_path')} - {pattern.get('description', '')}",
+                    'verified': False
+                }
+
+    # Summary metrics
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Total Patterns", len(patterns))
+    with col2:
+        unique_versions = len(set(p['spec_version'] for p in patterns))
+        st.metric("Versions", unique_versions)
+    with col3:
+        unique_types = len(set(p.get('decision_rule', {}).get('node_type', 'Unknown') for p in patterns))
+        st.metric("Node Types", unique_types)
+
+    st.divider()
+    st.subheader("🔎 Pattern Details")
+
+    # Show success message if pattern was just modified
+    if 'last_modification' in st.session_state:
+        mod = st.session_state.last_modification
+        st.success(f"✅ Pattern {mod['pattern_id']} was successfully modified!")
+        st.write(f"**Modification Summary:** {mod['modification_summary']}")
+
+        with st.expander("View Modification Details"):
+            st.write("**New Description:**")
+            st.info(mod['new_description'])
+            st.write("**New Decision Rule:**")
+            st.json(mod['new_decision_rule'])
+
+        # Clear the modification state after showing once
+        if st.button("Clear Notification"):
+            del st.session_state.last_modification
+            st.rerun()
+
+    pattern_options = {f"ID {p['id']} - {p['section_path']} (seen {p['times_seen']}x)": p for p in patterns}
+    selected_pattern = st.selectbox("Select pattern:", list(pattern_options.keys()))
+
+    if selected_pattern:
+        pattern = pattern_options[selected_pattern]
+
+        # Show business-friendly description
+        if pattern.get('description'):
+            st.info(f"📝 **Description:** {pattern['description']}")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.write("**Pattern Info:**")
+            st.write(f"- **Section:** {pattern['section_path']}")
+            st.write(f"- **Version:** {pattern['spec_version']}")
+            st.write(f"- **Message:** {pattern['message_root']}")
+            if pattern.get('airline_code'):
+                st.write(f"- **Airline:** {pattern['airline_code']}")
+            if pattern.get('description'):
+                st.write(f"- **Description:** {pattern['description']}")
+
+        with col2:
+            st.write("**Node Type:**")
+            node_type = pattern.get('decision_rule', {}).get('node_type', 'Unknown')
+            st.write(f"- **Type:** {node_type}")
+
+            # Show required attributes if available
+            must_have = pattern.get('decision_rule', {}).get('must_have_attributes', [])
+            if must_have:
+                st.write(f"- **Required Attributes:** {', '.join(must_have[:5])}")
+                if len(must_have) > 5:
+                    st.write(f"  _(and {len(must_have) - 5} more)_")
+
+        # Relationships Section
+        st.divider()
+        st.subheader("🔗 Discovered Relationships")
+
+        # Get relationships for this node type
+        node_type = pattern.get('decision_rule', {}).get('node_type', 'Unknown')
+        relationships = get_relationships_by_node_type(node_type, workspace)
+
+        if relationships:
+            # Show summary metrics
+            total_rels = len(relationships)
+            valid_rels = sum(1 for r in relationships if r.get('is_valid'))
+            broken_rels = total_rels - valid_rels
+
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Total", total_rels)
             with col2:
-                if additional_requirements:
-                    st.caption(f"💡 {len(additional_requirements)} characters entered")
+                st.metric("✅ Valid", valid_rels)
+            with col3:
+                st.metric("❌ Broken", broken_rels)
 
-            # Advanced details in expander (for technical users)
-            with st.expander("🔧 Technical Details (Advanced)"):
-                st.write("**Decision Rule:**")
-                st.json(pattern.get('decision_rule', {}))
-                st.write("**Pattern ID:**", pattern['id'])
-                st.write("**Signature Hash:**", pattern.get('signature_hash', 'N/A'))
-    else:
-        st.info("No patterns found. Run discovery on some XML files first!")
+            # Group relationships by target node type
+            rel_by_target = {}
+            for r in relationships:
+                target = r.get('target_node_type', 'Unknown')
+                if target not in rel_by_target:
+                    rel_by_target[target] = []
+                rel_by_target[target].append(r)
+
+            # Display relationships table
+            st.write("**📊 Relationships by Target Node Type:**")
+
+            rel_data = []
+            for r in relationships:
+                status_icon = "✅" if r.get('is_valid') else "❌"
+                conf = r.get('confidence')
+                conf_str = f"{conf:.0%}" if conf is not None else "N/A"
+
+                rel_data.append({
+                    "Status": status_icon,
+                    "Target Node": r.get('target_node_type', 'Unknown'),
+                    "Reference Type": r.get('reference_type', 'N/A'),
+                    "Reference Field": r.get('reference_field', 'N/A'),
+                    "Confidence": conf_str
+                })
+
+            df_rels = pd.DataFrame(rel_data)
+            st.dataframe(df_rels, use_container_width=True, hide_index=True)
+
+            st.caption("Legend: ✅ Valid relationship | ❌ Broken relationship (target not found)")
+        else:
+            st.info(f"No relationships discovered for **{node_type}** yet. Relationships are discovered during the Discovery or Identify workflows.")
+
+        # Advanced details in expander (for technical users)
+        st.divider()
+        with st.expander("🔧 Technical Details (Advanced)"):
+            st.write("**Decision Rule:**")
+            st.json(pattern.get('decision_rule', {}))
+            st.write("**Pattern ID:**", pattern['id'])
+            st.write("**Signature Hash:**", pattern.get('signature_hash', 'N/A'))
+
+        # XML Verification Section
+        st.divider()
+        st.subheader("🧪 Verify Pattern with XML")
+        st.caption("Enter XML content to verify against this pattern using AI-powered analysis")
+
+        xml_content = st.text_area(
+            "Paste XML content:",
+            height=200,
+            placeholder="<YourNode>\n  <Attribute>Value</Attribute>\n  <ChildNode>Content</ChildNode>\n</YourNode>",
+            key=f"verify_xml_{pattern['id']}",
+            help="Paste the XML content you want to verify against this pattern. The LLM will analyze if it matches the pattern's requirements."
+        )
+
+        col1, col2 = st.columns([1, 3])
+        with col1:
+            verify_btn = st.button(
+                "🚀 Verify with LLM",
+                type="primary",
+                disabled=not xml_content.strip(),
+                use_container_width=True,
+                key=f"verify_btn_{pattern['id']}"
+            )
+
+        with col2:
+            if xml_content.strip():
+                xml_lines = len(xml_content.strip().split('\n'))
+                xml_chars = len(xml_content.strip())
+                st.caption(f"✅ Ready to verify: {xml_lines} lines, {xml_chars} characters")
+            else:
+                st.info("Enter XML content above to verify")
+
+        # Process verification
+        if verify_btn and xml_content.strip():
+            result = None
+            verification_error = None
+
+            with st.status("🔄 Verifying pattern with AI...", expanded=True) as status:
+
+                try:
+                    # Import and initialize verifier
+                    import sys
+                    sys.path.insert(0, str(Path(__file__).parent / "utils"))
+                    from pattern_llm_verifier import get_verifier
+
+                    verifier = get_verifier()
+                    st.write("🤖 Analyzing XML against pattern...")
+
+                    # Generate detailed pattern prompt from decision rule
+                    decision_rule = pattern.get('decision_rule', {})
+                    pattern_prompt = f"**STRICT PATTERN VALIDATION REQUIREMENTS:**\n\n"
+                    pattern_prompt += f"The XML MUST match ALL of the following requirements exactly:\n\n"
+
+                    # Node type
+                    pattern_prompt += f"1. **Node Type:** Must be exactly '{decision_rule.get('node_type', 'Unknown')}'\n"
+
+                    # Attributes
+                    must_have_attrs = decision_rule.get('must_have_attributes', [])
+                    if must_have_attrs:
+                        pattern_prompt += f"\n2. **Required Attributes (ALL must be present):**\n"
+                        for attr in must_have_attrs:
+                            pattern_prompt += f"   - {attr} (REQUIRED)\n"
+                    else:
+                        pattern_prompt += f"\n2. **Required Attributes:** None specified\n"
+
+                    # Children
+                    child_structure = decision_rule.get('child_structure', {})
+                    if child_structure.get('has_children'):
+                        pattern_prompt += f"\n3. **Child Structure:** MUST have children\n"
+
+                        child_types = child_structure.get('child_types', [])
+                        if child_types:
+                            pattern_prompt += f"   **Required Child Types (ALL must be present):**\n"
+                            for child_type in child_types:
+                                pattern_prompt += f"   - {child_type} (REQUIRED)\n"
+
+                        # Add nested child structure requirements
+                        child_structures = child_structure.get('child_structures', [])
+                        if child_structures:
+                            pattern_prompt += f"\n   **Child Element Requirements:**\n"
+                            for idx, child_struct in enumerate(child_structures, 1):
+                                child_node_type = child_struct.get('node_type', 'Unknown')
+                                pattern_prompt += f"\n   {idx}. Each '{child_node_type}' element MUST have:\n"
+
+                                # Required attributes for child
+                                req_attrs = child_struct.get('required_attributes', [])
+                                if req_attrs:
+                                    pattern_prompt += f"      **Required Attributes (ALL must be present):**\n"
+                                    for attr in req_attrs:
+                                        pattern_prompt += f"      - @{attr} (REQUIRED)\n"
+
+                                # Reference fields for child
+                                ref_fields = child_struct.get('reference_fields', [])
+                                if ref_fields:
+                                    pattern_prompt += f"      **Required Child Elements (ALL must be present):**\n"
+                                    for ref_field in ref_fields:
+                                        pattern_prompt += f"      - <{ref_field}> (REQUIRED)\n"
+
+                        min_children = child_structure.get('min_children', 0)
+                        max_children = child_structure.get('max_children')
+                        if min_children > 0:
+                            pattern_prompt += f"\n   - Minimum children: {min_children}\n"
+                        if max_children:
+                            pattern_prompt += f"   - Maximum children: {max_children}\n"
+                    else:
+                        pattern_prompt += f"\n3. **Child Structure:** No children expected\n"
+
+                    # Additional context
+                    pattern_prompt += f"\n**Pattern Context:**\n"
+                    pattern_prompt += f"- Section: {pattern.get('section_path', 'N/A')}\n"
+                    pattern_prompt += f"- Version: {pattern.get('spec_version', 'N/A')}\n"
+                    if pattern.get('description'):
+                        pattern_prompt += f"- Description: {pattern['description']}\n"
+
+                    pattern_prompt += f"\n**IMPORTANT:** The XML must match ALL requirements listed above. "
+                    pattern_prompt += f"If ANY required attribute or child type is missing, the verification should FAIL.\n"
+
+                    # Verify pattern
+                    result = verifier.verify_pattern(pattern_prompt, xml_content.strip())
+
+                    if 'error' in result:
+                        st.write(f"❌ Verification error: {result['error']}")
+                        status.update(label="❌ Verification Failed", state="error")
+                        return
+
+                    st.write("✅ Verification complete!")
+                    status.update(label="✅ AI Verification Complete", state="complete")
+
+                except ImportError:
+                    verification_error = "LLM verifier not available. Check that openai package is installed."
+                    status.update(label="❌ Verification Failed", state="error")
+
+                except Exception as e:
+                    verification_error = f"Verification failed: {str(e)}\n\nError Type: {type(e).__name__}"
+                    status.update(label="❌ Verification Failed", state="error")
+
+            # Display results outside the status block to avoid nesting issues
+            if verification_error:
+                st.error(f"❌ {verification_error}")
+            elif result:
+                # Display verification results
+                st.divider()
+                st.markdown("### 📊 AI Verification Results")
+
+                # Summary with match status
+                is_match = result.get('is_match', False)
+                confidence = result.get('confidence', 0.0)
+
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    if is_match:
+                        st.success("✅ **MATCH**")
+                    else:
+                        st.error("❌ **NO MATCH**")
+
+                with col2:
+                    st.metric("Confidence", f"{confidence:.0%}")
+
+                with col3:
+                    tokens_used = result.get('tokens_used', 0)
+                    st.metric("Tokens Used", tokens_used)
+
+                # Summary
+                summary = result.get('summary', 'No summary available')
+                st.markdown("**Summary:**")
+                if is_match:
+                    st.success(summary)
+                else:
+                    st.warning(summary)
+
+                # Detailed findings
+                findings = result.get('findings', [])
+                if findings:
+                    st.markdown("---")
+                    st.markdown("### 🔍 Detailed Findings")
+
+                    for finding in findings:
+                        aspect = finding.get('aspect', 'Unknown')
+                        expected = finding.get('expected', 'N/A')
+                        found = finding.get('found', 'N/A')
+                        match = finding.get('match', False)
+
+                        with st.expander(f"{'✅' if match else '❌'} {aspect.replace('_', ' ').title()}", expanded=not match):
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.write("**Expected:**")
+                                st.code(expected, language='text')
+                            with col2:
+                                st.write("**Found:**")
+                                st.code(found, language='text')
+
+                            if match:
+                                st.success("✅ Matches pattern requirements")
+                            else:
+                                st.error("❌ Does not match pattern requirements")
+
+                # Issues
+                issues = result.get('issues', [])
+                if issues:
+                    st.markdown("---")
+                    st.markdown("### ⚠️ Issues Found")
+                    for issue in issues:
+                        st.warning(f"• {issue}")
+
+                # Recommendations
+                recommendations = result.get('recommendations', [])
+                if recommendations:
+                    st.markdown("---")
+                    st.markdown("### 💡 Recommendations")
+                    for rec in recommendations:
+                        st.info(f"• {rec}")
+
 
 
 def get_llm_config():
@@ -2086,7 +2480,11 @@ def get_llm_config():
             return response.json()
         return None
     except Exception as e:
-        st.error(f"Failed to get LLM config: {e}")
+        show_error_with_logs(
+            "Failed to get LLM configuration",
+            str(e),
+            error_type="network"
+        )
         return None
 
 
@@ -2097,10 +2495,18 @@ def update_llm_config(config_data: Dict[str, Any]):
         if response.status_code == 200:
             return response.json()
         else:
-            st.error(f"Failed to update config: {response.text}")
+            show_error_with_logs(
+                "Failed to update LLM configuration",
+                response.text,
+                error_type="general"
+            )
             return None
     except Exception as e:
-        st.error(f"Failed to update LLM config: {e}")
+        show_error_with_logs(
+            "Failed to update LLM configuration",
+            str(e),
+            error_type="network"
+        )
         return None
 
 
@@ -2196,7 +2602,11 @@ def show_config_page():
                                 os.remove(backend_workspace_path)
                                 st.success(f"✅ Workspace '{workspace_to_delete}' and its database deleted.")
                             except Exception as e:
-                                st.error(f"❌ Failed to delete database file: {e}")
+                                show_error_with_logs(
+                                    "Failed to delete workspace database file",
+                                    str(e),
+                                    error_type="general"
+                                )
                         else:
                             st.success(f"✅ Workspace '{workspace_to_delete}' removed from list (database not found).")
 
@@ -2212,7 +2622,7 @@ def show_config_page():
     st.divider()
 
     # LLM Configuration Section
-    st.markdown("### 🤖 LLM Configuration")
+    st.header("🤖 LLM Configuration")
     st.caption("Configure your LLM provider credentials. Changes require backend restart.")
 
     # Get current config
@@ -2425,11 +2835,45 @@ def show_config_page():
 
 
 def run_pattern_manager_page():
-    """Render Pattern Manager with embedded Pattern Explorer tab."""
-    from pattern_manager import PatternManager
+    """Render Pattern Manager with tabs for Patterns and Verify."""
+    workspace = st.session_state.get('current_workspace', 'default')
 
-    manager = PatternManager()
-    manager.render(explorer_callback=lambda: show_patterns_page(embedded=True))
+    st.header("🎨 Pattern Manager")
+    st.write("Browse, verify, and manage patterns extracted from XML files")
+
+    tabs = st.tabs([
+        "📋 Manage Patterns",
+        "✅ Verify Patterns"
+    ])
+
+    with tabs[0]:
+        # Show patterns tab content
+        show_patterns_page(embedded=True)
+
+    with tabs[1]:
+        # Show verify tab content
+        patterns = get_patterns(limit=200, workspace=workspace)
+        if patterns:
+            # Use the deduplication logic from show_patterns_page
+            unique_patterns = {}
+            for pattern in patterns:
+                decision_rule = pattern.get('decision_rule', {})
+                node_type = decision_rule.get('node_type', 'Unknown')
+                section_path = pattern['section_path']
+                unique_key = f"{section_path}|{node_type}"
+
+                if unique_key not in unique_patterns:
+                    unique_patterns[unique_key] = pattern
+                else:
+                    current_attrs = len(decision_rule.get('must_have_attributes', []))
+                    existing_attrs = len(unique_patterns[unique_key].get('decision_rule', {}).get('must_have_attributes', []))
+                    if current_attrs > existing_attrs:
+                        unique_patterns[unique_key] = pattern
+
+            patterns = list(unique_patterns.values())
+            _render_verify_tab(patterns, workspace)
+        else:
+            st.info("No patterns found. Run Discovery first to generate patterns.")
 
 
 def show_node_manager_page():
@@ -2458,29 +2902,61 @@ def show_node_manager_page():
                     del st.session_state.analyzed_nodes
                     st.session_state.pop('node_checked_paths_raw', None)
                     st.session_state.pop('node_checked_paths_effective', None)
+                    st.session_state.pop('last_uploaded_file', None)
                     st.rerun()
 
         if uploaded_file:
-            if st.button("Analyze Structure", type="primary"):
+            # Analyze immediately when file is uploaded
+            # Check if this is a new file upload or existing session
+            if 'analyzed_nodes' not in st.session_state or st.session_state.get('last_uploaded_file') != uploaded_file.name:
                 with st.spinner("Analyzing XML structure..."):
                     result = analyze_xml_for_nodes(uploaded_file, workspace=current_workspace)
 
                 if result:
-                    airline_display = f" - Airline: {result['airline_code']}" if result.get('airline_code') else ""
-                    st.success(f"✅ Discovered {result['total_nodes']} nodes in {result['spec_version']}/{result['message_root']}{airline_display}")
+                    # Check if result contains an error
+                    if 'error' in result:
+                        st.error(f"❌ Failed to analyze XML structure")
+                        st.error(f"**Error:** {result['error']}")
+                        if result.get('status_code'):
+                            st.caption(f"Status Code: {result['status_code']}")
+                        st.warning("💡 **Troubleshooting:**")
+                        st.write("- Check if the XML file is well-formed and valid")
+                        st.write("- Verify it's a supported message type (e.g., AirShoppingRS)")
+                        st.write("- Check the log files for detailed error information:")
 
-                    if result.get('airline_code'):
-                        st.info(f"ℹ️ Showing configurations for **{result['airline_code']}** airline. "
-                               f"Configurations are airline-specific - each airline has its own settings.")
+                        # Platform-specific log location
+                        import platform
+                        system = platform.system()
+                        if system == "Darwin":  # macOS
+                            log_path = "~/Library/Logs/AssistedDiscovery/assisted_discovery.log"
+                            st.code(f"📂 Log Location (macOS):\n{log_path}", language="bash")
+                        elif system == "Windows":
+                            log_path = "%LOCALAPPDATA%\\AssistedDiscovery\\Logs\\assisted_discovery.log"
+                            st.code(f"📂 Log Location (Windows):\n{log_path}", language="bash")
+                        else:  # Linux
+                            log_path = "~/.local/share/AssistedDiscovery/logs/assisted_discovery.log"
+                            st.code(f"📂 Log Location (Linux):\n{log_path}", language="bash")
+                    else:
+                        # Success case
+                        airline_display = f" - Airline: {result['airline_code']}" if result.get('airline_code') else ""
+                        st.success(f"✅ Discovered {result['total_nodes']} nodes in {result['spec_version']}/{result['message_root']}{airline_display}")
 
-                    # Store in session state for editing
-                    st.session_state.analyzed_nodes = merge_existing_configs(result, workspace=current_workspace)
-                    # Don't select any nodes by default - user must manually select
-                    st.session_state.node_checked_paths_raw = []
-                    st.session_state.node_checked_paths_effective = []
-                    st.rerun()
+                        if result.get('airline_code'):
+                            st.info(f"ℹ️ Showing configurations for **{result['airline_code']}** airline. "
+                                   f"Configurations are airline-specific - each airline has its own settings.")
+
+                        # Store in session state for editing
+                        st.session_state.analyzed_nodes = merge_existing_configs(result, workspace=current_workspace)
+                        st.session_state.last_uploaded_file = uploaded_file.name
+                        # Clear selection state to force reload from saved configurations
+                        if 'node_checked_paths_raw' in st.session_state:
+                            del st.session_state.node_checked_paths_raw
+                        if 'node_checked_paths_effective' in st.session_state:
+                            del st.session_state.node_checked_paths_effective
+                        st.rerun()
                 else:
-                    st.error("Failed to analyze XML structure")
+                    st.error("❌ Failed to analyze XML structure - no response from server")
+                    st.warning("💡 Check the backend logs for detailed error information")
 
         # Show analyzed nodes if available
         if 'analyzed_nodes' in st.session_state:
@@ -2516,37 +2992,24 @@ def show_node_manager_page():
             node_lookup = {node['section_path']: node for node in result['nodes']}
 
             # Determine which nodes should be checked initially
-            # Start with no nodes selected by default
-            default_checked_raw = []
+            # Load enabled nodes from saved configurations (only parent nodes, not descendants)
+            default_checked_raw = [
+                node['section_path']
+                for node in result['nodes']
+                if node.get('enabled', False)
+            ]
 
-            stored_raw = st.session_state.get('node_checked_paths_raw')
-            if stored_raw is None:
-                stored_raw = [path for path in default_checked_raw if path in node_lookup]
-                st.session_state.node_checked_paths_raw = stored_raw
+            # Initialize or get session state for checked paths
+            if 'node_checked_paths_raw' not in st.session_state:
+                # First time: load from saved configurations
+                st.session_state.node_checked_paths_raw = default_checked_raw
+                st.session_state.node_checked_paths_effective = default_checked_raw
 
-            stored_raw = [path for path in stored_raw if path in node_lookup]
-            if stored_raw != st.session_state.get('node_checked_paths_raw'):
-                st.session_state.node_checked_paths_raw = stored_raw
+            stored_raw = st.session_state.node_checked_paths_raw or []
+            stored_effective = st.session_state.node_checked_paths_effective or []
 
-            stored_effective = st.session_state.get('node_checked_paths_effective')
-            if stored_effective is None:
-                stored_effective = compute_effective_paths(
-                    stored_raw,
-                    previous_effective=stored_raw,
-                    previous_raw=stored_raw
-                )
-                stored_effective = [path for path in stored_effective if path in node_lookup]
-                st.session_state.node_checked_paths_effective = stored_effective
-
-            pre_checked_display = list(dict.fromkeys([
-                *stored_raw,
-                *[path for path in stored_effective if path in node_lookup]
-            ]))
-
-            if not pre_checked_display and default_checked_raw:
-                pre_checked_display = [path for path in default_checked_raw if path in node_lookup]
-                st.session_state.node_checked_paths_raw = pre_checked_display
-                stored_raw = pre_checked_display
+            # Use stored values if available, otherwise use defaults
+            pre_checked_display = stored_raw if stored_raw else default_checked_raw
 
             # Display tree selector
             col1, col2 = st.columns([1, 1])
@@ -2554,8 +3017,25 @@ def show_node_manager_page():
             checked_paths = st.session_state.get('node_checked_paths_effective', [])
 
             with col1:
-                st.write("**🌳 Node Hierarchy**")
-                st.caption("Check nodes to enable extraction. Parent nodes auto-enable all descendants.")
+                st.caption("Tip: Checked nodes show with a ✓. Descendants are visually checked but only the parent is saved.")
+
+                # Get only top-level paths for expansion (don't auto-expand checked node descendants)
+                def get_top_level_paths(tree_data, max_depth=3):
+                    """Get paths up to a certain depth for initial expansion."""
+                    paths = []
+                    def traverse(nodes, current_path="", depth=0):
+                        if depth >= max_depth:
+                            return
+                        for node in nodes:
+                            node_path = f"{current_path}/{node['label']}" if current_path else node['label']
+                            paths.append(node_path)
+                            if 'children' in node and node['children']:
+                                traverse(node['children'], node_path, depth + 1)
+                    traverse(tree_data)
+                    return paths
+
+                # Expand tree structure to reasonable depth, but not all descendants
+                expanded_paths = get_top_level_paths(tree_data, max_depth=3)
 
                 # Tree select component
                 try:
@@ -2564,19 +3044,25 @@ def show_node_manager_page():
                         checked=pre_checked_display,
                         only_leaf_checkboxes=False,
                         expand_on_click=True,
-                        no_cascade=False,  # Enable cascading to visually show parent-child selection
-                        expanded=[node['value'] for node in tree_data if node.get('value')],
+                        no_cascade=True,  # Must be True for checked parameter to work correctly
+                        expanded=expanded_paths,  # Expand tree structure but not all descendants
                         key="node_manager_tree"
                     )
                 except Exception as e:
-                    st.error(f"Tree component error: {str(e)}")
-                    st.write("Tree data:", tree_data)
+                    show_error_with_logs(
+                        "Tree component error",
+                        str(e),
+                        error_type="general"
+                    )
                     selected = {'checked': []}
 
                 # Get checked nodes from tree_select
                 raw_checked = selected.get('checked')
-                if raw_checked is None:
+
+                # If tree returns empty/None on initial render, use pre_checked_display
+                if raw_checked is None or (not raw_checked and pre_checked_display):
                     raw_checked = pre_checked_display
+
                 raw_checked = [path for path in raw_checked if path in node_lookup]
 
                 previous_raw = st.session_state.get('node_checked_paths_raw', stored_raw)
@@ -2593,60 +3079,31 @@ def show_node_manager_page():
                 checked_paths = effective_checked
 
             with col2:
+                st.write("**🌳 Node Hierarchy**")
+                st.info("""
+                    **ℹ️ How Node Selection Works:**
+                    - **Check a parent node** → Extracts that parent + all its descendants
+                    - **Check a child only** → Extracts that child + its descendants (parent NOT extracted)
+                    - **Check a leaf node** → Extracts only that specific node
+                                    """)
                 st.write("**⚙️ Node Properties**")
 
                 # Show configuration form for selected nodes
                 if checked_paths:
-                    st.info(f"✅ {len(checked_paths)} nodes enabled for extraction")
-
                     raw_selection = st.session_state.get('node_checked_paths_raw', [])
                     auto_enabled = [path for path in checked_paths if path not in raw_selection]
+
+                    st.info(f"✅ {len(raw_selection)} parent nodes selected for extraction")
                     if auto_enabled:
-                        st.caption(f"🔁 {len(auto_enabled)} nodes auto-enabled by parent selection")
+                        st.caption(f"🔁 {len(auto_enabled)} descendants will be auto-extracted (shown checked in tree)")
 
-                    # Get first checked node for editing
-                    selected_path = checked_paths[0] if checked_paths else None
-
-                    if selected_path and selected_path in node_lookup:
-                        selected_node = node_lookup[selected_path]
-
-                        st.write(f"**Editing:** `{selected_node['node_type']}`")
-                        st.caption(f"Path: {selected_path}")
-
-                        # Initialize form state
-                        if 'node_configs' not in st.session_state:
-                            st.session_state.node_configs = {}
-
-                        # Get current config or defaults
-                        current_config = st.session_state.node_configs.get(selected_path, {
-                            'ba_remarks': selected_node.get('ba_remarks', '')
-                        })
-
-                        # Form for editing node properties
-                        with st.form(key=f"edit_form_{selected_path}"):
-                            ba_remarks_str = st.text_area(
-                                "BA Remarks",
-                                value=current_config['ba_remarks'],
-                                help="Notes and instructions for this node",
-                                placeholder="Add any notes or special instructions..."
-                            )
-
-                            if st.form_submit_button("💾 Update This Node"):
-                                # Store config
-                                st.session_state.node_configs[selected_path] = {
-                                    'ba_remarks': ba_remarks_str
-                                }
-                                st.success(f"✅ Updated {selected_node['node_type']}")
-
-                        # Show all selected nodes summary
-                        if len(checked_paths) > 1:
-                            st.divider()
-                            st.caption(f"**Other selected nodes ({len(checked_paths) - 1}):**")
-                            for path in checked_paths[1:6]:  # Show up to 5
-                                if path in node_lookup:
-                                    st.caption(f"• {node_lookup[path]['node_type']}")
-                            if len(checked_paths) > 6:
-                                st.caption(f"...and {len(checked_paths) - 6} more")
+                    # Show selected parent nodes summary
+                    st.caption("**Parent nodes selected for extraction:**")
+                    for idx, path in enumerate(raw_selection[:10]):  # Show up to 10
+                        if path in node_lookup:
+                            st.caption(f"• {node_lookup[path]['node_type']}")
+                    if len(raw_selection) > 10:
+                        st.caption(f"...and {len(raw_selection) - 10} more")
                 else:
                     st.info("👈 Check nodes in the tree to configure them")
                     st.caption("**Tip:** You can select multiple nodes at once")
@@ -2659,20 +3116,15 @@ def show_node_manager_page():
                     # Prepare data for bulk update from all nodes
                     configurations = []
 
-                    # Get configs from session state or defaults
-                    node_configs = st.session_state.get('node_configs', {})
+                    # Get only the explicitly checked parent nodes (not auto-expanded descendants)
+                    raw_checked_paths = st.session_state.get('node_checked_paths_raw', [])
 
                     # Process all nodes
                     for node in result['nodes']:
                         section_path = node['section_path']
 
-                        # Check if node is enabled (in checked_paths)
-                        enabled = section_path in checked_paths
-
-                        # Get config for this node
-                        config_data = node_configs.get(section_path, {
-                            'ba_remarks': node.get('ba_remarks', '')
-                        })
+                        # Only enable nodes that were explicitly checked (parents), not auto-expanded descendants
+                        enabled = section_path in raw_checked_paths
 
                         config = {
                             'config_id': node.get('config_id'),
@@ -2683,90 +3135,147 @@ def show_node_manager_page():
                             'section_path': section_path,
                             'enabled': enabled,
                             'expected_references': [],  # Always empty - LLM auto-discovers relationships
-                            'ba_remarks': config_data['ba_remarks']
+                            'ba_remarks': ''  # No longer used
                         }
                         configurations.append(config)
 
                     # Send to API
                     if bulk_update_node_configurations(configurations, workspace=current_workspace):
                         st.success(f"✅ Saved {len(configurations)} node configurations!")
-                        st.success(f"   • {len(checked_paths)} nodes enabled for extraction")
-                        st.info("💡 Configurations saved successfully. You can continue editing or upload a new XML file.")
-                        # Clear session state configs after save
-                        st.session_state.node_configs = {}
+                        st.success(f"   • {len(raw_checked_paths)} parent nodes enabled for extraction")
+                        st.info("💡 Configurations saved successfully. Parent nodes will auto-extract their descendants during Discovery.")
                     else:
-                        st.error("Failed to save configurations")
+                        show_error_with_logs(
+                            "Failed to save node configurations",
+                            "The backend did not accept the configuration update",
+                            error_type="general"
+                        )
 
             with col2:
                 st.caption("💡 **Tip**: Relationships will be auto-discovered by the LLM during Discovery")
 
     with tab2:
         st.subheader("⚙️ Existing Configurations")
+        st.write("View and search existing node configurations in this workspace")
 
-        # Filters
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            filter_version = st.text_input("Filter by Version", placeholder="e.g., 21.3")
-        with col2:
-            filter_message = st.text_input("Filter by Message", placeholder="e.g., OrderViewRS")
-        with col3:
-            filter_airline = st.text_input("Filter by Airline", placeholder="e.g., SQ")
-        with col4:
-            filter_node = st.text_input("Search Node Type", placeholder="e.g., Pax")
+        # Load all configurations for this workspace
+        configs_data = get_node_configurations(workspace=current_workspace)
 
-        if st.button("🔍 Load Configurations"):
-            version_filter = filter_version.strip() if filter_version and filter_version.strip() else None
-            message_filter = filter_message.strip() if filter_message and filter_message.strip() else None
-            airline_filter = filter_airline.strip().upper() if filter_airline and filter_airline.strip() else None
+        if configs_data and configs_data['configurations']:
+            # Group configurations by (airline, message, version)
+            from collections import defaultdict
+            config_groups = defaultdict(lambda: {'count': 0, 'enabled': 0})
 
-            configs_data = get_node_configurations(
-                spec_version=version_filter,
-                message_root=message_filter,
-                airline_code=airline_filter,
-                workspace=current_workspace
-            )
+            for config in configs_data['configurations']:
+                key = (
+                    config.get('airline_code') or 'Global',
+                    config['message_root'],
+                    config['spec_version']
+                )
+                config_groups[key]['count'] += 1
+                if config.get('enabled'):
+                    config_groups[key]['enabled'] += 1
 
-            if configs_data and configs_data['configurations']:
-                st.caption(f"Showing results for Version={version_filter or 'All'}, Message={message_filter or 'All'}, Airline={airline_filter or 'All'}")
-                # Display as table
-                config_list = []
-                for config in configs_data['configurations']:
-                    config_list.append({
-                        "Version": config['spec_version'],
-                        "Message": config['message_root'],
-                        "Airline": config['airline_code'] or "All",
-                        "Node Type": config['node_type'],
-                        "Section Path": config['section_path'],
-                        "Enabled": "Yes" if config['enabled'] else "No",
-                        "References": ", ".join(config['expected_references']) if config['expected_references'] else "-",
-                        "Remarks": config['ba_remarks'] or "-"
-                    })
+            # Display available configuration groups
+            st.write("**📊 Available Configurations**")
 
-                df_configs = pd.DataFrame(config_list)
+            # Create options list for selectbox
+            options = []
+            for (airline, message, version), stats in sorted(config_groups.items()):
+                option_label = f"{airline} | {message} | {version} ({stats['enabled']}/{stats['count']} enabled)"
+                options.append({
+                    'label': option_label,
+                    'airline': airline,
+                    'message': message,
+                    'version': version,
+                    'stats': stats
+                })
 
-                # Apply node type filter if specified
-                if filter_node:
-                    # Case-insensitive partial match on Node Type
-                    df_configs = df_configs[
-                        df_configs['Node Type'].str.contains(filter_node, case=False, na=False)
+            if options:
+                # Display as metrics
+                cols = st.columns(min(len(options), 3))
+                for idx, opt in enumerate(options):
+                    with cols[idx % 3]:
+                        st.metric(
+                            f"{opt['airline']} - {opt['message']}",
+                            f"{opt['version']}",
+                            f"{opt['stats']['enabled']}/{opt['stats']['count']} enabled"
+                        )
+
+                st.divider()
+
+                # Let user select a configuration group
+                selected_option = st.selectbox(
+                    "Select Configuration to View",
+                    options,
+                    format_func=lambda x: x['label'],
+                    key="config_selector"
+                )
+
+                if selected_option:
+                    st.write(f"**Showing configurations for: {selected_option['label']}**")
+
+                    # Optional search filter
+                    filter_node = st.text_input(
+                        "🔍 Search Node Type",
+                        placeholder="e.g., Pax, PassengerList",
+                        key="node_search_filter"
+                    )
+
+                    # Filter configurations for selected group
+                    filtered_configs = [
+                        config for config in configs_data['configurations']
+                        if (config.get('airline_code') or 'Global') == selected_option['airline']
+                        and config['message_root'] == selected_option['message']
+                        and config['spec_version'] == selected_option['version']
                     ]
 
-                if len(df_configs) > 0:
-                    st.success(f"Found {len(df_configs)} configurations")
+                    # Sort: enabled first, then by node type
+                    filtered_configs.sort(key=lambda x: (
+                        0 if x.get('enabled') else 1,  # Enabled first
+                        x.get('node_type', '').lower()  # Then alphabetically
+                    ))
 
-                    # Apply color coding to Enabled column
-                    def highlight_enabled(row):
-                        if row['Enabled'] == 'Yes':
-                            return ['background-color: #d4edda'] * len(row)  # Light green
+                    # Apply node type search filter if specified
+                    if filter_node and filter_node.strip():
+                        filtered_configs = [
+                            config for config in filtered_configs
+                            if filter_node.lower() in config.get('node_type', '').lower()
+                        ]
+
+                    if filtered_configs:
+                        st.success(f"Found {len(filtered_configs)} node configurations")
+
+                        # Build table data
+                        config_list = []
+                        for config in filtered_configs:
+                            config_list.append({
+                                "Status": "✅ Enabled" if config['enabled'] else "❌ Disabled",
+                                "Node Type": config['node_type'],
+                                "Section Path": config['section_path']
+                            })
+
+                        df_configs = pd.DataFrame(config_list)
+
+                        # Apply color coding to Status column
+                        def highlight_status(row):
+                            if row['Status'] == "✅ Enabled":
+                                return ['background-color: #d4edda'] * len(row)  # Light green
+                            else:
+                                return ['background-color: #f8d7da'] * len(row)  # Light red
+
+                        styled_df = df_configs.style.apply(highlight_status, axis=1)
+                        st.dataframe(styled_df, use_container_width=True, hide_index=True, height=600)
+                    else:
+                        if filter_node:
+                            st.warning(f"No configurations found matching '{filter_node}'")
                         else:
-                            return ['background-color: #f8d7da'] * len(row)  # Light red
+                            st.info("No configurations found for this selection")
 
-                    styled_df = df_configs.style.apply(highlight_enabled, axis=1)
-                    st.dataframe(styled_df, use_container_width=True, hide_index=True)
-                else:
-                    st.warning(f"No configurations found matching node type '{filter_node}'")
             else:
-                st.info(f"No configurations found in workspace `{current_workspace}`. Upload an XML in the 'Analyze XML' tab to create configurations or adjust your filters.")
+                st.info("No configuration groups available")
+        else:
+            st.info(f"No configurations found in workspace `{current_workspace}`. Upload an XML in the 'Analyze XML' tab to create configurations.")
 
 
 

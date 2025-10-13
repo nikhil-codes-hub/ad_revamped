@@ -81,7 +81,7 @@ class PatternLLMVerifier:
 
     def _build_verification_prompt(self, pattern_prompt: str, test_xml: str) -> str:
         """Build the LLM prompt for verification."""
-        return f"""Verify if the following XML matches the pattern definition.
+        return f"""Verify if the following XML matches the pattern definition with STRICT validation.
 
 **PATTERN DEFINITION:**
 {pattern_prompt}
@@ -91,29 +91,41 @@ class PatternLLMVerifier:
 {test_xml}
 ```
 
+**CRITICAL VALIDATION RULES:**
+1. **ALL** requirements must be satisfied for a match
+2. If ANY required attribute is missing → is_match = false
+3. If ANY required child type is missing → is_match = false
+4. If node type doesn't match → is_match = false
+5. Check EVERY requirement individually and report each finding
+
 **TASK:**
-Analyze if the XML matches the pattern requirements. Return a JSON object with:
+Perform STRICT validation and return a JSON object with:
 
 {{
-  "is_match": true/false,
+  "is_match": true/false,  // Only true if ALL requirements are met
   "confidence": 0.0-1.0,
   "summary": "Brief summary of verification (1-2 sentences)",
   "findings": [
     {{"aspect": "node_type", "expected": "...", "found": "...", "match": true/false}},
-    {{"aspect": "attributes", "expected": "...", "found": "...", "match": true/false}},
-    {{"aspect": "children", "expected": "...", "found": "...", "match": true/false}}
+    {{"aspect": "required_attributes", "expected": "list of required attrs", "found": "list of found attrs", "match": true/false}},
+    {{"aspect": "required_children", "expected": "list of required child types", "found": "list of found child types", "match": true/false}},
+    {{"aspect": "child_count", "expected": "min/max if specified", "found": "actual count", "match": true/false}}
   ],
-  "issues": ["List of specific issues found, if any"],
-  "recommendations": ["Suggestions if pattern doesn't match"]
+  "issues": ["List EVERY specific issue found - missing attributes, missing children, etc."],
+  "recommendations": ["Specific suggestions to fix the XML to match the pattern"]
 }}
 
-Focus on:
-1. Node type/name matching
-2. Required attributes present
-3. Child structure (if specified)
-4. Data types and formats
+**VALIDATION CHECKLIST:**
+✓ Node type matches exactly
+✓ EVERY required attribute is present
+✓ EVERY required child type is present
+✓ Child count meets min/max requirements (if specified)
+✓ All data types and formats are correct
 
-Return ONLY valid JSON, no additional text."""
+Return ONLY valid JSON, no additional text.
+
+**REMEMBER:** Be STRICT. Even one missing required element means is_match = false.
+"""
 
 
 def get_verifier() -> PatternLLMVerifier:
