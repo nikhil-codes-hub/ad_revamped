@@ -2349,12 +2349,12 @@ def _render_verify_tab(patterns, workspace=None):
                                     for attr in req_attrs:
                                         pattern_prompt += f"      - @{attr} (REQUIRED)\n"
 
-                                # Reference fields for child
+                                # Reference fields for child (these are OPTIONAL, not required)
                                 ref_fields = child_struct.get('reference_fields', [])
                                 if ref_fields:
-                                    pattern_prompt += f"      **Required Child Elements (ALL must be present):**\n"
+                                    pattern_prompt += f"      **Optional Reference Fields (may or may not be present):**\n"
                                     for ref_field in ref_fields:
-                                        pattern_prompt += f"      - <{ref_field}> (REQUIRED)\n"
+                                        pattern_prompt += f"      - <{ref_field}> (OPTIONAL - seen in training data but not required)\n"
 
                         min_children = child_structure.get('min_children', 0)
                         max_children = child_structure.get('max_children')
@@ -2398,77 +2398,43 @@ def _render_verify_tab(patterns, workspace=None):
             if verification_error:
                 st.error(f"❌ {verification_error}")
             elif result:
-                # Display verification results
+                # Display simplified verification results
                 st.divider()
-                st.markdown("### 📊 AI Verification Results")
+                st.markdown("### 📊 Verification Results")
 
                 # Summary with match status
                 is_match = result.get('is_match', False)
                 confidence = result.get('confidence', 0.0)
-
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    if is_match:
-                        st.success("✅ **MATCH**")
-                    else:
-                        st.error("❌ **NO MATCH**")
-
-                with col2:
-                    st.metric("Confidence", f"{confidence:.0%}")
-
-                with col3:
-                    tokens_used = result.get('tokens_used', 0)
-                    st.metric("Tokens Used", tokens_used)
-
-                # Summary
                 summary = result.get('summary', 'No summary available')
-                st.markdown("**Summary:**")
-                if is_match:
-                    st.success(summary)
-                else:
-                    st.warning(summary)
-
-                # Detailed findings
-                findings = result.get('findings', [])
-                if findings:
-                    st.markdown("---")
-                    st.markdown("### 🔍 Detailed Findings")
-
-                    for finding in findings:
-                        aspect = finding.get('aspect', 'Unknown')
-                        expected = finding.get('expected', 'N/A')
-                        found = finding.get('found', 'N/A')
-                        match = finding.get('match', False)
-
-                        with st.expander(f"{'✅' if match else '❌'} {aspect.replace('_', ' ').title()}", expanded=not match):
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.write("**Expected:**")
-                                st.code(expected, language='text')
-                            with col2:
-                                st.write("**Found:**")
-                                st.code(found, language='text')
-
-                            if match:
-                                st.success("✅ Matches pattern requirements")
-                            else:
-                                st.error("❌ Does not match pattern requirements")
-
-                # Issues
                 issues = result.get('issues', [])
-                if issues:
-                    st.markdown("---")
-                    st.markdown("### ⚠️ Issues Found")
-                    for issue in issues:
-                        st.warning(f"• {issue}")
 
-                # Recommendations
-                recommendations = result.get('recommendations', [])
-                if recommendations:
-                    st.markdown("---")
-                    st.markdown("### 💡 Recommendations")
-                    for rec in recommendations:
-                        st.info(f"• {rec}")
+                # Build a comprehensive paragraph
+                if is_match:
+                    result_text = f"✅ **Match Confirmed** ({confidence:.0%} confidence)\n\n{summary}"
+                    st.success(result_text)
+                else:
+                    # Include missing elements info in the paragraph
+                    result_text = f"❌ **No Match** ({confidence:.0%} confidence)\n\n{summary}"
+
+                    # Add specific missing elements if available
+                    if issues:
+                        missing_info = []
+                        for issue in issues:
+                            issue_lower = issue.lower()
+                            # Filter out issues about optional reference fields
+                            if 'optional' not in issue_lower and 'reference field' not in issue_lower:
+                                missing_info.append(issue)
+
+                        if missing_info:
+                            result_text += "\n\n**Missing Elements:**\n"
+                            for info in missing_info[:5]:  # Limit to top 5 issues
+                                result_text += f"• {info}\n"
+
+                    st.error(result_text)
+
+                # Show token usage as small caption
+                tokens_used = result.get('tokens_used', 0)
+                st.caption(f"🔢 Tokens used: {tokens_used}")
 
 
 
