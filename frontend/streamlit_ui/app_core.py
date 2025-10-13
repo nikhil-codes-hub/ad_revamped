@@ -2714,7 +2714,7 @@ def show_config_page():
             if result:
                 st.success(f"✅ {result.get('message', 'Configuration saved!')}")
                 st.warning("⚠️ Please restart the backend for changes to take effect.")
-                st.rerun()
+                # st.rerun()
 
     with col_test:
         if st.button("🔍 Test Connection", use_container_width=True):
