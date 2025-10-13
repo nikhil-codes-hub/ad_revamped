@@ -41,24 +41,30 @@ class LLMConfig(BaseModel):
 
 
 def get_env_file_path() -> Path:
-    """Get the path to the .env file."""
-    # Try multiple locations, prioritizing project root
+    """
+    Get the path to the .env file.
+
+    For portable builds: uses .env in same directory as the application
+    For development: uses .env in project root
+    """
+    # Calculate paths
     backend_dir = Path(__file__).parent.parent.parent.parent.parent  # Points to /ad/backend
     project_root = backend_dir.parent  # Points to /ad
 
-    env_paths = [
-        project_root / ".env",  # /ad/.env (main project .env)
-        backend_dir / ".env",   # /ad/backend/.env (backend-specific)
-        Path.cwd() / ".env",
-    ]
+    # Check if this is a portable build (has setup.sh/setup.bat in current dir)
+    cwd = Path.cwd()
+    is_portable = (cwd / "setup.sh").exists() or (cwd / "setup.bat").exists()
 
-    for env_path in env_paths:
-        if env_path.exists():
-            logger.info(f"Using .env file at: {env_path}")
-            return env_path
+    if is_portable:
+        # Portable build: use .env in current working directory
+        env_file = cwd / ".env"
+        logger.info(f"Portable build detected - using .env at: {env_file}")
+    else:
+        # Development: use .env in project root (/ad/.env)
+        env_file = project_root / ".env"
+        logger.info(f"Development mode - using .env at: {env_file}")
 
-    # Return default location if none exist (project root)
-    return project_root / ".env"
+    return env_file
 
 
 def read_env_file() -> Dict[str, str]:

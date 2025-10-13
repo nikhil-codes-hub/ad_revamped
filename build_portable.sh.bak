@@ -28,10 +28,10 @@ cp -r frontend/streamlit_ui portable_dist/frontend/
 cp frontend/requirements.txt portable_dist/frontend/
 
 # Copy .env template if exists
-if [ -f ".env.example" ]; then
-    cp .env.example portable_dist/.env.template
-elif [ -f ".env" ]; then
-    cp .env portable_dist/.env.template
+if [ -f "backend/.env.example" ]; then
+    cp backend/.env.example portable_dist/backend/.env.template
+elif [ -f "backend/.env" ]; then
+    cp backend/.env portable_dist/backend/.env.template
 fi
 
 # Create setup script with virtual environment
@@ -95,13 +95,13 @@ if [ $? -ne 0 ]; then
 fi
 
 # Create default .env if not exists
-if [ ! -f ".env" ]; then
-    if [ -f ".env.template" ]; then
-        cp .env.template .env
-        echo "⚙️  Created .env from template"
-        echo "⚠️  Please update .env with your Azure OpenAI credentials"
+if [ ! -f "backend/.env" ]; then
+    if [ -f "backend/.env.template" ]; then
+        cp backend/.env.template backend/.env
+        echo "⚙️  Created backend/.env from template"
+        echo "⚠️  Please update backend/.env with your Azure OpenAI credentials"
     else
-        cat > .env << 'ENVEOF'
+        cat > backend/.env << 'ENVEOF'
 # LLM Provider Configuration
 # Supported providers: azure, gemini
 LLM_PROVIDER=azure
@@ -125,8 +125,8 @@ LLM_TOP_P=0.0
 LOG_LEVEL=INFO
 WORKSPACE_DB_DIR=./data/workspaces
 ENVEOF
-        echo "⚙️  Created .env template"
-        echo "⚠️  Please update .env with your Azure OpenAI credentials"
+        echo "⚙️  Created backend/.env template"
+        echo "⚠️  Please update backend/.env with your Azure OpenAI credentials"
     fi
 fi
 
@@ -134,7 +134,7 @@ echo ""
 echo "✅ Setup complete! Isolated environments created."
 echo ""
 echo "📝 Next Steps:"
-echo "   1. Update .env with your Azure OpenAI credentials"
+echo "   1. Update backend/.env with your Azure OpenAI credentials"
 echo "   2. Run ./start_app.sh to start the application"
 EOF
 
@@ -154,8 +154,8 @@ if [ ! -d "backend_env" ] || [ ! -d "frontend_env" ]; then
 fi
 
 # Check if .env exists and has credentials
-if [ ! -f ".env" ]; then
-    echo "❌ .env not found. Please run ./setup.sh first."
+if [ ! -f "backend/.env" ]; then
+    echo "❌ backend/.env not found. Please run ./setup.sh first."
     exit 1
 fi
 
@@ -190,7 +190,7 @@ sleep 5
 
 # Check if backend is running
 if ! ps -p $BACKEND_PID > /dev/null; then
-    echo "❌ Backend failed to start. Check .env configuration."
+    echo "❌ Backend failed to start. Check backend/.env configuration."
     exit 1
 fi
 
@@ -395,7 +395,7 @@ EOF
 cat > portable_dist/.gitignore << 'EOF'
 backend_env/
 frontend_env/
-.env
+backend/.env
 data/workspaces/*.db
 __pycache__/
 *.pyc

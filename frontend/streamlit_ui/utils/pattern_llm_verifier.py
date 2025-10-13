@@ -10,6 +10,7 @@ from typing import Dict, Any, Optional
 from pathlib import Path
 from openai import AzureOpenAI
 from dotenv import load_dotenv
+import httpx
 
 # Load environment variables
 env_path = Path(__file__).parent.parent.parent.parent / ".env"
@@ -24,7 +25,8 @@ class PatternLLMVerifier:
         self.client = AzureOpenAI(
             api_key=os.getenv("AZURE_OPENAI_KEY"),
             api_version=os.getenv("AZURE_API_VERSION", "2025-01-01-preview"),
-            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
+            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+            http_client=httpx.Client(verify=False)
         )
         self.model = os.getenv("MODEL_DEPLOYMENT_NAME", "gpt-4o")
         self.temperature = float(os.getenv("LLM_TEMPERATURE", "0.1"))

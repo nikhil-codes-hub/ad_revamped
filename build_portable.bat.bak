@@ -28,10 +28,10 @@ xcopy /E /I frontend\streamlit_ui portable_dist\frontend\streamlit_ui
 copy frontend\requirements.txt portable_dist\frontend\
 
 REM Copy .env template if exists
-if exist .env.example (
-    copy .env.example portable_dist\.env.template
-) else if exist .env (
-    copy .env portable_dist\.env.template
+if exist backend\.env.example (
+    copy backend\.env.example portable_dist\backend\.env.template
+) else if exist backend\.env (
+    copy backend\.env portable_dist\backend\.env.template
 )
 
 REM Create setup script
@@ -93,36 +93,36 @@ echo     exit /b 1 >> portable_dist\setup.bat
 echo ^) >> portable_dist\setup.bat
 echo. >> portable_dist\setup.bat
 echo REM Create default .env if not exists >> portable_dist\setup.bat
-echo if not exist .env ^( >> portable_dist\setup.bat
-echo     if exist .env.template ^( >> portable_dist\setup.bat
-echo         copy .env.template .env >> portable_dist\setup.bat
-echo         echo Created .env from template >> portable_dist\setup.bat
-echo         echo Please update .env with your LLM credentials >> portable_dist\setup.bat
+echo if not exist backend\.env ^( >> portable_dist\setup.bat
+echo     if exist backend\.env.template ^( >> portable_dist\setup.bat
+echo         copy backend\.env.template backend\.env >> portable_dist\setup.bat
+echo         echo Created backend\.env from template >> portable_dist\setup.bat
+echo         echo Please update backend\.env with your LLM credentials >> portable_dist\setup.bat
 echo     ^) else ^( >> portable_dist\setup.bat
-echo         ^(echo # LLM Provider Configuration^) ^> .env >> portable_dist\setup.bat
-echo         ^(echo # Supported providers: azure, gemini^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo LLM_PROVIDER=azure^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo.^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo # Azure OpenAI Configuration^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo AZURE_OPENAI_ENDPOINT=your-endpoint-here^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo AZURE_OPENAI_KEY=your-api-key-here^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo AZURE_API_VERSION=2025-01-01-preview^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo MODEL_DEPLOYMENT_NAME=gpt-4o^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo.^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo # Google Gemini Configuration^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo GEMINI_API_KEY=your-gemini-api-key-here^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo GEMINI_MODEL=gemini-1.5-pro^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo.^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo # LLM Common Settings^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo MAX_TOKENS_PER_REQUEST=4000^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo LLM_TEMPERATURE=0.1^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo LLM_TOP_P=0.0^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo.^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo # Application Settings^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo LOG_LEVEL=INFO^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo WORKSPACE_DB_DIR=./data/workspaces^) ^>^> .env >> portable_dist\setup.bat
-echo         echo Created .env template >> portable_dist\setup.bat
-echo         echo Please update .env with your LLM credentials >> portable_dist\setup.bat
+echo         ^(echo # LLM Provider Configuration^) ^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo # Supported providers: azure, gemini^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo LLM_PROVIDER=azure^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo.^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo # Azure OpenAI Configuration^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo AZURE_OPENAI_ENDPOINT=your-endpoint-here^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo AZURE_OPENAI_KEY=your-api-key-here^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo AZURE_API_VERSION=2025-01-01-preview^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo MODEL_DEPLOYMENT_NAME=gpt-4o^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo.^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo # Google Gemini Configuration^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo GEMINI_API_KEY=your-gemini-api-key-here^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo GEMINI_MODEL=gemini-1.5-pro^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo.^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo # LLM Common Settings^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo MAX_TOKENS_PER_REQUEST=4000^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo LLM_TEMPERATURE=0.1^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo LLM_TOP_P=0.0^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo.^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo # Application Settings^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo LOG_LEVEL=INFO^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo WORKSPACE_DB_DIR=./data/workspaces^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         echo Created backend\.env template >> portable_dist\setup.bat
+echo         echo Please update backend\.env with your LLM credentials >> portable_dist\setup.bat
 echo     ^) >> portable_dist\setup.bat
 echo ^) >> portable_dist\setup.bat
 echo. >> portable_dist\setup.bat
@@ -130,7 +130,7 @@ echo echo. >> portable_dist\setup.bat
 echo echo ✅ Setup complete! Isolated environments created. >> portable_dist\setup.bat
 echo echo. >> portable_dist\setup.bat
 echo echo 📝 Next Steps: >> portable_dist\setup.bat
-echo echo    1. Update .env with your Azure OpenAI credentials >> portable_dist\setup.bat
+echo echo    1. Update backend\.env with your Azure OpenAI credentials >> portable_dist\setup.bat
 echo echo    2. Run start_app.bat to start the application >> portable_dist\setup.bat
 echo pause >> portable_dist\setup.bat
 
@@ -154,8 +154,8 @@ echo     exit /b 1 >> portable_dist\start_app.bat
 echo ^) >> portable_dist\start_app.bat
 echo. >> portable_dist\start_app.bat
 echo REM Check if .env exists >> portable_dist\start_app.bat
-echo if not exist .env ^( >> portable_dist\start_app.bat
-echo     echo ❌ .env not found. Please run setup.bat first. >> portable_dist\start_app.bat
+echo if not exist backend\.env ^( >> portable_dist\start_app.bat
+echo     echo ❌ backend\.env not found. Please run setup.bat first. >> portable_dist\start_app.bat
 echo     pause >> portable_dist\start_app.bat
 echo     exit /b 1 >> portable_dist\start_app.bat
 echo ^) >> portable_dist\start_app.bat
