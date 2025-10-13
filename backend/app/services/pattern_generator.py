@@ -129,29 +129,26 @@ class PatternGenerator:
                 "child_names": sorted(set(children))
             }
 
-    def _extract_reference_patterns(self, fact_json: Dict[str, Any],
-                                   expected_references: List[str] = None) -> List[Dict[str, Any]]:
+    def _extract_reference_patterns(self, fact_json: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
-        Extract reference patterns from fact using BA-defined expected references.
+        Extract reference patterns from fact (auto-discovery mode).
 
         Args:
             fact_json: NodeFact JSON data
-            expected_references: BA-defined list of expected reference types
-                               (e.g., ['infant_parent', 'segment_reference'])
 
         Returns list of reference patterns like:
         [
             {
                 "type": "infant_parent",
-                "from": "Passenger[type=ADT]",
-                "to": "Passenger[type=INF]",
-                "via": "references.infant"
+                "parent": "PAX1",
+                "child": "PAX1.1",
+                "direction": "INF→ADT"
             }
         ]
         """
         patterns = []
 
-        # Extract from relationships field
+        # Extract from relationships field (LLM-discovered)
         relationships = fact_json.get('relationships', [])
         for rel in relationships:
             patterns.append({
@@ -169,26 +166,6 @@ class PatternGenerator:
                     patterns.append({
                         'type': f'cross_reference_{ref_type}',
                         'reference': ref
-                    })
-
-        # ONLY extract child_references if BA has defined expected_references
-        # This fixes the issue where child_references was applied to ALL nodes
-        if expected_references and len(expected_references) > 0:
-            children = fact_json.get('children', [])
-            if children and isinstance(children[0], dict):
-                reference_fields = set()
-                for child in children:
-                    refs = child.get('references', {})
-                    # Only include references that match BA-defined expected types
-                    for ref_key in refs.keys():
-                        if any(exp_ref in ref_key for exp_ref in expected_references):
-                            reference_fields.add(ref_key)
-
-                if reference_fields:
-                    patterns.append({
-                        'type': 'child_references',
-                        'fields': sorted(list(reference_fields)),
-                        'expected_by_ba': expected_references
                     })
 
         return patterns
@@ -226,14 +203,12 @@ class PatternGenerator:
 
         return schema
 
-    def generate_decision_rule(self, facts_group: List[Dict[str, Any]],
-                              expected_references: List[str] = None) -> Dict[str, Any]:
+    def generate_decision_rule(self, facts_group: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Generate decision rule from a group of similar NodeFacts.
 
         Args:
             facts_group: List of fact_json dicts from similar NodeFacts
-            expected_references: BA-defined expected reference types
 
         Returns:
             Decision rule dict
@@ -258,8 +233,8 @@ class PatternGenerator:
             template.get('children', [])
         )
 
-        # Reference patterns - use BA-defined expected references
-        reference_patterns = self._extract_reference_patterns(template, expected_references)
+        # Reference patterns (auto-discovered by LLM)
+        reference_patterns = self._extract_reference_patterns(template)
 
         # Business intelligence schema
         bi_schema = self._extract_bi_schema(template)
@@ -508,19 +483,17 @@ Business Description:"""
 
             return new_pattern
 
-    def generate_patterns_from_run(self, run_id: str,
-                                  node_configs: Dict[str, Dict] = None) -> Dict[str, Any]:
+    def generate_patterns_from_run(self, run_id: str) -> Dict[str, Any]:
         """
-        Generate patterns from all NodeFacts in a run.
+        Generate patterns from all NodeFacts in a run (fully automatic).
 
         Args:
             run_id: Discovery run ID
-            node_configs: Dict mapping section_path -> config with expected_references
 
         Returns:
             Statistics about pattern generation
         """
-        logger.info(f"Generating patterns from run: {run_id}")
+        logger.info(f"Generating patterns from run: {run_id} (auto-discovery mode)")
 
         # Get the Run to extract airline_code
         run = self.db_session.query(Run).filter(Run.id == run_id).first()
@@ -535,7 +508,6 @@ Business Description:"""
             }
 
         airline_code = run.airline_code
-        node_configs = node_configs or {}
 
         # Get all NodeFacts from this run
         node_facts = self.db_session.query(NodeFact).filter(
@@ -579,16 +551,8 @@ Business Description:"""
                 # Extract fact_json from each NodeFact
                 fact_jsons = [f['fact_json'] for f in facts]
 
-                # Get expected references from NodeConfiguration (BA-defined)
-                expected_references = []
-                for config_path, config in node_configs.items():
-                    if config_path in section_path:
-                        expected_references = config.get('expected_references', [])
-                        logger.debug(f"Using BA-defined references for {section_path}: {expected_references}")
-                        break
-
-                # Generate decision rule with BA-defined references
-                decision_rule = self.generate_decision_rule(fact_jsons, expected_references)
+                # Generate decision rule (all references auto-discovered by LLM)
+                decision_rule = self.generate_decision_rule(fact_jsons)
 
                 # Find or create pattern
                 pattern = self.find_or_create_pattern(

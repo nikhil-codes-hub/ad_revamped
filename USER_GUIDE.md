@@ -1,4 +1,4 @@
-# AssistedDiscovery - Complete User Guide
+# AssistedDiscovery v1.0 - Complete User Guide
 
 ## Table of Contents
 
@@ -28,26 +28,51 @@ AssistedDiscovery is an AI-powered tool that helps you understand and document N
 - **Identifies changes** in XML structure over time
 - **Validates XML files** against known patterns
 
-### Who Should Use This Tool?
-
-- **Business Analysts**: Understanding airline XML message formats
-- **Integration Developers**: Documenting API message structures
-- **QA Teams**: Validating XML message consistency
-- **Technical Writers**: Creating implementation documentation
-
 ### Key Concepts
 
-**NodeFact**: A discovered piece of information about an XML node (its structure, attributes, children)
-
-**Pattern**: A reusable template describing how a specific node type should look
+**Pattern**: A reusable template describing how a specific node type should look (its structure, attributes, children)
 
 **Relationship**: A reference from one node to another (e.g., Passenger → Segment)
 
-**Discovery**: The process of extracting NodeFacts and relationships from XML
+**Discovery**: The process of analyzing XML structure and generating reusable patterns
 
 **Identify**: The process of comparing XML against known patterns
 
 **Workspace**: An isolated environment for a specific airline or project
+
+### Important: Understanding AI-Powered Analysis
+
+AssistedDiscovery uses **Large Language Models (LLMs)** to analyze XML structure. This means:
+
+**⚠️ Results May Vary**:
+- **LLMs can make mistakes**: Like humans, AI can misinterpret or miss information
+- **Non-deterministic**: Running Discovery/Identify on the same XML file multiple times may produce slightly different results
+- **Confidence scores matter**: Always review low-confidence matches (< 85%)
+- **Human validation required**: Treat results as AI-assisted suggestions, not absolute truth
+
+**Typical Accuracy**:
+- **Node extraction**: 90-95% accurate
+- **Relationship discovery**: 85-90% accurate
+- **Pattern matching**: 90-95% accurate
+
+**Best Practices**:
+1. **Always review results**: Don't trust blindly
+2. **Validate unexpected discoveries**: AI might find real issues OR make mistakes
+3. **Check low-confidence matches**: < 85% confidence needs human verification
+4. **Run multiple times if uncertain**: Compare results for consistency
+5. **Report issues**: Help improve the system by reporting errors
+
+**We Need Your Feedback!**:
+Your feedback helps improve AssistedDiscovery. Please report:
+- **False positives**: AI found relationships that don't exist
+- **False negatives**: AI missed relationships that do exist
+- **Incorrect patterns**: AI generated wrong patterns
+- **Inconsistent results**: Different results on same XML
+- **Quality issues**: Any accuracy or reliability problems
+
+**How to Report**:
+- **Team Contact**: Reach out to nikhilkrishna.lepakshi@amadeus.com
+- **Include**: Error message, Run ID, log files, sample XML (if possible)
 
 ---
 
@@ -55,7 +80,7 @@ AssistedDiscovery is an AI-powered tool that helps you understand and document N
 
 ### Installation
 
-#### Option 1: Portable Distribution (Recommended for Users)
+#### Portable Distribution (Recommended for Users)
 
 1. **Extract the ZIP file**:
    ```bash
@@ -85,41 +110,64 @@ AssistedDiscovery is an AI-powered tool that helps you understand and document N
    - Open your browser
    - Go to: `http://localhost:8501`
 
-#### Option 2: Development Setup
-
-For developers who want to modify the code:
-
-```bash
-# Clone repository
-git clone <repository-url>
-cd ad
-
-# Setup backend
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-
-# Setup frontend
-cd ../frontend/streamlit_ui
-pip install -r requirements.txt
-
-# Start backend (terminal 1)
-cd backend
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-
-# Start frontend (terminal 2)
-cd frontend/streamlit_ui
-streamlit run AssistedDiscovery.py --server.port 8501
-```
 
 ### First-Time Setup Checklist
 
 - [ ] Application installed and running
 - [ ] Browser opens to `http://localhost:8501`
 - [ ] LLM credentials configured (see [Configuration](#configuration))
-- [ ] Test workspace created
+- [ ] Test workspace created (see [Quick Start: Create a Workspace](#quick-start-create-a-workspace))
 - [ ] Sample XML file ready for testing
+
+---
+
+### Quick Start: Create a Workspace
+
+Before running Discovery, you should create a **workspace** for your project or airline.
+
+**What is a Workspace?**
+A workspace is an isolated environment that stores all your data (patterns, runs, configurations) separately. Think of it as a project folder.
+
+**Why use workspaces?**
+- ✅ Separate data per airline (LATAM vs United vs Delta)
+- ✅ Keep test data separate from production
+- ✅ Clean organization and comparison
+
+**How to Create a Workspace:**
+
+1. **Access Config Page**:
+   - Click **⚙️ Config** in the sidebar
+
+2. **Scroll to Workspace Management**:
+   - Find the **📁 Workspace Management** section
+
+3. **Add New Workspace**:
+   - Enter workspace name in the text box
+   - Example names: `WestJet`, `LATAM`, `Testing`, `Production`
+   - Use alphanumeric characters only (no spaces)
+
+4. **Click ➕ Add Workspace**:
+   ```
+   ✅ Workspace 'WestJet' created successfully!
+   ```
+
+5. **Switch to Your Workspace**:
+   - At the top of the sidebar, you'll see **Workspace: [dropdown]**
+   - Select your newly created workspace
+   - All operations now use this workspace
+
+**Example Setup:**
+```
+Workspaces:
+├─ default       (Built-in, always available)
+├─ WestJet       (For WestJet Airlines)
+├─ LATAM         (For LATAM Airlines)
+└─ Testing       (For experiments)
+```
+
+**Important**: Always check which workspace you're in before running Discovery or Identify!
+
+For detailed workspace management, see the [Workspaces](#workspaces) section.
 
 ---
 
@@ -137,8 +185,7 @@ AssistedDiscovery uses AI (Large Language Model) to extract information from XML
 #### Step 2: Select Provider
 
 **Supported Providers**:
-- **Azure OpenAI** (Recommended for enterprise)
-- **Google Gemini** (Alternative option)
+- **Azure OpenAI** 
 
 #### Step 3: Configure Azure OpenAI
 
@@ -171,34 +218,35 @@ AssistedDiscovery uses AI (Large Language Model) to extract information from XML
 Provider: azure
 ```
 
-#### Step 4: Configure Google Gemini (Alternative)
+#### Step 4: Apply Configuration
 
-If using Gemini instead of Azure:
-
-1. Select **gemini** from LLM Provider dropdown
-2. Enter your **Gemini API Key**
-3. Select **Model** (default: `gemini-1.5-pro`)
-4. Configure common settings (same as Azure)
-5. Click **💾 Save Configuration**
-6. Click **🔍 Test Connection**
-
-#### Step 5: Restart Backend
-
-**Important**: After saving LLM configuration, **restart the backend** for changes to take effect.
-
-**Portable Distribution**:
-```bash
-# Stop the app (Ctrl+C in terminal)
-# Restart
-./start_app.sh  # or start_app.bat on Windows
+After saving, you'll see:
+```
+✅ Configuration saved!
+⚠️ Please restart the backend for changes to take effect.
 ```
 
-**Development Setup**:
-```bash
-# Stop backend (Ctrl+C)
-# Restart
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-```
+To apply your configuration, restart the entire application:
+
+1. **Stop the application**:
+   - Go to the terminal window where the app is running
+   - Press `Ctrl+C` (or `Cmd+C` on Mac)
+   - Wait for the app to fully stop
+
+2. **Start the application again**:
+   ```bash
+   # macOS/Linux
+   ./start_app.sh
+
+   # Windows
+   start_app.bat
+   ```
+
+3. **Verify the configuration**:
+   - Go back to **⚙️ Config** → **🤖 LLM Configuration**
+   - Your settings should be preserved
+   - Click **🔍 Test Connection** to verify
+
 
 ### Log File Location
 
@@ -206,12 +254,81 @@ Application logs are stored in platform-specific locations:
 
 - **macOS**: `~/Library/Logs/AssistedDiscovery/assisted_discovery.log`
 - **Windows**: `%LOCALAPPDATA%\AssistedDiscovery\Logs\assisted_discovery.log`
-- **Linux**: `~/.local/share/AssistedDiscovery/logs/assisted_discovery.log`
 
 **To view logs via UI**:
 1. Go to **⚙️ Config** page
 2. Scroll to **📋 Application Logs** section
 3. Click **📂 Open Log Folder** button
+
+---
+
+### Managing Workspaces
+
+Access workspace management in **⚙️ Config** page.
+
+#### Create New Workspace
+
+1. Go to **⚙️ Config**
+2. Scroll to **📁 Workspace Management**
+3. Enter workspace name:
+   ```
+   New Workspace: WestJet
+   ```
+   - Use airline code or project name
+   - Alphanumeric only (no spaces)
+   - Examples: `WestJet`, `United`, `Test`, `Production`
+
+4. Click **➕ Add Workspace**
+
+5. **Result**:
+   ```
+   ✅ Workspace 'WestJet' created successfully!
+   ```
+
+---
+
+#### Switch Workspace
+
+**In Sidebar**:
+```
+Workspace: [WestJet ▼]
+```
+
+**Effect**: All pages now show data from selected workspace.
+
+---
+
+#### Delete Workspace
+
+**⚠️ Warning**: This permanently deletes ALL data in workspace!
+
+1. Go to **⚙️ Config** → **Delete Workspace**
+2. Select workspace to delete:
+   ```
+   Workspace to delete: [WestJet ▼]
+   ```
+   - Cannot delete "default" workspace
+   - Must have at least one workspace
+
+3. **Warning message**:
+   ```
+   ⚠️ This will permanently delete the workspace and all its data
+   (patterns, runs, node facts)!
+   ```
+
+4. Click **🗑️ Delete Workspace**
+
+5. Confirmation:
+   ```
+   ✅ Workspace 'WestJet' and its database deleted.
+   ```
+
+**What gets deleted**:
+- All Patterns
+- All Relationships
+- All Node Configurations
+- All Discovery/Identify runs
+- Workspace database file (`.db` file deleted from disk)
 
 ---
 
@@ -221,17 +338,17 @@ AssistedDiscovery has four main workflows:
 
 ### 1. Discovery Workflow 🔍
 
-**Purpose**: Extract structure and relationships from XML
+**Purpose**: Analyze existing airline XML files to extract and generate reusable patterns
 
 **When to use**:
-- First time analyzing an airline's XML format
-- New XML message type received
-- Need to understand XML structure
+- Analyzing an existing airline's XML format
+- Creating pattern library for known/existing airlines
+- Need to understand and document XML structure
+- Generating patterns for future validation
 
 **Output**:
-- NodeFacts (extracted structures)
+- Patterns (reusable templates for node structures)
 - Relationships (node references)
-- Patterns (reusable templates)
 
 **Typical Duration**: 2-5 minutes for standard XML
 
@@ -239,15 +356,16 @@ AssistedDiscovery has four main workflows:
 
 ### 2. Identify Workflow 🎯
 
-**Purpose**: Validate XML against known patterns
+**Purpose**: Validate XML from new/unknown airlines against saved patterns from existing airlines
 
 **When to use**:
-- After Discovery has generated patterns
-- Validating new XML files from same airline
-- Checking for structural changes
+- After Discovery has generated patterns from existing airlines
+- Validating new airline XML files against known patterns
+- Checking how closely new airline matches existing patterns
+- Identifying deviations and differences from standard patterns
 
 **Output**:
-- Pattern matches (what changed, what stayed same)
+- Pattern matches (how closely new XML matches saved patterns)
 - Confidence scores
 - Deviation reports
 
@@ -275,8 +393,7 @@ AssistedDiscovery has four main workflows:
 **Purpose**: Configure which nodes to extract and their expected references
 
 **When to use**:
-- Before Discovery (optional, for guided extraction)
-- After Discovery (to refine extraction rules)
+- Before Discovery
 
 **Output**:
 - Node Configuration rules
@@ -290,51 +407,142 @@ Node Configuration tells AssistedDiscovery **which nodes to extract** and **what
 
 ### Why Configure Nodes?
 
+Node configuration is **required** before running Discovery. You must configure which nodes to extract from your XML.
+
 **Benefits**:
-- ✅ **Faster Discovery**: Only extract nodes you care about
+- ✅ **Controlled Extraction**: Only extract nodes you care about
 - ✅ **Better Relationships**: Define expected references between nodes
 - ✅ **Consistent Results**: Same extraction rules across runs
-
-**Optional**: You can skip this and let Discovery auto-detect everything. However, configuration gives you more control.
+- ✅ **Required Step**: Discovery will only extract nodes that are configured and enabled
 
 ### Access Node Configuration
 
 1. Click **📋 Node Config** in sidebar
-2. You'll see four tabs:
+2. You'll see two tabs:
    - **📤 Analyze XML**: Upload XML to see available nodes
    - **⚙️ Manage Configurations**: Create/edit node configs
-   - **📋 Copy to Versions**: Copy configs across NDC versions
-   - **🔖 Reference Types**: Define reference type taxonomy
 
 ---
 
 ### Tab 1: Analyze XML
 
-**Purpose**: Discover which nodes exist in your XML without running full Discovery.
+**Purpose**: Discover which nodes exist in your XML and configure them using an interactive tree view.
 
 #### Steps:
 
 1. **Upload XML File**:
-   - Click **Browse** or drag-and-drop
+   - Click **Choose XML file** or drag-and-drop
    - Select your NDC XML file
+   - System analyzes the XML structure automatically
 
-2. **Review Detected Nodes**:
+2. **Review Detected Information**:
    ```
-   Message: OrderViewRS
-   Version: 19.2
-   Airline: LA (LATAM)
+   ✅ Discovered 47 nodes in 19.2/OrderViewRS - Airline: WS
 
-   Available Sections:
-   ✓ OrderViewRS/Response/DataLists/PassengerList
-   ✓ OrderViewRS/Response/DataLists/SegmentList
-   ✓ OrderViewRS/Response/DataLists/FareList
-   ✓ OrderViewRS/Response/Order
-   ... (more sections)
+   Spec Version: 19.2
+   Airline: WS (WestJet)
+   Total Nodes: 47
+   Configured: 9
    ```
 
-3. **Note Section Paths**: These are the paths you'll use in configuration
+3. **Understanding Node Selection**:
 
-4. **Optionally Create Configs**: Click **Create Configuration** next to any section
+   The tree view shows your XML structure hierarchically:
+
+   **How Node Selection Works:**
+   - **Check a parent node** → Extracts that parent + all its descendants
+   - **Check a child only** → Extracts that child + its descendants (parent NOT extracted)
+   - **Check a leaf node** → Extracts only that specific node
+
+   Each checked node becomes a "root" for hierarchical extraction. Only explicitly checked nodes are saved.
+
+4. **Select Nodes for Extraction**:
+
+   **Tree View** (Left Panel):
+   ```
+   🌳 Node Hierarchy
+
+   ▶ IATA_AirShoppingRS
+     ▶ PayloadAttributes
+     ▼ Response
+       ▼ DataLists
+         ✓ DatedMarketingSegmentList
+         ✓ DatedOperatingLegList
+         ✓ DatedOperatingSegmentList
+         ✓ DisclosureList
+         ✓ OriginDestList
+   ```
+
+   - Click ▶ to expand/collapse nodes
+   - Check ✓ boxes to enable extraction
+   - Parent selection auto-enables descendants (shown with ✓ but not saved individually)
+
+   **Node Properties** (Right Panel):
+   ```
+   ✅ 9 parent nodes selected for extraction
+   🔁 82 descendants will be auto-extracted (shown checked in tree)
+
+   Selected nodes for extraction:
+   • DatedMarketingSegmentList
+   • DatedOperatingLegList
+   • DatedOperatingSegmentList
+   ... and 6 more
+   ```
+
+5. **Save Configuration**:
+   - Click **💾 Save All Configurations**
+   - Result:
+     ```
+     ✅ Saved 47 node configurations!
+        • 9 parent nodes enabled for extraction
+     💡 Configurations saved successfully. Parent nodes will auto-extract
+        their descendants during Discovery.
+     ```
+
+#### Important Notes:
+
+- **Tree starts collapsed** when you reload - manually expand to see nodes
+- **Checkmarks persist** across page reloads
+- **Only parent nodes are saved** - descendants are auto-extracted
+- **No descendants expanded automatically** - you control the tree view
+
+#### Disabling Nodes:
+
+To **disable** a node that was previously enabled for extraction:
+
+1. **Upload the same XML file** in the Analyze XML tab
+2. **Expand the tree** to find the enabled node (shown with ✓)
+3. **Uncheck the node** by clicking on its checkbox
+4. **Click Save All Configurations**
+
+**What happens when you disable a node:**
+- The node is marked as `enabled = false` in the database
+- The node will **NOT be extracted** during Discovery
+- All descendants of that node will also be skipped during extraction
+- The configuration remains saved but inactive
+
+**Example:**
+```
+Before: ✓ PassengerList (enabled)
+After:  ☐ PassengerList (disabled)
+```
+
+When you save, you'll see:
+```
+✅ Saved 47 node configurations!
+   • 8 parent nodes enabled for extraction
+   • 1 parent node disabled (not extracted)
+```
+
+**Important**: Disabling a parent node automatically disables all its descendants. They will not be extracted during Discovery, even if they were previously enabled.
+
+#### Re-loading Your Configuration:
+
+When you upload the same XML file later:
+- Previously selected nodes will show with checkmarks ✓
+- Tree remains collapsed for clean view
+- Expand any node to see its checked children
+- Modify selections as needed and save again
 
 ---
 
@@ -351,155 +559,6 @@ The table shows all configured nodes:
 | PassengerList | 19.2 | OrderViewRS | ✓ | high | Yes |
 | SegmentList | 19.2 | OrderViewRS | ✓ | high | Yes |
 
-#### Create New Configuration
-
-**Steps**:
-
-1. Click **➕ Add New Configuration**
-
-2. Fill in the form:
-
-   **Section Path** (Required):
-   ```
-   OrderViewRS/Response/DataLists/PassengerList
-   ```
-   - Copy from "Analyze XML" tab
-   - Use the exact path from XML
-
-   **Spec Version** (Required):
-   ```
-   19.2
-   ```
-   - NDC specification version
-   - Common values: 17.2, 18.1, 19.2, 21.3
-
-   **Message Root** (Required):
-   ```
-   OrderViewRS
-   ```
-   - Root element of the XML message
-   - Examples: OrderViewRS, AirShoppingRS, OfferPriceRS
-
-   **Enabled**:
-   - ✅ Checked: Extract this node during Discovery
-   - ❌ Unchecked: Skip this node
-
-   **Importance** (Optional):
-   ```
-   Options: critical, high, medium, low
-   ```
-   - Used for prioritization and reporting
-   - Default: medium
-
-   **Expected References** (Optional):
-   ```
-   segment_reference, fare_reference, service_reference
-   ```
-   - Comma-separated list
-   - Semantic names for expected relationships
-   - Example: "segment_reference" means Passenger should reference Segment
-   - Leave empty to auto-discover all relationships
-
-3. Click **💾 Save Configuration**
-
-#### Example: Configure PassengerList
-
-```
-Section Path: OrderViewRS/Response/DataLists/PassengerList
-Spec Version: 19.2
-Message Root: OrderViewRS
-Enabled: ✓ Yes
-Importance: high
-Expected References: segment_reference, fare_reference, service_reference
-```
-
-**What this means**:
-- Extract PassengerList nodes during Discovery
-- This is a high-priority node
-- We expect Passengers to reference Segments, Fares, and Services
-- Discovery will validate these expected references exist
-
-#### Edit Existing Configuration
-
-1. Find the configuration in the table
-2. Click **✏️ Edit** button
-3. Modify fields
-4. Click **💾 Update**
-
-#### Delete Configuration
-
-1. Find the configuration in the table
-2. Click **🗑️ Delete** button
-3. Confirm deletion
-
-**Note**: Deleting config doesn't delete extracted NodeFacts, just the extraction rule.
-
----
-
-### Tab 3: Copy to Versions
-
-**Purpose**: Copy node configurations across NDC versions or message types.
-
-**Use Case**: You configured nodes for NDC 19.2, now you receive NDC 21.3 files with similar structure.
-
-#### Steps:
-
-1. **Select Source**:
-   - Spec Version: `19.2`
-   - Message Root: `OrderViewRS`
-
-2. **Select Target**:
-   - Spec Version: `21.3`
-   - Message Root: `OrderViewRS`
-
-3. **Review Configs to Copy**:
-   ```
-   ✓ PassengerList
-   ✓ SegmentList
-   ✓ FareList
-   (3 configurations selected)
-   ```
-
-4. Click **📋 Copy Configurations**
-
-5. **Result**:
-   ```
-   ✅ Copied 3 configurations from 19.2/OrderViewRS to 21.3/OrderViewRS
-   ```
-
-**What happens**: All selected configs are duplicated with new version/message.
-
----
-
-### Tab 4: Reference Types
-
-**Purpose**: Define a taxonomy of reference types for your domain.
-
-**Use Case**: Standardize reference naming across configurations.
-
-#### View Reference Types
-
-| Reference Type | Description | Category |
-|---------------|-------------|----------|
-| segment_reference | Passenger to flight segment | Booking |
-| fare_reference | Passenger to fare component | Pricing |
-| infant_parent | Infant to parent passenger | Passenger |
-
-#### Create Reference Type
-
-1. Click **➕ Add Reference Type**
-2. Fill in:
-   - **Reference Type**: `segment_reference`
-   - **Description**: `Reference from Passenger to Segment`
-   - **Category**: `Booking` (optional)
-3. Click **💾 Save**
-
-**Benefits**:
-- Standardized naming
-- Documentation
-- Autocomplete in configuration forms
-
----
 
 ## Discovery Workflow
 
@@ -507,15 +566,15 @@ Discovery is the core workflow that extracts structure and relationships from XM
 
 ### When to Run Discovery
 
-**First Time with XML**:
-- New airline partner
-- New message type
-- New NDC version
+**For Existing Airlines**:
+- Analyzing known/existing airline XML formats
+- Creating pattern library from existing airline data
+- Documenting standard XML structures
 
 **Periodic Updates**:
-- XML structure changes
-- New fields added
-- Validate current understanding
+- XML structure changes in existing airlines
+- New fields added to existing patterns
+- Updating pattern library
 
 ### Step-by-Step: Running Discovery
 
@@ -526,7 +585,7 @@ Click **🔍 Discovery** in the sidebar
 #### Step 2: Select Workspace
 
 ```
-Workspace: [Dropdown: default, LATAM, United, ...]
+Workspace: [Dropdown: default, WestJet, United, ...]
 ```
 
 - Select existing workspace or create new one
@@ -544,9 +603,9 @@ Workspace: [Dropdown: default, LATAM, United, ...]
 
 **Supported Formats**:
 - ✅ `.xml` files
-- ✅ NDC messages (OrderViewRS, AirShoppingRS, etc.)
+- ✅ Any messages (OrderViewRS, AirShoppingRS, etc.)
 - ✅ With or without `IATA_` prefix
-- ✅ Any NDC version (17.2, 18.1, 19.2, 21.3)
+- ✅ Any version (17.2, 18.1, 19.2, 21.3)
 
 **File Size Limits**:
 - Maximum: 100 MB
@@ -557,11 +616,11 @@ Workspace: [Dropdown: default, LATAM, United, ...]
 ```
 ✅ File uploaded successfully!
 
-File: LATAM_OrderView_19.2.xml
+File: WestJet_OrderView_19.2.xml
 Size: 2.3 MB
 Message Type: OrderViewRS
 NDC Version: 19.2
-Airline: LA (LATAM)
+Airline: WS (WestJet)
 ```
 
 #### Step 5: Start Discovery
@@ -596,7 +655,7 @@ Click **🚀 Start Discovery** button
    ```
    🎨 Generating reusable patterns...
    ```
-   - Creates pattern templates from NodeFacts
+   - Creates pattern templates from extracted node structures
    - Deduplicates similar patterns
    - Stores for future Identify runs
 
@@ -622,7 +681,7 @@ Duration: 3m 42s
 
 NDC Version: 19.2
 Message Root: OrderViewRS
-Airline: LA (LATAM)
+Airline: WS (WestJet)
 ```
 
 ---
@@ -632,7 +691,7 @@ Airline: LA (LATAM)
 ```
 📈 Extraction Statistics
 
-NodeFacts Extracted: 47
+Nodes Analyzed: 47
 Relationships Found: 18
 Patterns Generated: 12
 
@@ -686,22 +745,6 @@ Note: This reference was not configured but AI found it
 
 ---
 
-### Discovery Results: Extracted NodeFacts
-
-Table showing all extracted nodes:
-
-| Node Type | Section Path | Attributes | Children | References | Confidence |
-|-----------|-------------|------------|----------|------------|------------|
-| Passenger | PassengerList | 8 | 12 | 3 | 95% |
-| Segment | SegmentList | 6 | 8 | 2 | 92% |
-| Fare | FareList | 5 | 6 | 1 | 90% |
-
-**Actions**:
-- Click any row to see full JSON structure
-- Export table to CSV
-
----
-
 ### Discovery Results: Generated Patterns
 
 ```
@@ -719,48 +762,50 @@ Click **View in Pattern Manager** to see patterns.
 
 ### Common Discovery Scenarios
 
-#### Scenario 1: First Discovery for Airline
+#### Scenario 1: Creating Patterns from Existing Airline
 
-**Situation**: Never analyzed this airline's XML before.
+**Situation**: Analyzing an existing airline's XML to create reusable patterns.
 
 **Steps**:
-1. Create new workspace: `Airline_Code` (e.g., `LATAM`)
-2. Upload sample XML
-3. Run Discovery without pre-configuration
-4. Review all relationships (validate unexpected discoveries)
-5. Configure expected references for next time
+1. Create new workspace: `Airline_Code` (e.g., `WestJet`)
+2. Configure nodes in Node Config (select which nodes to extract)
+3. Upload existing airline XML file
+4. Run Discovery
+5. Review generated patterns and relationships
 
-**Result**: Full understanding of XML structure.
+**Result**: Pattern library created for this existing airline, ready for future Identify operations with new airlines.
 
 ---
 
-#### Scenario 2: Validating Expected Structure
+#### Scenario 2: Updating Existing Patterns
 
-**Situation**: You know what references should exist (BA knowledge).
-
-**Steps**:
-1. Configure node configs with expected_references BEFORE Discovery
-2. Upload XML
-3. Run Discovery
-4. Check "Expected Missing" section for broken references
-
-**Result**: Validation of business assumptions.
-
----
-
-#### Scenario 3: Detecting Changes
-
-**Situation**: Previously analyzed airline, checking for changes.
+**Situation**: Existing airline's XML structure has changed, need to update patterns.
 
 **Steps**:
-1. Use same workspace as previous Discovery
-2. Upload new XML file
+1. Use the existing workspace for that airline (e.g., `WestJet`)
+2. Upload updated XML file with new structure
 3. Run Discovery
 4. Compare:
-   - New unexpected discoveries = structural additions
-   - Missing expected references = structural changes/breaks
+   - New relationships discovered = structural additions
+   - Missing expected references = structural changes
 
-**Result**: Change detection report.
+**Result**: Updated pattern library reflecting new structure.
+
+---
+
+#### Scenario 3: Validating New Airline (Use Identify Instead)
+
+**Situation**: New airline XML needs validation against existing patterns.
+
+**Action**: Use **Identify Workflow** instead of Discovery.
+
+**Steps**:
+1. Use workspace containing patterns from existing airlines
+2. Upload new airline's XML file
+3. Run **Identify** (not Discovery)
+4. Review pattern matches to see how closely new airline matches existing patterns
+
+**Result**: Compatibility report showing how well new airline conforms to known patterns.
 
 ---
 
@@ -907,14 +952,15 @@ Identify validates new XML files against existing patterns.
 
 ### When to Use Identify
 
-**After Discovery**:
-- You've run Discovery and generated patterns
-- Now you want to validate new XML files
+**For New/Unknown Airlines**:
+- You've run Discovery on existing airlines and generated patterns
+- Now you want to validate new airline XML files against those patterns
 
 **Use Cases**:
-- Testing: Validate test XML files
-- Monitoring: Check production files for deviations
-- Regression: Ensure changes don't break structure
+- New Airline Validation: Check how closely a new airline's XML matches existing patterns
+- Compliance Testing: Verify new airline follows standard structures
+- Deviation Detection: Identify differences from known patterns
+- Onboarding: Assess compatibility of new airline XML with existing systems
 
 ### Prerequisites
 
@@ -950,13 +996,14 @@ Click **🔍 Start Identify**
 
 **What Happens**:
 
-1. **Extract NodeFacts** (1-2 minutes)
+1. **Extract Node Structures** (1-2 minutes)
    - Same extraction as Discovery
-   - But no relationship analysis
+   - Analyzes relationships between nodes
    - No pattern generation
 
 2. **Match Against Patterns** (30 seconds)
-   - Compare each NodeFact to existing patterns
+   - Compare each extracted node to existing patterns
+   - Compare relationships against expected patterns
    - Calculate similarity scores
    - Classify matches
 
@@ -971,7 +1018,7 @@ Click **🔍 Start Identify**
 ```
 📊 Pattern Matching Results
 
-Total NodeFacts: 45
+Total Nodes Analyzed: 45
 Match Rate: 87.5%
 
 Verdict Breakdown:
@@ -985,7 +1032,7 @@ Verdict Breakdown:
 **What the verdicts mean**:
 
 **EXACT_MATCH** ✅ (Confidence ≥ 95%):
-- NodeFact perfectly matches known pattern
+- Node perfectly matches known pattern
 - All must-have attributes present
 - Structure identical
 
@@ -1062,7 +1109,7 @@ with 89% confidence. Optional field 'MiddleName' is present but not required.
 ```
 
 **Full JSON Comparison**:
-- Expand to see side-by-side NodeFact vs Pattern
+- Expand to see side-by-side comparison of extracted node vs known pattern
 
 ---
 
@@ -1116,14 +1163,13 @@ action needed unless 'MiddleName' should be mandatory.
 
 ## Workspaces
 
-Workspaces isolate data per airline or project.
+Workspaces isolate data per airline or project. For basic workspace creation, see [Quick Start: Create a Workspace](#quick-start-create-a-workspace) in the Getting Started section. For detailed management, see [Managing Workspaces](#managing-workspaces) in the Configuration section.
 
 ### What is a Workspace?
 
 A **workspace** is an isolated environment containing:
-- NodeFacts
-- Relationships
 - Patterns
+- Relationships
 - Node Configurations
 - Discovery/Identify runs
 
@@ -1134,111 +1180,62 @@ A **workspace** is an isolated environment containing:
 
 ---
 
-### Managing Workspaces
-
-Access workspace management in **⚙️ Config** page.
-
-#### Create New Workspace
-
-1. Go to **⚙️ Config**
-2. Scroll to **📁 Workspace Management**
-3. Enter workspace name:
-   ```
-   New Workspace: LATAM
-   ```
-   - Use airline code or project name
-   - Alphanumeric only (no spaces)
-   - Examples: `LATAM`, `United`, `Test`, `Production`
-
-4. Click **➕ Add Workspace**
-
-5. **Result**:
-   ```
-   ✅ Workspace 'LATAM' created successfully!
-   ```
-
----
-
-#### Switch Workspace
-
-**In Sidebar**:
-```
-Workspace: [LATAM ▼]
-```
-
-**Or in Config Page**:
-```
-Current Workspace: LATAM
-Switch to: [United ▼] → Switch
-```
-
-**Effect**: All pages now show data from selected workspace.
-
----
-
-#### Delete Workspace
-
-**⚠️ Warning**: This permanently deletes ALL data in workspace!
-
-1. Go to **⚙️ Config** → **Delete Workspace**
-2. Select workspace to delete:
-   ```
-   Workspace to delete: [Test ▼]
-   ```
-   - Cannot delete "default" workspace
-   - Must have at least one workspace
-
-3. **Warning message**:
-   ```
-   ⚠️ This will permanently delete the workspace and all its data
-   (patterns, runs, node facts)!
-   ```
-
-4. Click **🗑️ Delete Workspace**
-
-5. Confirmation:
-   ```
-   ✅ Workspace 'Test' and its database deleted.
-   ```
-
-**What gets deleted**:
-- All NodeFacts
-- All Relationships
-- All Patterns
-- All Node Configurations
-- All Discovery/Identify runs
-- Workspace database file (`.db` file deleted from disk)
-
----
-
-### Workspace Best Practices
-
-**Organization Strategy**:
-
-```
-Workspaces:
-├─ LATAM          (LATAM Airlines - production)
-├─ LATAM_Test     (LATAM Airlines - testing)
-├─ United         (United Airlines)
-├─ Delta          (Delta Airlines)
-└─ Development    (Experiments and testing)
-```
-
-**Naming Conventions**:
-- ✅ Airline code: `LATAM`, `UA`, `DL`
-- ✅ Project name: `Phase1`, `Migration`
-- ✅ Environment: `Production`, `Test`, `Dev`
-- ❌ Avoid: Spaces, special characters
-
-**Workflow**:
-1. Create workspace per airline
-2. Run Discovery in airline workspace
-3. Patterns stay isolated to that airline
-4. Switch workspaces to compare different airlines
-
----
-
 ## Troubleshooting
+
+### Understanding Error Messages
+
+AssistedDiscovery provides detailed error messages to help you diagnose issues quickly. When an error occurs, you'll see:
+
+1. **Error Description**: What went wrong
+2. **Error Details**: Specific technical information
+3. **Troubleshooting Tips**: Context-specific suggestions
+4. **Log File Location**: Where to find detailed logs
+
+**Example Error Message**:
+```
+❌ Failed to analyze XML structure
+**Error:** argument of type '_cython_3_1_4.cython_function_or_method' is not iterable
+Status Code: 500
+
+💡 Troubleshooting:
+- Check if the XML file is well-formed and valid
+- Verify it's a supported message type (e.g., AirShoppingRS)
+- Check the log files for detailed error information:
+
+📂 Log File (macOS):
+~/Library/Logs/AssistedDiscovery/assisted_discovery.log
+```
+
+### How to Use Log Files
+
+When you see an error, always check the log files for detailed information:
+
+**Accessing Logs:**
+
+**Option 1: Via UI** (Recommended)
+1. Go to **⚙️ Config** page
+2. Scroll to **📋 Application Logs** section
+3. Click **📂 Open Log Folder** button
+4. Open `assisted_discovery.log` in a text editor
+
+**Option 2: Direct File Access**
+- **macOS**: `~/Library/Logs/AssistedDiscovery/assisted_discovery.log`
+- **Windows**: `%LOCALAPPDATA%\AssistedDiscovery\Logs\assisted_discovery.log`
+- **Linux**: `~/.local/share/AssistedDiscovery/logs/assisted_discovery.log`
+
+**What to Look For in Logs:**
+- **Error timestamps**: Match with when your operation failed
+- **Run IDs**: Unique identifier for each Discovery/Identify run
+- **Stack traces**: Detailed error information
+- **LLM API responses**: Check for API-specific errors
+
+**Tip**: When reporting issues, always include:
+- The error message shown in UI
+- Relevant log file excerpts (with timestamps)
+- The Run ID (if available)
+- What you were trying to do
+
+---
 
 ### LLM Connection Issues
 
@@ -1307,14 +1304,71 @@ Workspaces:
 
 ---
 
+### XML Analysis Issues
+
+#### "Failed to analyze XML structure"
+
+**When it happens**: Uploading XML to Node Configuration Manager
+
+**What you'll see**:
+```
+❌ Failed to analyze XML structure
+**Error:** [Technical error message from backend]
+
+💡 Troubleshooting:
+- Check if the XML file is well-formed and valid
+- Verify it's a supported message type (e.g., AirShoppingRS)
+- Check the log files for detailed error information:
+
+📂 Log File (macOS):
+~/Library/Logs/AssistedDiscovery/assisted_discovery.log
+```
+
+**Solutions**:
+
+1. **Validate XML Format**:
+   - Open XML in text editor
+   - Check for:
+     - Unclosed tags
+     - Special characters (&, <, >)
+     - Encoding issues
+     - Malformed structure
+   - Use online XML validator: https://www.xmlvalidation.com/
+
+2. **Check File Type**:
+   - Must be NDC XML message (AirShoppingRS, OrderViewRS, etc.)
+   - Not just any XML file
+   - Should have NDC namespace declarations
+
+3. **Review Log File**:
+   - Go to **⚙️ Config** → **📋 Application Logs**
+   - Click **📂 Open Log Folder**
+   - Search for error timestamp in `assisted_discovery.log`
+   - Look for detailed Python stack trace
+
+4. **Try Different XML**:
+   - If one file fails, try another sample
+   - Use a known-good XML file first
+   - Check if issue is file-specific or systemic
+
+5. **Report Issue**:
+   - If problem persists, report to development team
+   - Include:
+     - Error message from UI
+     - Log file excerpt (with timestamp)
+     - Sample XML file (if not sensitive)
+
+---
+
 ### Discovery/Identify Issues
 
-#### "No NodeFacts extracted"
+#### "No patterns extracted"
 
 **Causes**:
 - XML file empty or corrupted
 - LLM not configured
 - XML format not supported
+- No nodes configured for extraction
 
 **Solutions**:
 
@@ -1637,26 +1691,54 @@ Always include log files when reporting issues:
 **Q: Can I use AssistedDiscovery offline?**
 A: No, it requires internet connection for LLM API calls (Azure OpenAI or Gemini).
 
-**Q: How much does it cost to run?**
-A: Cost depends on LLM provider usage. Azure OpenAI charges per token. Typical Discovery run costs $0.10-$0.50.
-
 **Q: Can multiple users share workspaces?**
-A: Not directly. Export/import patterns to share data between users.
-
-**Q: What happens to my data?**
-A: All data stored locally in SQLite databases. No data sent to AssistedDiscovery servers (only to your configured LLM provider).
+A: Not directly. Export/import patterns to share data between users. In the future, a centralised database will be used to share data between users.
 
 **Q: Can I modify extracted patterns?**
-A: Not directly through UI. Export, edit JSON, and re-import. Or run Discovery again with refined configuration.
+A: Run Discovery again with refined configuration.
 
 **Q: How accurate is relationship discovery?**
-A: LLM-based discovery has ~90-95% accuracy. Always validate unexpected discoveries.
+A: LLM-based discovery has ~85-95% accuracy. Always validate unexpected discoveries and review confidence scores.
 
-**Q: Can I automate Discovery?**
-A: Yes, via API. See API documentation for automation examples.
+**Q: Why do I get different results when running Discovery twice on the same XML?**
+A: AssistedDiscovery uses AI (LLMs) which are non-deterministic. Each run may produce slightly different results due to:
+- Random sampling in AI models
+- Different interpretation of ambiguous structures
+- Temperature settings (we use low temperature for consistency, but not zero)
 
----
+**Recommendation**: If results vary significantly:
+- Check confidence scores - trust high confidence (>90%) more
+- Run multiple times and look for consistent patterns
+- Review differences manually
+- Report significant inconsistencies to help improve the system
 
-**Document Version**: 1.0
-**Last Updated**: 2025-10-09
-**For**: AssistedDiscovery v1.0
+**Q: Can LLMs make mistakes?**
+A: Yes, absolutely. LLMs can:
+- Miss relationships that exist
+- Find relationships that don't exist
+- Misinterpret node structures
+- Generate incorrect patterns
+
+**Always review results**, especially:
+- Low confidence matches (< 85%)
+- Unexpected discoveries
+- Broken relationships
+- New patterns
+
+Think of AssistedDiscovery as an **intelligent assistant**, not a perfect oracle. Human validation is essential.
+
+**Q: How can I improve accuracy?**
+A: Several ways:
+1. **Configure expected references** in Node Configuration before Discovery
+2. **Use representative XML samples** (not edge cases)
+3. **Review and validate** all unexpected discoveries
+4. **Run multiple times** and compare for consistency
+5. **Provide feedback** when AI makes mistakes
+6. **Use clear, well-formed XML** files
+
+**Q: What should I do if I find an error in the results?**
+A: Please report it! Your feedback helps improve the system:
+1. Note the Run ID from the results page
+2. Save the error details and confidence scores
+3. Export relevant patterns/results
+4. Include log files if possible

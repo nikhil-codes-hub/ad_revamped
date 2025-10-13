@@ -234,12 +234,9 @@ class PatternManager:
     def render(self, explorer_callback=None):
         """Render Pattern Manager page with optional pattern manager tab."""
 
-        st.header("🎨 Pattern Manager")
-        st.write("Browse, export, import, and verify patterns")
-
         if explorer_callback:
             tabs = st.tabs([
-                "🎨 Pattern Manager",
+                "📋 Manage Patterns",
                 "✅ Verify Patterns"
             ])
 
@@ -557,74 +554,134 @@ class PatternManager:
 
     def _render_verify_tab(self):
         """Verify workspace patterns with test XML."""
-        st.subheader("✅ Verify Patterns with Test XML")
-        st.info("💡 Test your workspace patterns against sample XML using AI-powered verification")
+        st.subheader("🔍 Verify Patterns")
+        st.info("💡 Verify patterns against XML content to ensure they match as expected.")
 
         # Get current workspace
         workspace = st.session_state.get('current_workspace', 'default')
 
-        # Get workspace patterns
-        workspace_patterns = self.db_utils.get_all_patterns()
+        # Load patterns from backend API first (primary source)
+        workspace_patterns = self._load_patterns_from_backend(workspace)
+
+        # Fallback to local workspace database if backend is unavailable
+        if not workspace_patterns:
+            workspace_patterns = self.db_utils.get_all_patterns()
 
         if not workspace_patterns:
-            workspace_patterns = self._load_patterns_from_backend(workspace)
-
-        if not workspace_patterns:
-            st.warning("📭 No patterns in workspace. Export patterns first in the Export tab.")
+            st.warning("📭 No patterns found. Run Discovery first to generate patterns.")
             return
 
-        st.success(f"✅ {len(workspace_patterns)} patterns in workspace")
+        # Show pattern statistics
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Total Patterns", len(workspace_patterns))
+        with col2:
+            unique_versions = len(set(p[1] for p in workspace_patterns))
+            st.metric("Versions", unique_versions)
+        with col3:
+            unique_types = len(set(p[2] for p in workspace_patterns))
+            st.metric("Node Types", unique_types)
 
-        # Pattern selection
-        pattern_options = {}
-        for p in workspace_patterns:
-            # Unpack all columns from get_all_patterns (9 columns total)
+        st.divider()
+
+        # Show pattern list with selection
+        st.markdown("### 🔍 Pattern Details")
+
+        import pandas as pd
+
+        # Build pattern table
+        pattern_rows = []
+        pattern_map = {}  # Map index to pattern details
+
+        for idx, p in enumerate(workspace_patterns):
+            # Unpack pattern tuple (9 columns from get_all_patterns or _load_patterns_from_backend)
             (api_name, api_version, section_name, pattern_desc, pattern_prompt,
              pattern_id, api_id, section_id, is_shared) = p
-            label = f"{api_name} v{api_version} - {section_name}"
-            pattern_options[label] = {
+
+            pattern_map[idx] = {
                 'api': api_name,
                 'version': api_version,
                 'section': section_name,
-                'description': pattern_desc,
-                'prompt': pattern_prompt
+                'description': pattern_desc or '',
+                'prompt': pattern_prompt,
+                'pattern_id': pattern_id
             }
 
-        selected_pattern_label = st.selectbox("🎯 Select Pattern to Test:", list(pattern_options.keys()))
+            pattern_rows.append({
+                "API": api_name,
+                "Version": api_version,
+                "Node Type": section_name,
+                "Description": pattern_desc[:80] + "..." if pattern_desc and len(pattern_desc) > 80 else pattern_desc or ''
+            })
 
-        if selected_pattern_label:
-            pattern = pattern_options[selected_pattern_label]
+        df = pd.DataFrame(pattern_rows)
+
+        # Display patterns table
+        st.dataframe(
+            df,
+            hide_index=True,
+            use_container_width=True,
+            height=min(400, len(df) * 35 + 38)
+        )
+
+        st.divider()
+
+        # XML file upload
+        st.markdown("### 📄 Upload XML File to Verify")
+
+        uploaded_xml = st.file_uploader(
+            "Upload XML file to verify against patterns",
+            type=['xml'],
+            help="Upload an XML file to check which patterns match",
+            key="verify_xml_uploader"
+        )
+
+        if uploaded_xml is not None:
+            # Read XML content
+            xml_content = uploaded_xml.read().decode('utf-8')
+
+            st.success(f"✅ Uploaded: {uploaded_xml.name}")
+
+            # Show XML preview
+            with st.expander("📄 XML Preview", expanded=False):
+                st.code(xml_content[:1000] + ("..." if len(xml_content) > 1000 else ""), language='xml')
+
+            # Pattern selection for verification
+            st.markdown("### 🎯 Select Pattern to Verify")
+
+            pattern_labels = [
+                f"{pattern_map[idx]['api']} v{pattern_map[idx]['version']} - {pattern_map[idx]['section']}"
+                for idx in range(len(workspace_patterns))
+            ]
+
+            selected_pattern_label = st.selectbox(
+                "Choose a pattern:",
+                pattern_labels,
+                key="selected_pattern_verify"
+            )
+
+            selected_idx = pattern_labels.index(selected_pattern_label)
+            pattern = pattern_map[selected_idx]
 
             # Show pattern details
-            with st.expander("📋 Pattern Details", expanded=False):
+            with st.expander("📋 Pattern Details", expanded=True):
                 st.write(f"**API:** {pattern['api']} v{pattern['version']}")
-                st.write(f"**Section:** {pattern['section']}")
-                st.write(f"**Description:** {pattern['description']}")
+                st.write(f"**Node Type:** {pattern['section']}")
+                if pattern['description']:
+                    st.write(f"**Description:** {pattern['description']}")
                 st.code(pattern['prompt'], language='text')
-
-            # XML test input
-            st.markdown("### 🧪 Test XML")
-            test_xml = st.text_area(
-                "Paste XML snippet to test:",
-                height=200,
-                placeholder="<YourNode>\n  <Attribute>Value</Attribute>\n</YourNode>",
-                key="verify_test_xml"
-            )
 
             col1, col2 = st.columns([1, 3])
 
             with col1:
-                verify_btn = st.button("🚀 Verify Pattern", type="primary", disabled=not test_xml.strip())
+                verify_btn = st.button("🚀 Verify Pattern", type="primary", use_container_width=True)
 
             with col2:
-                if test_xml.strip():
-                    st.success("✅ Ready to test")
-                else:
-                    st.info("Enter XML above to test")
+                st.success("✅ Ready to verify pattern against uploaded XML")
 
             # Process verification
-            if verify_btn and test_xml.strip():
-                self._process_verification(pattern, test_xml)
+            if verify_btn:
+                self._process_verification(pattern, xml_content)
 
     def _process_verification(self, pattern: Dict[str, Any], test_xml: str):
         """Process pattern verification with LLM."""
@@ -632,7 +689,6 @@ class PatternManager:
         verification_error = None
 
         with st.status("🔄 Verifying pattern with AI...", expanded=True) as status:
-            st.write("📤 Sending to Azure OpenAI for analysis...")
 
             try:
                 # Import and initialize verifier

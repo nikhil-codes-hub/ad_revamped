@@ -1,5 +1,0 @@
-GPT_4O = "GPT4O"
-GPT_4_32K = "GPT4_32K"
-GPT_o3_mini = "o3_mini"
-GPT_o1 = "o1"
-PROJECT_ROOT="genie"

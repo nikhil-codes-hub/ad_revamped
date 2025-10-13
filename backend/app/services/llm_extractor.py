@@ -112,7 +112,9 @@ class LLMNodeFactsExtractor:
         """
         try:
             root = etree.fromstring(xml_content.encode('utf-8'))
-            element_name = section_path.split('/')[-1]
+            # Ensure section_path is a string
+            section_path_str = str(section_path) if section_path else ""
+            element_name = section_path_str.split('/')[-1] if section_path_str else "Unknown"
 
             # Count direct children by tag name
             child_tags = {}
@@ -126,10 +128,12 @@ class LLMNodeFactsExtractor:
 
             # Determine if this is a container
             # Container if: has repeating children OR element name suggests plural
+            # Ensure element_name is a string before calling endswith
+            element_name_str = str(element_name)
             is_container = (
                 max_repetition > 1 or  # Has repeating child elements
-                (element_name.endswith('List') and total_children > 0) or
-                (element_name.endswith('s') and total_children > 0 and max_repetition == total_children)
+                (element_name_str.endswith('List') and total_children > 0) or
+                (element_name_str.endswith('s') and total_children > 0 and max_repetition == total_children)
             )
 
             result = {
@@ -149,10 +153,12 @@ class LLMNodeFactsExtractor:
 
         except Exception as e:
             logger.warning(f"Failed to analyze XML structure: {e}")
+            import traceback
+            logger.warning(f"Traceback: {traceback.format_exc()}")
             # Fallback to item extraction
             return {
                 'is_container': False,
-                'element_name': section_path.split('/')[-1],
+                'element_name': str(section_path).split('/')[-1] if section_path else "Unknown",
                 'child_tags': {},
                 'total_children': 0,
                 'max_repetition': 0,
@@ -174,6 +180,12 @@ class LLMNodeFactsExtractor:
     def _create_container_extraction_prompt(self, xml_content: str, section_path: str,
                                            structure: Dict[str, Any]) -> str:
         """Create prompt for extracting container/collection elements."""
+        logger.info(f"🔧 Container prompt parameters:")
+        logger.info(f"   element_name: {structure['element_name']}")
+        logger.info(f"   repeating_tag: {structure['repeating_tag']}")
+        logger.info(f"   child_count: {structure['total_children']}")
+        logger.info(f"   max_repetition: {structure['max_repetition']}")
+
         return get_container_prompt(
             xml_content=xml_content,
             section_path=section_path,
@@ -313,10 +325,11 @@ class LLMNodeFactsExtractor:
             for i, fact in enumerate(facts):
                 if self._validate_fact(fact):
                     cleaned = self._clean_fact(fact)
+                    self._apply_quality_checks(cleaned)
                     validated_facts.append(cleaned)
-                    logger.info(f"Fact {i+1} validated: {fact.get('node_type', 'Unknown')}")
+                    logger.info(f"✅ Fact {i+1} validated: node_type='{fact.get('node_type', 'Unknown')}'")
                 else:
-                    logger.warning(f"Invalid fact {i+1} structure: {fact}")
+                    logger.warning(f"❌ Invalid fact {i+1} structure: {fact}")
 
             logger.info(f"Final validated facts: {len(validated_facts)}")
             return validated_facts
@@ -374,7 +387,8 @@ class LLMNodeFactsExtractor:
             # NEW: Business intelligence fields
             'business_intelligence': fact.get('business_intelligence', {}),
             'relationships': fact.get('relationships', []),
-            'cross_references': fact.get('cross_references', {})
+            'cross_references': fact.get('cross_references', {}),
+            'quality_checks': fact.get('quality_checks', {})
         }
 
         # Apply PII masking to parent attributes
@@ -386,6 +400,51 @@ class LLMNodeFactsExtractor:
         cleaned = bi_enricher.enrich_fact(cleaned)
 
         return cleaned
+    def _apply_quality_checks(self, fact: Dict[str, Any]) -> None:
+        """
+        Annotate facts with quality check metadata without aborting extraction.
+        Calculates a simple match percentage and logs warnings when breaks exist.
+        """
+        quality_checks = fact.get('quality_checks')
+        if not isinstance(quality_checks, dict):
+            return
+
+        status = str(quality_checks.get('status', 'ok')).lower()
+        missing_items = quality_checks.get('missing_elements') or []
+
+        if not isinstance(missing_items, list):
+            missing_items = [missing_items]
+
+        quality_checks['missing_elements'] = missing_items
+
+        # Derive total elements for a coarse match percentage
+        total_children = fact.get('attributes', {}).get('child_count')
+        if not isinstance(total_children, int) or total_children <= 0:
+            total_children = len(fact.get('children', []))
+
+        total_children = max(total_children, 0)
+        missing_count = len(missing_items)
+
+        if total_children == 0:
+            match_percentage = 0 if missing_count else 100
+        else:
+            matched = max(total_children - missing_count, 0)
+            match_percentage = round((matched / total_children) * 100)
+
+        quality_checks['match_percentage'] = match_percentage
+
+        if status == 'error' and missing_count:
+            missing_summary = '; '.join(
+                f"{item.get('path', 'unknown path')} ({item.get('reason', 'unspecified reason')})"
+                if isinstance(item, dict) else str(item)
+                for item in missing_items
+            )
+            logger.warning(
+                "Quality check warning for node_type '%s': match=%s%%, missing=%s",
+                fact.get('node_type', 'Unknown'),
+                match_percentage,
+                missing_summary or 'unspecified'
+            )
 
     async def extract_from_subtree(self, subtree: XmlSubtree,
                                  context: Optional[Dict[str, Any]] = None) -> LLMExtractionResult:
@@ -423,6 +482,18 @@ class LLMNodeFactsExtractor:
 
             # Parse response
             node_facts = self._parse_llm_response(llm_response["content"])
+
+            # Log quality breaks without aborting workflow
+            for fact in node_facts:
+                qc = fact.get('quality_checks') or {}
+                if str(qc.get('status', 'ok')).lower() == 'error':
+                    logger.warning(
+                        "Quality break detected in fact '%s' (ordinal %s): match=%s%%, missing=%s",
+                        fact.get('node_type', 'Unknown'),
+                        fact.get('node_ordinal', 'n/a'),
+                        qc.get('match_percentage', 'n/a'),
+                        qc.get('missing_elements', [])
+                    )
 
             # Calculate confidence score
             confidence_scores = [fact.get('confidence', 0.8) for fact in node_facts]

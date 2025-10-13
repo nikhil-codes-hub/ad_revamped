@@ -120,58 +120,73 @@ class RelationshipAnalyzer:
 
         # Analyze each source node type against all target node types
         for source_path, source_facts in node_groups.items():
-            # Get expected references from configuration
-            expected_refs = self._get_expected_references(source_path, source_facts[0])
-
             logger.info("")
             logger.info("-" * 60)
             logger.info(f"📊 Analyzing SOURCE: {source_path}")
             logger.info(f"   Node count: {len(source_facts)}")
-            logger.info(f"   Expected references from config: {expected_refs if expected_refs else 'None (auto-discover)'}")
+            logger.info(f"   Mode: Auto-discover all relationships (LLM-powered)")
 
             # Check relationships with all other node types
             for target_path, target_facts in node_groups.items():
                 if source_path == target_path:
                     continue
 
-                logger.info(f"   🔗 Checking relationship: {source_path} -> {target_path}")
-                stats['total_comparisons'] += 1
+                try:
+                    logger.info(f"   🔗 Checking relationship: {source_path} -> {target_path}")
+                    stats['total_comparisons'] += 1
 
-                # Use LLM to discover references
-                discovered = self._discover_references_llm(
-                    source_facts[0],  # Sample source fact
-                    target_facts[0],   # Sample target fact
-                    expected_refs
-                )
+                    # Validate we have facts to analyze
+                    if not source_facts or not target_facts:
+                        logger.warning(f"      ⚠️  Skipping: empty facts list (source={len(source_facts)}, target={len(target_facts)})")
+                        continue
 
-                if not discovered or not discovered.get('has_references'):
-                    logger.info(f"      ❌ No references found: {source_path} -> {target_path}")
-                    continue
-
-                logger.info(f"      ✅ FOUND {len(discovered.get('references', []))} reference(s)!")
-
-                # Validate discovered references for all instances
-                for ref_info in discovered.get('references', []):
-                    validated_rels = self._validate_reference_instances(
-                        source_facts,
-                        target_facts,
-                        ref_info,
-                        run_id,
-                        expected_refs
+                    # Use LLM to discover references
+                    discovered = self._discover_references_llm(
+                        source_facts[0],  # Sample source fact
+                        target_facts[0]    # Sample target fact
                     )
 
-                    relationships.extend(validated_rels)
-                    stats['relationships_found'] += len(validated_rels)
-                    stats['valid_relationships'] += sum(1 for r in validated_rels if r['is_valid'])
-                    stats['broken_relationships'] += sum(1 for r in validated_rels if not r['is_valid'])
+                    # Handle error cases: None, empty dict, or invalid structure
+                    if not discovered:
+                        logger.info(f"      ❌ No references found: {source_path} -> {target_path} (LLM returned None)")
+                        continue
 
-                    if ref_info.get('was_expected'):
-                        stats['expected_validated'] += 1
-                    else:
+                    if not isinstance(discovered, dict):
+                        logger.warning(f"      ❌ Invalid LLM response type: {type(discovered)} (expected dict)")
+                        continue
+
+                    if not discovered.get('has_references'):
+                        logger.info(f"      ❌ No references found: {source_path} -> {target_path}")
+                        continue
+
+                    logger.info(f"      ✅ FOUND {len(discovered.get('references', []))} reference(s)!")
+
+                    # Validate discovered references for all instances
+                    for ref_info in discovered.get('references', []):
+                        if not isinstance(ref_info, dict):
+                            logger.warning(f"      ⚠️  Skipping invalid reference info: {type(ref_info)}")
+                            continue
+
+                        validated_rels = self._validate_reference_instances(
+                            source_facts,
+                            target_facts,
+                            ref_info,
+                            run_id
+                        )
+
+                        relationships.extend(validated_rels)
+                        stats['relationships_found'] += len(validated_rels)
+                        stats['valid_relationships'] += sum(1 for r in validated_rels if r['is_valid'])
+                        stats['broken_relationships'] += sum(1 for r in validated_rels if not r['is_valid'])
                         stats['unexpected_discovered'] += 1
 
-            # Check for expected references that weren't found
-            stats['expected_missing'] += len(expected_refs) - stats['expected_validated']
+                except Exception as e:
+                    logger.error(f"      ❌ Error checking relationship {source_path} -> {target_path}: {str(e)}")
+                    logger.error(f"         Error type: {type(e).__name__}")
+                    import traceback
+                    logger.error(f"         Traceback: {traceback.format_exc()}")
+                    # Continue to next relationship instead of failing entire analysis
+                    continue
 
         # Bulk insert relationships to database
         if relationships:
@@ -188,9 +203,7 @@ class RelationshipAnalyzer:
         logger.info(f"Relationships found: {stats['relationships_found']}")
         logger.info(f"Valid relationships: {stats['valid_relationships']}")
         logger.info(f"Broken relationships: {stats['broken_relationships']}")
-        logger.info(f"Expected & validated: {stats['expected_validated']}")
-        logger.info(f"Expected but missing: {stats['expected_missing']}")
-        logger.info(f"Unexpected discoveries: {stats['unexpected_discovered']}")
+        logger.info(f"Auto-discovered relationships: {stats['unexpected_discovered']}")
         logger.info("=" * 80)
 
         return {
@@ -208,25 +221,27 @@ class RelationshipAnalyzer:
             groups[fact.section_path].append(fact)
         return groups
 
-    def _get_expected_references(self, section_path: str, sample_fact: NodeFact) -> List[str]:
-        """Get expected references from node configuration."""
-        config = self.db.query(NodeConfiguration).filter(
-            NodeConfiguration.section_path == section_path,
-            NodeConfiguration.spec_version == sample_fact.spec_version,
-            NodeConfiguration.message_root == sample_fact.message_root
-        ).first()
 
-        if config and config.expected_references:
-            return config.expected_references
-        return []
-
-    def _extract_xml_snippet(self, fact_json: Dict[str, Any]) -> str:
+    def _extract_xml_snippet(self, fact_json: Any) -> str:
         """
         Extract XML snippet from node fact JSON.
 
         Handles both direct xml_snippet field and nested children structure.
         Reconstructs a representative XML snippet from the stored data.
         """
+        # Handle case where fact_json is a string (should be parsed to dict)
+        if isinstance(fact_json, str):
+            try:
+                fact_json = json.loads(fact_json)
+            except json.JSONDecodeError:
+                logger.warning(f"Failed to parse fact_json string, returning empty snippet")
+                return "<UnknownNode />"
+
+        # Ensure we have a dict
+        if not isinstance(fact_json, dict):
+            logger.warning(f"fact_json is not a dict (type: {type(fact_json)}), returning empty snippet")
+            return "<UnknownNode />"
+
         # Try direct xml_snippet field first
         if 'xml_snippet' in fact_json and fact_json['xml_snippet']:
             return fact_json['xml_snippet']
@@ -273,8 +288,7 @@ class RelationshipAnalyzer:
     def _discover_references_llm(
         self,
         source_fact: NodeFact,
-        target_fact: NodeFact,
-        expected_refs: List[str]
+        target_fact: NodeFact
     ) -> Optional[Dict[str, Any]]:
         """
         Use LLM to discover if source node references target node.
@@ -282,7 +296,6 @@ class RelationshipAnalyzer:
         Args:
             source_fact: Sample source node fact
             target_fact: Sample target node fact
-            expected_refs: BA-configured expected references
 
         Returns:
             Dictionary with discovered references or None
@@ -304,8 +317,7 @@ class RelationshipAnalyzer:
             source_fact.node_type,
             source_xml,
             target_fact.node_type,
-            target_xml,
-            expected_refs
+            target_xml
         )
 
         logger.debug(f"   Prompt length: {len(prompt)} chars")
@@ -323,20 +335,32 @@ class RelationshipAnalyzer:
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are an XML relationship analysis expert. Analyze XML structures and return structured JSON results."
+                        "content": "You are an XML relationship analysis expert. Your task is to identify reference fields that link XML elements. Always return valid JSON with the exact schema specified. Be consistent across multiple calls with the same input."
                     },
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.1,  # Low temperature for consistency
+                temperature=0.0,  # Zero temperature for maximum consistency
                 max_tokens=1000,
-                response_format={"type": "json_object"}  # Ensure JSON response
+                response_format={"type": "json_object"},  # Ensure JSON response
+                seed=42  # Fixed seed for deterministic responses
             )
 
             # Parse JSON response
             content = response.choices[0].message.content
             logger.debug(f"   LLM Response: {content}")
 
-            result = json.loads(content)
+            # Parse and validate response
+            try:
+                result = json.loads(content)
+            except json.JSONDecodeError as json_err:
+                logger.error(f"❌ Failed to parse LLM JSON response: {json_err}")
+                logger.error(f"   Raw content: {content[:500]}")
+                return None
+
+            # Validate result structure
+            if not isinstance(result, dict):
+                logger.error(f"❌ LLM returned non-dict response: {type(result)}")
+                return None
 
             # Enhanced debug logging
             has_refs = result.get('has_references', False)
@@ -348,7 +372,10 @@ class RelationshipAnalyzer:
 
             if has_refs and refs_count > 0:
                 for ref in result.get('references', []):
-                    logger.info(f"         - {ref.get('reference_type')}: {ref.get('reference_field')} = {ref.get('reference_value')}")
+                    if isinstance(ref, dict):
+                        logger.info(f"         - {ref.get('reference_type')}: {ref.get('reference_field')} = {ref.get('reference_value')}")
+                    else:
+                        logger.warning(f"         - Invalid reference format (not a dict): {type(ref)}")
 
             return result
 
@@ -366,60 +393,71 @@ class RelationshipAnalyzer:
         source_type: str,
         source_xml: str,
         target_type: str,
-        target_xml: str,
-        expected_refs: List[str]
+        target_xml: str
     ) -> str:
-        """Build LLM prompt for reference discovery."""
-        return f"""Analyze if the SOURCE node contains references to the TARGET node.
+        """Build LLM prompt for reference discovery with consistent formatting."""
+        return f"""You are analyzing XML node relationships. Determine if SOURCE contains reference fields that point to TARGET.
 
-SOURCE NODE TYPE: {source_type}
-SOURCE XML SAMPLE:
+**SOURCE NODE**: {source_type}
 ```xml
 {source_xml}
 ```
 
-TARGET NODE TYPE: {target_type}
-TARGET XML SAMPLE:
+**TARGET NODE**: {target_type}
 ```xml
 {target_xml}
 ```
 
-EXPECTED REFERENCES (configured by Business Analyst): {', '.join(expected_refs) if expected_refs else 'None - auto-discover all references'}
+**INSTRUCTIONS**:
+1. Look for reference fields in SOURCE that contain IDs/Keys matching TARGET
+2. Common patterns: <PaxRefID>, <SegmentKey>, <JourneyRefID>, attributes ending in "RefID", "Ref", "ID", "Key"
+3. Only report references if you find actual ID fields that would link these nodes
 
-TASK:
-1. Identify if SOURCE contains reference fields pointing to TARGET
-2. For each reference found, determine:
-   - reference_type: Semantic name (e.g., "pax_reference", "segment_reference", "infant_parent")
-   - reference_field: XML element/attribute containing the reference (e.g., "PaxRefID", "SegmentKey")
-   - reference_value: The actual reference ID/key value from this sample
-   - confidence: Your confidence level (0.0 - 1.0)
-   - was_expected: Is this reference in the EXPECTED REFERENCES list?
-
-3. If BA provided EXPECTED REFERENCES, validate if they exist in the XML
-
-Return ONLY valid JSON (no markdown, no explanation):
+**REQUIRED JSON SCHEMA** (return EXACTLY this structure, no additional fields):
 {{
-  "has_references": true|false,
+  "has_references": boolean,
+  "references": [
+    {{
+      "reference_type": "string (semantic name: pax_reference, segment_reference, journey_reference, etc.)",
+      "reference_field": "string (exact XML element/attribute name)",
+      "reference_value": "string (actual ID value from SOURCE)",
+      "confidence": number (0.0 to 1.0)
+    }}
+  ],
+  "discovery_notes": "string (brief explanation)"
+}}
+
+**EXAMPLES**:
+
+Example 1 - Reference Found:
+{{
+  "has_references": true,
   "references": [
     {{
       "reference_type": "pax_reference",
       "reference_field": "PaxRefID",
       "reference_value": "PAX1",
-      "confidence": 0.95,
-      "was_expected": true
+      "confidence": 0.95
     }}
   ],
-  "missing_expected": ["infant_parent"],
-  "validation_notes": "Brief note if needed"
-}}"""
+  "discovery_notes": "Found PaxRefID field linking to passenger"
+}}
+
+Example 2 - No Reference:
+{{
+  "has_references": false,
+  "references": [],
+  "discovery_notes": "No reference fields found linking these nodes"
+}}
+
+**YOUR ANALYSIS** (return ONLY valid JSON, no markdown):"""
 
     def _validate_reference_instances(
         self,
         source_facts: List[NodeFact],
         target_facts: List[NodeFact],
         ref_info: Dict[str, Any],
-        run_id: str,
-        expected_refs: List[str]
+        run_id: str
     ) -> List[Dict[str, Any]]:
         """
         Validate reference across all instances of source and target nodes.
@@ -429,7 +467,6 @@ Return ONLY valid JSON (no markdown, no explanation):
             target_facts: All target node instances
             ref_info: Reference information from LLM
             run_id: Run ID
-            expected_refs: Expected references list
 
         Returns:
             List of validated relationship dictionaries
@@ -459,7 +496,7 @@ Return ONLY valid JSON (no markdown, no explanation):
                 'reference_field': reference_field,
                 'reference_value': ref_value,
                 'is_valid': target_fact is not None,
-                'was_expected': ref_info.get('reference_type') in expected_refs,
+                'was_expected': False,  # DEPRECATED: All relationships are auto-discovered
                 'confidence': float(ref_info.get('confidence', 1.0)),
                 'discovered_by': 'llm',
                 'model_used': self.model

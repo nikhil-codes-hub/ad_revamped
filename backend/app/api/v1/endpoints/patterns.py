@@ -143,7 +143,8 @@ async def list_patterns(
                 created_by_model=p.created_by_model,
                 examples=p.examples or [],
                 created_at=p.created_at.isoformat() if p.created_at else None,
-                last_seen_at=p.last_seen_at.isoformat() if p.last_seen_at else None
+                last_seen_at=p.last_seen_at.isoformat() if p.last_seen_at else None,
+                description=p.description
             )
             for p in patterns
         ]

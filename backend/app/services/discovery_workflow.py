@@ -74,7 +74,7 @@ class DiscoveryWorkflow:
         """
         Get node configurations from database.
 
-        Returns dict mapping section_path -> config dict with enabled status and expected_references.
+        Returns dict mapping section_path -> config dict with enabled status.
         """
         query = self.db_session.query(NodeConfiguration).filter(
             NodeConfiguration.enabled == True  # Only get enabled configs
@@ -100,7 +100,6 @@ class DiscoveryWorkflow:
                 'id': config.id,
                 'node_type': config.node_type,
                 'enabled': config.enabled,
-                'expected_references': config.expected_references or [],
                 'ba_remarks': config.ba_remarks
             }
 
@@ -633,13 +632,10 @@ class DiscoveryWorkflow:
 
             # PHASE 3: Pattern Generation (if NodeFacts were extracted AND not skipped)
             if total_facts_extracted > 0 and not skip_pattern_generation:
-                logger.info(f"Phase 3: Generating patterns from {total_facts_extracted} NodeFacts")
+                logger.info(f"Phase 3: Generating patterns from {total_facts_extracted} NodeFacts (auto-discovery mode)")
                 try:
                     pattern_generator = create_pattern_generator(self.db_session)
-                    pattern_results = pattern_generator.generate_patterns_from_run(
-                        run_id,
-                        node_configs=node_configs  # Pass node configs for BA-defined references
-                    )
+                    pattern_results = pattern_generator.generate_patterns_from_run(run_id)
 
                     workflow_results['pattern_generation'] = pattern_results
 

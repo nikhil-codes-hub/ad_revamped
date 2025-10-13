@@ -1,4 +1,5 @@
 <IATA_AirShoppingRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<!-- NEGATIVE TEST: Orphaned Passengers - Passengers exist but are never referenced in any offer -->
 	<Response>
 		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
 			<DatedMarketingSegmentList>
@@ -65,7 +66,9 @@
 				</PaxJourney>
 			</PaxJourneyList>
 			<PaxList>
+				<!-- ORPHANED: These passengers exist but are never referenced in offers -->
 				<Pax>
+					<PTC>CHD</PTC>
 					<PaxID>PAX-ORPHAN-001</PaxID>
 				</Pax>
 				<Pax>
@@ -76,6 +79,7 @@
 					<PaxID>PAX-ORPHAN-003</PaxID>
 					<PTC>INF</PTC>
 				</Pax>
+				<!-- Only this passenger is actually used -->
 				<Pax>
 					<PaxID>PAX-VALID</PaxID>
 					<PTC>ADT</PTC>
@@ -106,6 +110,7 @@
 									<RBD_Code>N</RBD_Code>
 								</RBD>
 							</FareComponent>
+							<!-- Only references one passenger, leaving 3 orphaned -->
 							<PaxRefID>PAX-VALID</PaxRefID>
 						</FareDetail>
 						<OfferItemID>ITEM-PARTIAL</OfferItemID>

@@ -9,7 +9,6 @@
 						<IATA_LocationCode>DEN</IATA_LocationCode>
 					</Arrival>
 					<CarrierDesigCode>AS</CarrierDesigCode>
-					<!-- DUPLICATE: Same ID used twice -->
 					<DatedMarketingSegmentId>seg-DUPLICATE</DatedMarketingSegmentId>
 					<DatedOperatingSegmentRefId>opseg-001</DatedOperatingSegmentRefId>
 					<Dep>
@@ -24,7 +23,6 @@
 						<IATA_LocationCode>SEA</IATA_LocationCode>
 					</Arrival>
 					<CarrierDesigCode>AS</CarrierDesigCode>
-					<!-- DUPLICATE: Same ID as above -->
 					<DatedMarketingSegmentId>seg-DUPLICATE</DatedMarketingSegmentId>
 					<DatedOperatingSegmentRefId>opseg-002</DatedOperatingSegmentRefId>
 					<Dep>
@@ -122,24 +120,20 @@
 			</PaxJourneyList>
 			<PaxList>
 				<Pax>
-					<!-- DUPLICATE: Same ID used for two different passengers -->
 					<PaxID>PAX-DUPLICATE</PaxID>
 					<PTC>ADT</PTC>
 				</Pax>
 				<Pax>
-					<!-- DUPLICATE: Same ID as above -->
 					<PaxID>PAX-DUPLICATE</PaxID>
 					<PTC>CHD</PTC>
 				</Pax>
 			</PaxList>
 			<PaxSegmentList>
 				<PaxSegment>
-					<!-- References duplicate segment ID - ambiguous which one -->
 					<DatedMarketingSegmentRefId>seg-DUPLICATE</DatedMarketingSegmentRefId>
 					<PaxSegmentID>paxseg-001</PaxSegmentID>
 				</PaxSegment>
 				<PaxSegment>
-					<!-- References duplicate segment ID - ambiguous which one -->
 					<DatedMarketingSegmentRefId>seg-DUPLICATE</DatedMarketingSegmentRefId>
 					<PaxSegmentID>paxseg-002</PaxSegmentID>
 				</PaxSegment>
@@ -164,7 +158,6 @@
 									<RBD_Code>V</RBD_Code>
 								</RBD>
 							</FareComponent>
-							<!-- References duplicate passenger ID - ambiguous which one -->
 							<PaxRefID>PAX-DUPLICATE</PaxRefID>
 						</FareDetail>
 						<OfferItemID>ITEM-DUPE</OfferItemID>

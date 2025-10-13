@@ -386,11 +386,14 @@ class IdentifyWorkflow:
                            pattern_id: Optional[int],
                            confidence: float,
                            verdict: str,
-                           quick_explanation: str = ""):
+                           quick_explanation: str = "",
+                           quality_checks: Optional[Dict[str, Any]] = None):
         """Store pattern match result in database."""
         match_metadata = {
             'quick_explanation': quick_explanation
         }
+        if isinstance(quality_checks, dict):
+            match_metadata['quality_checks'] = quality_checks
 
         pattern_match = PatternMatch(
             run_id=run_id,
@@ -502,13 +505,152 @@ class IdentifyWorkflow:
         matched_count = 0
         high_confidence_count = 0
         new_patterns_count = 0
+        quality_issue_count = 0
+        quality_coverage_total = 0.0
+        quality_alerts: List[Dict[str, Any]] = []
 
         for nf in node_facts:
+            fact_payload = nf.fact_json if isinstance(nf.fact_json, dict) else {}
+            if not isinstance(fact_payload, dict):
+                try:
+                    fact_payload = json.loads(nf.fact_json or "{}")
+                except (TypeError, json.JSONDecodeError):
+                    fact_payload = {}
+
+            quality_checks = fact_payload.get('quality_checks') or {}
+            if isinstance(quality_checks, dict):
+                quality_checks = dict(quality_checks)  # shallow copy for safe mutation
+            else:
+                quality_checks = {}
+
+            quality_status = str(quality_checks.get('status', 'ok')).lower()
+            missing_elements = quality_checks.get('missing_elements') or []
+            if not isinstance(missing_elements, list):
+                missing_elements = [missing_elements]
+
+            match_percentage = quality_checks.get('match_percentage')
+            if match_percentage is None:
+                match_percentage = 0 if quality_status == 'error' else 100
+            try:
+                match_percentage_value = float(match_percentage)
+            except (TypeError, ValueError):
+                match_percentage_value = 0.0 if quality_status == 'error' else 100.0
+            quality_checks['match_percentage'] = match_percentage_value
+            match_percentage = match_percentage_value
+
+            quality_coverage_total += match_percentage
+
+            quality_summary = ""
+            if missing_elements:
+                details = []
+                for item in missing_elements:
+                    if isinstance(item, dict):
+                        path = item.get('path', 'unknown path')
+                        reason = item.get('reason', 'unspecified reason')
+                        details.append(f"{path} ({reason})")
+                    else:
+                        details.append(str(item))
+                quality_summary = "; ".join(details)
+
             matches = self.match_node_fact_to_patterns(nf, match_version, match_message_root, match_airline_code)
 
             if matches:
                 # Use best match
                 best_match = matches[0]
+
+                # ATTRIBUTE COMPARISON: Check if pattern's required_attributes exist in NodeFact
+                # This catches missing fields that the LLM didn't detect during extraction
+                pattern = best_match['pattern']
+                pattern_decision_rule = pattern.decision_rule or {}
+
+                # Get child structures from pattern (for container nodes like DatedOperatingSegmentList)
+                pattern_child_structures = pattern_decision_rule.get('child_structure', {}).get('child_structures', [])
+
+                # For container nodes, check child attributes
+                if pattern_child_structures and fact_payload.get('children'):
+                    for child_struct_pattern in pattern_child_structures:
+                        required_child_attrs = set(child_struct_pattern.get('required_attributes', []))
+
+                        # Check each child instance in the NodeFact
+                        children = fact_payload.get('children', [])
+                        for idx, child in enumerate(children):
+                            if not isinstance(child, dict):
+                                continue
+
+                            child_attrs = child.get('attributes', {})
+                            # Filter out metadata fields
+                            METADATA_FIELDS = {'summary', 'child_count', 'confidence', 'node_ordinal', 'missing_elements'}
+                            actual_child_attrs = set(child_attrs.keys()) - METADATA_FIELDS
+
+                            # Helper function for fuzzy attribute matching (handles LLM normalization)
+                            def attrs_match_fuzzy(pattern_attr: str, actual_attrs: set) -> bool:
+                                """Check if pattern attribute exists in actual attributes (with fuzzy matching)."""
+                                # Exact match
+                                if pattern_attr in actual_attrs:
+                                    return True
+
+                                # Normalize both to lowercase for comparison
+                                pattern_lower = pattern_attr.lower()
+
+                                for actual_attr in actual_attrs:
+                                    actual_lower = actual_attr.lower()
+
+                                    # Case-insensitive exact match
+                                    if pattern_lower == actual_lower:
+                                        return True
+
+                                    # Semantic equivalents (e.g., "distance" <-> "DistanceMeasure")
+                                    # Check if one is contained in the other
+                                    if pattern_lower in actual_lower or actual_lower in pattern_lower:
+                                        # Additional check: ensure they're semantically related
+                                        # "distance" should match "DistanceMeasure" but not "distant_code"
+                                        if len(pattern_lower) >= 4 and len(actual_lower) >= 4:
+                                            # Check if the shorter term is a significant substring of the longer
+                                            shorter = pattern_lower if len(pattern_lower) < len(actual_lower) else actual_lower
+                                            longer = actual_lower if shorter == pattern_lower else pattern_lower
+
+                                            # If shorter is at least 4 chars and starts the longer, it's a match
+                                            if longer.startswith(shorter):
+                                                return True
+
+                                            # Special case: normalized names like "duration" matches "Duration"
+                                            # (already covered by case-insensitive check above)
+
+                                return False
+
+                            # Find missing required attributes (with fuzzy matching to handle LLM normalization)
+                            missing_attrs = set()
+                            for required_attr in required_child_attrs - METADATA_FIELDS:
+                                if not attrs_match_fuzzy(required_attr, actual_child_attrs):
+                                    missing_attrs.add(required_attr)
+
+                            if missing_attrs:
+                                # Add to missing_elements
+                                child_node_type = child.get('node_type', 'Unknown')
+                                child_ordinal = child.get('ordinal', idx + 1)
+                                child_path = f"{nf.node_type}[1]/{child_node_type}[{child_ordinal}]"
+
+                                for missing_attr in missing_attrs:
+                                    missing_elements.append({
+                                        'path': f"{child_path}/{missing_attr}",
+                                        'reason': f"Required attribute '{missing_attr}' not found in {child_node_type}"
+                                    })
+
+                                # Update quality checks
+                                if not quality_checks.get('missing_elements'):
+                                    quality_checks['missing_elements'] = []
+                                quality_checks['missing_elements'].extend(missing_elements)
+                                quality_checks['status'] = 'error'
+
+                                # Recalculate match percentage
+                                total_children = len(children)
+                                children_with_issues = len([c for c in children if any(
+                                    attr not in (set(c.get('attributes', {}).keys()) - METADATA_FIELDS)
+                                    for attr in required_child_attrs - METADATA_FIELDS
+                                )])
+                                match_percentage = ((total_children - children_with_issues) / total_children * 100) if total_children > 0 else 0
+                                quality_checks['match_percentage'] = match_percentage
+                                quality_status = 'error'
 
                 # Generate quick explanation
                 quick_explanation = self.get_quick_explanation(
@@ -518,6 +660,33 @@ class IdentifyWorkflow:
                     verdict=best_match['verdict']
                 )
 
+                if quality_status == 'error':
+                    quality_issue_count += 1
+                    quality_alerts.append({
+                        'node_fact_id': nf.id,
+                        'node_type': nf.node_type,
+                        'section_path': nf.section_path,
+                        'match_percentage': match_percentage,
+                        'missing_elements': missing_elements,
+                        'quality_checks': quality_checks
+                    })
+
+                    adjusted_confidence = best_match['confidence']
+                    if match_percentage is not None:
+                        adjusted_confidence = min(adjusted_confidence, max(match_percentage, 0) / 100.0)
+                        best_match['confidence'] = adjusted_confidence
+
+                    best_match['verdict'] = 'QUALITY_BREAK'
+
+                    if quality_summary:
+                        quick_explanation = (
+                            f"{quick_explanation} ⚠️ Quality break detected: {quality_summary}."
+                        )
+                    else:
+                        quick_explanation = (
+                            f"{quick_explanation} ⚠️ Quality break detected: Missing required content."
+                        )
+
                 # Store match
                 self.store_pattern_match(
                     run_id=run_id,
@@ -525,17 +694,20 @@ class IdentifyWorkflow:
                     pattern_id=best_match['pattern_id'],
                     confidence=best_match['confidence'],
                     verdict=best_match['verdict'],
-                    quick_explanation=quick_explanation
+                    quick_explanation=quick_explanation,
+                    quality_checks=quality_checks
                 )
 
                 match_results.append({
                     'node_fact_id': nf.id,
                     'node_type': nf.node_type,
                     'section_path': nf.section_path,
+                    'quality_checks': quality_checks,
                     'best_match': {
                         'pattern_id': best_match['pattern_id'],
                         'confidence': best_match['confidence'],
-                        'verdict': best_match['verdict']
+                        'verdict': best_match['verdict'],
+                        'quality_checks': quality_checks
                     },
                     'all_matches': [
                         {
@@ -547,9 +719,9 @@ class IdentifyWorkflow:
                     ]
                 })
 
-                if best_match['confidence'] >= 0.70:
+                if best_match['confidence'] >= 0.70 and quality_status != 'error':
                     matched_count += 1
-                if best_match['confidence'] >= 0.85:
+                if best_match['confidence'] >= 0.85 and quality_status != 'error':
                     high_confidence_count += 1
 
                 # Update pattern times_seen for high confidence matches
@@ -570,13 +742,34 @@ class IdentifyWorkflow:
                     verdict="NEW_PATTERN"
                 )
 
+                if quality_status == 'error':
+                    quality_issue_count += 1
+                    quality_alerts.append({
+                        'node_fact_id': nf.id,
+                        'node_type': nf.node_type,
+                        'section_path': nf.section_path,
+                        'match_percentage': match_percentage,
+                        'missing_elements': missing_elements,
+                        'quality_checks': quality_checks
+                    })
+
+                    if quality_summary:
+                        quick_explanation = (
+                            f"{quick_explanation} ⚠️ Quality break detected: {quality_summary}."
+                        )
+                    else:
+                        quick_explanation = (
+                            f"{quick_explanation} ⚠️ Quality break detected: Missing required content."
+                        )
+
                 self.store_pattern_match(
                     run_id=run_id,
                     node_fact=nf,
                     pattern_id=None,
                     confidence=0.0,
                     verdict="NEW_PATTERN",
-                    quick_explanation=quick_explanation
+                    quick_explanation=quick_explanation,
+                    quality_checks=quality_checks
                 )
 
                 match_results.append({
@@ -584,7 +777,8 @@ class IdentifyWorkflow:
                     'node_type': nf.node_type,
                     'section_path': nf.section_path,
                     'best_match': None,
-                    'verdict': 'NEW_PATTERN'
+                    'verdict': 'NEW_PATTERN',
+                    'quality_checks': quality_checks
                 })
 
         # Commit all pattern matches
@@ -593,14 +787,22 @@ class IdentifyWorkflow:
         # PHASE 3: Gap Analysis
         logger.info("Phase 3: Generating gap analysis")
 
+        confidence_match_rate = (matched_count / node_facts_extracted * 100) if node_facts_extracted > 0 else 0
+        quality_match_rate = (quality_coverage_total / node_facts_extracted) if node_facts_extracted > 0 else 0
+        effective_match_rate = quality_match_rate if quality_issue_count > 0 else confidence_match_rate
+
         gap_analysis = {
             'total_node_facts': node_facts_extracted,
             'matched_facts': matched_count,
             'high_confidence_matches': high_confidence_count,
             'new_patterns': new_patterns_count,
             'unmatched_facts': node_facts_extracted - matched_count,
-            'match_rate': (matched_count / node_facts_extracted * 100) if node_facts_extracted > 0 else 0,
-            'high_confidence_rate': (high_confidence_count / node_facts_extracted * 100) if node_facts_extracted > 0 else 0
+            'quality_breaks': quality_issue_count,
+            'match_rate': effective_match_rate,
+            'quality_match_rate': quality_match_rate,
+            'confidence_match_rate': confidence_match_rate,
+            'high_confidence_rate': (high_confidence_count / node_facts_extracted * 100) if node_facts_extracted > 0 else 0,
+            'quality_alerts': quality_alerts
         }
 
         # Update run with summary
@@ -610,7 +812,8 @@ class IdentifyWorkflow:
                 'identify_results': {
                     'matches': matched_count,
                     'new_patterns': new_patterns_count,
-                    'match_rate': gap_analysis['match_rate']
+                    'match_rate': gap_analysis['match_rate'],
+                    'quality_breaks': quality_issue_count
                 }
             }
             self.db_session.commit()

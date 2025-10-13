@@ -96,8 +96,8 @@ echo REM Create default .env if not exists >> portable_dist\setup.bat
 echo if not exist backend\.env ^( >> portable_dist\setup.bat
 echo     if exist backend\.env.template ^( >> portable_dist\setup.bat
 echo         copy backend\.env.template backend\.env >> portable_dist\setup.bat
-echo         echo ⚙️  Created backend\.env from template >> portable_dist\setup.bat
-echo         echo ⚠️  Please update backend\.env with your Azure OpenAI credentials >> portable_dist\setup.bat
+echo         echo Created backend\.env from template >> portable_dist\setup.bat
+echo         echo Please update backend\.env with your LLM credentials >> portable_dist\setup.bat
 echo     ^) else ^( >> portable_dist\setup.bat
 echo         ^(echo # LLM Provider Configuration^) ^> backend\.env >> portable_dist\setup.bat
 echo         ^(echo # Supported providers: azure, gemini^) ^>^> backend\.env >> portable_dist\setup.bat
@@ -109,7 +109,7 @@ echo         ^(echo AZURE_OPENAI_KEY=your-api-key-here^) ^>^> backend\.env >> po
 echo         ^(echo AZURE_API_VERSION=2025-01-01-preview^) ^>^> backend\.env >> portable_dist\setup.bat
 echo         ^(echo MODEL_DEPLOYMENT_NAME=gpt-4o^) ^>^> backend\.env >> portable_dist\setup.bat
 echo         ^(echo.^) ^>^> backend\.env >> portable_dist\setup.bat
-echo         ^(echo # Google Gemini Configuration ^(if using gemini provider^)^) ^>^> backend\.env >> portable_dist\setup.bat
+echo         ^(echo # Google Gemini Configuration^) ^>^> backend\.env >> portable_dist\setup.bat
 echo         ^(echo GEMINI_API_KEY=your-gemini-api-key-here^) ^>^> backend\.env >> portable_dist\setup.bat
 echo         ^(echo GEMINI_MODEL=gemini-1.5-pro^) ^>^> backend\.env >> portable_dist\setup.bat
 echo         ^(echo.^) ^>^> backend\.env >> portable_dist\setup.bat
@@ -121,8 +121,8 @@ echo         ^(echo.^) ^>^> backend\.env >> portable_dist\setup.bat
 echo         ^(echo # Application Settings^) ^>^> backend\.env >> portable_dist\setup.bat
 echo         ^(echo LOG_LEVEL=INFO^) ^>^> backend\.env >> portable_dist\setup.bat
 echo         ^(echo WORKSPACE_DB_DIR=./data/workspaces^) ^>^> backend\.env >> portable_dist\setup.bat
-echo         echo ⚙️  Created backend\.env template >> portable_dist\setup.bat
-echo         echo ⚠️  Please update backend\.env with your LLM provider credentials >> portable_dist\setup.bat
+echo         echo Created backend\.env template >> portable_dist\setup.bat
+echo         echo Please update backend\.env with your LLM credentials >> portable_dist\setup.bat
 echo     ^) >> portable_dist\setup.bat
 echo ^) >> portable_dist\setup.bat
 echo. >> portable_dist\setup.bat
@@ -162,9 +162,10 @@ echo ^) >> portable_dist\start_app.bat
 echo. >> portable_dist\start_app.bat
 echo REM Start backend >> portable_dist\start_app.bat
 echo echo 🔧 Starting backend API server... >> portable_dist\start_app.bat
-echo cd backend >> portable_dist\start_app.bat
+echo cd /d backend >> portable_dist\start_app.bat
+echo set PYTHONPATH=%%cd%% >> portable_dist\start_app.bat
 echo start "AssistedDiscovery-Backend" ..\backend_env\Scripts\uvicorn app.main:app --host 0.0.0.0 --port 8000 >> portable_dist\start_app.bat
-echo cd .. >> portable_dist\start_app.bat
+echo cd /d .. >> portable_dist\start_app.bat
 echo. >> portable_dist\start_app.bat
 echo REM Wait for backend to start >> portable_dist\start_app.bat
 echo echo ⏳ Waiting for backend to start... >> portable_dist\start_app.bat
@@ -172,9 +173,9 @@ echo timeout /t 5 /nobreak ^>nul >> portable_dist\start_app.bat
 echo. >> portable_dist\start_app.bat
 echo REM Start frontend >> portable_dist\start_app.bat
 echo echo 🎨 Starting frontend UI... >> portable_dist\start_app.bat
-echo cd frontend\streamlit_ui >> portable_dist\start_app.bat
+echo cd /d frontend\streamlit_ui >> portable_dist\start_app.bat
 echo start "AssistedDiscovery-Frontend" ..\..\frontend_env\Scripts\streamlit run AssistedDiscovery.py --server.port 8501 --server.headless true >> portable_dist\start_app.bat
-echo cd ..\.. >> portable_dist\start_app.bat
+echo cd /d ..\.. >> portable_dist\start_app.bat
 echo. >> portable_dist\start_app.bat
 echo REM Wait for frontend to start >> portable_dist\start_app.bat
 echo echo ⏳ Waiting for frontend to start... >> portable_dist\start_app.bat
@@ -323,7 +324,7 @@ echo. >> portable_dist\README.txt
 echo backend_env\     - Backend virtual environment (created by setup.bat) >> portable_dist\README.txt
 echo frontend_env\    - Frontend virtual environment (created by setup.bat) >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
-echo Build Date: %DATE% %TIME% >> portable_dist\README.txt
+echo Build Date: Created with build_portable.bat >> portable_dist\README.txt
 
 REM Create .gitignore
 echo backend_env/ > portable_dist\.gitignore
