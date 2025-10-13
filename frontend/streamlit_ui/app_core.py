@@ -2699,6 +2699,11 @@ def show_config_page():
                     "azure_api_version": azure_api_version,
                     "model_deployment_name": model_deployment
                 })
+            elif provider == "openai":
+                config_payload.update({
+                    "openai_api_key": openai_key if not openai_key.startswith("••••") else None,
+                    "llm_model": llm_model
+                })
             elif provider == "gemini":
                 config_payload.update({
                     "gemini_api_key": gemini_key if not gemini_key.startswith("••••") else None,
@@ -2709,7 +2714,7 @@ def show_config_page():
             if result:
                 st.success(f"✅ {result.get('message', 'Configuration saved!')}")
                 st.warning("⚠️ Please restart the backend for changes to take effect.")
-                st.experimental_rerun()
+                st.rerun()
 
     with col_test:
         if st.button("🔍 Test Connection", use_container_width=True):
