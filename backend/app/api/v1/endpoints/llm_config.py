@@ -211,8 +211,8 @@ async def update_llm_config(config: LLMConfig):
     # Azure OpenAI
     if config.azure_openai_endpoint is not None:
         updates["AZURE_OPENAI_ENDPOINT"] = config.azure_openai_endpoint
-    if config.azure_openai_key is not None and not config.azure_openai_key.startswith("••••"):
-        # Only update if not masked
+    if config.azure_openai_key is not None and "••••" not in config.azure_openai_key:
+        # Only update if not masked (masked format: "3IPc••••XLiI")
         updates["AZURE_OPENAI_KEY"] = config.azure_openai_key
     if config.azure_api_version is not None:
         updates["AZURE_API_VERSION"] = config.azure_api_version
@@ -222,13 +222,15 @@ async def update_llm_config(config: LLMConfig):
         updates["FALLBACK_MODEL_DEPLOYMENT_NAME"] = config.fallback_model_deployment_name
 
     # OpenAI
-    if config.openai_api_key is not None and not config.openai_api_key.startswith("••••"):
+    if config.openai_api_key is not None and "••••" not in config.openai_api_key:
+        # Only update if not masked
         updates["OPENAI_API_KEY"] = config.openai_api_key
     if config.llm_model is not None:
         updates["LLM_MODEL"] = config.llm_model
 
     # Gemini
-    if config.gemini_api_key is not None and not config.gemini_api_key.startswith("••••"):
+    if config.gemini_api_key is not None and "••••" not in config.gemini_api_key:
+        # Only update if not masked
         updates["GEMINI_API_KEY"] = config.gemini_api_key
     if config.gemini_model is not None:
         updates["GEMINI_MODEL"] = config.gemini_model
