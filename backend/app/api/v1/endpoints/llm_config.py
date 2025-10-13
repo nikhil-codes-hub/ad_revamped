@@ -42,20 +42,23 @@ class LLMConfig(BaseModel):
 
 def get_env_file_path() -> Path:
     """Get the path to the .env file."""
-    # Try multiple locations
-    backend_dir = Path(__file__).parent.parent.parent.parent.parent
+    # Try multiple locations, prioritizing project root
+    backend_dir = Path(__file__).parent.parent.parent.parent.parent  # Points to /ad/backend
+    project_root = backend_dir.parent  # Points to /ad
+
     env_paths = [
-        backend_dir / ".env",
-        backend_dir.parent / "backend" / ".env",
+        project_root / ".env",  # /ad/.env (main project .env)
+        backend_dir / ".env",   # /ad/backend/.env (backend-specific)
         Path.cwd() / ".env",
     ]
 
     for env_path in env_paths:
         if env_path.exists():
+            logger.info(f"Using .env file at: {env_path}")
             return env_path
 
-    # Return default location if none exist
-    return backend_dir / ".env"
+    # Return default location if none exist (project root)
+    return project_root / ".env"
 
 
 def read_env_file() -> Dict[str, str]:
