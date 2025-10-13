@@ -97,6 +97,10 @@ class PatternLLMVerifier:
 3. If ANY required child type is missing → is_match = false
 4. If node type doesn't match → is_match = false
 5. Check EVERY requirement individually and report each finding
+6. **IMPORTANT:** Use ONLY the EXACT attribute names listed in the pattern definition above
+   - DO NOT invent, guess, or suggest alternative attribute names
+   - DO NOT use semantic equivalents (e.g., if pattern says "id", don't say "PaxSegmentID")
+   - Report missing attributes using the EXACT names from the pattern definition
 
 **TASK:**
 Perform STRICT validation and return a JSON object with:
@@ -111,7 +115,7 @@ Perform STRICT validation and return a JSON object with:
     {{"aspect": "required_children", "expected": "list of required child types", "found": "list of found child types", "match": true/false}},
     {{"aspect": "child_count", "expected": "min/max if specified", "found": "actual count", "match": true/false}}
   ],
-  "issues": ["List EVERY specific issue found - missing attributes, missing children, etc."],
+  "issues": ["List EVERY specific issue found using EXACT attribute/element names from pattern definition"],
   "recommendations": ["Specific suggestions to fix the XML to match the pattern"]
 }}
 
