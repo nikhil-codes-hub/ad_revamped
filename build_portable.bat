@@ -46,7 +46,7 @@ echo. >> portable_dist\setup.bat
 echo REM Check if Python is installed >> portable_dist\setup.bat
 echo python --version ^>nul 2^>^&1 >> portable_dist\setup.bat
 echo if errorlevel 1 ^( >> portable_dist\setup.bat
-echo     echo ❌ Python is not installed. Please install Python 3.9+ first. >> portable_dist\setup.bat
+echo     echo ❌ Python is not installed. Please install Python 3.12 first. >> portable_dist\setup.bat
 echo     echo Download from: https://www.python.org/downloads/ >> portable_dist\setup.bat
 echo     pause >> portable_dist\setup.bat
 echo     exit /b 1 >> portable_dist\setup.bat

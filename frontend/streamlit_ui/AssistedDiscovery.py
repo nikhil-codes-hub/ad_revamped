@@ -57,7 +57,41 @@ def show_home_page():
         ✅ AirShoppingRS / IATA_AirShoppingRS
         ✅ OfferPriceRS / IATA_OfferPriceRS
         ✅ OrderCreateRQ / IATA_OrderCreateRQ
+        ✅ OrderChangeRQ / IATA_OrderChangeRQ
         ✅ Any other NDC message type (dynamic)
+
+        ---
+
+        ### ⚠️ Important: AI-Powered Analysis
+
+        AssistedDiscovery uses **Large Language Models (LLMs)** to analyze XML. This means:
+
+        **Results May Vary**:
+        - **LLMs can make mistakes**: Like humans, AI can misinterpret or miss information
+        - **Non-deterministic**: Running Discovery/Identify on the same XML multiple times may produce slightly different results
+        - **Confidence scores matter**: Always review low-confidence matches (< 85%)
+        - **Human validation required**: Treat results as AI-assisted suggestions, not absolute truth
+
+        **Typical Accuracy**:
+        - Node extraction: 90-95%
+        - Relationship discovery: 85-90%
+        - Pattern matching: 90-95%
+
+        **Best Practices**:
+        1. Always review results - don't trust blindly
+        2. Validate unexpected discoveries
+        3. Check low-confidence matches (< 85%)
+        4. Run multiple times if uncertain
+        5. Report issues to help improve the system
+
+        **We Need Your Feedback!**
+        Help improve AssistedDiscovery by reporting:
+        - False positives/negatives
+        - Incorrect patterns
+        - Inconsistent results
+        - Quality issues
+
+        **Contact**: nikhilkrishna.lepakshi@amadeus.com
         """)
 
     with tab2:
