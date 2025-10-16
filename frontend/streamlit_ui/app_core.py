@@ -1566,8 +1566,16 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
             st.divider()
 
     if missing_patterns:
-        st.warning(f"⚠️ Found {len(missing_patterns)} expected pattern(s) that are **missing** from the uploaded XML.")
-        st.info("**What this means**: These data structures were expected based on the pattern library but were not found in your uploaded XML file. This may indicate incomplete data or optional elements that are not present in this specific message.")
+        st.warning(f"⚠️ Found {len(missing_patterns)} pattern variation(s) from the library that did not match the uploaded XML.")
+        st.info("""
+        **What this means**: These are **structural variations** of data elements that exist in the pattern library but were not found in your XML.
+
+        **Important Notes**:
+        - The element itself (e.g., PaxList) may be present in your XML
+        - However, this specific structural variation (different attributes, child structures, or relationships) was not matched
+        - Multiple patterns can exist for the same node type with different variations
+        - This helps identify which structural variations are missing from your specific message
+        """)
 
         missing_table = []
         for pattern in missing_patterns:
@@ -1582,6 +1590,7 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
                     pass
 
             missing_table.append({
+                "Pattern ID": f"#{pattern.get('pattern_id', 'Unknown')}",
                 "Node Type": pattern.get('node_type', 'Unknown'),
                 "Section Path": pattern.get('section_path', 'N/A'),
                 "Times Seen": pattern.get('times_seen', 0),
@@ -1594,10 +1603,18 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
         st.dataframe(df_missing, use_container_width=True, hide_index=True)
 
         st.info("""
-        **💡 What to do about missing patterns:**
-        - **Common case**: These elements may be optional in your specific scenario (e.g., baggage information not included for certain fare types)
-        - **Action needed**: If these elements SHOULD be present, check your source system to ensure complete data is being sent
-        - **Documentation**: Review NDC specification to determine if these elements are required or optional for your message type
+        **💡 Understanding Missing Pattern Variations:**
+
+        **Why do I see the same element name multiple times?**
+        - The system learns different structural variations of the same element from multiple XMLs
+        - For example, `PaxList` with 2 adults vs `PaxList` with 1 adult + 1 child creates different patterns
+        - Each variation (different attributes, children, or relationships) gets its own Pattern ID
+
+        **What should I do?**
+        - **If the element is completely missing**: Check your source system to ensure complete data
+        - **If the element exists but shows as missing**: This variation wasn't matched - this is normal and indicates structural differences
+        - **Review Pattern ID column**: Multiple IDs for same node type = multiple known variations
+        - **Check Times Seen**: Higher numbers indicate more commonly seen variations
         """)
     elif quality_alerts:
         st.warning("⚠️ No missing patterns detected, but review the quality breaks listed above.")

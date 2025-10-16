@@ -1,5 +1,4 @@
 <IATA_AirShoppingRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
-	<!-- NEGATIVE TEST: Missing PaxList - Segments and journeys exist but no passengers defined -->
 	<Response>
 		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
 			<DatedMarketingSegmentList>
@@ -65,7 +64,6 @@
 					<PaxSegmentRefID>paxseg-001</PaxSegmentRefID>
 				</PaxJourney>
 			</PaxJourneyList>
-			<!-- MISSING: PaxList is completely absent -->
 			<PaxSegmentList>
 				<PaxSegment>
 					<DatedMarketingSegmentRefId>seg-001</DatedMarketingSegmentRefId>
@@ -91,7 +89,6 @@
 									<RBD_Code>H</RBD_Code>
 								</RBD>
 							</FareComponent>
-							<!-- References passenger that doesn't exist because PaxList is missing -->
 							<PaxRefID>PAX-GHOST</PaxRefID>
 						</FareDetail>
 						<OfferItemID>ITEM-NOPAX</OfferItemID>
