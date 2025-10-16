@@ -23,6 +23,10 @@ from app.services.llm_extractor import get_llm_extractor
 from app.services.pii_masking import pii_engine
 from app.services.pattern_generator import create_pattern_generator
 from app.services.utils import normalize_iata_prefix
+from app.services.parallel_processor import (
+    ThreadSafeDatabaseManager,
+    process_nodes_parallel
+)
 
 logger = logging.getLogger(__name__)
 
@@ -449,11 +453,23 @@ class DiscoveryWorkflow:
             logger.info(f"Phase 2: XML processing with {optimization_strategy}")
             parser = XmlStreamingParser(target_paths)
 
-            # Process XML stream
+            # Initialize variables
             subtrees_processed = 0
             total_facts_extracted = 0
             version_updated_during_processing = False
             nodes_skipped_by_config = 0
+
+            # Check if LLM is available and decide processing mode
+            llm_extractor = get_llm_extractor()
+            use_parallel = settings.ENABLE_PARALLEL_PROCESSING and llm_extractor.client
+
+            if not llm_extractor.client:
+                logger.warning("LLM client not available - parallel processing disabled")
+                use_parallel = False
+
+            # Collect subtrees from XML stream
+            logger.info("Collecting subtrees from XML stream...")
+            subtrees_to_process = []
 
             for subtree in parser.parse_stream(xml_file_path):
                 # Handle version info if not detected in Phase 1
@@ -478,94 +494,108 @@ class DiscoveryWorkflow:
 
                 # Find matching target path for this subtree
                 matching_target = None
-                logger.debug(f"Looking for match for subtree path: {subtree.path}")
-                logger.debug(f"Available target paths: {[t['path_local'] for t in parser.target_paths]}")
-
                 for target in parser.target_paths:
                     if target['path_local'] in subtree.path:
                         matching_target = target
-                        logger.debug(f"Found matching target: {target['path_local']} for {subtree.path}")
                         break
 
                 if matching_target:
-                    # Only apply node config filtering when using ndc_target_paths strategy
-                    # (node_configurations strategy already filters to enabled nodes)
+                    # Only collect nodes that should be extracted
                     if optimization_strategy == "ndc_target_paths":
-                        if not self._should_extract_node(subtree.path, node_configs):
-                            logger.info(f"Skipping node {subtree.path} - disabled by NodeConfiguration")
-                            nodes_skipped_by_config += 1
-                            continue
-
-                    extractor_key = matching_target.get('extractor_key', 'generic_llm')
-                    facts_stored = 0
-
-                    if extractor_key == 'llm' or extractor_key == 'generic_llm':
-                        # Check if LLM is available
-                        llm_extractor = get_llm_extractor()
-
-                        if llm_extractor.client:
-                            # Use LLM-based extraction
-                            logger.debug(f"Using LLM extraction for path: {subtree.path}")
-
-                            try:
-                                llm_result = llm_extractor.extract_from_subtree_sync(
-                                    subtree,
-                                    context={
-                                        'run_id': run_id,
-                                        'spec_version': version_info.spec_version if version_info else None,
-                                        'message_root': version_info.message_root if version_info else None
-                                    }
-                                )
-                                logger.debug(f"LLM extraction results: {len(llm_result.node_facts)} facts, "
-                                           f"confidence: {llm_result.confidence_score:.2f}")
-
-                                # Store LLM-extracted facts
-                                facts_stored = self._store_llm_node_facts(run_id, subtree, llm_result)
-
-                            except ValueError as e:
-                                # ValueErrors contain detailed user-friendly messages - propagate them
-                                error_msg = str(e)
-                                logger.error(f"❌ LLM EXTRACTION FAILED for {subtree.path}")
-                                logger.error(f"   Error: {error_msg}")
-                                logger.error(f"   This is likely a configuration or connectivity issue")
-                                logger.error(f"   Please check the logs and .env file")
-
-                                # Don't fallback - raise the error to stop processing
-                                raise ValueError(f"LLM Extraction Failed: {error_msg}")
-
-                            except Exception as e:
-                                logger.error(f"❌ UNEXPECTED ERROR during LLM extraction for {subtree.path}")
-                                logger.error(f"   Error type: {type(e).__name__}")
-                                logger.error(f"   Error message: {str(e)}")
-                                import traceback
-                                logger.error(f"   Traceback:\n{traceback.format_exc()}")
-
-                                # Raise with context
-                                raise ValueError(f"Discovery Error: {type(e).__name__}: {str(e)}")
+                        if self._should_extract_node(subtree.path, node_configs):
+                            subtrees_to_process.append(subtree)
                         else:
-                            # LLM not available, use templates directly
-                            logger.info(f"LLM client not available, using template extraction for {subtree.path}")
-                            template_keys = self._get_template_keys_for_path(matching_target)
-                            extraction_results = template_extractor.extract_from_subtree(subtree, template_keys)
-                            facts_stored = self._store_node_facts(run_id, subtree, extraction_results)
-
+                            logger.debug(f"Skipping node {subtree.path} - disabled by NodeConfiguration")
+                            nodes_skipped_by_config += 1
                     else:
-                        # Use template-based extraction
-                        template_keys = self._get_template_keys_for_path(matching_target)
-                        logger.debug(f"Using template keys: {template_keys} for path: {subtree.path}")
-
-                        extraction_results = template_extractor.extract_from_subtree(subtree, template_keys)
-                        logger.debug(f"Template extraction results: {extraction_results}")
-
-                        facts_stored = self._store_node_facts(run_id, subtree, extraction_results)
-
-                    total_facts_extracted += facts_stored
-                    subtrees_processed += 1
-
-                    logger.info(f"Processed subtree {subtrees_processed}: "
-                               f"{subtree.path} -> {facts_stored} facts (method: {extractor_key})")
+                        subtrees_to_process.append(subtree)
                 else:
                     logger.warning(f"No matching target path found for subtree: {subtree.path}")
+
+            logger.info(f"Collected {len(subtrees_to_process)} subtrees for processing "
+                       f"({nodes_skipped_by_config} skipped by config)")
+
+            # Process nodes - Parallel or Sequential based on configuration
+            if use_parallel and len(subtrees_to_process) > 0:
+                # PARALLEL PROCESSING
+                logger.info(f"🚀 Starting PARALLEL processing with {settings.MAX_PARALLEL_NODES} workers")
+
+                # Initialize thread-safe database manager
+                db_manager = ThreadSafeDatabaseManager(self.db_session.bind)
+
+                try:
+                    # Process nodes in parallel
+                    parallel_results = process_nodes_parallel(
+                        subtrees=subtrees_to_process,
+                        run_id=run_id,
+                        spec_version=version_info.spec_version if version_info else None,
+                        message_root=version_info.message_root if version_info else None,
+                        llm_extractor=llm_extractor,
+                        db_manager=db_manager,
+                        optimization_strategy=optimization_strategy,
+                        node_configs=node_configs,
+                        max_workers=min(settings.MAX_PARALLEL_NODES, len(subtrees_to_process)),
+                        should_extract_func=self._should_extract_node
+                    )
+
+                    # Extract results
+                    subtrees_processed = parallel_results['subtrees_processed']
+                    total_facts_extracted = parallel_results['total_facts_extracted']
+                    nodes_skipped_by_config += parallel_results['nodes_skipped_by_config']
+
+                    logger.info(f"✅ Parallel processing completed: "
+                               f"{subtrees_processed} nodes processed, "
+                               f"{total_facts_extracted} facts extracted")
+
+                    # Handle errors if any
+                    if parallel_results['processing_errors']:
+                        error_count = len(parallel_results['processing_errors'])
+                        logger.warning(f"⚠️ {error_count} nodes had processing errors")
+                        # Continue processing despite individual node errors
+
+                finally:
+                    # Cleanup thread-local sessions
+                    db_manager.cleanup_session()
+
+            else:
+                # SEQUENTIAL PROCESSING (Fallback/Legacy mode)
+                logger.info("Using SEQUENTIAL processing (legacy mode)")
+
+                for subtree in subtrees_to_process:
+                    try:
+                        # Use LLM-based extraction
+                        logger.debug(f"Using LLM extraction for path: {subtree.path}")
+
+                        llm_result = llm_extractor.extract_from_subtree_sync(
+                            subtree,
+                            context={
+                                'run_id': run_id,
+                                'spec_version': version_info.spec_version if version_info else None,
+                                'message_root': version_info.message_root if version_info else None
+                            }
+                        )
+
+                        # Store LLM-extracted facts
+                        facts_stored = self._store_llm_node_facts(run_id, subtree, llm_result)
+                        total_facts_extracted += facts_stored
+                        subtrees_processed += 1
+
+                        logger.info(f"Processed subtree {subtrees_processed}/{len(subtrees_to_process)}: "
+                                   f"{subtree.path} -> {facts_stored} facts")
+
+                    except ValueError as e:
+                        # LLM extraction errors - stop processing
+                        error_msg = str(e)
+                        logger.error(f"❌ LLM EXTRACTION FAILED for {subtree.path}")
+                        logger.error(f"   Error: {error_msg}")
+                        raise ValueError(f"LLM Extraction Failed: {error_msg}")
+
+                    except Exception as e:
+                        logger.error(f"❌ UNEXPECTED ERROR during LLM extraction for {subtree.path}")
+                        logger.error(f"   Error: {type(e).__name__}: {str(e)}")
+                        import traceback
+                        logger.error(f"   Traceback:\n{traceback.format_exc()}")
+                        raise ValueError(f"Discovery Error: {type(e).__name__}: {str(e)}")
 
             # Update workflow results
             workflow_results.update({
