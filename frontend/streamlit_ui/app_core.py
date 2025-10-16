@@ -1404,6 +1404,54 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
     # Pattern Matches table
     st.subheader("🔍 Pattern Matches")
 
+    # Add legend for color coding
+    with st.expander("📊 **Color Legend - What do the colors mean?**", expanded=False):
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.markdown("""
+            <div style='background-color: #d4edda; padding: 10px; border-radius: 5px; margin-bottom: 10px;'>
+                <strong>🟢 Green - EXACT_MATCH</strong><br/>
+                <small>95-100% confidence | Perfect match, no differences</small>
+            </div>
+            <div style='background-color: #fff3cd; padding: 10px; border-radius: 5px;'>
+                <strong>🟡 Yellow - HIGH_MATCH</strong><br/>
+                <small>85-94% confidence | Very close match, minor differences</small>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col2:
+            st.markdown("""
+            <div style='background-color: #f8d7da; padding: 10px; border-radius: 5px; margin-bottom: 10px;'>
+                <strong>🟠 Pink - PARTIAL_MATCH</strong><br/>
+                <small>70-84% confidence | Good match but has some deviations</small>
+            </div>
+            <div style='background-color: #f8d7da; padding: 10px; border-radius: 5px;'>
+                <strong>🟠 Pink - LOW_MATCH</strong><br/>
+                <small>50-69% confidence | Low similarity, review recommended</small>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col3:
+            st.markdown("""
+            <div style='background-color: #f5b7b1; padding: 10px; border-radius: 5px; margin-bottom: 10px;'>
+                <strong>🔴 Red - QUALITY_BREAK</strong><br/>
+                <small>Data quality issues | Missing required elements</small>
+            </div>
+            <div style='background-color: #f5c6cb; padding: 10px; border-radius: 5px;'>
+                <strong>🔴 Light Red - NEW_PATTERN</strong><br/>
+                <small>Never seen before | New structure discovered</small>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.info("""
+        **💡 Understanding Match Rate vs Colors:**
+        - **Match Rate 100%** means all nodes matched patterns with ≥70% confidence (green + yellow + pink)
+        - **High Confidence** counts only green (≥95%) and yellow (≥85%) matches
+        - **Red rows** (Quality Breaks or New Patterns) require attention but may still count as matches if confidence ≥70%
+        - **Use colors to prioritize**: Green = no action, Yellow = minor review, Pink/Red = needs investigation
+        """)
+
     matches_data = get_identify_matches(run_id, limit=200, workspace=workspace)
     matches: List[Dict[str, Any]] = []
 
