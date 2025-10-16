@@ -791,6 +791,44 @@ class IdentifyWorkflow:
         quality_match_rate = (quality_coverage_total / node_facts_extracted) if node_facts_extracted > 0 else 0
         effective_match_rate = quality_match_rate if quality_issue_count > 0 else confidence_match_rate
 
+        # PHASE 3.1: Identify MISSING patterns (patterns in library but NOT in uploaded XML)
+        logger.info("Phase 3.1: Identifying missing patterns from uploaded XML")
+
+        # Get all expected patterns for this version/message/airline
+        expected_patterns_query = self.db_session.query(Pattern).filter(
+            Pattern.spec_version == match_version,
+            Pattern.message_root == match_message_root
+        )
+        if match_airline_code:
+            expected_patterns_query = expected_patterns_query.filter(Pattern.airline_code == match_airline_code)
+
+        all_expected_patterns = expected_patterns_query.all()
+
+        # Build set of pattern IDs that were matched
+        matched_pattern_ids = set()
+        for match in match_results:
+            if match.get('best_match') and match['best_match'].get('pattern_id'):
+                matched_pattern_ids.add(match['best_match']['pattern_id'])
+
+        # Find patterns that were NOT matched (missing from uploaded XML)
+        missing_patterns = []
+        for pattern in all_expected_patterns:
+            if pattern.id not in matched_pattern_ids:
+                decision_rule = pattern.decision_rule or {}
+                missing_patterns.append({
+                    'pattern_id': pattern.id,
+                    'node_type': decision_rule.get('node_type', 'Unknown'),
+                    'section_path': pattern.section_path,
+                    'airline_code': pattern.airline_code,
+                    'times_seen': pattern.times_seen,
+                    'last_seen_at': pattern.last_seen_at.isoformat() if pattern.last_seen_at else None,
+                    'must_have_attributes': decision_rule.get('must_have_attributes', []),
+                    'has_children': decision_rule.get('child_structure', {}).get('has_children', False)
+                })
+
+        missing_patterns_count = len(missing_patterns)
+        logger.info(f"Found {missing_patterns_count} patterns in library that are missing from uploaded XML")
+
         gap_analysis = {
             'total_node_facts': node_facts_extracted,
             'matched_facts': matched_count,
@@ -802,7 +840,11 @@ class IdentifyWorkflow:
             'quality_match_rate': quality_match_rate,
             'confidence_match_rate': confidence_match_rate,
             'high_confidence_rate': (high_confidence_count / node_facts_extracted * 100) if node_facts_extracted > 0 else 0,
-            'quality_alerts': quality_alerts
+            'quality_alerts': quality_alerts,
+            'missing_patterns': missing_patterns,
+            'missing_patterns_count': missing_patterns_count,
+            'total_expected_patterns': len(all_expected_patterns),
+            'pattern_coverage_rate': ((len(all_expected_patterns) - missing_patterns_count) / len(all_expected_patterns) * 100) if len(all_expected_patterns) > 0 else 0
         }
 
         # Update run with summary AND set finished_at timestamp

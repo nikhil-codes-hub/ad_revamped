@@ -1543,49 +1543,66 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
             hide_index=True
         )
 
-    # Gap Analysis section for unmatched items
-    st.subheader("📝 Gap Analysis: Unmatched Nodes")
+    # Gap Analysis section for missing patterns
+    st.subheader("📝 Gap Analysis: Missing Patterns")
     gap_data = gap_analysis or {}
+    missing_patterns = gap_data.get('missing_patterns', [])
 
-    if gap_data and gap_data.get('unmatched_nodes'):
-        unmatched_nodes = gap_data['unmatched_nodes']
-        st.info(f"Found {len(unmatched_nodes)} issue(s) requiring review.")
+    # Show pattern coverage metrics
+    if gap_data:
+        missing_count = stats.get('missing_patterns_count', 0)
+        total_expected = stats.get('total_expected_patterns', 0)
+        coverage_rate = stats.get('pattern_coverage_rate', 0)
 
-        def describe_reason(node: Dict[str, Any]) -> str:
-            reason = node.get('reason')
-            verdict = node.get('verdict')
-            confidence = node.get('confidence')
-            actual_type = node.get('actual_node_type')
+        if total_expected > 0:
+            col_a, col_b, col_c = st.columns(3)
+            with col_a:
+                st.metric("Total Expected Patterns", total_expected)
+            with col_b:
+                st.metric("Missing from XML", missing_count)
+            with col_c:
+                st.metric("Pattern Coverage", f"{coverage_rate:.1f}%")
 
-            if reason == "missing":
-                return "Not found in input XML"
-            if reason == "mismatch":
-                verdict_label = verdict or "NO_MATCH"
-                if actual_type and actual_type != node.get('node_type'):
-                    return f"{verdict_label} (actual: {actual_type})"
-                return f"{verdict_label} against expected pattern"
-            if reason == "low_confidence":
-                pct = f"{confidence * 100:.1f}%" if isinstance(confidence, (float, int)) else "n/a"
-                verdict_label = verdict or "LOW_MATCH"
-                if actual_type and actual_type != node.get('node_type'):
-                    return f"Low confidence ({pct}) - verdict {verdict_label} (actual: {actual_type})"
-                return f"Low confidence ({pct}) - verdict {verdict_label}"
-            return "Review required"
+            st.divider()
 
-        unmatched_table = [{
-            "Node Type": node.get('node_type'),
-            "Actual Node Type": node.get('actual_node_type') or "N/A",
-            "Section Path": node.get('section_path'),
-            "Reason": describe_reason(node),
-            "Expected Pattern": node.get('pattern_section') or "N/A"
-        } for node in unmatched_nodes]
+    if missing_patterns:
+        st.warning(f"⚠️ Found {len(missing_patterns)} expected pattern(s) that are **missing** from the uploaded XML.")
+        st.info("**What this means**: These data structures were expected based on the pattern library but were not found in your uploaded XML file. This may indicate incomplete data or optional elements that are not present in this specific message.")
 
-        df_unmatched = pd.DataFrame(unmatched_table)
-        st.dataframe(df_unmatched, use_container_width=True, hide_index=True)
+        missing_table = []
+        for pattern in missing_patterns:
+            # Format last seen date
+            last_seen = pattern.get('last_seen_at', 'Never')
+            if last_seen and last_seen != 'Never':
+                try:
+                    from datetime import datetime
+                    last_seen_dt = datetime.fromisoformat(last_seen.replace('Z', '+00:00'))
+                    last_seen = last_seen_dt.strftime('%Y-%m-%d')
+                except:
+                    pass
+
+            missing_table.append({
+                "Node Type": pattern.get('node_type', 'Unknown'),
+                "Section Path": pattern.get('section_path', 'N/A'),
+                "Times Seen": pattern.get('times_seen', 0),
+                "Last Seen": last_seen,
+                "Has Children": "Yes" if pattern.get('has_children', False) else "No",
+                "Required Attributes": ", ".join(pattern.get('must_have_attributes', [])) or "None"
+            })
+
+        df_missing = pd.DataFrame(missing_table)
+        st.dataframe(df_missing, use_container_width=True, hide_index=True)
+
+        st.info("""
+        **💡 What to do about missing patterns:**
+        - **Common case**: These elements may be optional in your specific scenario (e.g., baggage information not included for certain fare types)
+        - **Action needed**: If these elements SHOULD be present, check your source system to ensure complete data is being sent
+        - **Documentation**: Review NDC specification to determine if these elements are required or optional for your message type
+        """)
     elif quality_alerts:
-        st.warning("⚠️ Review the quality breaks listed above.")
+        st.warning("⚠️ No missing patterns detected, but review the quality breaks listed above.")
     else:
-        st.success("✅ All expected nodes were found in the input XML.")
+        st.success("✅ All expected patterns from the library were found in the uploaded XML.")
 
     # Detailed match view
     st.divider()
