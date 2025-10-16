@@ -425,5 +425,35 @@ Performance Improvement: 85% faster (6x speedup)
 
 ---
 
+## Additional Fixes Applied
+
+### Duration Calculation Fix (October 16, 2025)
+
+**Problem**: Duration was showing incorrect time (28s instead of ~2 minutes)
+- `finished_at` timestamp was set BEFORE relationship analysis and pattern generation phases
+- Missing 1-2 minutes of processing time from duration calculation
+
+**Solution**:
+1. **Discovery Workflow** (`discovery_workflow.py`):
+   - Removed premature `finished_at` update after Phase 2
+   - Added proper completion logic AFTER all phases complete (lines 682-688)
+   - Now includes: XML Processing + Relationship Analysis + Pattern Generation
+
+2. **Identify Workflow** (`identify_workflow.py`):
+   - Added missing database `finished_at` and `status` updates (lines 819-820)
+   - Ensures duration is calculated correctly from database timestamps
+
+3. **Identify API** (`identify.py`):
+   - Added `started_at`, `finished_at`, and `duration_seconds` to gap-analysis endpoint
+   - Provides consistent timing information across both Discovery and Identify APIs
+
+**Result**: Duration now accurately reflects total processing time including all workflow phases
+
+**Commits**:
+- `4a6f1b2` - Fix duration calculation by setting finished_at after all workflow phases complete
+- `953953f` - Add duration, started_at, and finished_at to Identify gap-analysis endpoint
+
+---
+
 **Document Owner**: AssistedDiscovery Development Team
-**Last Updated**: October 15, 2025
+**Last Updated**: October 16, 2025
