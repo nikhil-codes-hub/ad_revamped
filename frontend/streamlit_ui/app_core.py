@@ -1339,7 +1339,7 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
         return str(elements)
 
     # Show basic run info first
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("NDC Version", run_details.get("spec_version", "N/A"))
     with col2:
@@ -1347,6 +1347,14 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
         st.metric("Airline", airline_code)
     with col3:
         st.metric("Message Root", run_details.get("message_root", "N/A"))
+    with col4:
+        duration = run_details.get("duration_seconds")
+        if duration is not None:
+            mins, secs = divmod(duration, 60)
+            duration_str = f"{int(mins)}m {int(secs)}s" if mins > 0 else f"{int(secs)}s"
+            st.metric("Duration", duration_str)
+        else:
+            st.metric("Duration", "N/A")
 
     st.divider()
 

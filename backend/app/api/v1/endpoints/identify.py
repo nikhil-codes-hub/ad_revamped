@@ -227,26 +227,40 @@ async def get_gap_analysis(
 
         all_expected_patterns = expected_patterns_query.all()
 
-        # Build set of pattern IDs that were matched
-        matched_pattern_ids = set()
+        # Build set of node types that were matched (deduplicate by node type, not pattern ID)
+        # This prevents showing "DatedMarketingSegmentList missing" when one version was matched
+        matched_node_types = set()
         for match in all_matches:
             if match.pattern_id:
-                matched_pattern_ids.add(match.pattern_id)
+                # Get the pattern to extract node type
+                matched_pattern = db.query(Pattern).filter(Pattern.id == match.pattern_id).first()
+                if matched_pattern and matched_pattern.decision_rule:
+                    node_type = matched_pattern.decision_rule.get('node_type')
+                    if node_type:
+                        matched_node_types.add(node_type)
 
         # Find patterns that were NOT matched (missing from uploaded XML)
+        # Deduplicate by node_type to avoid showing duplicates
         missing_patterns = []
+        seen_node_types = set()
         for pattern in all_expected_patterns:
-            if pattern.id not in matched_pattern_ids:
-                decision_rule = pattern.decision_rule or {}
-                missing_patterns.append({
-                    "pattern_id": pattern.id,
-                    "node_type": decision_rule.get('node_type', 'Unknown'),
-                    "section_path": pattern.section_path,
-                    "airline_code": pattern.airline_code,
-                    "times_seen": pattern.times_seen,
-                    "last_seen_at": pattern.last_seen_at.isoformat() if pattern.last_seen_at else None,
-                    "must_have_attributes": decision_rule.get('must_have_attributes', []),
-                    "has_children": decision_rule.get('child_structure', {}).get('has_children', False)
+            decision_rule = pattern.decision_rule or {}
+            node_type = decision_rule.get('node_type', 'Unknown')
+
+            # Skip if this node type was already matched or already added to missing list
+            if node_type in matched_node_types or node_type in seen_node_types:
+                continue
+
+            seen_node_types.add(node_type)
+            missing_patterns.append({
+                "pattern_id": pattern.id,
+                "node_type": node_type,
+                "section_path": pattern.section_path,
+                "airline_code": pattern.airline_code,
+                "times_seen": pattern.times_seen,
+                "last_seen_at": pattern.last_seen_at.isoformat() if pattern.last_seen_at else None,
+                "must_have_attributes": decision_rule.get('must_have_attributes', []),
+                "has_children": decision_rule.get('child_structure', {}).get('has_children', False)
                 })
 
         missing_patterns_count = len(missing_patterns)
