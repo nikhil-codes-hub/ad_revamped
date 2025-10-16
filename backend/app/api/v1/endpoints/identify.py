@@ -220,6 +220,9 @@ async def get_gap_analysis(
             "run_id": run_id,
             "spec_version": run.spec_version,
             "message_root": run.message_root,
+            "started_at": run.started_at.isoformat() if run.started_at else None,
+            "finished_at": run.finished_at.isoformat() if run.finished_at else None,
+            "duration_seconds": run.duration_seconds,
             "statistics": {
                 "total_node_facts": total_facts,
                 "matched_facts": matched_count,
