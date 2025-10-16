@@ -597,14 +597,13 @@ class DiscoveryWorkflow:
                         logger.error(f"   Traceback:\n{traceback.format_exc()}")
                         raise ValueError(f"Discovery Error: {type(e).__name__}: {str(e)}")
 
-            # Update workflow results
+            # Update workflow results (but DON'T set finished_at yet - still have more phases!)
             workflow_results.update({
                 'subtrees_processed': subtrees_processed,
                 'node_facts_extracted': total_facts_extracted,
                 'nodes_skipped_by_config': nodes_skipped_by_config,
                 'node_configs_loaded': len(node_configs),
-                'finished_at': datetime.utcnow().isoformat(),
-                'status': 'completed',
+                'status': 'in_progress',  # Still processing - relationship analysis and pattern generation pending
                 'optimization_used': optimization_strategy,
                 'target_paths_loaded': len(target_paths),
                 'version_info': {
@@ -616,8 +615,7 @@ class DiscoveryWorkflow:
                 }
             })
 
-            # Update run status to completed
-            self._update_run_status(run_id, RunStatus.COMPLETED)
+            # DON'T update run status to completed yet - relationship analysis and pattern generation still pending
 
             logger.info(f"Optimized discovery workflow completed: {run_id} - "
                        f"Strategy: {optimization_strategy}, "
@@ -680,6 +678,14 @@ class DiscoveryWorkflow:
                     }
             elif skip_pattern_generation:
                 logger.info("Phase 3: Pattern generation SKIPPED (called from Identify mode)")
+
+            # ALL PHASES COMPLETE - Now update run status and set finished_at timestamp
+            workflow_results.update({
+                'finished_at': datetime.utcnow().isoformat(),
+                'status': 'completed'
+            })
+            self._update_run_status(run_id, RunStatus.COMPLETED)
+            logger.info(f"✅ Discovery workflow fully completed: {run_id}")
 
         except Exception as e:
             error_msg = str(e)

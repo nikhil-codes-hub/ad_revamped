@@ -805,7 +805,7 @@ class IdentifyWorkflow:
             'quality_alerts': quality_alerts
         }
 
-        # Update run with summary
+        # Update run with summary AND set finished_at timestamp
         if run:
             run.metadata_json = {
                 **run.metadata_json,
@@ -816,6 +816,8 @@ class IdentifyWorkflow:
                     'quality_breaks': quality_issue_count
                 }
             }
+            run.status = RunStatus.COMPLETED
+            run.finished_at = datetime.utcnow()
             self.db_session.commit()
 
         results = {
