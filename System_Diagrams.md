@@ -148,13 +148,17 @@ flowchart TD
     end
 
     subgraph "External Services"
-        LLM_API[LLM API<br/>GPT-4 Turbo]
-        ObjectStore[Object Storage<br/>S3/GCS]
+        LLM_API[Azure OpenAI<br/>GPT-4o]
+        ObjectStore[Local Storage<br/>workspaces/]
     end
 
     subgraph "Data Layer"
-        Cache[(Redis Cache<br/>Targets & Aliases)]
-        MySQL[(MySQL Database<br/>Facts & Patterns)]
+        subgraph "Workspace DBs"
+            WS1[(workspace1.db<br/>SQLite)]
+            WS2[(workspace2.db<br/>SQLite)]
+            WS3[(workspace3.db<br/>SQLite)]
+        end
+        Note[Each workspace has<br/>isolated database]
     end
 
     subgraph "Monitoring"
@@ -180,15 +184,14 @@ flowchart TD
 
     Parser --> TE
     Parser --> GE
-    TE --> MySQL
+    TE --> WS1
     GE --> LLM_API
-    GE --> MySQL
+    GE --> WS1
 
-    Retriever --> MySQL
+    Retriever --> WS1
     Retriever --> LLM_API
 
-    Parser --> Cache
-    Reporter --> MySQL
+    Reporter --> WS1
 
     JobOrch --> ObjectStore
 
@@ -314,45 +317,52 @@ flowchart TD
     Fail --> Start
 ```
 
-## Caching Strategy Diagram
+## Workspace Architecture Diagram
 
 ```mermaid
 flowchart TD
-    subgraph "Cache Layers"
-        L1[L1: In-Memory<br/>Path Trie]
-        L2[L2: Redis<br/>Pattern Catalog]
-        L3[L3: MySQL<br/>Persistent Store]
+    subgraph "Application Layer"
+        API[FastAPI Application]
+        SessionMgr[Session Manager]
     end
 
-    subgraph "Cache Operations"
-        Startup[Worker Startup]
-        Request[Process Request]
-        Refresh[Periodic Refresh]
-        Invalidate[Cache Invalidation]
+    subgraph "Workspace Isolation"
+        WS1[Workspace: default]
+        WS2[Workspace: airline1]
+        WS3[Workspace: airline2]
     end
 
-    subgraph "Data Sources"
-        TargetPaths[ndc_target_paths]
-        PathAliases[ndc_path_aliases]
-        Patterns[patterns table]
+    subgraph "SQLite Databases"
+        DB1[(default/workspace.db<br/>Runs, NodeFacts,<br/>Patterns, Matches)]
+        DB2[(airline1/workspace.db<br/>Runs, NodeFacts,<br/>Patterns, Matches)]
+        DB3[(airline2/workspace.db<br/>Runs, NodeFacts,<br/>Patterns, Matches)]
     end
 
-    Startup --> TargetPaths
-    Startup --> PathAliases
-    TargetPaths --> L1
-    PathAliases --> L1
+    API --> SessionMgr
+    SessionMgr -->|get_session("default")| WS1
+    SessionMgr -->|get_session("airline1")| WS2
+    SessionMgr -->|get_session("airline2")| WS3
 
-    Request --> L1
-    L1 -->|Miss| L2
-    L2 -->|Miss| L3
-    L3 --> Patterns
+    WS1 --> DB1
+    WS2 --> DB2
+    WS3 --> DB3
 
-    Refresh -->|Every 15min| L2
-    Refresh -->|On webhook| L1
+    Note1[Each workspace is<br/>completely isolated]
+    Note2[No cross-workspace<br/>data access]
+    Note3[Patterns are<br/>workspace-specific]
+```
 
-    Invalidate -->|New patterns| L2
-    Invalidate -->|Config change| L1
+## Storage Structure
 
-    L2 --> L1
-    L3 --> L2
+```
+workspaces/
+├── default/
+│   ├── workspace.db          # SQLite database
+│   └── uploads/              # XML files
+├── airline1/
+│   ├── workspace.db
+│   └── uploads/
+└── airline2/
+    ├── workspace.db
+    └── uploads/
 ```

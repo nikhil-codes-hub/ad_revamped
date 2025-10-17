@@ -1,20 +1,19 @@
 # AssistedDiscovery
 ## 🏗️ Architecture
 
-- **Backend**: FastAPI with Python
+- **Backend**: FastAPI with Python 3.10
 - **Frontend**: Streamlit UI
-- **Database**: MySQL (current), CouchDB (future migration)
-- **Caching**: Redis
-- **LLM**: OpenAI GPT-4 Turbo
+- **Database**: SQLite (workspace-based isolation)
+- **LLM**: Azure OpenAI GPT-4o
+- **Parser**: lxml (streaming)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.9+
-- MySQL 8.0+
-- Redis (optional, for caching)
-- OpenAI API key
+- Python 3.10+
+- Azure OpenAI API access (with GPT-4o deployment)
+- No external database required (uses SQLite)
 
 ### 1. Clone and Setup
 
@@ -26,32 +25,33 @@ cd ad
 ### 2. Backend Setup
 
 ```bash
+# Create virtual environment
+python3 -m venv assisted_discovery_env
+source assisted_discovery_env/bin/activate  # On Windows: assisted_discovery_env\Scripts\activate
+
 # Install backend dependencies
 cd backend
 pip install -r requirements.txt
 
 # Setup environment
 cp ../.env.example .env
-# Edit .env with your configuration
+# Edit .env with your Azure OpenAI credentials
 
-# Setup database
-mysql -u root -p < migrations/001_initial_schema.sql
-
-# Start the FastAPI server
-python -m app.main
+# Start the FastAPI server (database auto-creates on first run)
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 The API will be available at http://localhost:8000
+API documentation: http://localhost:8000/docs
 
 ### 3. Frontend Setup
 
 ```bash
-# Install frontend dependencies
-cd ../frontend
-pip install -r requirements.txt
+# Navigate to frontend directory
+cd frontend/streamlit_ui
 
 # Start Streamlit UI
-streamlit run streamlit_ui/main.py
+streamlit run AssistedDiscovery.py --server.port 8501
 ```
 
 The UI will be available at http://localhost:8501
@@ -81,19 +81,20 @@ The UI will be available at http://localhost:8501
 Key environment variables (see `.env.example`):
 
 ```bash
-# Database
-MYSQL_HOST=localhost
-MYSQL_USER=assisted_discovery
-MYSQL_PASSWORD=your_password
-MYSQL_DATABASE=assisted_discovery
+# Azure OpenAI
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_KEY=your_azure_openai_key
+AZURE_OPENAI_DEPLOYMENT=gpt-4o
+AZURE_OPENAI_API_VERSION=2024-02-15-preview
 
-# LLM
-OPENAI_API_KEY=your_openai_api_key
-DEFAULT_MODEL=gpt-4-turbo-preview
+# Application
+MAX_XML_SIZE_MB=100
+MAX_SUBTREE_SIZE_KB=500
+ENABLE_PARALLEL_PROCESSING=true
+MAX_PARALLEL_NODES=4
 
 # Processing
-MAX_XML_SIZE_MB=100
-PATTERN_CONFIDENCE_THRESHOLD=0.7
+PATTERN_CONFIDENCE_THRESHOLD=0.85
 ```
 
 ## 📁 Project Structure
@@ -137,26 +138,39 @@ ad/
 
 ## 📊 Database Schema
 
+**Database Location**: `workspaces/{workspace_name}/workspace.db` (SQLite)
+
 Key tables:
 - `ndc_target_paths` - Configuration for XML target paths
-- `runs` - Processing run tracking
+- `runs` - Processing run tracking (discovery/identify)
 - `node_facts` - Extracted and masked XML nodes
-- `patterns` - Discovered patterns with signatures
-- `pattern_matches` - Pattern matching results
+- `patterns` - Discovered patterns with signature hashes
+- `pattern_matches` - Pattern matching results with confidence scores
+- `node_configurations` - BA-configured extraction rules
+
+**Multi-workspace Support**: Each workspace has its own isolated SQLite database
 
 ## 🧪 Testing
 
 ```bash
-# Backend tests
+# Unit tests (fast - 1.3s)
 cd backend
-pytest tests/
+pytest tests/unit/ -v
 
-# API integration tests
-pytest tests/integration/
+# With coverage report
+pytest tests/unit/ --cov=app --cov-report=html --cov-report=term
 
-# Load tests
-pytest tests/load/
+# VS Code: Press F5 → Select "AD 🧪 Run Unit Tests"
+
+# View coverage report
+open htmlcov/index.html
 ```
+
+**Current Test Status** (as of 2025-10-17):
+- 40% coverage (honest metric)
+- 69/120 tests passing (58%)
+- Unit tests: 81% pass rate
+- Core services: 70-92% coverage (production-ready)
 
 ## 📈 Monitoring
 
@@ -173,18 +187,41 @@ pytest tests/load/
 
 ## 🚧 Implementation Status
 
-Current phase: **Phase 0 - Foundation & Infrastructure**
+**Current Phase**: Phase 4 - API & Monitoring (40% complete)
+**Overall Progress**: 90% complete (as of 2025-10-03)
 
-- ✅ Project structure and dependencies
-- ✅ Database schema and models
-- ✅ FastAPI application setup
-- ✅ Basic Streamlit UI
-- ✅ Environment configuration
-- ⏳ XML processing core (Day 2)
-- ⏳ Pattern discovery (Day 4)
-- ⏳ Identify pipeline (Day 5)
+### Completed Phases ✅
+- ✅ **Phase 0**: Foundation & Infrastructure (100%)
+- ✅ **Phase 1**: Extraction & Storage (100%)
+  - XML streaming parser with memory-bounded processing
+  - LLM-based NodeFacts extraction
+  - Business intelligence enrichment
+  - PII masking (11 pattern types)
+- ✅ **Phase 2**: Pattern Discovery (100%)
+  - Pattern generator with SHA256 signature hashing
+  - Decision rule extraction
+  - Pattern deduplication (times_seen tracking)
+  - 19 patterns generated from 82 NodeFacts
+- ✅ **Phase 3**: Pattern Matching (100%)
+  - Version-filtered pattern matching
+  - 4-factor weighted confidence scoring
+  - 6 verdict types (EXACT, HIGH, PARTIAL, LOW, NO_MATCH, NEW_PATTERN)
+  - Gap analysis and NEW_PATTERN detection
 
-See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for detailed progress.
+### In Progress 🔄
+- 🔄 **Phase 4**: API & Monitoring (40%)
+  - Run reports endpoint
+  - Coverage statistics API
+  - Pattern match history
+  - Monitoring endpoints
+
+### Pending ⏳
+- ⏳ **Phase 5**: Testing & Validation
+  - Comprehensive testing suite (currently 40% coverage)
+  - Performance benchmarking
+  - End-to-end validation
+
+See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for detailed progress tracking.
 
 ## 📋 Development Roadmap
 
