@@ -34,6 +34,7 @@
 
 ### Most Important Files
 📖 `IMPLEMENTATION_STATUS.md` - **Ground truth for project status**
+📖 `REPOSITORY_PATTERN_MIGRATION.md` - **Repository pattern implementation plan** (Started Oct 18, 2025)
 📖 `backend/FINAL_COVERAGE_REPORT.md` - Test coverage details
 📖 `.vscode/launch.json` - Test runner configs (F5 to run)
 
@@ -122,6 +123,34 @@ NodeConfiguration # BA-configured extraction rules
 - **IdentifyWorkflow**: Pattern matching and quality validation
 - **PatternGenerator**: Pattern creation from NodeFacts
 - **XMLParser**: Streaming XML processing with target paths
+
+---
+
+## 🏗️ Active Migration: Repository Pattern (2025-10-18)
+
+**Status**: 📋 Planning Phase (Phase 0 complete)
+**Goal**: Decouple services from SQLAlchemy to support any database (PostgreSQL, MySQL, MongoDB, etc.)
+
+### Why This Matters
+Current architecture tightly couples services to SQLAlchemy:
+- ❌ Can't easily switch databases (36 direct `db_session` calls)
+- ❌ Hard to test (services need real database)
+- ❌ Business logic mixed with data access
+
+### Solution: Repository Pattern
+- ✅ Services use interfaces (`IUnitOfWork`), not SQLAlchemy
+- ✅ Switch databases by changing 1 line (dependency injection)
+- ✅ Easy mocking for tests
+
+### Implementation Plan
+See **`REPOSITORY_PATTERN_MIGRATION.md`** for complete details:
+- Phase 0: Analysis & Design ✅ **COMPLETE**
+- Phase 1: Create Repository Layer ⏳ Pending (2 days)
+- Phase 2: Migrate One Service (Pilot) ⏳ Pending (1-2 days)
+- Phase 3: Migrate Remaining Services ⏳ Pending (3-4 days)
+- Phase 4: Cleanup & Enforcement ⏳ Pending (1 day)
+
+**📖 For detailed implementation steps, always refer to `REPOSITORY_PATTERN_MIGRATION.md`**
 
 ---
 
