@@ -17,6 +17,8 @@ from app.services.workspace_db import get_workspace_db
 from app.services.discovery_workflow import create_discovery_workflow
 from app.services.identify_workflow import create_identify_workflow
 from app.models.database import Run, RunKind, RunStatus as DbRunStatus
+from app.repositories.interfaces import IUnitOfWork
+from app.repositories.sqlalchemy.unit_of_work import SQLAlchemyUnitOfWork
 import logging
 
 router = APIRouter()
@@ -66,12 +68,15 @@ async def create_run(
             temp_file_path = temp_file.name
 
         try:
+            # Create Unit of Work from database session
+            uow = SQLAlchemyUnitOfWork(db)
+
             # Run appropriate workflow based on kind
             if kind == "discovery":
-                workflow = create_discovery_workflow(db)
+                workflow = create_discovery_workflow(uow)
                 results = workflow.run_discovery(temp_file_path)
             elif kind == "identify":
-                workflow = create_identify_workflow(db)
+                workflow = create_identify_workflow(db)  # TODO: Migrate identify_workflow to use UnitOfWork
                 results = workflow.run_identify(
                     temp_file_path,
                     target_version=target_version,
@@ -145,8 +150,11 @@ async def get_run_status(
     db = next(db_generator)
 
     try:
+        # Create Unit of Work from database session
+        uow = SQLAlchemyUnitOfWork(db)
+
         # Get run from database
-        workflow = create_discovery_workflow(db)
+        workflow = create_discovery_workflow(uow)
         run_summary = workflow.get_run_summary(run_id)
     finally:
         try:
