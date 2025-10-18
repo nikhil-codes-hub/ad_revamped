@@ -17,6 +17,7 @@ from sqlalchemy import create_engine
 
 from app.core.config import settings
 from app.models.database import Run, RunKind, RunStatus, NodeFact, NdcTargetPath, NodeConfiguration
+from app.repositories.interfaces import IUnitOfWork
 from app.services.xml_parser import XmlStreamingParser, create_parser_for_version, XmlSubtree, detect_ndc_version_fast
 from app.services.template_extractor import template_extractor
 from app.services.llm_extractor import get_llm_extractor
@@ -34,9 +35,18 @@ logger = logging.getLogger(__name__)
 class DiscoveryWorkflow:
     """Orchestrates the complete discovery process."""
 
-    def __init__(self, db_session: Session):
-        """Initialize workflow with database session."""
-        self.db_session = db_session
+    def __init__(self, unit_of_work: IUnitOfWork):
+        """
+        Initialize workflow with Unit of Work.
+
+        Args:
+            unit_of_work: Repository layer providing database-agnostic data access
+        """
+        self.uow = unit_of_work
+        # Maintain db_session for backward compatibility with methods
+        # that still need direct database access (target paths, node configs)
+        # This will be fully removed in future iterations
+        self.db_session = unit_of_work.session if hasattr(unit_of_work, 'session') else None
         self.message_root: Optional[str] = None
 
     def _calculate_file_hash(self, file_path: str) -> str:
@@ -189,8 +199,9 @@ class DiscoveryWorkflow:
             }
         )
 
-        self.db_session.add(run)
-        self.db_session.commit()
+        # Use repository instead of direct session
+        self.uow.runs.create(run)
+        self.uow.commit()
 
         logger.info(f"Created discovery run: {run_id}")
         return run_id
@@ -198,37 +209,30 @@ class DiscoveryWorkflow:
     def _update_run_version_info(self, run_id: str, spec_version: str, message_root: str,
                                  airline_code: str = None, airline_name: str = None):
         """Update run with detected version and airline information."""
-        run = self.db_session.query(Run).filter(Run.id == run_id).first()
-        if run:
-            run.spec_version = spec_version
-            run.message_root = message_root
-            if airline_code:
-                run.airline_code = airline_code
-            if airline_name:
-                run.airline_name = airline_name
-            run.status = RunStatus.IN_PROGRESS
-            self.db_session.commit()
-            airline_info = f" - Airline: {airline_code}" if airline_code else ""
-            logger.info(f"Updated run {run_id} with version: {spec_version}/{message_root}{airline_info}")
+        # Use repository method
+        self.uow.runs.update_version_info(
+            run_id, spec_version, message_root, airline_code, airline_name
+        )
+        self.uow.commit()
+
+        airline_info = f" - Airline: {airline_code}" if airline_code else ""
+        logger.info(f"Updated run {run_id} with version: {spec_version}/{message_root}{airline_info}")
 
     def _update_run_status(self, run_id: str, status: RunStatus, error_details: str = None):
         """Update run status."""
-        run = self.db_session.query(Run).filter(Run.id == run_id).first()
-        if run:
-            run.status = status
-            run.finished_at = datetime.utcnow()
-            if error_details:
-                run.error_details = error_details
-            self.db_session.commit()
+        # Use repository method
+        self.uow.runs.update_status(run_id, status, error_details)
+        self.uow.commit()
 
     def _store_node_facts(self, run_id: str, subtree: XmlSubtree,
                          extraction_results: Dict[str, Any]):
         """Store extracted node facts in database."""
-        run = self.db_session.query(Run).filter(Run.id == run_id).first()
+        # Use repository to get run
+        run = self.uow.runs.get_by_id(run_id)
         if not run:
-            return
+            return 0
 
-        node_facts_stored = 0
+        node_facts = []
 
         for template_key, result in extraction_results['extraction_results'].items():
             if result['status'] == 'success' and result['facts']:
@@ -244,24 +248,25 @@ class DiscoveryWorkflow:
                         pii_masked=settings.PII_MASKING_ENABLED,
                         created_at=datetime.utcnow()
                     )
+                    node_facts.append(node_fact)
 
-                    self.db_session.add(node_fact)
-                    node_facts_stored += 1
+        if node_facts:
+            # Use batch insert for better performance
+            self.uow.node_facts.create_batch(node_facts)
+            self.uow.commit()
+            logger.debug(f"Stored {len(node_facts)} node facts for run {run_id}")
 
-        if node_facts_stored > 0:
-            self.db_session.commit()
-            logger.debug(f"Stored {node_facts_stored} node facts for run {run_id}")
-
-        return node_facts_stored
+        return len(node_facts)
 
     def _store_llm_node_facts(self, run_id: str, subtree: XmlSubtree,
                              llm_result) -> int:
         """Store LLM-extracted node facts in database."""
-        run = self.db_session.query(Run).filter(Run.id == run_id).first()
+        # Use repository to get run
+        run = self.uow.runs.get_by_id(run_id)
         if not run:
             return 0
 
-        node_facts_stored = 0
+        node_facts = []
 
         for fact_data in llm_result.node_facts:
             node_fact = NodeFact(
@@ -275,15 +280,15 @@ class DiscoveryWorkflow:
                 pii_masked=settings.PII_MASKING_ENABLED,
                 created_at=datetime.utcnow()
             )
+            node_facts.append(node_fact)
 
-            self.db_session.add(node_fact)
-            node_facts_stored += 1
+        if node_facts:
+            # Use batch insert for better performance
+            self.uow.node_facts.create_batch(node_facts)
+            self.uow.commit()
+            logger.debug(f"Stored {len(node_facts)} LLM-extracted node facts for run {run_id}")
 
-        if node_facts_stored > 0:
-            self.db_session.commit()
-            logger.debug(f"Stored {node_facts_stored} LLM-extracted node facts for run {run_id}")
-
-        return node_facts_stored
+        return len(node_facts)
 
     def _get_template_keys_for_path(self, target_path: Dict) -> List[str]:
         """Get template keys to use for a target path."""
@@ -704,14 +709,13 @@ class DiscoveryWorkflow:
 
     def get_run_summary(self, run_id: str) -> Optional[Dict[str, Any]]:
         """Get summary of discovery run."""
-        run = self.db_session.query(Run).filter(Run.id == run_id).first()
+        # Use repository to get run
+        run = self.uow.runs.get_by_id(run_id)
         if not run:
             return None
 
-        # Count node facts
-        node_facts_count = self.db_session.query(NodeFact).filter(
-            NodeFact.run_id == run_id
-        ).count()
+        # Use repository to count node facts
+        node_facts_count = self.uow.node_facts.count_by_run(run_id)
 
         return {
             'run_id': run.id,
@@ -732,6 +736,14 @@ class DiscoveryWorkflow:
         }
 
 
-def create_discovery_workflow(db_session: Session) -> DiscoveryWorkflow:
-    """Create discovery workflow instance with database session."""
-    return DiscoveryWorkflow(db_session)
+def create_discovery_workflow(unit_of_work: IUnitOfWork) -> DiscoveryWorkflow:
+    """
+    Create discovery workflow instance with Unit of Work.
+
+    Args:
+        unit_of_work: Repository layer for database-agnostic data access
+
+    Returns:
+        DiscoveryWorkflow instance
+    """
+    return DiscoveryWorkflow(unit_of_work)
