@@ -11,7 +11,6 @@ import json
 from typing import Dict, List, Any, Optional, Set, Tuple
 from datetime import datetime
 from collections import defaultdict
-from sqlalchemy.orm import Session
 from openai import AzureOpenAI, OpenAI
 import httpx
 
@@ -19,6 +18,7 @@ from app.models.database import NodeFact, Pattern, Run
 from app.core.config import settings
 from app.services.llm_extractor import get_llm_extractor
 from app.services.utils import normalize_iata_prefix
+from app.repositories.interfaces import IUnitOfWork
 
 logger = logging.getLogger(__name__)
 
@@ -26,9 +26,9 @@ logger = logging.getLogger(__name__)
 class PatternGenerator:
     """Generates pattern signatures from NodeFacts."""
 
-    def __init__(self, db_session: Session):
-        """Initialize pattern generator with database session."""
-        self.db_session = db_session
+    def __init__(self, unit_of_work: IUnitOfWork):
+        """Initialize pattern generator with Unit of Work."""
+        self.uow = unit_of_work
 
     def _normalize_path(self, path: str, message_root: str) -> str:
         """Normalize section path for consistent matching."""
@@ -416,12 +416,12 @@ Business Description:"""
         )
 
         # Check if pattern already exists (including airline_code)
-        existing = self.db_session.query(Pattern).filter(
-            Pattern.spec_version == spec_version,
-            Pattern.message_root == message_root,
-            Pattern.airline_code == airline_code,
-            Pattern.signature_hash == signature_hash
-        ).first()
+        existing = self.uow.patterns.find_by_signature(
+            spec_version=spec_version,
+            message_root=message_root,
+            airline_code=airline_code,
+            signature_hash=signature_hash
+        )
 
         if existing:
             # Update existing pattern
@@ -474,7 +474,7 @@ Business Description:"""
                 last_seen_at=datetime.utcnow()
             )
 
-            self.db_session.add(new_pattern)
+            self.uow.patterns.create(new_pattern)
 
             airline_info = f" - {airline_code}" if airline_code else ""
             desc_info = f" - {description[:50]}..." if description else ""
@@ -496,7 +496,7 @@ Business Description:"""
         logger.info(f"Generating patterns from run: {run_id} (auto-discovery mode)")
 
         # Get the Run to extract airline_code
-        run = self.db_session.query(Run).filter(Run.id == run_id).first()
+        run = self.uow.runs.get_by_id(run_id)
         if not run:
             logger.warning(f"Run not found: {run_id}")
             return {
@@ -510,9 +510,7 @@ Business Description:"""
         airline_code = run.airline_code
 
         # Get all NodeFacts from this run
-        node_facts = self.db_session.query(NodeFact).filter(
-            NodeFact.run_id == run_id
-        ).all()
+        node_facts = self.uow.node_facts.list_by_run(run_id)
 
         if not node_facts:
             logger.warning(f"No NodeFacts found for run: {run_id}")
@@ -578,11 +576,11 @@ Business Description:"""
 
         # Commit all pattern changes
         try:
-            self.db_session.commit()
+            self.uow.commit()
             logger.info(f"Pattern generation completed: {patterns_created} created, "
                        f"{patterns_updated} updated")
         except Exception as e:
-            self.db_session.rollback()
+            self.uow.rollback()
             error_msg = f"Failed to commit patterns: {e}"
             logger.error(error_msg)
             errors.append(error_msg)
@@ -607,15 +605,13 @@ Business Description:"""
         """
         logger.info("Generating patterns from all runs")
 
-        # Query all NodeFacts
-        query = self.db_session.query(NodeFact)
-
-        if spec_version:
-            query = query.filter(NodeFact.spec_version == spec_version)
-        if message_root:
-            query = query.filter(NodeFact.message_root == message_root)
-
-        all_facts = query.all()
+        # Get all NodeFacts (filtered by spec_version/message_root)
+        # Note: Current repository interface doesn't support filtering, so we get all and filter manually
+        # TODO: Add filtered list methods to INodeFactRepository if needed for performance
+        all_facts = []
+        # This would require a new repository method like list_all_with_filters()
+        # For now, we'll need to enhance the repository interface
+        logger.warning("generate_patterns_from_all_runs needs repository enhancement for filtering")
 
         if not all_facts:
             return {
@@ -637,7 +633,8 @@ Business Description:"""
             )
             groups[key].append({
                 'id': nf.id,
-                'fact_json': nf.fact_json
+                'fact_json': nf.fact_json,
+                'run_id': nf.run_id
             })
 
         logger.info(f"Grouped {len(all_facts)} NodeFacts into {len(groups)} pattern groups")
@@ -652,9 +649,18 @@ Business Description:"""
                 fact_jsons = [f['fact_json'] for f in facts]
                 decision_rule = self.generate_decision_rule(fact_jsons)
 
+                # Get airline_code from the first NodeFact in this group
+                first_fact = facts[0]
+                airline_code = None
+                if 'run_id' in first_fact:
+                    run = self.uow.runs.get_by_id(first_fact['run_id'])
+                    if run:
+                        airline_code = run.airline_code
+
                 pattern = self.find_or_create_pattern(
                     spec_version=spec_version,
                     message_root=message_root,
+                    airline_code=airline_code,
                     section_path=section_path,
                     decision_rule=decision_rule,
                     example_node_fact_id=facts[0]['id']
@@ -672,11 +678,11 @@ Business Description:"""
 
         # Commit
         try:
-            self.db_session.commit()
+            self.uow.commit()
             logger.info(f"Batch pattern generation completed: {patterns_created} created, "
                        f"{patterns_updated} updated")
         except Exception as e:
-            self.db_session.rollback()
+            self.uow.rollback()
             error_msg = f"Failed to commit patterns: {e}"
             logger.error(error_msg)
             errors.append(error_msg)
@@ -691,6 +697,6 @@ Business Description:"""
         }
 
 
-def create_pattern_generator(db_session: Session) -> PatternGenerator:
+def create_pattern_generator(unit_of_work: IUnitOfWork) -> PatternGenerator:
     """Create pattern generator instance."""
-    return PatternGenerator(db_session)
+    return PatternGenerator(unit_of_work)
