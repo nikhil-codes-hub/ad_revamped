@@ -76,7 +76,7 @@ async def create_run(
                 workflow = create_discovery_workflow(uow)
                 results = workflow.run_discovery(temp_file_path)
             elif kind == "identify":
-                workflow = create_identify_workflow(db)  # TODO: Migrate identify_workflow to use UnitOfWork
+                workflow = create_identify_workflow(uow)
                 results = workflow.run_identify(
                     temp_file_path,
                     target_version=target_version,
