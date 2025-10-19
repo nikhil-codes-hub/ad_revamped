@@ -1615,14 +1615,16 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
 
         **Why do I see the same element name multiple times?**
         - The system learns different structural variations of the same element from multiple XMLs
-        - For example, `PaxList` with 2 adults vs `PaxList` with 1 adult + 1 child creates different patterns
-        - Each variation (different attributes, children, or relationships) gets its own Pattern ID
+        - Patterns are unique based on: element structure, child types, required attributes, and relationships
+        - For example, `PaxList` with optional contact info vs `PaxList` without any contact fields creates different patterns
+        - Number of child instances (e.g., 2 adults vs 3 adults) does NOT create different patterns - structure matters, not quantity
+        - Each structural variation gets its own Pattern ID
 
         **What should I do?**
         - **If the element is completely missing**: Check your source system to ensure complete data
-        - **If the element exists but shows as missing**: This variation wasn't matched - this is normal and indicates structural differences
-        - **Review Pattern ID column**: Multiple IDs for same node type = multiple known variations
-        - **Check Times Seen**: Higher numbers indicate more commonly seen variations
+        - **If the element exists but shows as missing**: This structural variation wasn't matched - review what attributes or child elements differ
+        - **Review Pattern ID column**: Multiple IDs for same node type = multiple known structural variations
+        - **Check Times Seen**: Higher numbers indicate more commonly seen variations in your training data
         """)
     elif quality_alerts:
         st.warning("⚠️ No missing patterns detected, but review the quality breaks listed above.")

@@ -6,19 +6,15 @@ Implements Phase 3: Pattern Identification.
 """
 
 import logging
-import uuid
 import json
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 from pathlib import Path
-from collections import defaultdict
 
-from app.core.config import settings
-from app.models.database import Run, RunKind, RunStatus, NodeFact, Pattern, PatternMatch
+from app.models.database import RunKind, RunStatus, NodeFact, Pattern, PatternMatch
 from app.services.xml_parser import detect_ndc_version_fast
 from app.services.discovery_workflow import create_discovery_workflow
 from app.services.pattern_generator import create_pattern_generator
-from app.services.llm_extractor import get_llm_extractor
 from app.services.utils import normalize_iata_prefix
 from app.repositories.interfaces import IUnitOfWork
 
@@ -231,8 +227,6 @@ class IdentifyWorkflow:
         Returns:
             List of matches with confidence scores
         """
-        from app.models.database import NodeRelationship
-
         # Query patterns for same version/message/airline (VERSION & AIRLINE FILTERED!)
         patterns = self.uow.patterns.list_by_version(
             spec_version=spec_version,

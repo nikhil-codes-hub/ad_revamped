@@ -6,18 +6,15 @@ Handles creation and monitoring of Discovery and Identify runs.
 
 import tempfile
 import os
-from pathlib import Path
 from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
+from fastapi import APIRouter, HTTPException, UploadFile, File, Query
 from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
 
-from app.models.schemas import RunCreate, RunResponse, RunStatus
+from app.models.schemas import RunResponse, RunStatus
 from app.services.workspace_db import get_workspace_db
 from app.services.discovery_workflow import create_discovery_workflow
 from app.services.identify_workflow import create_identify_workflow
-from app.models.database import Run, RunKind, RunStatus as DbRunStatus
-from app.repositories.interfaces import IUnitOfWork
+from app.models.database import Run
 from app.repositories.sqlalchemy.unit_of_work import SQLAlchemyUnitOfWork
 import logging
 

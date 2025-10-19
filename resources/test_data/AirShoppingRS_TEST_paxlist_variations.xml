@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<IATA_AirShoppingRS xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+    <!-- TEST CASE: Multiple PaxList variations to test pattern deduplication -->
+    <Response>
+        <DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+
+            <!-- VARIATION 1: PaxList with 2 Adults -->
+            <PaxList>
+                <Pax>
+                    <PaxID>PAX-001</PaxID>
+                    <PTC>ADT</PTC>
+                    <Individual>
+                        <GivenName>John</GivenName>
+                        <Surname>Smith</Surname>
+                    </Individual>
+                </Pax>
+                <Pax>
+                    <PaxID>PAX-002</PaxID>
+                    <PTC>ADT</PTC>
+                    <Individual>
+                        <GivenName>Jane</GivenName>
+                        <Surname>Smith</Surname>
+                    </Individual>
+                </Pax>
+            </PaxList>
+
+            <!-- VARIATION 2: PaxList with 1 Adult + 1 Child (different passenger types) -->
+            <PaxList>
+                <Pax>
+                    <PaxID>PAX-003</PaxID>
+                    <PTC>ADT</PTC>
+                    <Individual>
+                        <GivenName>Robert</GivenName>
+                        <Surname>Johnson</Surname>
+                    </Individual>
+                </Pax>
+                <Pax>
+                    <PaxID>PAX-004</PaxID>
+                    <PTC>CHD</PTC>
+                    <Individual>
+                        <GivenName>Emily</GivenName>
+                        <Surname>Johnson</Surname>
+                    </Individual>
+                    <Age>8</Age>
+                </Pax>
+            </PaxList>
+
+            <!-- VARIATION 3: PaxList with 3 passengers (1 Adult + 1 Child + 1 Infant) -->
+            <PaxList>
+                <Pax>
+                    <PaxID>PAX-005</PaxID>
+                    <PTC>ADT</PTC>
+                    <Individual>
+                        <GivenName>Michael</GivenName>
+                        <Surname>Brown</Surname>
+                    </Individual>
+                </Pax>
+                <Pax>
+                    <PaxID>PAX-006</PaxID>
+                    <PTC>CHD</PTC>
+                    <Individual>
+                        <GivenName>Sarah</GivenName>
+                        <Surname>Brown</Surname>
+                    </Individual>
+                    <Age>10</Age>
+                </Pax>
+                <Pax>
+                    <PaxID>PAX-007</PaxID>
+                    <PTC>INF</PTC>
+                    <Individual>
+                        <GivenName>Baby</GivenName>
+                        <Surname>Brown</Surname>
+                    </Individual>
+                    <Age>1</Age>
+                </Pax>
+            </PaxList>
+
+        </DataLists>
+    </Response>
+    <PayloadAttributes>
+        <CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">test-paxlist-dedup</CorrelationID>
+        <VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">21.3</VersionNumber>
+    </PayloadAttributes>
+</IATA_AirShoppingRS>
