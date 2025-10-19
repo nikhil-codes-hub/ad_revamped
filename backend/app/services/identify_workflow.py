@@ -13,15 +13,14 @@ from datetime import datetime
 from pathlib import Path
 from collections import defaultdict
 
-from sqlalchemy.orm import Session
-
 from app.core.config import settings
 from app.models.database import Run, RunKind, RunStatus, NodeFact, Pattern, PatternMatch
 from app.services.xml_parser import detect_ndc_version_fast
-from app.services.discovery_workflow import DiscoveryWorkflow
-from app.services.pattern_generator import PatternGenerator
+from app.services.discovery_workflow import create_discovery_workflow
+from app.services.pattern_generator import create_pattern_generator
 from app.services.llm_extractor import get_llm_extractor
 from app.services.utils import normalize_iata_prefix
+from app.repositories.interfaces import IUnitOfWork
 
 logger = logging.getLogger(__name__)
 
@@ -29,11 +28,11 @@ logger = logging.getLogger(__name__)
 class IdentifyWorkflow:
     """Orchestrates the identify process: extract NodeFacts and match against patterns."""
 
-    def __init__(self, db_session: Session):
+    def __init__(self, unit_of_work: IUnitOfWork):
         """Initialize identify workflow."""
-        self.db_session = db_session
-        self.discovery = DiscoveryWorkflow(db_session)
-        self.pattern_gen = PatternGenerator(db_session)
+        self.uow = unit_of_work
+        self.discovery = create_discovery_workflow(unit_of_work)
+        self.pattern_gen = create_pattern_generator(unit_of_work)
 
     @staticmethod
     def _normalize_node_type(node_type: Optional[str]) -> str:
@@ -235,16 +234,11 @@ class IdentifyWorkflow:
         from app.models.database import NodeRelationship
 
         # Query patterns for same version/message/airline (VERSION & AIRLINE FILTERED!)
-        query = self.db_session.query(Pattern).filter(
-            Pattern.spec_version == spec_version,
-            Pattern.message_root == message_root
+        patterns = self.uow.patterns.list_by_version(
+            spec_version=spec_version,
+            message_root=message_root,
+            airline_code=airline_code
         )
-
-        # Filter by airline_code if provided
-        if airline_code:
-            query = query.filter(Pattern.airline_code == airline_code)
-
-        patterns = query.all()
 
         airline_info = f"/{airline_code}" if airline_code else ""
         if not patterns:
@@ -252,10 +246,7 @@ class IdentifyWorkflow:
             return []
 
         # Check for broken relationships in the database for this NodeFact
-        broken_relationships = self.db_session.query(NodeRelationship).filter(
-            NodeRelationship.source_node_fact_id == node_fact.id,
-            NodeRelationship.is_valid == False
-        ).all()
+        broken_relationships = self.uow.node_relationships.list_broken_for_node(node_fact.id)
 
         broken_count = len(broken_relationships)
         if broken_count > 0:
@@ -404,7 +395,7 @@ class IdentifyWorkflow:
             match_metadata=match_metadata
         )
 
-        self.db_session.add(pattern_match)
+        self.uow.pattern_matches.create(pattern_match)
 
     def run_identify(self,
                      xml_file_path: str,
@@ -461,10 +452,10 @@ class IdentifyWorkflow:
         run_id = discovery_results['run_id']
 
         # Update run kind to IDENTIFY
-        run = self.db_session.query(Run).filter(Run.id == run_id).first()
+        run = self.uow.runs.get_by_id(run_id)
         if run:
             run.kind = RunKind.IDENTIFY
-            self.db_session.commit()
+            self.uow.commit()
 
         node_facts_extracted = discovery_results.get('node_facts_extracted', 0)
 
@@ -497,9 +488,7 @@ class IdentifyWorkflow:
         # PHASE 2: Match NodeFacts against patterns
         logger.info(f"Phase 2: Matching {node_facts_extracted} NodeFacts against patterns")
 
-        node_facts = self.db_session.query(NodeFact).filter(
-            NodeFact.run_id == run_id
-        ).all()
+        node_facts = self.uow.node_facts.list_by_run(run_id)
 
         match_results = []
         matched_count = 0
@@ -782,7 +771,7 @@ class IdentifyWorkflow:
                 })
 
         # Commit all pattern matches
-        self.db_session.commit()
+        self.uow.commit()
 
         # PHASE 3: Gap Analysis
         logger.info("Phase 3: Generating gap analysis")
@@ -795,14 +784,11 @@ class IdentifyWorkflow:
         logger.info("Phase 3.1: Identifying missing patterns from uploaded XML")
 
         # Get all expected patterns for this version/message/airline
-        expected_patterns_query = self.db_session.query(Pattern).filter(
-            Pattern.spec_version == match_version,
-            Pattern.message_root == match_message_root
+        all_expected_patterns = self.uow.patterns.list_by_version(
+            spec_version=match_version,
+            message_root=match_message_root,
+            airline_code=match_airline_code
         )
-        if match_airline_code:
-            expected_patterns_query = expected_patterns_query.filter(Pattern.airline_code == match_airline_code)
-
-        all_expected_patterns = expected_patterns_query.all()
 
         # Build set of node types that were matched (deduplicate by node type, not pattern ID)
         # This prevents showing "DatedMarketingSegmentList missing" when one version was matched
@@ -811,7 +797,7 @@ class IdentifyWorkflow:
             if match.get('best_match') and match['best_match'].get('pattern_id'):
                 pattern_id = match['best_match']['pattern_id']
                 # Get the pattern to extract node type
-                matched_pattern = self.db_session.query(Pattern).filter(Pattern.id == pattern_id).first()
+                matched_pattern = self.uow.patterns.get_by_id(pattern_id)
                 if matched_pattern and matched_pattern.decision_rule:
                     node_type = matched_pattern.decision_rule.get('node_type')
                     if node_type:
@@ -875,7 +861,7 @@ class IdentifyWorkflow:
             }
             run.status = RunStatus.COMPLETED
             run.finished_at = datetime.utcnow()
-            self.db_session.commit()
+            self.uow.commit()
 
         results = {
             'run_id': run_id,
@@ -903,6 +889,6 @@ class IdentifyWorkflow:
         return results
 
 
-def create_identify_workflow(db_session: Session) -> IdentifyWorkflow:
+def create_identify_workflow(unit_of_work: IUnitOfWork) -> IdentifyWorkflow:
     """Create identify workflow instance."""
-    return IdentifyWorkflow(db_session)
+    return IdentifyWorkflow(unit_of_work)
