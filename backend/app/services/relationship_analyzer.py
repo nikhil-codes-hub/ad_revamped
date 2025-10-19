@@ -6,7 +6,6 @@ Handles both BA-configured expected_references and auto-discovery.
 """
 
 from typing import List, Dict, Any, Optional, Tuple
-from sqlalchemy.orm import Session
 import structlog
 import json
 from openai import AzureOpenAI, OpenAI
@@ -14,6 +13,7 @@ import httpx
 
 from app.models.database import NodeFact, NodeRelationship, NodeConfiguration
 from app.core.config import settings
+from app.repositories.interfaces import IUnitOfWork
 
 logger = structlog.get_logger(__name__)
 
@@ -21,8 +21,8 @@ logger = structlog.get_logger(__name__)
 class RelationshipAnalyzer:
     """Analyzes relationships between extracted NodeFacts using LLM."""
 
-    def __init__(self, db: Session):
-        self.db = db
+    def __init__(self, unit_of_work: IUnitOfWork):
+        self.uow = unit_of_work
         self.llm_client = None
         self.model = settings.LLM_MODEL
         self._init_sync_client()
@@ -666,16 +666,19 @@ Example 2 - No Reference:
     def _save_relationships(self, relationships: List[Dict[str, Any]]):
         """Bulk insert relationships to database."""
         try:
-            # Use bulk_insert_mappings for performance
-            self.db.bulk_insert_mappings(NodeRelationship, relationships)
-            self.db.commit()
+            # Convert dicts to NodeRelationship entities for batch insert
+            relationship_entities = [
+                NodeRelationship(**rel_data) for rel_data in relationships
+            ]
+            self.uow.node_relationships.create_batch(relationship_entities)
+            self.uow.commit()
             logger.info(f"Saved {len(relationships)} relationships to database")
         except Exception as e:
-            self.db.rollback()
+            self.uow.rollback()
             logger.error("Failed to save relationships", error=str(e))
             raise
 
 
-def create_relationship_analyzer(db: Session) -> RelationshipAnalyzer:
+def create_relationship_analyzer(unit_of_work: IUnitOfWork) -> RelationshipAnalyzer:
     """Factory function to create RelationshipAnalyzer instance."""
-    return RelationshipAnalyzer(db)
+    return RelationshipAnalyzer(unit_of_work)
