@@ -551,7 +551,39 @@ class DiscoveryWorkflow:
                     if parallel_results['processing_errors']:
                         error_count = len(parallel_results['processing_errors'])
                         logger.warning(f"⚠️ {error_count} nodes had processing errors")
-                        # Continue processing despite individual node errors
+
+                        # Build error summary for user visibility
+                        error_summary_lines = []
+                        for err in parallel_results['processing_errors'][:10]:  # First 10 errors
+                            error_summary_lines.append(f"• {err['subtree_path']}: {err['error']}")
+
+                        if error_count > 10:
+                            error_summary_lines.append(f"• ... and {error_count - 10} more errors")
+
+                        error_summary = "\n".join(error_summary_lines)
+
+                        # Save errors to Run record so user can see them
+                        run = self.db_session.query(Run).filter(Run.id == run_id).first()
+                        if run:
+                            run.error_details = f"LLM extraction failed for {error_count} of {len(subtrees_to_process)} nodes:\n\n{error_summary}"
+
+                            # Also save detailed errors to metadata for debugging
+                            if run.metadata_json is None:
+                                run.metadata_json = {}
+                            run.metadata_json['processing_errors'] = parallel_results['processing_errors']
+                            run.metadata_json['error_count'] = error_count
+
+                            self.db_session.commit()
+                            logger.info(f"Saved {error_count} processing errors to Run record")
+
+                        # If ALL nodes failed, mark run as FAILED and stop
+                        if total_facts_extracted == 0:
+                            error_msg = (f"Discovery completely failed: No NodeFacts extracted. "
+                                        f"All {error_count} nodes had LLM extraction errors.\n\n"
+                                        f"First error: {parallel_results['processing_errors'][0]['error']}")
+                            logger.error(f"❌ {error_msg}")
+                            self._update_run_status(run_id, RunStatus.FAILED, error_msg)
+                            raise ValueError(error_msg)
 
                 finally:
                     # Cleanup thread-local sessions
@@ -614,6 +646,16 @@ class DiscoveryWorkflow:
                     'airline_name': version_info.airline_name if version_info else None
                 }
             })
+
+            # Add processing error info to workflow results for API response
+            if use_parallel and parallel_results.get('processing_errors'):
+                workflow_results['processing_errors_count'] = len(parallel_results['processing_errors'])
+                if total_facts_extracted > 0:
+                    # Partial success - add warning
+                    workflow_results['warning'] = (
+                        f"⚠️ {len(parallel_results['processing_errors'])} nodes had processing errors. "
+                        f"See error details for more information."
+                    )
 
             # DON'T update run status to completed yet - relationship analysis and pattern generation still pending
 

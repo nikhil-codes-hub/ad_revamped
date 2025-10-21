@@ -436,11 +436,6 @@ Business Description:"""
             })
             existing.examples = examples[-5:]  # Keep last 5 examples
 
-            # Generate description if missing (for patterns created before this feature)
-            if not existing.description:
-                logger.info(f"Generating missing description for pattern {existing.id}")
-                existing.description = self._generate_pattern_description(decision_rule, section_path)
-
             logger.info(f"Updated existing pattern {existing.id}: {signature_hash} "
                        f"(times_seen: {existing.times_seen})")
 
