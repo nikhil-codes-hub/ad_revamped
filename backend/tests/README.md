@@ -34,8 +34,8 @@ tests/
 │   └── test_utils.py                    # Utility functions
 └── integration/                         # Integration tests
     ├── test_api_patterns.py             # Pattern API endpoints
-    ├── test_api_discovery.py            # Discovery API endpoints
-    └── test_api_identify.py             # Identify API endpoints
+    ├── test_api_pattern_extractor.py    # Pattern Extractor API (backend: discovery)
+    └── test_api_discovery.py            # Discovery API (backend: identify)
 ```
 
 ## Running Tests
@@ -150,20 +150,20 @@ pytest -m critical
 - ✅ Pattern examples retrieval
 - ✅ Pattern statistics
 
-#### test_api_discovery.py
-- ✅ List discovery runs (empty, with filters, pagination)
+#### test_api_pattern_extractor.py
+- ✅ List pattern extraction runs (empty, with filters, pagination)
 - ✅ Get run by ID
 - ✅ Run not found handling
-- ✅ Upload XML for discovery
+- ✅ Upload XML for pattern extraction
 - ✅ Invalid file type rejection
 - ✅ Get node facts for run
 - ✅ Delete run
 - ✅ Run status tracking
 - ✅ Version detection endpoint
 
-#### test_api_identify.py
-- ✅ Identify XML with existing patterns
-- ✅ Identify XML with no patterns
+#### test_api_discovery.py
+- ✅ Discover patterns in XML with existing pattern library
+- ✅ Discover with no patterns in library
 - ✅ Invalid XML handling
 - ✅ Version mismatch detection
 - ✅ Quality alert generation

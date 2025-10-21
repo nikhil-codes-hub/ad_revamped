@@ -1,22 +1,21 @@
 """
 Integration tests for Discovery API endpoints.
 
-NOTE: Backend uses "discovery" for the service that extracts patterns from XML.
-UI terminology: This is called "Pattern Extractor" in the user interface.
+NOTE: Backend uses "identify" for the service that validates XML against patterns.
+UI terminology: This is called "Discovery" in the user interface.
 
-Tests the full discovery workflow including:
-- POST /api/v1/discovery/upload (upload XML for discovery)
-- GET /api/v1/discovery/runs (list discovery runs)
-- GET /api/v1/discovery/runs/{id} (get run details)
-- GET /api/v1/discovery/runs/{id}/node-facts (get node facts for run)
+Tests the discovery/validation workflow including:
+- POST /api/v1/identify/upload (upload XML for discovery)
+- Pattern matching against library
+- Missing pattern detection
+- Quality alert generation
 """
 import pytest
-import tempfile
 from pathlib import Path
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from app.main import app
-from app.models.database import Run
+from app.models.database import Pattern
 
 
 @pytest.fixture
@@ -26,133 +25,210 @@ def client():
 
 
 class TestDiscoveryAPI:
-    """Test suite for Discovery API endpoints."""
+    """Test suite for Discovery API endpoints (backend: Identify API)."""
 
-    def test_list_runs_empty(self, client, db_session: Session):
-        """Test listing runs when database is empty."""
-        response = client.get("/api/v1/runs/")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert isinstance(data, list)
-
-    def test_list_runs_with_filters(self, client, db_session: Session, sample_run: Run):
-        """Test listing runs with query filters."""
-        response = client.get(
-            "/api/v1/runs/",
-            params={
-                "spec_version": sample_run.spec_version,
-                "workspace": "default"
-            }
-        )
-
-        assert response.status_code == 200
-        data = response.json()
-        assert len(data) > 0
-
-    def test_get_run_by_id(self, client, db_session: Session, sample_run: Run):
-        """Test getting a specific run by ID."""
-        response = client.get(f"/api/v1/runs/{sample_run.id}")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["id"] == sample_run.id
-        assert data["spec_version"] == sample_run.spec_version
-
-    def test_get_run_not_found(self, client):
-        """Test getting non-existent run."""
-        response = client.get("/api/v1/runs/non-existent-id")
-
-        assert response.status_code == 404
-
-    def test_upload_xml_for_discovery(self, client, sample_xml_file: Path):
-        """Test uploading XML file for discovery."""
+    def test_identify_xml_with_patterns(self, client, db_session: Session, sample_pattern: Pattern, sample_xml_file: Path):
+        """Test identifying XML against existing patterns."""
         with open(sample_xml_file, 'rb') as f:
             response = client.post(
-                "/api/v1/discovery/upload",
+                "/api/v1/identify/upload",
                 files={"file": ("test.xml", f, "application/xml")},
                 data={"workspace": "default"}
             )
 
-        # Should return 200 or 202 (accepted)
-        assert response.status_code in [200, 202]
-        if response.status_code == 200:
-            data = response.json()
-            assert "run_id" in data or "id" in data
+        # Should return 200 with identification results
+        assert response.status_code == 200
+        data = response.json()
 
-    def test_upload_invalid_file_type(self, client):
-        """Test uploading non-XML file."""
-        content = b"This is not XML"
+        # Check for expected response structure
+        assert "matched_patterns" in data or "matches" in data
+        assert "missing_patterns" in data or "missing" in data
+
+    def test_identify_xml_no_patterns(self, client, sample_xml_file: Path):
+        """Test identifying XML when no patterns exist."""
+        with open(sample_xml_file, 'rb') as f:
+            response = client.post(
+                "/api/v1/identify/upload",
+                files={"file": ("test.xml", f, "application/xml")},
+                data={"workspace": "default"}
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+
+        # Should indicate no patterns found
+        matched = data.get("matched_patterns", data.get("matches", []))
+        assert len(matched) == 0
+
+    def test_identify_invalid_xml(self, client):
+        """Test identifying invalid XML."""
+        invalid_xml = b"<invalid>This is not valid XML"
+
         response = client.post(
-            "/api/v1/discovery/upload",
-            files={"file": ("test.txt", content, "text/plain")},
+            "/api/v1/identify/upload",
+            files={"file": ("invalid.xml", invalid_xml, "application/xml")},
             data={"workspace": "default"}
         )
 
-        # Should reject non-XML files
-        assert response.status_code in [400, 422]
+        # Should return error
+        assert response.status_code in [400, 422, 500]
 
-    def test_get_node_facts_for_run(self, client, db_session: Session, sample_run: Run, sample_node_fact):
-        """Test retrieving node facts for a specific run."""
-        response = client.get(f"/api/v1/runs/{sample_run.id}/node-facts")
+    def test_identify_with_version_mismatch(self, client, db_session: Session, sample_pattern: Pattern):
+        """Test identifying XML with different version than patterns."""
+        # Create XML with different version
+        xml_content = b"""<?xml version="1.0" encoding="UTF-8"?>
+<IATA_OrderViewRS xmlns="http://www.iata.org/IATA/2015/00/2018.1/IATA_OrderViewRS">
+    <Response>
+        <DataLists>
+            <PaxList>
+                <Pax>
+                    <PaxID>PAX1</PaxID>
+                </Pax>
+            </PaxList>
+        </DataLists>
+    </Response>
+</IATA_OrderViewRS>"""
 
-        assert response.status_code == 200
-        data = response.json()
-        assert isinstance(data, list)
-        assert len(data) > 0
-
-    def test_delete_run(self, client, db_session: Session, sample_run: Run):
-        """Test deleting a discovery run."""
-        run_id = sample_run.id
-
-        response = client.delete(f"/api/v1/runs/{run_id}")
-
-        assert response.status_code == 200
-
-        # Verify run is deleted
-        response = client.get(f"/api/v1/runs/{run_id}")
-        assert response.status_code == 404
-
-    def test_run_status_updates(self, client, db_session: Session, sample_run: Run):
-        """Test that run status is properly tracked."""
-        response = client.get(f"/api/v1/runs/{sample_run.id}")
+        response = client.post(
+            "/api/v1/identify/upload",
+            files={"file": ("test.xml", xml_content, "application/xml")},
+            data={"workspace": "default"}
+        )
 
         assert response.status_code == 200
         data = response.json()
-        assert "status" in data
-        assert data["status"] in ["pending", "processing", "completed", "failed"]
 
-    def test_list_runs_pagination(self, client, db_session: Session):
-        """Test pagination for run listing."""
-        # Create multiple runs
-        for i in range(10):
-            run = Run(
-                id=f"test-run-{i:03d}",
-                spec_version="21.3",
-                message_root="OrderViewRS",
-                filename=f"test_{i}.xml",
-                workspace="default",
-                status="completed"
-            )
-            db_session.add(run)
-        db_session.commit()
+        # May have version mismatch warnings
+        if "warnings" in data:
+            assert any("version" in w.lower() for w in data["warnings"])
 
-        # Test with limit
-        response = client.get("/api/v1/runs/?limit=5")
+    def test_identify_quality_alerts(self, client, db_session: Session, sample_pattern: Pattern):
+        """Test that quality alerts are generated."""
+        # Create XML with quality issues (orphaned references)
+        xml_content = b"""<?xml version="1.0" encoding="UTF-8"?>
+<IATA_OrderViewRS xmlns="http://www.iata.org/IATA/2015/00/2019.2/IATA_OrderViewRS">
+    <Response>
+        <DataLists>
+            <PaxList>
+                <Pax>
+                    <PaxID>PAX1</PaxID>
+                    <PaxJourneyRefID>NONEXISTENT</PaxJourneyRefID>
+                </Pax>
+            </PaxList>
+        </DataLists>
+    </Response>
+</IATA_OrderViewRS>"""
 
-        assert response.status_code == 200
-        data = response.json()
-        assert len(data) <= 5
-
-    def test_detect_version_endpoint(self, client, sample_xml_file: Path):
-        """Test version detection endpoint."""
-        with open(sample_xml_file, 'rb') as f:
-            response = client.post(
-                "/api/v1/discovery/detect-version",
-                files={"file": ("test.xml", f, "application/xml")}
-            )
+        response = client.post(
+            "/api/v1/identify/upload",
+            files={"file": ("test.xml", xml_content, "application/xml")},
+            data={"workspace": "default"}
+        )
 
         if response.status_code == 200:
             data = response.json()
-            assert "spec_version" in data or "version" in data
-            assert "message_root" in data or "message_type" in data
+            # May have quality alerts
+            if "quality_alerts" in data:
+                assert isinstance(data["quality_alerts"], list)
+
+    def test_identify_missing_patterns(self, client, db_session: Session, sample_pattern: Pattern):
+        """Test detection of missing patterns."""
+        # Create XML that doesn't match any patterns
+        xml_content = b"""<?xml version="1.0" encoding="UTF-8"?>
+<IATA_OrderViewRS xmlns="http://www.iata.org/IATA/2015/00/2019.2/IATA_OrderViewRS">
+    <Response>
+        <DataLists>
+            <BaggageList>
+                <Baggage>
+                    <BaggageID>BAG1</BaggageID>
+                </Baggage>
+            </BaggageList>
+        </DataLists>
+    </Response>
+</IATA_OrderViewRS>"""
+
+        response = client.post(
+            "/api/v1/identify/upload",
+            files={"file": ("test.xml", xml_content, "application/xml")},
+            data={"workspace": "default"}
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+
+        # Should report missing patterns
+        missing = data.get("missing_patterns", data.get("missing", []))
+        assert isinstance(missing, list)
+
+    def test_identify_response_structure(self, client, sample_xml_file: Path):
+        """Test that identify response has correct structure."""
+        with open(sample_xml_file, 'rb') as f:
+            response = client.post(
+                "/api/v1/identify/upload",
+                files={"file": ("test.xml", f, "application/xml")},
+                data={"workspace": "default"}
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+
+        # Verify response structure
+        assert isinstance(data, dict)
+        # Should have at least matched or missing patterns
+        has_matches = "matched_patterns" in data or "matches" in data
+        has_missing = "missing_patterns" in data or "missing" in data
+        assert has_matches or has_missing
+
+    def test_identify_with_airline_filter(self, client, db_session: Session, sample_xml_file: Path):
+        """Test identifying with airline-specific patterns."""
+        with open(sample_xml_file, 'rb') as f:
+            response = client.post(
+                "/api/v1/identify/upload",
+                files={"file": ("test.xml", f, "application/xml")},
+                data={
+                    "workspace": "default",
+                    "airline_code": "AA"
+                }
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, dict)
+
+    def test_identify_performance_large_xml(self, client, db_session: Session):
+        """Test identify performance with larger XML."""
+        # Create larger XML with multiple elements
+        xml_content = b"""<?xml version="1.0" encoding="UTF-8"?>
+<IATA_OrderViewRS xmlns="http://www.iata.org/IATA/2015/00/2019.2/IATA_OrderViewRS">
+    <Response>
+        <DataLists>
+            <PaxList>"""
+
+        # Add 100 passengers
+        for i in range(100):
+            xml_content += f"""
+                <Pax>
+                    <PaxID>PAX{i}</PaxID>
+                    <PTC>ADT</PTC>
+                </Pax>""".encode()
+
+        xml_content += b"""
+            </PaxList>
+        </DataLists>
+    </Response>
+</IATA_OrderViewRS>"""
+
+        import time
+        start_time = time.time()
+
+        response = client.post(
+            "/api/v1/identify/upload",
+            files={"file": ("large.xml", xml_content, "application/xml")},
+            data={"workspace": "default"}
+        )
+
+        duration = time.time() - start_time
+
+        assert response.status_code == 200
+        # Should complete within reasonable time (30 seconds)
+        assert duration < 30.0
