@@ -59,7 +59,7 @@ The UI will be available at http://localhost:8501
 ## 📊 API Endpoints
 
 ### Runs Management
-- `POST /api/v1/runs/?kind={discovery|identify}` - Create new run
+- `POST /api/v1/runs/?kind={pattern_extractor|discovery}` - Create new run
 - `GET /api/v1/runs/{run_id}` - Get run status
 - `GET /api/v1/runs/{run_id}/report` - Get run report
 - `GET /api/v1/runs/` - List recent runs
@@ -120,20 +120,20 @@ ad/
 
 ## 🔄 Processing Flows
 
-### Discovery Flow
-1. Upload NDC XML file
+### Pattern Extractor Flow
+1. Upload NDC XML file from existing airline
 2. Stream parse with memory-bounded processing
 3. Extract NodeFacts with PII masking
 4. Generate patterns via LLM micro-batching
 5. Deduplicate patterns by signature hash
 6. Store results and generate report
 
-### Identify Flow
-1. Upload NDC XML file
+### Discovery Flow
+1. Upload NDC XML file from new airline
 2. Extract NodeFacts from target sections
 3. Retrieve Top-K candidate patterns
 4. Apply hard constraint validation
-5. LLM classify with confidence scoring
+5. Calculate confidence scores with pattern matching
 6. Generate gap analysis report
 
 ## 📊 Database Schema

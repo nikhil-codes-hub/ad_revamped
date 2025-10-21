@@ -1,8 +1,25 @@
 # AssistedDiscovery Project - Claude Memory
 
-**Last Updated**: 2025-10-17
+**Last Updated**: 2025-10-21
 **Project**: AssistedDiscovery - NDC XML Pattern Discovery & Validation System
 **Stack**: Python FastAPI (backend) + Streamlit (frontend)
+
+---
+
+## ⚠️ IMPORTANT: UI Terminology Update (2025-10-21)
+
+**UI pages were renamed for clarity**:
+- **"Discovery" → "Pattern Extractor"** (🔬 page for extracting patterns from existing airline XML)
+- **"Identify" → "Discovery"** (🎯 page for validating new airline XML against patterns)
+
+**Backend services remain unchanged**:
+- Code still uses `DiscoveryWorkflow` and `IdentifyWorkflow` service classes
+- API endpoints still use `/api/v1/discovery/` and `/api/v1/identify/`
+- Internal `kind` field still uses `discovery` and `identify` values
+
+**This is UI-only renaming** to make the user experience clearer:
+- "Pattern Extractor" = build pattern library from known airlines
+- "Discovery" = discover differences in new airlines vs known patterns
 
 ---
 
@@ -43,10 +60,12 @@
 
 AssistedDiscovery is an AI-powered system for discovering patterns in NDC (New Distribution Capability) XML messages and validating new XML files against learned patterns.
 
-### Core Purpose
-- **Discovery Mode**: Upload XML → Extract patterns → Store in pattern library
-- **Identify Mode**: Upload XML → Match against patterns → Generate quality alerts
-- **Pattern Management**: View, edit, and manage discovered patterns
+### Core Purpose (UI Terminology)
+- **Pattern Extractor Mode** (UI: 🔬 Pattern Extractor): Upload XML → Extract patterns → Store in pattern library
+- **Discovery Mode** (UI: 🎯 Discovery): Upload XML → Match against patterns → Generate quality alerts
+- **Pattern Management** (UI: 🎨 Pattern Manager): View, edit, and manage discovered patterns
+
+**Note**: Backend code still refers to these as "discovery" and "identify" workflows internally.
 
 ### Architecture
 ```
