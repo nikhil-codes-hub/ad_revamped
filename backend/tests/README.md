@@ -2,6 +2,18 @@
 
 Comprehensive test suite for the AssistedDiscovery backend application.
 
+## ⚠️ Important: Backend vs UI Terminology
+
+**Backend naming** (used in tests, code, and APIs):
+- `DiscoveryWorkflow` / `/api/v1/discovery/` = Extract patterns from XML
+- `IdentifyWorkflow` / `/api/v1/identify/` = Validate XML against patterns
+
+**UI naming** (user-facing):
+- "Pattern Extractor" (🔬) = Same as backend "discovery"
+- "Discovery" (🎯) = Same as backend "identify"
+
+Tests use backend terminology since they test backend services and APIs.
+
 ## Overview
 
 This test suite covers:

@@ -1,6 +1,9 @@
 """
 Integration tests for Discovery API endpoints.
 
+NOTE: Backend uses "discovery" for the service that extracts patterns from XML.
+UI terminology: This is called "Pattern Extractor" in the user interface.
+
 Tests the full discovery workflow including:
 - POST /api/v1/discovery/upload (upload XML for discovery)
 - GET /api/v1/discovery/runs (list discovery runs)

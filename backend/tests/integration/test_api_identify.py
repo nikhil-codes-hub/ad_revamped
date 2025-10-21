@@ -1,6 +1,9 @@
 """
 Integration tests for Identify API endpoints.
 
+NOTE: Backend uses "identify" for the service that validates XML against patterns.
+UI terminology: This is called "Discovery" in the user interface.
+
 Tests the identification/validation workflow including:
 - POST /api/v1/identify/upload (upload XML for identification)
 - Pattern matching against library
