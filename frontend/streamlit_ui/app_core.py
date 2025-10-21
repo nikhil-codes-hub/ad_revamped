@@ -743,19 +743,19 @@ def copy_configurations_to_versions(
 
 # ========== PAGE FUNCTIONS ==========
 
-def show_discovery_page():
-    """Discovery page - run discovery and view results."""
-    st.header("🔬 Discovery Mode")
+def show_pattern_extractor_page():
+    """Pattern Extractor page - run pattern extraction and view results."""
+    st.header("🔬 Extract Patterns")
     st.write("Upload XML files to learn and extract patterns")
 
     current_workspace = st.session_state.get('current_workspace', 'default')
 
     # Initialize session state
-    if 'discovery_selected_run' not in st.session_state:
-        st.session_state.discovery_selected_run = None
+    if 'pattern_extractor_selected_run' not in st.session_state:
+        st.session_state.pattern_extractor_selected_run = None
 
     # Upload section
-    st.subheader("📤 Upload XML for Discovery")
+    st.subheader("📤 Upload XML to extract Patterns")
     uploaded_file = st.file_uploader("Choose an NDC XML file", type=['xml'], key="discovery_upload")
 
     if uploaded_file:
@@ -965,23 +965,23 @@ def show_discovery_page():
                         if result.get('warning'):
                             st.warning(f"⚠️ {result['warning']}")
 
-                        st.session_state.discovery_selected_run = result['id']
+                        st.session_state.pattern_extractor_selected_run = result['id']
                         st.rerun()
 
     st.divider()
 
     # Show results from current session
-    if st.session_state.discovery_selected_run:
-        run_id = st.session_state.discovery_selected_run
-        st.success(f"📊 Discovery Results (Run: {run_id[:12]}...)")
-        show_discovery_run_details(run_id, current_workspace)
+    if st.session_state.pattern_extractor_selected_run:
+        run_id = st.session_state.pattern_extractor_selected_run
+        st.success(f"📊 Pattern Extraction Results (Run: {run_id[:12]}...)")
+        show_pattern_extractor_run_details(run_id, current_workspace)
     else:
         st.info("👆 Upload an XML file above to see discovery results")
 
 
 
-def show_discovery_run_details(run_id: str, workspace: str = "default"):
-    """Show detailed view of a discovery run."""
+def show_pattern_extractor_run_details(run_id: str, workspace: str = "default"):
+    """Show detailed view of a pattern extraction run."""
     run_details = get_run_status(run_id, workspace)
 
     if not run_details:
@@ -1198,20 +1198,20 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
             st.info("No NodeFacts found for this run")
 
 
-def show_identify_page(current_workspace: Optional[str] = None):
-    """Identify page - match patterns and view results."""
+def show_discovery_page(current_workspace: Optional[str] = None):
+    """Discovery page - match patterns and view results."""
     if current_workspace is None:
         current_workspace = st.session_state.get('current_workspace', 'default')
-    st.header("🎯 Identify Mode")
+    st.header("🎯 Discovery Mode")
     st.write("Upload XML files to match against learned patterns")
 
     # Initialize session state to track current session's run only
-    if 'identify_current_run' not in st.session_state:
-        st.session_state.identify_current_run = None
+    if 'discovery_current_run' not in st.session_state:
+        st.session_state.discovery_current_run = None
 
     # Upload section
-    with st.expander("📤 Upload XML for Identification", expanded=True):
-        uploaded_file = st.file_uploader("Choose an NDC XML file", type=['xml'], key="identify_upload")
+    with st.expander("📤 Upload XML for Discovery", expanded=True):
+        uploaded_file = st.file_uploader("Choose an NDC XML file", type=['xml'], key="discovery_upload")
 
         if uploaded_file:
             # Get available patterns to populate filters
@@ -1229,20 +1229,20 @@ def show_identify_page(current_workspace: Optional[str] = None):
                 target_version = st.selectbox(
                     "🏷️ NDC Version:",
                     options=["Auto-detect (from XML)"] + available_versions,
-                    key="identify_target_version"
+                    key="discovery_target_version"
                 )
                 target_msg_root = st.selectbox(
                     "📋 Message Root:",
                     options=["Auto-detect (from XML)"] + available_msg_roots,
-                    key="identify_target_msg_root"
+                    key="discovery_target_msg_root"
                 )
                 target_airline = st.selectbox(
                     "✈️ Airline:",
                     options=["Auto-detect (from XML)"] + available_airlines,
-                    key="identify_target_airline"
+                    key="discovery_target_airline"
                 )
 
-            if st.button("Start Identify", type="primary", key="start_identify"):
+            if st.button("Start Discovery", type="primary", key="start_discovery"):
                     import time
                     progress_bar = st.progress(0)
                     status_text = st.empty()
@@ -1290,27 +1290,27 @@ def show_identify_page(current_workspace: Optional[str] = None):
                         progress_bar.progress(95)
                         time.sleep(0.2)
 
-                        status_text.text("✅ Identify completed!")
+                        status_text.text("✅ Discovery completed!")
                         progress_bar.progress(100)
 
-                        st.success(f"✅ Identify completed! Run ID: {result['id']}")
+                        st.success(f"✅ Discovery completed! Run ID: {result['id']}")
                         # Store the current run ID in session
-                        st.session_state.identify_current_run = result['id']
+                        st.session_state.discovery_current_run = result['id']
                         st.rerun()
 
     st.divider()
 
     # Only show results from the current session
-    if st.session_state.identify_current_run:
-        run_id = st.session_state.identify_current_run
+    if st.session_state.discovery_current_run:
+        run_id = st.session_state.discovery_current_run
         st.success("📊 Pattern Matching Results")
-        show_identify_run_details(run_id, current_workspace)
+        show_discovery_run_details(run_id, current_workspace)
     else:
         st.info("👆 Upload an XML file above to see pattern matching results")
 
 
-def show_identify_run_details(run_id: str, workspace: str = "default"):
-    """Show detailed view of an identify run with pattern matches."""
+def show_discovery_run_details(run_id: str, workspace: str = "default"):
+    """Show detailed view of a discovery run with pattern matches."""
     run_details = get_run_status(run_id, workspace)
 
     if not run_details:
@@ -2308,7 +2308,7 @@ def _render_verify_tab(patterns, workspace=None):
 
             st.caption("Legend: ✅ Valid relationship | ❌ Broken relationship (target not found)")
         else:
-            st.info(f"No relationships discovered for **{node_type}** yet. Relationships are discovered during the Discovery or Identify workflows.")
+            st.info(f"No relationships discovered for **{node_type}** yet. Relationships are discovered during the Pattern Extractor or Discovery workflows.")
 
         # Advanced details in expander (for technical users)
         st.divider()
@@ -2591,7 +2591,7 @@ def show_config_page():
                     st.session_state.current_workspace = candidate
                     st.session_state.pop("config_new_workspace", None)
                     st.success(f"✅ Workspace **'{candidate}'** has been created and is now active!")
-                    st.info(f"💡 The workspace is ready to use. You can now run Discovery or Identify operations in this workspace.")
+                    st.info(f"💡 The workspace is ready to use. You can now run Pattern Extractor or Discovery operations in this workspace.")
                     time.sleep(1.5)  # Brief pause to show the success message
                     st.experimental_rerun()
 
@@ -3348,8 +3348,8 @@ def render_sidebar() -> str:
             'node_checked_paths_raw',
             'node_checked_paths_effective',
             'node_configs',
-            'discovery_selected_run',
-            'identify_current_run'
+            'pattern_extractor_selected_run',
+            'discovery_current_run'
         ]
 
         for key in workspace_specific_keys:

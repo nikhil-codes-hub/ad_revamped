@@ -4,13 +4,13 @@ from app_core import (
     render_sidebar,
     render_sidebar_footer,
     check_api_health,
-    show_discovery_page,
+    show_pattern_extractor_page,
 )
 
 
 def main() -> None:
     st.set_page_config(
-        page_title="🔬 Discovery",
+        page_title="🔬 Pattern Extractor",
         page_icon="🔬",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -21,7 +21,7 @@ def main() -> None:
         st.stop()
 
     render_sidebar()
-    show_discovery_page()
+    show_pattern_extractor_page()
     render_sidebar_footer()
 
 
