@@ -93,16 +93,30 @@ class PatternLLMVerifier:
 {test_xml}
 ```
 
+**CRITICAL TERMINOLOGY CLARIFICATION:**
+⚠️ In this pattern definition, "Required Attributes" actually means "Required Child Elements"
+- When the pattern says "Required Attributes: PaxID, PTC", it means the XML must have child elements <PaxID> and <PTC>
+- These are NOT XML attributes (like @PaxID="value" in the opening tag)
+- These ARE child elements (like <PaxID>value</PaxID> inside the element)
+- This is a naming convention used internally - treat all "required attributes" as child elements
+
 **CRITICAL VALIDATION RULES:**
-1. **ALL** requirements must be satisfied for a match
-2. If ANY required attribute is missing → is_match = false
-3. If ANY required child type is missing → is_match = false
-4. If node type doesn't match → is_match = false
-5. Check EVERY requirement individually and report each finding
-6. **IMPORTANT:** Use ONLY the EXACT attribute names listed in the pattern definition above
-   - DO NOT invent, guess, or suggest alternative attribute names
+1. **ONLY** check requirements EXPLICITLY stated in the pattern definition above
+2. DO NOT infer or assume additional requirements beyond what is explicitly listed
+3. If a child element is listed as required (e.g., <Desc>), just verify that element EXISTS
+4. DO NOT validate the internal structure of child elements UNLESS the pattern explicitly specifies what should be inside them
+5. If ANY explicitly required element is missing → is_match = false
+6. If node type doesn't match → is_match = false
+7. Check EVERY EXPLICITLY STATED requirement and report findings
+8. **IMPORTANT:** Use ONLY the EXACT element names listed in the pattern definition above
+   - DO NOT invent, guess, or suggest alternative element names
    - DO NOT use semantic equivalents (e.g., if pattern says "id", don't say "PaxSegmentID")
-   - Report missing attributes using the EXACT names from the pattern definition
+   - Report missing elements using the EXACT names from the pattern definition
+
+**Example:** If pattern says "Each Disclosure must have: <Desc>, <DisclosureID>", then:
+- ✓ Check that Disclosure has <Desc> element (exists)
+- ✓ Check that Disclosure has <DisclosureID> element (exists)
+- ✗ DO NOT check what's inside <Desc> unless pattern explicitly defines it
 
 **TASK:**
 Perform STRICT validation and return a JSON object with:
@@ -113,17 +127,17 @@ Perform STRICT validation and return a JSON object with:
   "summary": "Brief summary of verification (1-2 sentences)",
   "findings": [
     {{"aspect": "node_type", "expected": "...", "found": "...", "match": true/false}},
-    {{"aspect": "required_attributes", "expected": "list of required attrs", "found": "list of found attrs", "match": true/false}},
+    {{"aspect": "required_child_elements", "expected": "list of required child elements", "found": "list of found child elements", "match": true/false}},
     {{"aspect": "required_children", "expected": "list of required child types", "found": "list of found child types", "match": true/false}},
     {{"aspect": "child_count", "expected": "min/max if specified", "found": "actual count", "match": true/false}}
   ],
-  "issues": ["List EVERY specific issue found using EXACT attribute/element names from pattern definition"],
+  "issues": ["List EVERY specific issue found using EXACT element names from pattern definition"],
   "recommendations": ["Specific suggestions to fix the XML to match the pattern"]
 }}
 
 **VALIDATION CHECKLIST:**
 ✓ Node type matches exactly
-✓ EVERY required attribute is present
+✓ EVERY required child element is present (remember: pattern "attributes" = XML child elements)
 ✓ EVERY required child type is present
 ✓ Child count meets min/max requirements (if specified)
 ✓ All data types and formats are correct
@@ -131,6 +145,7 @@ Perform STRICT validation and return a JSON object with:
 Return ONLY valid JSON, no additional text.
 
 **REMEMBER:** Be STRICT. Even one missing required element means is_match = false.
+**REMEMBER:** "Required Attributes" in the pattern = "Required Child Elements" in the XML!
 """
 
 

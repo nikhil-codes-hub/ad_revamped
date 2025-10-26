@@ -1011,15 +1011,7 @@ def show_pattern_extractor_run_details(run_id: str, workspace: str = "default"):
     patterns = get_patterns(limit=200, run_id=run_id, workspace=workspace)
 
     if patterns:
-        col1, col2 = st.columns([3, 1])
-
-        with col1:
-            st.success(f"✅ {len(patterns)} pattern(s) extracted and saved from this discovery run")
-
-        with col2:
-            if st.button("View in Pattern Explorer", type="secondary"):
-                st.session_state.page = "📚 Pattern Explorer"
-                st.rerun()
+        st.success(f"✅ {len(patterns)} pattern(s) extracted and saved from this discovery run")
 
         # Quick preview of patterns
         pattern_preview = []
@@ -1202,7 +1194,7 @@ def show_discovery_page(current_workspace: Optional[str] = None):
     """Discovery page - match patterns and view results."""
     if current_workspace is None:
         current_workspace = st.session_state.get('current_workspace', 'default')
-    st.header("🎯 Discovery Mode")
+    st.header("🎯 Discovery")
     st.write("Upload XML files to match against learned patterns")
 
     # Initialize session state to track current session's run only
@@ -2373,14 +2365,15 @@ def _render_verify_tab(patterns, workspace=None):
                     # Node type
                     pattern_prompt += f"1. **Node Type:** Must be exactly '{decision_rule.get('node_type', 'Unknown')}'\n"
 
-                    # Attributes
+                    # Child Elements (stored as 'must_have_attributes' but are actually child elements)
                     must_have_attrs = decision_rule.get('must_have_attributes', [])
                     if must_have_attrs:
-                        pattern_prompt += f"\n2. **Required Attributes (ALL must be present):**\n"
+                        pattern_prompt += f"\n2. **Required Child Elements (ALL must be present as child tags):**\n"
+                        pattern_prompt += f"   Note: These must appear as <ElementName>value</ElementName>, NOT as attributes\n"
                         for attr in must_have_attrs:
-                            pattern_prompt += f"   - {attr} (REQUIRED)\n"
+                            pattern_prompt += f"   - <{attr}> (REQUIRED as child element)\n"
                     else:
-                        pattern_prompt += f"\n2. **Required Attributes:** None specified\n"
+                        pattern_prompt += f"\n2. **Required Child Elements:** None specified\n"
 
                     # Children
                     child_structure = decision_rule.get('child_structure', {})
@@ -2401,12 +2394,12 @@ def _render_verify_tab(patterns, workspace=None):
                                 child_node_type = child_struct.get('node_type', 'Unknown')
                                 pattern_prompt += f"\n   {idx}. Each '{child_node_type}' element MUST have:\n"
 
-                                # Required attributes for child
+                                # Required child elements for this child type
                                 req_attrs = child_struct.get('required_attributes', [])
                                 if req_attrs:
-                                    pattern_prompt += f"      **Required Attributes (ALL must be present):**\n"
+                                    pattern_prompt += f"      **Required Child Elements (ALL must be present as child tags):**\n"
                                     for attr in req_attrs:
-                                        pattern_prompt += f"      - @{attr} (REQUIRED)\n"
+                                        pattern_prompt += f"      - <{attr}> (REQUIRED as child element)\n"
 
                                 # Reference fields for child (these are OPTIONAL, not required)
                                 ref_fields = child_struct.get('reference_fields', [])
@@ -2431,8 +2424,12 @@ def _render_verify_tab(patterns, workspace=None):
                     if pattern.get('description'):
                         pattern_prompt += f"- Description: {pattern['description']}\n"
 
-                    pattern_prompt += f"\n**IMPORTANT:** The XML must match ALL requirements listed above. "
-                    pattern_prompt += f"If ANY required attribute or child type is missing, the verification should FAIL.\n"
+                    pattern_prompt += f"\n**IMPORTANT VALIDATION RULES:**\n"
+                    pattern_prompt += f"1. The XML must match ALL requirements EXPLICITLY listed above\n"
+                    pattern_prompt += f"2. Only check the requirements specified - DO NOT infer additional requirements\n"
+                    pattern_prompt += f"3. If a child element is listed as required (e.g., <Desc>), verify it EXISTS\n"
+                    pattern_prompt += f"4. DO NOT validate the internal structure of child elements UNLESS explicitly specified above\n"
+                    pattern_prompt += f"5. Example: If '<Desc> (REQUIRED)' is listed, just verify <Desc> exists - don't check what's inside Desc unless the pattern explicitly defines it\n"
 
                     # Verify pattern
                     result = verifier.verify_pattern(pattern_prompt, xml_content.strip())
@@ -2609,36 +2606,60 @@ def show_config_page():
             )
             st.warning("⚠️ This will permanently delete the workspace and all its data (patterns, runs, node facts)!")
 
+            # Initialize confirmation state
+            if "delete_workspace_confirmation" not in st.session_state:
+                st.session_state.delete_workspace_confirmation = None
+
             col1, col2 = st.columns(2)
-            with col1:
-                if st.button("🗑️ Delete Workspace", key="config_delete_workspace_btn", use_container_width=True, type="primary"):
-                    if workspace_to_delete in st.session_state.workspaces:
-                        # Remove from workspace list
-                        st.session_state.workspaces.remove(workspace_to_delete)
-                        if not st.session_state.workspaces:
-                            st.session_state.workspaces = ["default"]
-                        save_workspaces(st.session_state.workspaces)
 
-                        # Delete database file from disk (stored in backend/data/workspaces)
-                        import os
-                        backend_workspace_path = Path(__file__).parent.parent.parent / "backend" / "data" / "workspaces" / f"{workspace_to_delete}.db"
-                        if backend_workspace_path.exists():
-                            try:
-                                os.remove(backend_workspace_path)
-                                st.success(f"✅ Workspace '{workspace_to_delete}' and its database deleted.")
-                            except Exception as e:
-                                show_error_with_logs(
-                                    "Failed to delete workspace database file",
-                                    str(e),
-                                    error_type="general"
-                                )
-                        else:
-                            st.success(f"✅ Workspace '{workspace_to_delete}' removed from list (database not found).")
+            # Check if we're in confirmation mode for this specific workspace
+            if st.session_state.delete_workspace_confirmation == workspace_to_delete:
+                st.error(f"⚠️ **Are you sure you want to delete '{workspace_to_delete}'?**")
+                st.markdown("This action cannot be undone!")
 
-                        # Switch to default if current workspace was deleted
-                        if st.session_state.current_workspace == workspace_to_delete:
-                            st.session_state.current_workspace = st.session_state.workspaces[0]
+                confirm_col1, confirm_col2 = st.columns(2)
+                with confirm_col1:
+                    if st.button("✅ Yes, Delete", key="config_confirm_delete_btn", use_container_width=True, type="primary"):
+                        if workspace_to_delete in st.session_state.workspaces:
+                            # Remove from workspace list
+                            st.session_state.workspaces.remove(workspace_to_delete)
+                            if not st.session_state.workspaces:
+                                st.session_state.workspaces = ["default"]
+                            save_workspaces(st.session_state.workspaces)
 
+                            # Delete database file from disk (stored in backend/data/workspaces)
+                            import os
+                            backend_workspace_path = Path(__file__).parent.parent.parent / "backend" / "data" / "workspaces" / f"{workspace_to_delete}.db"
+                            if backend_workspace_path.exists():
+                                try:
+                                    os.remove(backend_workspace_path)
+                                    st.success(f"✅ Workspace '{workspace_to_delete}' and its database deleted.")
+                                except Exception as e:
+                                    show_error_with_logs(
+                                        "Failed to delete workspace database file",
+                                        str(e),
+                                        error_type="general"
+                                    )
+                            else:
+                                st.success(f"✅ Workspace '{workspace_to_delete}' removed from list (database not found).")
+
+                            # Switch to default if current workspace was deleted
+                            if st.session_state.current_workspace == workspace_to_delete:
+                                st.session_state.current_workspace = st.session_state.workspaces[0]
+
+                            # Reset confirmation state
+                            st.session_state.delete_workspace_confirmation = None
+                            st.rerun()
+
+                with confirm_col2:
+                    if st.button("❌ Cancel", key="config_cancel_delete_btn", use_container_width=True):
+                        st.session_state.delete_workspace_confirmation = None
+                        st.rerun()
+            else:
+                # Show initial delete button
+                with col1:
+                    if st.button("🗑️ Delete Workspace", key="config_delete_workspace_btn", use_container_width=True, type="primary"):
+                        st.session_state.delete_workspace_confirmation = workspace_to_delete
                         st.rerun()
 
             with col2:
@@ -2919,20 +2940,32 @@ def show_node_manager_page():
         st.subheader("Upload XML to Discover Nodes")
         st.write("Upload an XML file to analyze its structure and create configurations")
 
+        # Initialize upload counter for clearing file uploader
+        if 'node_upload_counter' not in st.session_state:
+            st.session_state.node_upload_counter = 0
+
         col_upload, col_clear = st.columns([4, 1])
 
         with col_upload:
-            uploaded_file = st.file_uploader("Choose XML file", type=['xml'], key="node_config_upload")
+            # Use dynamic key to force widget reset when cleared
+            uploaded_file = st.file_uploader(
+                "Choose XML file",
+                type=['xml'],
+                key=f"node_config_upload_{st.session_state.node_upload_counter}"
+            )
 
         with col_clear:
             if 'analyzed_nodes' in st.session_state:
                 st.write("")  # Spacer
                 st.write("")  # Spacer
                 if st.button("🔄 Clear & New Upload", help="Clear current analysis and upload a new file"):
+                    # Clear session state
                     del st.session_state.analyzed_nodes
                     st.session_state.pop('node_checked_paths_raw', None)
                     st.session_state.pop('node_checked_paths_effective', None)
                     st.session_state.pop('last_uploaded_file', None)
+                    # Increment counter to reset file uploader widget
+                    st.session_state.node_upload_counter += 1
                     st.rerun()
 
         if uploaded_file:

@@ -267,8 +267,52 @@ class LLMNodeFactsExtractor:
             logger.error(f"   Traceback:\n{traceback.format_exc()}")
             raise ValueError(f"LLM API Error: {type(e).__name__}: {str(e)}")
 
+    def _clean_json_string(self, json_str: str) -> str:
+        """
+        Clean common JSON formatting issues from LLM responses.
+
+        Handles:
+        - Trailing commas in arrays and objects
+        - Single quotes to double quotes
+        - Unescaped quotes in strings
+        - Extra commas
+        - Control characters in string values
+        """
+        import re
+
+        # Remove trailing commas before closing brackets/braces
+        json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
+
+        # Remove multiple consecutive commas
+        json_str = re.sub(r',\s*,', ',', json_str)
+
+        # Remove comments (// and /* */)
+        json_str = re.sub(r'//.*?\n', '\n', json_str)
+        json_str = re.sub(r'/\*.*?\*/', '', json_str, flags=re.DOTALL)
+
+        # Fix unescaped control characters in string values
+        # This regex finds string values and replaces control characters with escaped versions
+        def escape_control_chars(match):
+            """Escape control characters within a JSON string value."""
+            string_content = match.group(1)
+            # Escape common control characters
+            string_content = string_content.replace('\n', '\\n')
+            string_content = string_content.replace('\r', '\\r')
+            string_content = string_content.replace('\t', '\\t')
+            string_content = string_content.replace('\b', '\\b')
+            string_content = string_content.replace('\f', '\\f')
+            # Remove any other control characters (ASCII 0-31 except those we already escaped)
+            string_content = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F]', '', string_content)
+            return f'"{string_content}"'
+
+        # Find all string values (between quotes) and escape control characters
+        # This pattern matches strings while avoiding already escaped quotes
+        json_str = re.sub(r'"((?:[^"\\]|\\.)*)(?<!\\)"', escape_control_chars, json_str)
+
+        return json_str
+
     def _parse_llm_response(self, llm_response: str) -> List[Dict[str, Any]]:
-        """Parse and validate LLM response."""
+        """Parse and validate LLM response with improved error handling."""
         try:
             response_content = llm_response.strip()
 
@@ -285,6 +329,9 @@ class LLMNodeFactsExtractor:
                 end = response_content.find('```', start)
                 if end != -1:
                     response_content = response_content[start:end].strip()
+
+            # Clean the JSON string
+            response_content = self._clean_json_string(response_content)
 
             # Try direct JSON parsing
             facts = []
@@ -312,7 +359,16 @@ class LLMNodeFactsExtractor:
 
             except json.JSONDecodeError as e:
                 logger.error(f"JSON parsing failed: {e}")
-                logger.debug(f"Content that failed: {response_content[:200]}...")
+                logger.error(f"Failed content (first 500 chars): {response_content[:500]}...")
+                logger.error(f"Error location: line {e.lineno}, column {e.colno}")
+
+                # Try to show the problematic section
+                if e.pos and e.pos > 0:
+                    start = max(0, e.pos - 50)
+                    end = min(len(response_content), e.pos + 50)
+                    logger.error(f"Context around error: ...{response_content[start:end]}...")
+
+                logger.warning("Returning empty result due to JSON parse error")
                 return []
 
             if not isinstance(facts, list):

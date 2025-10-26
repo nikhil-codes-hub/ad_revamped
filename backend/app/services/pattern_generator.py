@@ -45,7 +45,15 @@ class PatternGenerator:
         attributes = fact_json.get('attributes', {})
 
         # Filter out metadata fields added during extraction - these are NOT real XML attributes
-        METADATA_FIELDS = {'summary', 'description', 'notes', 'child_count', 'confidence', 'node_ordinal'}
+        METADATA_FIELDS = {
+            'summary',          # LLM-generated summary
+            'description',      # LLM-generated description
+            'notes',           # Internal notes
+            'child_count',     # Count of children
+            'confidence',      # Extraction confidence score
+            'node_ordinal',    # Node position/ordering
+            'missing_elements' # Quality check tracking field
+        }
 
         required = []
         for key in sorted(attributes.keys()):
@@ -63,6 +71,12 @@ class PatternGenerator:
         if not facts_group:
             return []
 
+        # Filter out metadata fields (same as _extract_required_attributes)
+        METADATA_FIELDS = {
+            'summary', 'description', 'notes', 'child_count',
+            'confidence', 'node_ordinal', 'missing_elements'
+        }
+
         # Count attribute occurrences
         attr_counts = defaultdict(int)
         total_facts = len(facts_group)
@@ -70,7 +84,7 @@ class PatternGenerator:
         for fact in facts_group:
             attributes = fact.get('attributes', {})
             for key in attributes.keys():
-                if key not in ['summary', 'description', 'notes']:
+                if key not in METADATA_FIELDS:
                     attr_counts[key] += 1
 
         # Optional: present in >0 but <100% of facts

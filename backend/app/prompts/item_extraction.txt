@@ -43,5 +43,15 @@ IMPORTANT:
 - Mask PII: replace sensitive data with patterns like "****@****.com" for emails, "****-**-**" for dates
 - Be thorough but accurate
 - If no facts found, return empty array []
+- **CRITICAL JSON FORMATTING**: Your response must be STRICT JSON - NO comments allowed!
+  * Do NOT include // comments in your JSON response
+  * Do NOT include /* */ comments in your JSON response
+  * Do NOT add trailing commas
+  * All property names MUST be in double quotes
+  * All string values MUST be in double quotes (not single quotes)
+  * **SNIPPET FORMATTING**: Keep XML snippets SHORT and on a SINGLE LINE
+    - Remove all newlines from snippet values
+    - Limit snippets to 100 characters maximum
+    - Example: "snippet": "<ContactInfo><EmailAddress>****@****.com</EmailAddress></ContactInfo>"
 
 Response must be valid JSON array: [{{fact1}}, {{fact2}}, ...]
