@@ -5,6 +5,80 @@ All notable changes to AssistedDiscovery will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-10-27
+
+### Added
+
+#### File Sharing Between Pages
+- **Cross-page file reuse**: Uploaded XML in Node Manager is now automatically available in Pattern Extractor
+- **Smart notifications**: Pattern Extractor shows friendly notification when shared file is available
+- **User choice**: Options to "Use This File", "Dismiss", or upload a new file
+- **Auto-cleanup**: Shared file state automatically cleared when uploading new files or clearing analysis
+- **Seamless workflow**: No need to upload the same file twice across different pages
+
+#### Windows Portable Distribution Improvements
+- **PowerShell detection**: Added automatic detection with clear error message and instructions
+- **Error visibility**: Console windows now stay open on errors using `cmd /k` wrapper
+- **Better troubleshooting**: Users can see complete error messages for configuration issues
+- **Distribution naming**: Renamed from `AssistedDiscovery-Portable-Windows.zip` to `AssistedDiscovery-Windows.zip`
+
+### Fixed
+
+#### Windows Portable Issues
+- **PowerShell vs Command Prompt bug**: Prevented `setup.bat` from running in PowerShell which creates incompatible `bin/` folder
+- **Console windows closing**: Backend and frontend consoles now remain open when errors occur
+- **Error visibility**: Users can now see what went wrong during startup
+
+#### UI Fixes
+- **Button label correction**: Changed "Start Discovery" to "Start Extraction" in Pattern Extractor page
+- **Terminology consistency**: Pattern Extractor page now uses appropriate action labels
+
+### Changed
+
+#### Session State Management
+- **Shared file storage**: Added `shared_xml_file` session state with file name, size, content, and source
+- **File persistence**: Uploaded files stored as bytes for seamless reuse across pages
+- **Smart cleanup**: Automatic state cleanup on page navigation and new uploads
+
+#### User Experience
+- **Windows setup instructions**: Added clear guidance to use Command Prompt instead of PowerShell
+- **Error messages**: More descriptive with specific instructions for Windows users
+
+### Technical Details
+
+#### Session State Structure
+```python
+st.session_state.shared_xml_file = {
+    'name': 'filename.xml',
+    'size': 12345,
+    'content': bytes,  # File content for reuse
+    'source': 'Node Manager'  # Source page
+}
+```
+
+#### File Handling
+- Uses `io.BytesIO` to create file-like objects from stored bytes
+- Proper file pointer reset with `uploaded_file.seek(0)`
+- Automatic cleanup when switching between shared and uploaded files
+
+### Migration Notes
+
+#### For Windows Users
+1. **Important**: Use Command Prompt (cmd.exe) for `setup.bat`, not PowerShell
+2. If you see "Scripts folder not found" errors, delete `backend_env` and `frontend_env`, then run setup again in Command Prompt
+3. Existing installations work fine—this only affects initial setup
+
+#### For All Users
+1. No breaking changes—all existing workspaces and patterns remain compatible
+2. File sharing is automatic—no configuration needed
+3. Shared files are session-only (cleared when browser is closed)
+
+### Known Issues
+
+None critical. All reported issues from v2.0.0 have been resolved.
+
+---
+
 ## [2.0.0] - 2025-10-27
 
 ### Major Release - Production Ready
@@ -166,5 +240,6 @@ First production-ready release of AssistedDiscovery.
 
 ---
 
+[2.1.0]: https://github.com/nikhil-codes-hub/ad_revamped/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/nikhil-codes-hub/ad_revamped/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/nikhil-codes-hub/ad_revamped/releases/tag/v1.0.0
