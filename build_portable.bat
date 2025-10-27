@@ -56,6 +56,22 @@ echo echo Checking Python version... >> portable_dist\setup.bat
 echo python --version >> portable_dist\setup.bat
 echo echo. >> portable_dist\setup.bat
 echo. >> portable_dist\setup.bat
+echo REM Check if backend folder exists >> portable_dist\setup.bat
+echo if not exist backend ^( >> portable_dist\setup.bat
+echo     echo ❌ Error: backend folder not found! >> portable_dist\setup.bat
+echo     echo Current directory: %%CD%% >> portable_dist\setup.bat
+echo     echo Please run setup.bat from the extracted AssistedDiscovery folder. >> portable_dist\setup.bat
+echo     pause >> portable_dist\setup.bat
+echo     exit /b 1 >> portable_dist\setup.bat
+echo ^) >> portable_dist\setup.bat
+echo. >> portable_dist\setup.bat
+echo if not exist backend\requirements.txt ^( >> portable_dist\setup.bat
+echo     echo ❌ Error: backend\requirements.txt not found! >> portable_dist\setup.bat
+echo     echo The ZIP file may be corrupted. Please re-download. >> portable_dist\setup.bat
+echo     pause >> portable_dist\setup.bat
+echo     exit /b 1 >> portable_dist\setup.bat
+echo ^) >> portable_dist\setup.bat
+echo. >> portable_dist\setup.bat
 echo REM Create backend virtual environment >> portable_dist\setup.bat
 echo echo 📦 Creating backend virtual environment... >> portable_dist\setup.bat
 echo python -m venv backend_env >> portable_dist\setup.bat
@@ -70,6 +86,21 @@ echo backend_env\Scripts\python.exe -m pip install --upgrade pip >> portable_dis
 echo backend_env\Scripts\pip.exe install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org -r backend\requirements.txt >> portable_dist\setup.bat
 echo if errorlevel 1 ^( >> portable_dist\setup.bat
 echo     echo ❌ Failed to install backend dependencies >> portable_dist\setup.bat
+echo     pause >> portable_dist\setup.bat
+echo     exit /b 1 >> portable_dist\setup.bat
+echo ^) >> portable_dist\setup.bat
+echo. >> portable_dist\setup.bat
+echo REM Check if frontend folder exists >> portable_dist\setup.bat
+echo if not exist frontend ^( >> portable_dist\setup.bat
+echo     echo ❌ Error: frontend folder not found! >> portable_dist\setup.bat
+echo     echo The ZIP file may be corrupted. Please re-download. >> portable_dist\setup.bat
+echo     pause >> portable_dist\setup.bat
+echo     exit /b 1 >> portable_dist\setup.bat
+echo ^) >> portable_dist\setup.bat
+echo. >> portable_dist\setup.bat
+echo if not exist frontend\requirements.txt ^( >> portable_dist\setup.bat
+echo     echo ❌ Error: frontend\requirements.txt not found! >> portable_dist\setup.bat
+echo     echo The ZIP file may be corrupted. Please re-download. >> portable_dist\setup.bat
 echo     pause >> portable_dist\setup.bat
 echo     exit /b 1 >> portable_dist\setup.bat
 echo ^) >> portable_dist\setup.bat
