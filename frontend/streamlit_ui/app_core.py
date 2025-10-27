@@ -756,7 +756,50 @@ def show_pattern_extractor_page():
 
     # Upload section
     st.subheader("📤 Upload XML to extract Patterns")
-    uploaded_file = st.file_uploader("Choose an NDC XML file", type=['xml'], key="discovery_upload")
+
+    # Check if there's a shared file from Node Manager
+    shared_file_info = st.session_state.get('shared_xml_file')
+    if shared_file_info and not st.session_state.get('pattern_extractor_using_shared_file'):
+        st.info(f"💡 **File from {shared_file_info['source']}:** `{shared_file_info['name']}` ({shared_file_info['size']:,} bytes)")
+        col1, col2, col3 = st.columns([2, 1, 2])
+        with col1:
+            if st.button("✅ Use This File", key="use_shared_file", use_container_width=True):
+                st.session_state.pattern_extractor_using_shared_file = True
+                st.rerun()
+        with col2:
+            if st.button("❌ Dismiss", key="dismiss_shared_file", use_container_width=True):
+                del st.session_state.shared_xml_file
+                st.rerun()
+        with col3:
+            st.caption("Or upload a new file below")
+
+    # Handle using shared file
+    uploaded_file = None
+    if st.session_state.get('pattern_extractor_using_shared_file') and shared_file_info:
+        # Create a file-like object from stored content
+        import io
+        uploaded_file = io.BytesIO(shared_file_info['content'])
+        uploaded_file.name = shared_file_info['name']
+        uploaded_file.size = shared_file_info['size']
+
+        # Show that we're using the shared file
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            st.success(f"✅ Using file from {shared_file_info['source']}: `{shared_file_info['name']}`")
+        with col2:
+            if st.button("🔄 Upload New", key="clear_shared_file_usage"):
+                st.session_state.pattern_extractor_using_shared_file = False
+                del st.session_state.shared_xml_file
+                st.rerun()
+    else:
+        # Normal file uploader
+        uploaded_file = st.file_uploader("Choose an NDC XML file", type=['xml'], key="discovery_upload")
+
+        # If user uploads a new file, clear the shared file state
+        if uploaded_file and shared_file_info:
+            del st.session_state.shared_xml_file
+            if 'pattern_extractor_using_shared_file' in st.session_state:
+                del st.session_state.pattern_extractor_using_shared_file
 
     if uploaded_file:
         col1, col2, col3 = st.columns([2, 1, 1])
@@ -868,10 +911,10 @@ def show_pattern_extractor_page():
 
             st.divider()
 
-        # Start Discovery button
+        # Start Extraction button
         col1, col2, col3 = st.columns(3)
         with col2:
-            if st.button("🚀 Start Discovery", type="primary", key="start_discovery", use_container_width=True):
+            if st.button("🚀 Start Extraction", type="primary", key="start_discovery", use_container_width=True):
                 import time
                 progress_bar = st.progress(0)
                 status_text = st.empty()
@@ -2969,6 +3012,7 @@ def show_node_manager_page():
                     st.session_state.pop('node_checked_paths_raw', None)
                     st.session_state.pop('node_checked_paths_effective', None)
                     st.session_state.pop('last_uploaded_file', None)
+                    st.session_state.pop('shared_xml_file', None)  # Clear shared file
                     # Increment counter to reset file uploader widget
                     st.session_state.node_upload_counter += 1
                     st.rerun()
@@ -3016,6 +3060,15 @@ def show_node_manager_page():
                         # Store in session state for editing
                         st.session_state.analyzed_nodes = merge_existing_configs(result, workspace=current_workspace)
                         st.session_state.last_uploaded_file = uploaded_file.name
+
+                        # Store file for sharing with Pattern Extractor page
+                        uploaded_file.seek(0)  # Reset file pointer to beginning
+                        st.session_state.shared_xml_file = {
+                            'name': uploaded_file.name,
+                            'size': uploaded_file.size,
+                            'content': uploaded_file.getvalue(),
+                            'source': 'Node Manager'
+                        }
                         # Clear selection state to force reload from saved configurations
                         if 'node_checked_paths_raw' in st.session_state:
                             del st.session_state.node_checked_paths_raw
