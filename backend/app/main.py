@@ -22,8 +22,8 @@ def create_application() -> FastAPI:
 
     application = FastAPI(
         title="AssistedDiscovery API",
-        description="AssistedDiscovery API",
-        version="1.0.0",
+        description="AssistedDiscovery API - AI-Powered NDC XML Analysis & Pattern Discovery",
+        version="2.0.0",
         docs_url="/docs",
         redoc_url="/redoc",
         openapi_url="/openapi.json"

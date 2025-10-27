@@ -1,4 +1,13 @@
 # AssistedDiscovery
+
+**Version 2.0.0** | AI-Powered NDC XML Analysis & Pattern Discovery
+
+[![Release](https://img.shields.io/badge/release-v2.0.0-blue.svg)](https://github.com/nikhil-codes-hub/ad_revamped/releases/tag/v2.0.0)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+
+> **What's New in 2.0.0**: Major stability improvements, enhanced UI/UX, near-perfect JSON parsing success rate, and improved pattern verification. See [CHANGELOG.md](CHANGELOG.md) for details.
+
 ## 🏗️ Architecture
 
 - **Backend**: FastAPI with Python 3.10
