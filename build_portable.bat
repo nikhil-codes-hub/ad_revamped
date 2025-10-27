@@ -37,6 +37,23 @@ if exist .env.example (
 REM Create setup script
 echo 📝 Creating setup script...
 echo @echo off > portable_dist\setup.bat
+echo. >> portable_dist\setup.bat
+echo REM Check if running in PowerShell ^(causes bin/ instead of Scripts/^) >> portable_dist\setup.bat
+echo if defined PSModulePath ^( >> portable_dist\setup.bat
+echo     echo ❌ ERROR: Do not run this in PowerShell! >> portable_dist\setup.bat
+echo     echo. >> portable_dist\setup.bat
+echo     echo PowerShell creates bin/ folder instead of Scripts/, which breaks this script. >> portable_dist\setup.bat
+echo     echo. >> portable_dist\setup.bat
+echo     echo Please run setup.bat in Command Prompt ^(cmd.exe^) instead: >> portable_dist\setup.bat
+echo     echo    1. Press Win+R >> portable_dist\setup.bat
+echo     echo    2. Type: cmd >> portable_dist\setup.bat
+echo     echo    3. Press Enter >> portable_dist\setup.bat
+echo     echo    4. Navigate to this folder and run: setup.bat >> portable_dist\setup.bat
+echo     echo. >> portable_dist\setup.bat
+echo     pause >> portable_dist\setup.bat
+echo     exit /b 1 >> portable_dist\setup.bat
+echo ^) >> portable_dist\setup.bat
+echo. >> portable_dist\setup.bat
 echo echo 🔧 Setting up AssistedDiscovery... >> portable_dist\setup.bat
 echo echo This will create isolated Python environments for backend and frontend >> portable_dist\setup.bat
 echo echo No pollution of your system Python! >> portable_dist\setup.bat
