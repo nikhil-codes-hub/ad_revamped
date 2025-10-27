@@ -291,23 +291,48 @@ class LLMNodeFactsExtractor:
         json_str = re.sub(r'/\*.*?\*/', '', json_str, flags=re.DOTALL)
 
         # Fix unescaped control characters in string values
-        # This regex finds string values and replaces control characters with escaped versions
+        # More robust approach using a state machine-like pattern
         def escape_control_chars(match):
             """Escape control characters within a JSON string value."""
             string_content = match.group(1)
-            # Escape common control characters
-            string_content = string_content.replace('\n', '\\n')
-            string_content = string_content.replace('\r', '\\r')
-            string_content = string_content.replace('\t', '\\t')
-            string_content = string_content.replace('\b', '\\b')
-            string_content = string_content.replace('\f', '\\f')
-            # Remove any other control characters (ASCII 0-31 except those we already escaped)
-            string_content = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F]', '', string_content)
-            return f'"{string_content}"'
+            # Only escape control characters, not already-escaped sequences
+            # Don't double-escape things that are already escaped
+            result = []
+            i = 0
+            while i < len(string_content):
+                char = string_content[i]
+                if char == '\\' and i + 1 < len(string_content):
+                    # Already escaped sequence - keep as is
+                    result.append(char)
+                    result.append(string_content[i + 1])
+                    i += 2
+                elif char == '\n':
+                    result.append('\\n')
+                    i += 1
+                elif char == '\r':
+                    result.append('\\r')
+                    i += 1
+                elif char == '\t':
+                    result.append('\\t')
+                    i += 1
+                elif char == '\b':
+                    result.append('\\b')
+                    i += 1
+                elif char == '\f':
+                    result.append('\\f')
+                    i += 1
+                elif ord(char) < 32 and char not in '\n\r\t\b\f':
+                    # Remove other control characters
+                    i += 1
+                else:
+                    result.append(char)
+                    i += 1
+            return f'"{"".join(result)}"'
 
-        # Find all string values (between quotes) and escape control characters
-        # This pattern matches strings while avoiding already escaped quotes
-        json_str = re.sub(r'"((?:[^"\\]|\\.)*)(?<!\\)"', escape_control_chars, json_str)
+        # Match string values: opening quote, content (may span lines), closing quote
+        # Pattern: " followed by anything except unescaped ", then closing "
+        # This handles escaped quotes within strings correctly
+        json_str = re.sub(r'"((?:[^"\\]|\\.)*)(?<!\\)"', escape_control_chars, json_str, flags=re.DOTALL)
 
         return json_str
 

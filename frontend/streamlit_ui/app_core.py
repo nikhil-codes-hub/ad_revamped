@@ -976,7 +976,7 @@ def show_pattern_extractor_page():
         st.success(f"📊 Pattern Extraction Results (Run: {run_id[:12]}...)")
         show_pattern_extractor_run_details(run_id, current_workspace)
     else:
-        st.info("👆 Upload an XML file above to see discovery results")
+        st.info("👆 Upload an XML file above to see pattern extraction results")
 
 
 
