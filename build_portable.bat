@@ -56,22 +56,6 @@ echo echo Checking Python version... >> portable_dist\setup.bat
 echo python --version >> portable_dist\setup.bat
 echo echo. >> portable_dist\setup.bat
 echo. >> portable_dist\setup.bat
-echo REM Check if backend folder exists >> portable_dist\setup.bat
-echo if not exist backend ^( >> portable_dist\setup.bat
-echo     echo ❌ Error: backend folder not found! >> portable_dist\setup.bat
-echo     echo Current directory: %%CD%% >> portable_dist\setup.bat
-echo     echo Please run setup.bat from the extracted AssistedDiscovery folder. >> portable_dist\setup.bat
-echo     pause >> portable_dist\setup.bat
-echo     exit /b 1 >> portable_dist\setup.bat
-echo ^) >> portable_dist\setup.bat
-echo. >> portable_dist\setup.bat
-echo if not exist backend\requirements.txt ^( >> portable_dist\setup.bat
-echo     echo ❌ Error: backend\requirements.txt not found! >> portable_dist\setup.bat
-echo     echo The ZIP file may be corrupted. Please re-download. >> portable_dist\setup.bat
-echo     pause >> portable_dist\setup.bat
-echo     exit /b 1 >> portable_dist\setup.bat
-echo ^) >> portable_dist\setup.bat
-echo. >> portable_dist\setup.bat
 echo REM Create backend virtual environment >> portable_dist\setup.bat
 echo echo 📦 Creating backend virtual environment... >> portable_dist\setup.bat
 echo python -m venv backend_env >> portable_dist\setup.bat
@@ -82,25 +66,10 @@ echo     exit /b 1 >> portable_dist\setup.bat
 echo ^) >> portable_dist\setup.bat
 echo. >> portable_dist\setup.bat
 echo echo Installing backend dependencies... >> portable_dist\setup.bat
-echo backend_env\Scripts\python.exe -m pip install --upgrade pip >> portable_dist\setup.bat
-echo backend_env\Scripts\pip.exe install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org -r backend\requirements.txt >> portable_dist\setup.bat
+echo backend_env\Scripts\python -m pip install --upgrade pip >> portable_dist\setup.bat
+echo backend_env\Scripts\pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org -r backend\requirements.txt >> portable_dist\setup.bat
 echo if errorlevel 1 ^( >> portable_dist\setup.bat
 echo     echo ❌ Failed to install backend dependencies >> portable_dist\setup.bat
-echo     pause >> portable_dist\setup.bat
-echo     exit /b 1 >> portable_dist\setup.bat
-echo ^) >> portable_dist\setup.bat
-echo. >> portable_dist\setup.bat
-echo REM Check if frontend folder exists >> portable_dist\setup.bat
-echo if not exist frontend ^( >> portable_dist\setup.bat
-echo     echo ❌ Error: frontend folder not found! >> portable_dist\setup.bat
-echo     echo The ZIP file may be corrupted. Please re-download. >> portable_dist\setup.bat
-echo     pause >> portable_dist\setup.bat
-echo     exit /b 1 >> portable_dist\setup.bat
-echo ^) >> portable_dist\setup.bat
-echo. >> portable_dist\setup.bat
-echo if not exist frontend\requirements.txt ^( >> portable_dist\setup.bat
-echo     echo ❌ Error: frontend\requirements.txt not found! >> portable_dist\setup.bat
-echo     echo The ZIP file may be corrupted. Please re-download. >> portable_dist\setup.bat
 echo     pause >> portable_dist\setup.bat
 echo     exit /b 1 >> portable_dist\setup.bat
 echo ^) >> portable_dist\setup.bat
@@ -115,8 +84,8 @@ echo     exit /b 1 >> portable_dist\setup.bat
 echo ^) >> portable_dist\setup.bat
 echo. >> portable_dist\setup.bat
 echo echo Installing frontend dependencies... >> portable_dist\setup.bat
-echo frontend_env\Scripts\python.exe -m pip install --upgrade pip >> portable_dist\setup.bat
-echo frontend_env\Scripts\pip.exe install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org -r frontend\requirements.txt >> portable_dist\setup.bat
+echo frontend_env\Scripts\python -m pip install --upgrade pip >> portable_dist\setup.bat
+echo frontend_env\Scripts\pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org -r frontend\requirements.txt >> portable_dist\setup.bat
 echo if errorlevel 1 ^( >> portable_dist\setup.bat
 echo     echo ❌ Failed to install frontend dependencies >> portable_dist\setup.bat
 echo     pause >> portable_dist\setup.bat
@@ -195,7 +164,7 @@ echo REM Start backend >> portable_dist\start_app.bat
 echo echo 🔧 Starting backend API server... >> portable_dist\start_app.bat
 echo cd /d backend >> portable_dist\start_app.bat
 echo set PYTHONPATH=%%cd%% >> portable_dist\start_app.bat
-echo start "AssistedDiscovery-Backend" cmd /k "..\backend_env\Scripts\uvicorn.exe app.main:app --host 0.0.0.0 --port 8000" >> portable_dist\start_app.bat
+echo start "AssistedDiscovery-Backend" ..\backend_env\Scripts\uvicorn app.main:app --host 0.0.0.0 --port 8000 >> portable_dist\start_app.bat
 echo cd /d .. >> portable_dist\start_app.bat
 echo. >> portable_dist\start_app.bat
 echo REM Wait for backend to start >> portable_dist\start_app.bat
@@ -205,7 +174,7 @@ echo. >> portable_dist\start_app.bat
 echo REM Start frontend >> portable_dist\start_app.bat
 echo echo 🎨 Starting frontend UI... >> portable_dist\start_app.bat
 echo cd /d frontend\streamlit_ui >> portable_dist\start_app.bat
-echo start "AssistedDiscovery-Frontend" cmd /k "..\..\frontend_env\Scripts\streamlit.exe run AssistedDiscovery.py --server.port 8501 --server.headless true" >> portable_dist\start_app.bat
+echo start "AssistedDiscovery-Frontend" ..\..\frontend_env\Scripts\streamlit run AssistedDiscovery.py --server.port 8501 --server.headless true >> portable_dist\start_app.bat
 echo cd /d ..\.. >> portable_dist\start_app.bat
 echo. >> portable_dist\start_app.bat
 echo REM Wait for frontend to start >> portable_dist\start_app.bat
