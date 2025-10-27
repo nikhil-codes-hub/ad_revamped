@@ -164,7 +164,7 @@ echo REM Start backend >> portable_dist\start_app.bat
 echo echo 🔧 Starting backend API server... >> portable_dist\start_app.bat
 echo cd /d backend >> portable_dist\start_app.bat
 echo set PYTHONPATH=%%cd%% >> portable_dist\start_app.bat
-echo start "AssistedDiscovery-Backend" ..\backend_env\Scripts\uvicorn.exe app.main:app --host 0.0.0.0 --port 8000 >> portable_dist\start_app.bat
+echo start "AssistedDiscovery-Backend" cmd /k "..\backend_env\Scripts\uvicorn.exe app.main:app --host 0.0.0.0 --port 8000" >> portable_dist\start_app.bat
 echo cd /d .. >> portable_dist\start_app.bat
 echo. >> portable_dist\start_app.bat
 echo REM Wait for backend to start >> portable_dist\start_app.bat
@@ -174,7 +174,7 @@ echo. >> portable_dist\start_app.bat
 echo REM Start frontend >> portable_dist\start_app.bat
 echo echo 🎨 Starting frontend UI... >> portable_dist\start_app.bat
 echo cd /d frontend\streamlit_ui >> portable_dist\start_app.bat
-echo start "AssistedDiscovery-Frontend" ..\..\frontend_env\Scripts\streamlit.exe run AssistedDiscovery.py --server.port 8501 --server.headless true >> portable_dist\start_app.bat
+echo start "AssistedDiscovery-Frontend" cmd /k "..\..\frontend_env\Scripts\streamlit.exe run AssistedDiscovery.py --server.port 8501 --server.headless true" >> portable_dist\start_app.bat
 echo cd /d ..\.. >> portable_dist\start_app.bat
 echo. >> portable_dist\start_app.bat
 echo REM Wait for frontend to start >> portable_dist\start_app.bat
