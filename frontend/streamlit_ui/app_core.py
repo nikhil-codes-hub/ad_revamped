@@ -2442,12 +2442,17 @@ def _render_verify_tab(patterns, workspace=None):
                     st.write("✅ Verification complete!")
                     status.update(label="✅ AI Verification Complete", state="complete")
 
-                except ImportError:
-                    verification_error = "LLM verifier not available. Check that openai package is installed."
+                except ImportError as e:
+                    verification_error = f"LLM verifier not available: {str(e)}\n\nPlease ensure:\n1. openai package is installed in frontend environment\n2. Run: pip install openai==1.3.5"
                     status.update(label="❌ Verification Failed", state="error")
 
                 except Exception as e:
-                    verification_error = f"Verification failed: {str(e)}\n\nError Type: {type(e).__name__}"
+                    # Check if it's a credentials issue
+                    error_str = str(e).lower()
+                    if 'api_key' in error_str or 'api key' in error_str or 'authentication' in error_str:
+                        verification_error = f"❌ LLM credentials not configured\n\nPlease configure Azure OpenAI credentials:\n1. Go to ⚙️ Config page in sidebar\n2. Enter your Azure OpenAI Endpoint and API Key\n3. Click 'Save Configuration'\n4. Restart the application\n\nError: {str(e)}"
+                    else:
+                        verification_error = f"Verification failed: {str(e)}\n\nError Type: {type(e).__name__}"
                     status.update(label="❌ Verification Failed", state="error")
 
             # Display results outside the status block to avoid nesting issues
