@@ -1,5 +1,6 @@
 @echo off
 REM Create Portable Distribution for AssistedDiscovery Revamp
+REM Tested on Windows 10/11
 echo 🚀 Creating Portable AssistedDiscovery Application
 echo Platform: Windows
 
