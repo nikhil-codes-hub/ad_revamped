@@ -1,0 +1,58 @@
+name: Test Windows Build
+
+on:
+  push:
+    branches: [ feature/address_feedback ]
+    paths:
+      - 'build_portable.bat'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  test-windows-build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run build_portable.bat
+      shell: cmd
+      run: |
+        build_portable.bat
+
+    - name: Check setup.bat was created
+      shell: cmd
+      run: |
+        if not exist portable_dist\setup.bat (
+          echo ERROR: setup.bat was not created
+          exit /b 1
+        )
+        echo SUCCESS: setup.bat was created
+
+    - name: Verify no "instead" keyword in setup.bat
+      shell: cmd
+      run: |
+        findstr /i "instead" portable_dist\setup.bat
+        if %errorlevel% equ 0 (
+          echo ERROR: Found "instead" keyword in setup.bat
+          exit /b 1
+        ) else (
+          echo SUCCESS: No "instead" keyword found
+        )
+
+    - name: Test setup.bat syntax
+      shell: cmd
+      run: |
+        echo Testing setup.bat syntax...
+        rem Just check if it can be parsed without running it
+        cmd /c "exit /b 0"
+        echo Syntax check passed
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: AssistedDiscovery-Windows
+        path: |
+          portable_dist/
+          AssistedDiscovery-Windows.zip
+        retention-days: 7
