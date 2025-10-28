@@ -39,6 +39,7 @@ jobs:
           exit /b 1
         )
         echo SUCCESS: No "instead" keyword found in setup.bat
+        exit /b 0
 
     - name: Test setup.bat syntax
       shell: cmd
