@@ -30,16 +30,16 @@ jobs:
         echo SUCCESS: setup.bat was created
 
     - name: Verify no "instead" keyword in setup.bat
-      shell: cmd
+      shell: powershell
       run: |
-        findstr /i "instead" portable_dist\setup.bat >nul 2>&1
-        if %errorlevel% equ 0 (
-          echo ERROR: Found "instead" keyword in setup.bat
-          type portable_dist\setup.bat | findstr /i "instead"
-          exit /b 1
-        )
-        echo SUCCESS: No "instead" keyword found in setup.bat
-        exit /b 0
+        $content = Get-Content portable_dist\setup.bat -Raw
+        if ($content -match "instead") {
+          Write-Host "ERROR: Found 'instead' keyword in setup.bat"
+          Select-String -Path portable_dist\setup.bat -Pattern "instead" -CaseSensitive:$false
+          exit 1
+        }
+        Write-Host "SUCCESS: No 'instead' keyword found in setup.bat"
+        exit 0
 
     - name: Test setup.bat syntax
       shell: cmd
