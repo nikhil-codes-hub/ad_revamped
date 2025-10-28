@@ -44,7 +44,7 @@ echo     echo ❌ ERROR  Do not run this in PowerShell! >> portable_dist\setup.b
 echo     echo. >> portable_dist\setup.bat
 echo     echo PowerShell creates bin/ folder instead of Scripts/, which breaks this script. >> portable_dist\setup.bat
 echo     echo. >> portable_dist\setup.bat
-echo     echo Please run setup.bat in Command Prompt ^(cmd.exe^) instead. >> portable_dist\setup.bat
+echo     echo Please run setup.bat in regular Command Prompt ^(cmd.exe^) >> portable_dist\setup.bat
 echo     echo    1. Press Win+R >> portable_dist\setup.bat
 echo     echo    2. Type  cmd >> portable_dist\setup.bat
 echo     echo    3. Press Enter >> portable_dist\setup.bat
