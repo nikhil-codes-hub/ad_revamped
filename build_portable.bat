@@ -47,7 +47,7 @@ echo REM Check if Python is installed >> portable_dist\setup.bat
 echo python --version ^>nul 2^>^&1 >> portable_dist\setup.bat
 echo if errorlevel 1 ^( >> portable_dist\setup.bat
 echo     echo ❌ Python is not installed. Please install Python 3.12 first. >> portable_dist\setup.bat
-echo     echo Download from  https //www.python.org/downloads/ >> portable_dist\setup.bat
+echo     echo Download from  https://www.python.org/downloads/ >> portable_dist\setup.bat
 echo     pause >> portable_dist\setup.bat
 echo     exit /b 1 >> portable_dist\setup.bat
 echo ^) >> portable_dist\setup.bat
@@ -186,13 +186,13 @@ echo echo ━━━━━━━━━━━━━━━━━━━━━━━�
 echo echo ✅ AssistedDiscovery is running! >> portable_dist\start_app.bat
 echo echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ >> portable_dist\start_app.bat
 echo echo. >> portable_dist\start_app.bat
-echo echo 📍 Frontend UI   http //localhost 8501 >> portable_dist\start_app.bat
-echo echo 📍 Backend API   http //localhost 8000 >> portable_dist\start_app.bat
-echo echo 📍 API Docs      http //localhost 8000/docs >> portable_dist\start_app.bat
+echo echo 📍 Frontend UI   http://localhost:8501 >> portable_dist\start_app.bat
+echo echo 📍 Backend API   http://localhost:8000 >> portable_dist\start_app.bat
+echo echo 📍 API Docs      http://localhost:8000/docs >> portable_dist\start_app.bat
 echo echo. >> portable_dist\start_app.bat
 echo echo 🌐 Opening browser... >> portable_dist\start_app.bat
 echo timeout /t 2 /nobreak ^>nul >> portable_dist\start_app.bat
-echo start http //localhost 8501 >> portable_dist\start_app.bat
+echo start http://localhost:8501 >> portable_dist\start_app.bat
 echo. >> portable_dist\start_app.bat
 echo echo. >> portable_dist\start_app.bat
 echo echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ >> portable_dist\start_app.bat
@@ -268,7 +268,7 @@ echo. >> portable_dist\README.txt
 echo Configure LLM credentials via the web UI  >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
 echo 1. Start the application (start_app.bat) >> portable_dist\README.txt
-echo 2. Open http //localhost 8501 in your browser >> portable_dist\README.txt
+echo 2. Open http://localhost:8501 in your browser >> portable_dist\README.txt
 echo 3. Click Config in the sidebar >> portable_dist\README.txt
 echo 4. Select your LLM provider (Azure OpenAI or Google Gemini) >> portable_dist\README.txt
 echo 5. Enter your credentials >> portable_dist\README.txt
