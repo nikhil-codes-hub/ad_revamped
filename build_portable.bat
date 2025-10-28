@@ -1,7 +1,7 @@
 @echo off
 REM Create Portable Distribution for AssistedDiscovery Revamp
 echo 🚀 Creating Portable AssistedDiscovery Application
-echo Platform  Windows
+echo Platform: Windows
 
 REM Clean previous builds
 echo 🧹 Cleaning previous builds...
