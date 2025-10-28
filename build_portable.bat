@@ -38,11 +38,11 @@ REM Create setup script
 echo 📝 Creating setup script...
 echo @echo off > portable_dist\setup.bat
 echo. >> portable_dist\setup.bat
-echo REM Check if running in PowerShell ^(causes bin/ instead of Scripts/^) >> portable_dist\setup.bat
+echo REM Check if running in PowerShell ^(causes bin/ rather than Scripts/^) >> portable_dist\setup.bat
 echo if defined PSModulePath ^( >> portable_dist\setup.bat
 echo     echo ❌ ERROR  Do not run this in PowerShell! >> portable_dist\setup.bat
 echo     echo. >> portable_dist\setup.bat
-echo     echo PowerShell creates bin/ folder instead of Scripts/, which breaks this script. >> portable_dist\setup.bat
+echo     echo PowerShell creates bin/ folder rather than Scripts/, which breaks this script. >> portable_dist\setup.bat
 echo     echo. >> portable_dist\setup.bat
 echo     echo Please run setup.bat in regular Command Prompt ^(cmd.exe^) >> portable_dist\setup.bat
 echo     echo    1. Press Win+R >> portable_dist\setup.bat
