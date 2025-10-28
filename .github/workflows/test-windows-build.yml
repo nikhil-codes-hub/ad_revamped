@@ -32,13 +32,13 @@ jobs:
     - name: Verify no "instead" keyword in setup.bat
       shell: cmd
       run: |
-        findstr /i "instead" portable_dist\setup.bat
+        findstr /i "instead" portable_dist\setup.bat >nul 2>&1
         if %errorlevel% equ 0 (
           echo ERROR: Found "instead" keyword in setup.bat
+          type portable_dist\setup.bat | findstr /i "instead"
           exit /b 1
-        ) else (
-          echo SUCCESS: No "instead" keyword found
         )
+        echo SUCCESS: No "instead" keyword found in setup.bat
 
     - name: Test setup.bat syntax
       shell: cmd
