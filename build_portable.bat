@@ -1,8 +1,7 @@
 @echo off
 REM Create Portable Distribution for AssistedDiscovery Revamp
-REM Tested on Windows 10/11
 echo 🚀 Creating Portable AssistedDiscovery Application
-echo Platform: Windows
+echo Platform  Windows
 
 REM Clean previous builds
 echo 🧹 Cleaning previous builds...
@@ -22,7 +21,7 @@ xcopy /E /I backend\app portable_dist\backend\app
 copy backend\requirements.txt portable_dist\backend\
 if exist backend\alembic.ini copy backend\alembic.ini portable_dist\backend\
 if exist backend\alembic xcopy /E /I backend\alembic portable_dist\backend\alembic
-
+̦
 REM Copy frontend files
 echo 📋 Copying frontend files...
 xcopy /E /I frontend\streamlit_ui portable_dist\frontend\streamlit_ui
@@ -38,23 +37,6 @@ if exist .env.example (
 REM Create setup script
 echo 📝 Creating setup script...
 echo @echo off > portable_dist\setup.bat
-echo. >> portable_dist\setup.bat
-echo REM Check if running in PowerShell ^(causes bin/ rather than Scripts/^) >> portable_dist\setup.bat
-echo if defined PSScriptRoot ^( >> portable_dist\setup.bat
-echo     echo ❌ ERROR  Do not run this in PowerShell! >> portable_dist\setup.bat
-echo     echo. >> portable_dist\setup.bat
-echo     echo PowerShell creates bin/ folder rather than Scripts/, which breaks this script. >> portable_dist\setup.bat
-echo     echo. >> portable_dist\setup.bat
-echo     echo Please run setup.bat in regular Command Prompt ^(cmd.exe^) >> portable_dist\setup.bat
-echo     echo    1. Press Win+R >> portable_dist\setup.bat
-echo     echo    2. Type  cmd >> portable_dist\setup.bat
-echo     echo    3. Press Enter >> portable_dist\setup.bat
-echo     echo    4. Navigate to this folder and run  setup.bat >> portable_dist\setup.bat
-echo     echo. >> portable_dist\setup.bat
-echo     pause >> portable_dist\setup.bat
-echo     exit /b 1 >> portable_dist\setup.bat
-echo ^) >> portable_dist\setup.bat
-echo. >> portable_dist\setup.bat
 echo echo 🔧 Setting up AssistedDiscovery... >> portable_dist\setup.bat
 echo echo This will create isolated Python environments for backend and frontend >> portable_dist\setup.bat
 echo echo No pollution of your system Python! >> portable_dist\setup.bat
