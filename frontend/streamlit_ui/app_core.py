@@ -743,20 +743,63 @@ def copy_configurations_to_versions(
 
 # ========== PAGE FUNCTIONS ==========
 
-def show_discovery_page():
-    """Discovery page - run discovery and view results."""
-    st.header("🔬 Discovery Mode")
+def show_pattern_extractor_page():
+    """Pattern Extractor page - run pattern extraction and view results."""
+    st.header("🔬 Extract Patterns")
     st.write("Upload XML files to learn and extract patterns")
 
     current_workspace = st.session_state.get('current_workspace', 'default')
 
     # Initialize session state
-    if 'discovery_selected_run' not in st.session_state:
-        st.session_state.discovery_selected_run = None
+    if 'pattern_extractor_selected_run' not in st.session_state:
+        st.session_state.pattern_extractor_selected_run = None
 
     # Upload section
-    st.subheader("📤 Upload XML for Discovery")
-    uploaded_file = st.file_uploader("Choose an NDC XML file", type=['xml'], key="discovery_upload")
+    st.subheader("📤 Upload XML to extract Patterns")
+
+    # Check if there's a shared file from Node Manager
+    shared_file_info = st.session_state.get('shared_xml_file')
+    if shared_file_info and not st.session_state.get('pattern_extractor_using_shared_file'):
+        st.info(f"💡 **File from {shared_file_info['source']}:** `{shared_file_info['name']}` ({shared_file_info['size']:,} bytes)")
+        col1, col2, col3 = st.columns([2, 1, 2])
+        with col1:
+            if st.button("✅ Use This File", key="use_shared_file", use_container_width=True):
+                st.session_state.pattern_extractor_using_shared_file = True
+                st.rerun()
+        with col2:
+            if st.button("❌ Dismiss", key="dismiss_shared_file", use_container_width=True):
+                del st.session_state.shared_xml_file
+                st.rerun()
+        with col3:
+            st.caption("Or upload a new file below")
+
+    # Handle using shared file
+    uploaded_file = None
+    if st.session_state.get('pattern_extractor_using_shared_file') and shared_file_info:
+        # Create a file-like object from stored content
+        import io
+        uploaded_file = io.BytesIO(shared_file_info['content'])
+        uploaded_file.name = shared_file_info['name']
+        uploaded_file.size = shared_file_info['size']
+
+        # Show that we're using the shared file
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            st.success(f"✅ Using file from {shared_file_info['source']}: `{shared_file_info['name']}`")
+        with col2:
+            if st.button("🔄 Upload New", key="clear_shared_file_usage"):
+                st.session_state.pattern_extractor_using_shared_file = False
+                del st.session_state.shared_xml_file
+                st.rerun()
+    else:
+        # Normal file uploader
+        uploaded_file = st.file_uploader("Choose an NDC XML file", type=['xml'], key="discovery_upload")
+
+        # If user uploads a new file, clear the shared file state
+        if uploaded_file and shared_file_info:
+            del st.session_state.shared_xml_file
+            if 'pattern_extractor_using_shared_file' in st.session_state:
+                del st.session_state.pattern_extractor_using_shared_file
 
     if uploaded_file:
         col1, col2, col3 = st.columns([2, 1, 1])
@@ -868,10 +911,10 @@ def show_discovery_page():
 
             st.divider()
 
-        # Start Discovery button
+        # Start Extraction button
         col1, col2, col3 = st.columns(3)
         with col2:
-            if st.button("🚀 Start Discovery", type="primary", key="start_discovery", use_container_width=True):
+            if st.button("🚀 Start Extraction", type="primary", key="start_discovery", use_container_width=True):
                 import time
                 progress_bar = st.progress(0)
                 status_text = st.empty()
@@ -965,23 +1008,23 @@ def show_discovery_page():
                         if result.get('warning'):
                             st.warning(f"⚠️ {result['warning']}")
 
-                        st.session_state.discovery_selected_run = result['id']
+                        st.session_state.pattern_extractor_selected_run = result['id']
                         st.rerun()
 
     st.divider()
 
     # Show results from current session
-    if st.session_state.discovery_selected_run:
-        run_id = st.session_state.discovery_selected_run
-        st.success(f"📊 Discovery Results (Run: {run_id[:12]}...)")
-        show_discovery_run_details(run_id, current_workspace)
+    if st.session_state.pattern_extractor_selected_run:
+        run_id = st.session_state.pattern_extractor_selected_run
+        st.success(f"📊 Pattern Extraction Results (Run: {run_id[:12]}...)")
+        show_pattern_extractor_run_details(run_id, current_workspace)
     else:
-        st.info("👆 Upload an XML file above to see discovery results")
+        st.info("👆 Upload an XML file above to see pattern extraction results")
 
 
 
-def show_discovery_run_details(run_id: str, workspace: str = "default"):
-    """Show detailed view of a discovery run."""
+def show_pattern_extractor_run_details(run_id: str, workspace: str = "default"):
+    """Show detailed view of a pattern extraction run."""
     run_details = get_run_status(run_id, workspace)
 
     if not run_details:
@@ -1011,15 +1054,7 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
     patterns = get_patterns(limit=200, run_id=run_id, workspace=workspace)
 
     if patterns:
-        col1, col2 = st.columns([3, 1])
-
-        with col1:
-            st.success(f"✅ {len(patterns)} pattern(s) extracted and saved from this discovery run")
-
-        with col2:
-            if st.button("View in Pattern Explorer", type="secondary"):
-                st.session_state.page = "📚 Pattern Explorer"
-                st.rerun()
+        st.success(f"✅ {len(patterns)} pattern(s) extracted and saved from this discovery run")
 
         # Quick preview of patterns
         pattern_preview = []
@@ -1198,20 +1233,20 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
             st.info("No NodeFacts found for this run")
 
 
-def show_identify_page(current_workspace: Optional[str] = None):
-    """Identify page - match patterns and view results."""
+def show_discovery_page(current_workspace: Optional[str] = None):
+    """Discovery page - match patterns and view results."""
     if current_workspace is None:
         current_workspace = st.session_state.get('current_workspace', 'default')
-    st.header("🎯 Identify Mode")
+    st.header("🎯 Discovery")
     st.write("Upload XML files to match against learned patterns")
 
     # Initialize session state to track current session's run only
-    if 'identify_current_run' not in st.session_state:
-        st.session_state.identify_current_run = None
+    if 'discovery_current_run' not in st.session_state:
+        st.session_state.discovery_current_run = None
 
     # Upload section
-    with st.expander("📤 Upload XML for Identification", expanded=True):
-        uploaded_file = st.file_uploader("Choose an NDC XML file", type=['xml'], key="identify_upload")
+    with st.expander("📤 Upload XML for Discovery", expanded=True):
+        uploaded_file = st.file_uploader("Choose an NDC XML file", type=['xml'], key="discovery_upload")
 
         if uploaded_file:
             # Get available patterns to populate filters
@@ -1229,20 +1264,20 @@ def show_identify_page(current_workspace: Optional[str] = None):
                 target_version = st.selectbox(
                     "🏷️ NDC Version:",
                     options=["Auto-detect (from XML)"] + available_versions,
-                    key="identify_target_version"
+                    key="discovery_target_version"
                 )
                 target_msg_root = st.selectbox(
                     "📋 Message Root:",
                     options=["Auto-detect (from XML)"] + available_msg_roots,
-                    key="identify_target_msg_root"
+                    key="discovery_target_msg_root"
                 )
                 target_airline = st.selectbox(
                     "✈️ Airline:",
                     options=["Auto-detect (from XML)"] + available_airlines,
-                    key="identify_target_airline"
+                    key="discovery_target_airline"
                 )
 
-            if st.button("Start Identify", type="primary", key="start_identify"):
+            if st.button("Start Discovery", type="primary", key="start_discovery"):
                     import time
                     progress_bar = st.progress(0)
                     status_text = st.empty()
@@ -1290,27 +1325,27 @@ def show_identify_page(current_workspace: Optional[str] = None):
                         progress_bar.progress(95)
                         time.sleep(0.2)
 
-                        status_text.text("✅ Identify completed!")
+                        status_text.text("✅ Discovery completed!")
                         progress_bar.progress(100)
 
-                        st.success(f"✅ Identify completed! Run ID: {result['id']}")
+                        st.success(f"✅ Discovery completed! Run ID: {result['id']}")
                         # Store the current run ID in session
-                        st.session_state.identify_current_run = result['id']
+                        st.session_state.discovery_current_run = result['id']
                         st.rerun()
 
     st.divider()
 
     # Only show results from the current session
-    if st.session_state.identify_current_run:
-        run_id = st.session_state.identify_current_run
+    if st.session_state.discovery_current_run:
+        run_id = st.session_state.discovery_current_run
         st.success("📊 Pattern Matching Results")
-        show_identify_run_details(run_id, current_workspace)
+        show_discovery_run_details(run_id, current_workspace)
     else:
         st.info("👆 Upload an XML file above to see pattern matching results")
 
 
-def show_identify_run_details(run_id: str, workspace: str = "default"):
-    """Show detailed view of an identify run with pattern matches."""
+def show_discovery_run_details(run_id: str, workspace: str = "default"):
+    """Show detailed view of a discovery run with pattern matches."""
     run_details = get_run_status(run_id, workspace)
 
     if not run_details:
@@ -1339,7 +1374,7 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
         return str(elements)
 
     # Show basic run info first
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("NDC Version", run_details.get("spec_version", "N/A"))
     with col2:
@@ -1347,6 +1382,14 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
         st.metric("Airline", airline_code)
     with col3:
         st.metric("Message Root", run_details.get("message_root", "N/A"))
+    with col4:
+        duration = run_details.get("duration_seconds")
+        if duration is not None:
+            mins, secs = divmod(duration, 60)
+            duration_str = f"{int(mins)}m {int(secs)}s" if mins > 0 else f"{int(secs)}s"
+            st.metric("Duration", duration_str)
+        else:
+            st.metric("Duration", "N/A")
 
     st.divider()
 
@@ -1403,6 +1446,54 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
 
     # Pattern Matches table
     st.subheader("🔍 Pattern Matches")
+
+    # Add legend for color coding
+    with st.expander("📊 **Color Legend - What do the colors mean?**", expanded=False):
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.markdown("""
+            <div style='background-color: #d4edda; padding: 10px; border-radius: 5px; margin-bottom: 10px;'>
+                <strong>🟢 Green - EXACT_MATCH</strong><br/>
+                <small>95-100% confidence | Perfect match, no differences</small>
+            </div>
+            <div style='background-color: #fff3cd; padding: 10px; border-radius: 5px;'>
+                <strong>🟡 Yellow - HIGH_MATCH</strong><br/>
+                <small>85-94% confidence | Very close match, minor differences</small>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col2:
+            st.markdown("""
+            <div style='background-color: #f8d7da; padding: 10px; border-radius: 5px; margin-bottom: 10px;'>
+                <strong>🟠 Pink - PARTIAL_MATCH</strong><br/>
+                <small>70-84% confidence | Good match but has some deviations</small>
+            </div>
+            <div style='background-color: #f8d7da; padding: 10px; border-radius: 5px;'>
+                <strong>🟠 Pink - LOW_MATCH</strong><br/>
+                <small>50-69% confidence | Low similarity, review recommended</small>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col3:
+            st.markdown("""
+            <div style='background-color: #f5b7b1; padding: 10px; border-radius: 5px; margin-bottom: 10px;'>
+                <strong>🔴 Red - QUALITY_BREAK</strong><br/>
+                <small>Data quality issues | Missing required elements</small>
+            </div>
+            <div style='background-color: #f5c6cb; padding: 10px; border-radius: 5px;'>
+                <strong>🔴 Light Red - NEW_PATTERN</strong><br/>
+                <small>Never seen before | New structure discovered</small>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.info("""
+        **💡 Understanding Match Rate vs Colors:**
+        - **Match Rate 100%** means all nodes matched patterns with ≥70% confidence (green + yellow + pink)
+        - **High Confidence** counts only green (≥95%) and yellow (≥85%) matches
+        - **Red rows** (Quality Breaks or New Patterns) require attention but may still count as matches if confidence ≥70%
+        - **Use colors to prioritize**: Green = no action, Yellow = minor review, Pink/Red = needs investigation
+        """)
 
     matches_data = get_identify_matches(run_id, limit=200, workspace=workspace)
     matches: List[Dict[str, Any]] = []
@@ -1495,49 +1586,69 @@ def show_identify_run_details(run_id: str, workspace: str = "default"):
             hide_index=True
         )
 
-    # Gap Analysis section for unmatched items
-    st.subheader("📝 Gap Analysis: Unmatched Nodes")
+    # Gap Analysis section for missing patterns
+    st.subheader("📝 Gap Analysis: Missing Patterns")
     gap_data = gap_analysis or {}
+    missing_patterns = gap_data.get('missing_patterns', [])
 
-    if gap_data and gap_data.get('unmatched_nodes'):
-        unmatched_nodes = gap_data['unmatched_nodes']
-        st.info(f"Found {len(unmatched_nodes)} issue(s) requiring review.")
+    # Show pattern coverage metrics
+    if gap_data:
+        missing_count = stats.get('missing_patterns_count', 0)
+        total_expected = stats.get('total_expected_patterns', 0)
+        coverage_rate = stats.get('pattern_coverage_rate', 0)
 
-        def describe_reason(node: Dict[str, Any]) -> str:
-            reason = node.get('reason')
-            verdict = node.get('verdict')
-            confidence = node.get('confidence')
-            actual_type = node.get('actual_node_type')
+        if total_expected > 0:
+            col_a, col_b, col_c = st.columns(3)
+            with col_a:
+                st.metric("Total Expected Patterns", total_expected)
+            with col_b:
+                st.metric("Missing from XML", missing_count)
+            with col_c:
+                st.metric("Pattern Coverage", f"{coverage_rate:.1f}%")
 
-            if reason == "missing":
-                return "Not found in input XML"
-            if reason == "mismatch":
-                verdict_label = verdict or "NO_MATCH"
-                if actual_type and actual_type != node.get('node_type'):
-                    return f"{verdict_label} (actual: {actual_type})"
-                return f"{verdict_label} against expected pattern"
-            if reason == "low_confidence":
-                pct = f"{confidence * 100:.1f}%" if isinstance(confidence, (float, int)) else "n/a"
-                verdict_label = verdict or "LOW_MATCH"
-                if actual_type and actual_type != node.get('node_type'):
-                    return f"Low confidence ({pct}) - verdict {verdict_label} (actual: {actual_type})"
-                return f"Low confidence ({pct}) - verdict {verdict_label}"
-            return "Review required"
+            st.divider()
 
-        unmatched_table = [{
-            "Node Type": node.get('node_type'),
-            "Actual Node Type": node.get('actual_node_type') or "N/A",
-            "Section Path": node.get('section_path'),
-            "Reason": describe_reason(node),
-            "Expected Pattern": node.get('pattern_section') or "N/A"
-        } for node in unmatched_nodes]
+    if missing_patterns:
+        st.warning(f"⚠️ Found {len(missing_patterns)} pattern variation(s) from the library that did not match the uploaded XML.")
+        st.info("""
+        **What this means**: These are **structural variations** of data elements that exist in the pattern library but were not found in your XML.
 
-        df_unmatched = pd.DataFrame(unmatched_table)
-        st.dataframe(df_unmatched, use_container_width=True, hide_index=True)
+        **Important Notes**:
+        - The element itself (e.g., PaxList) may be present in your XML
+        - However, this specific structural variation (different attributes, child structures, or relationships) was not matched
+        - Multiple patterns can exist for the same node type with different variations
+        - This helps identify which structural variations are missing from your specific message
+        """)
+
+        missing_table = []
+        for pattern in missing_patterns:
+            # Format last seen date
+            last_seen = pattern.get('last_seen_at', 'Never')
+            if last_seen and last_seen != 'Never':
+                try:
+                    from datetime import datetime
+                    last_seen_dt = datetime.fromisoformat(last_seen.replace('Z', '+00:00'))
+                    last_seen = last_seen_dt.strftime('%Y-%m-%d')
+                except:
+                    pass
+
+            missing_table.append({
+                "Pattern ID": f"#{pattern.get('pattern_id', 'Unknown')}",
+                "Node Type": pattern.get('node_type', 'Unknown'),
+                "Section Path": pattern.get('section_path', 'N/A'),
+                "Times Seen": pattern.get('times_seen', 0),
+                "Last Seen": last_seen,
+                "Has Children": "Yes" if pattern.get('has_children', False) else "No",
+                "Required Attributes": ", ".join(pattern.get('must_have_attributes', [])) or "None"
+            })
+
+        df_missing = pd.DataFrame(missing_table)
+        st.dataframe(df_missing, use_container_width=True, hide_index=True)
+
     elif quality_alerts:
-        st.warning("⚠️ Review the quality breaks listed above.")
+        st.warning("⚠️ No missing patterns detected, but review the quality breaks listed above.")
     else:
-        st.success("✅ All expected nodes were found in the input XML.")
+        st.success("✅ All expected patterns from the library were found in the uploaded XML.")
 
     # Detailed match view
     st.divider()
@@ -2232,7 +2343,7 @@ def _render_verify_tab(patterns, workspace=None):
 
             st.caption("Legend: ✅ Valid relationship | ❌ Broken relationship (target not found)")
         else:
-            st.info(f"No relationships discovered for **{node_type}** yet. Relationships are discovered during the Discovery or Identify workflows.")
+            st.info(f"No relationships discovered for **{node_type}** yet. Relationships are discovered during the Pattern Extractor or Discovery workflows.")
 
         # Advanced details in expander (for technical users)
         st.divider()
@@ -2297,14 +2408,15 @@ def _render_verify_tab(patterns, workspace=None):
                     # Node type
                     pattern_prompt += f"1. **Node Type:** Must be exactly '{decision_rule.get('node_type', 'Unknown')}'\n"
 
-                    # Attributes
+                    # Child Elements (stored as 'must_have_attributes' but are actually child elements)
                     must_have_attrs = decision_rule.get('must_have_attributes', [])
                     if must_have_attrs:
-                        pattern_prompt += f"\n2. **Required Attributes (ALL must be present):**\n"
+                        pattern_prompt += f"\n2. **Required Child Elements (ALL must be present as child tags):**\n"
+                        pattern_prompt += f"   Note: These must appear as <ElementName>value</ElementName>, NOT as attributes\n"
                         for attr in must_have_attrs:
-                            pattern_prompt += f"   - {attr} (REQUIRED)\n"
+                            pattern_prompt += f"   - <{attr}> (REQUIRED as child element)\n"
                     else:
-                        pattern_prompt += f"\n2. **Required Attributes:** None specified\n"
+                        pattern_prompt += f"\n2. **Required Child Elements:** None specified\n"
 
                     # Children
                     child_structure = decision_rule.get('child_structure', {})
@@ -2325,12 +2437,12 @@ def _render_verify_tab(patterns, workspace=None):
                                 child_node_type = child_struct.get('node_type', 'Unknown')
                                 pattern_prompt += f"\n   {idx}. Each '{child_node_type}' element MUST have:\n"
 
-                                # Required attributes for child
+                                # Required child elements for this child type
                                 req_attrs = child_struct.get('required_attributes', [])
                                 if req_attrs:
-                                    pattern_prompt += f"      **Required Attributes (ALL must be present):**\n"
+                                    pattern_prompt += f"      **Required Child Elements (ALL must be present as child tags):**\n"
                                     for attr in req_attrs:
-                                        pattern_prompt += f"      - @{attr} (REQUIRED)\n"
+                                        pattern_prompt += f"      - <{attr}> (REQUIRED as child element)\n"
 
                                 # Reference fields for child (these are OPTIONAL, not required)
                                 ref_fields = child_struct.get('reference_fields', [])
@@ -2355,8 +2467,12 @@ def _render_verify_tab(patterns, workspace=None):
                     if pattern.get('description'):
                         pattern_prompt += f"- Description: {pattern['description']}\n"
 
-                    pattern_prompt += f"\n**IMPORTANT:** The XML must match ALL requirements listed above. "
-                    pattern_prompt += f"If ANY required attribute or child type is missing, the verification should FAIL.\n"
+                    pattern_prompt += f"\n**IMPORTANT VALIDATION RULES:**\n"
+                    pattern_prompt += f"1. The XML must match ALL requirements EXPLICITLY listed above\n"
+                    pattern_prompt += f"2. Only check the requirements specified - DO NOT infer additional requirements\n"
+                    pattern_prompt += f"3. If a child element is listed as required (e.g., <Desc>), verify it EXISTS\n"
+                    pattern_prompt += f"4. DO NOT validate the internal structure of child elements UNLESS explicitly specified above\n"
+                    pattern_prompt += f"5. Example: If '<Desc> (REQUIRED)' is listed, just verify <Desc> exists - don't check what's inside Desc unless the pattern explicitly defines it\n"
 
                     # Verify pattern
                     result = verifier.verify_pattern(pattern_prompt, xml_content.strip())
@@ -2369,12 +2485,17 @@ def _render_verify_tab(patterns, workspace=None):
                     st.write("✅ Verification complete!")
                     status.update(label="✅ AI Verification Complete", state="complete")
 
-                except ImportError:
-                    verification_error = "LLM verifier not available. Check that openai package is installed."
+                except ImportError as e:
+                    verification_error = f"LLM verifier not available: {str(e)}\n\nPlease ensure:\n1. openai package is installed in frontend environment\n2. Run: pip install openai==1.3.5"
                     status.update(label="❌ Verification Failed", state="error")
 
                 except Exception as e:
-                    verification_error = f"Verification failed: {str(e)}\n\nError Type: {type(e).__name__}"
+                    # Check if it's a credentials issue
+                    error_str = str(e).lower()
+                    if 'api_key' in error_str or 'api key' in error_str or 'authentication' in error_str:
+                        verification_error = f"❌ LLM credentials not configured\n\nPlease configure Azure OpenAI credentials:\n1. Go to ⚙️ Config page in sidebar\n2. Enter your Azure OpenAI Endpoint and API Key\n3. Click 'Save Configuration'\n4. Restart the application\n\nError: {str(e)}"
+                    else:
+                        verification_error = f"Verification failed: {str(e)}\n\nError Type: {type(e).__name__}"
                     status.update(label="❌ Verification Failed", state="error")
 
             # Display results outside the status block to avoid nesting issues
@@ -2515,7 +2636,7 @@ def show_config_page():
                     st.session_state.current_workspace = candidate
                     st.session_state.pop("config_new_workspace", None)
                     st.success(f"✅ Workspace **'{candidate}'** has been created and is now active!")
-                    st.info(f"💡 The workspace is ready to use. You can now run Discovery or Identify operations in this workspace.")
+                    st.info(f"💡 The workspace is ready to use. You can now run Pattern Extractor or Discovery operations in this workspace.")
                     time.sleep(1.5)  # Brief pause to show the success message
                     st.experimental_rerun()
 
@@ -2533,36 +2654,60 @@ def show_config_page():
             )
             st.warning("⚠️ This will permanently delete the workspace and all its data (patterns, runs, node facts)!")
 
+            # Initialize confirmation state
+            if "delete_workspace_confirmation" not in st.session_state:
+                st.session_state.delete_workspace_confirmation = None
+
             col1, col2 = st.columns(2)
-            with col1:
-                if st.button("🗑️ Delete Workspace", key="config_delete_workspace_btn", use_container_width=True, type="primary"):
-                    if workspace_to_delete in st.session_state.workspaces:
-                        # Remove from workspace list
-                        st.session_state.workspaces.remove(workspace_to_delete)
-                        if not st.session_state.workspaces:
-                            st.session_state.workspaces = ["default"]
-                        save_workspaces(st.session_state.workspaces)
 
-                        # Delete database file from disk (stored in backend/data/workspaces)
-                        import os
-                        backend_workspace_path = Path(__file__).parent.parent.parent / "backend" / "data" / "workspaces" / f"{workspace_to_delete}.db"
-                        if backend_workspace_path.exists():
-                            try:
-                                os.remove(backend_workspace_path)
-                                st.success(f"✅ Workspace '{workspace_to_delete}' and its database deleted.")
-                            except Exception as e:
-                                show_error_with_logs(
-                                    "Failed to delete workspace database file",
-                                    str(e),
-                                    error_type="general"
-                                )
-                        else:
-                            st.success(f"✅ Workspace '{workspace_to_delete}' removed from list (database not found).")
+            # Check if we're in confirmation mode for this specific workspace
+            if st.session_state.delete_workspace_confirmation == workspace_to_delete:
+                st.error(f"⚠️ **Are you sure you want to delete '{workspace_to_delete}'?**")
+                st.markdown("This action cannot be undone!")
 
-                        # Switch to default if current workspace was deleted
-                        if st.session_state.current_workspace == workspace_to_delete:
-                            st.session_state.current_workspace = st.session_state.workspaces[0]
+                confirm_col1, confirm_col2 = st.columns(2)
+                with confirm_col1:
+                    if st.button("✅ Yes, Delete", key="config_confirm_delete_btn", use_container_width=True, type="primary"):
+                        if workspace_to_delete in st.session_state.workspaces:
+                            # Remove from workspace list
+                            st.session_state.workspaces.remove(workspace_to_delete)
+                            if not st.session_state.workspaces:
+                                st.session_state.workspaces = ["default"]
+                            save_workspaces(st.session_state.workspaces)
 
+                            # Delete database file from disk (stored in backend/data/workspaces)
+                            import os
+                            backend_workspace_path = Path(__file__).parent.parent.parent / "backend" / "data" / "workspaces" / f"{workspace_to_delete}.db"
+                            if backend_workspace_path.exists():
+                                try:
+                                    os.remove(backend_workspace_path)
+                                    st.success(f"✅ Workspace '{workspace_to_delete}' and its database deleted.")
+                                except Exception as e:
+                                    show_error_with_logs(
+                                        "Failed to delete workspace database file",
+                                        str(e),
+                                        error_type="general"
+                                    )
+                            else:
+                                st.success(f"✅ Workspace '{workspace_to_delete}' removed from list (database not found).")
+
+                            # Switch to default if current workspace was deleted
+                            if st.session_state.current_workspace == workspace_to_delete:
+                                st.session_state.current_workspace = st.session_state.workspaces[0]
+
+                            # Reset confirmation state
+                            st.session_state.delete_workspace_confirmation = None
+                            st.rerun()
+
+                with confirm_col2:
+                    if st.button("❌ Cancel", key="config_cancel_delete_btn", use_container_width=True):
+                        st.session_state.delete_workspace_confirmation = None
+                        st.rerun()
+            else:
+                # Show initial delete button
+                with col1:
+                    if st.button("🗑️ Delete Workspace", key="config_delete_workspace_btn", use_container_width=True, type="primary"):
+                        st.session_state.delete_workspace_confirmation = workspace_to_delete
                         st.rerun()
 
             with col2:
@@ -2843,20 +2988,33 @@ def show_node_manager_page():
         st.subheader("Upload XML to Discover Nodes")
         st.write("Upload an XML file to analyze its structure and create configurations")
 
+        # Initialize upload counter for clearing file uploader
+        if 'node_upload_counter' not in st.session_state:
+            st.session_state.node_upload_counter = 0
+
         col_upload, col_clear = st.columns([4, 1])
 
         with col_upload:
-            uploaded_file = st.file_uploader("Choose XML file", type=['xml'], key="node_config_upload")
+            # Use dynamic key to force widget reset when cleared
+            uploaded_file = st.file_uploader(
+                "Choose XML file",
+                type=['xml'],
+                key=f"node_config_upload_{st.session_state.node_upload_counter}"
+            )
 
         with col_clear:
             if 'analyzed_nodes' in st.session_state:
                 st.write("")  # Spacer
                 st.write("")  # Spacer
                 if st.button("🔄 Clear & New Upload", help="Clear current analysis and upload a new file"):
+                    # Clear session state
                     del st.session_state.analyzed_nodes
                     st.session_state.pop('node_checked_paths_raw', None)
                     st.session_state.pop('node_checked_paths_effective', None)
                     st.session_state.pop('last_uploaded_file', None)
+                    st.session_state.pop('shared_xml_file', None)  # Clear shared file
+                    # Increment counter to reset file uploader widget
+                    st.session_state.node_upload_counter += 1
                     st.rerun()
 
         if uploaded_file:
@@ -2902,6 +3060,15 @@ def show_node_manager_page():
                         # Store in session state for editing
                         st.session_state.analyzed_nodes = merge_existing_configs(result, workspace=current_workspace)
                         st.session_state.last_uploaded_file = uploaded_file.name
+
+                        # Store file for sharing with Pattern Extractor page
+                        uploaded_file.seek(0)  # Reset file pointer to beginning
+                        st.session_state.shared_xml_file = {
+                            'name': uploaded_file.name,
+                            'size': uploaded_file.size,
+                            'content': uploaded_file.getvalue(),
+                            'source': 'Node Manager'
+                        }
                         # Clear selection state to force reload from saved configurations
                         if 'node_checked_paths_raw' in st.session_state:
                             del st.session_state.node_checked_paths_raw
@@ -3272,8 +3439,8 @@ def render_sidebar() -> str:
             'node_checked_paths_raw',
             'node_checked_paths_effective',
             'node_configs',
-            'discovery_selected_run',
-            'identify_current_run'
+            'pattern_extractor_selected_run',
+            'discovery_current_run'
         ]
 
         for key in workspace_specific_keys:

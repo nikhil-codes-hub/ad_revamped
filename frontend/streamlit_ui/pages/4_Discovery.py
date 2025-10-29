@@ -10,8 +10,8 @@ from app_core import (
 
 def main() -> None:
     st.set_page_config(
-        page_title="🔬 Discovery",
-        page_icon="🔬",
+        page_title="🎯 Discovery",
+        page_icon="🎯",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -20,8 +20,8 @@ def main() -> None:
         st.error("⚠️ Backend API is not responding. Please start the FastAPI server.")
         st.stop()
 
-    render_sidebar()
-    show_discovery_page()
+    current_workspace = render_sidebar()
+    show_discovery_page(current_workspace=current_workspace)
     render_sidebar_footer()
 
 

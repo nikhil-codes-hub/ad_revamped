@@ -52,13 +52,13 @@
 
 ---
 
-### **Act 2: Discovery Workflow - The Core Magic (7 minutes)**
+### **Act 2: Pattern Extractor Workflow - The Core Magic (7 minutes)**
 
 **What to say:**
-> "Let me show you how AssistedDiscovery analyzes an XML file we've never seen before."
+> "Let me show you how AssistedDiscovery analyzes an existing airline's XML file to build reusable patterns."
 
 **Steps:**
-1. **Click "🔬 Discovery" in sidebar**
+1. **Click "🔬 Pattern Extractor" in sidebar**
 
 2. **Upload XML File**
    - Drag and drop or browse
@@ -67,7 +67,7 @@
      - ✅ NDC Version: 19.2
      - ✅ Airline Code: (if present)
 
-3. **Click "🚀 Start Discovery"**
+3. **Click "🚀 Start Pattern Extraction"**
    - Show progress indicator
    - Explain: "The AI is extracting node structures, finding relationships, and generating reusable patterns"
 
@@ -87,7 +87,7 @@
    **Patterns Tab:**
    - "These are reusable templates generated from this analysis"
    - Click on a pattern to show decision rule
-   - Explain: "These patterns can now validate future XML files"
+   - Explain: "These patterns can now validate future XML files from NEW airlines"
 
 **Key Talking Points:**
 - ✨ Fully automated - no manual template writing
@@ -114,7 +114,7 @@
 
 4. **Key Point:**
    - "This gives BAs control - you define what matters"
-   - "Next Discovery run will validate YOUR expectations"
+   - "Next Pattern Extraction run will validate YOUR expectations"
 
 **What makes this powerful:**
 - 🎯 BA defines business rules
@@ -123,18 +123,18 @@
 
 ---
 
-### **Act 4: Identify Workflow - Validation (4 minutes)**
+### **Act 4: Discovery Workflow - Validation (4 minutes)**
 
 **What to say:**
-> "Now that we have patterns, let's validate a NEW XML file against them."
+> "Now that we have patterns from existing airlines, let's validate a NEW airline's XML against them."
 
 **Steps:**
-1. **Click "🎯 Identify" in sidebar**
+1. **Click "🎯 Discovery" in sidebar**
 
-2. **Upload a DIFFERENT OrderViewRS XML** (same version)
+2. **Upload a DIFFERENT OrderViewRS XML** (new airline, same version)
 
-3. **Click "🔍 Start Identify"**
-   - Faster than Discovery (30 seconds vs 2-5 minutes)
+3. **Click "🔍 Start Discovery"**
+   - Faster than Pattern Extraction (30 seconds vs 2-5 minutes)
 
 4. **Show Results:**
 
@@ -441,8 +441,8 @@ If total system failure, pivot to system design presentation
 ## 🔥 YOUR CONFIDENCE BOOSTERS
 
 ### What's Working GREAT ✅
-1. ✅ **Discovery workflow** - 100% functional, tested
-2. ✅ **Identify workflow** - Confidence scoring validated
+1. ✅ **Pattern Extractor workflow** - 100% functional, tested
+2. ✅ **Discovery workflow** - Confidence scoring validated
 3. ✅ **Pattern generation** - Deduplication working
 4. ✅ **Relationship discovery** - Unique differentiator
 5. ✅ **Multi-version support** - 17.2, 18.1, 19.2, 21.3

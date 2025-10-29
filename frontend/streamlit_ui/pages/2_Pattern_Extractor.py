@@ -4,14 +4,14 @@ from app_core import (
     render_sidebar,
     render_sidebar_footer,
     check_api_health,
-    show_identify_page,
+    show_pattern_extractor_page,
 )
 
 
 def main() -> None:
     st.set_page_config(
-        page_title="🎯 Identify",
-        page_icon="🎯",
+        page_title="🔬 Pattern Extractor",
+        page_icon="🔬",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -20,8 +20,8 @@ def main() -> None:
         st.error("⚠️ Backend API is not responding. Please start the FastAPI server.")
         st.stop()
 
-    current_workspace = render_sidebar()
-    show_identify_page(current_workspace=current_workspace)
+    render_sidebar()
+    show_pattern_extractor_page()
     render_sidebar_footer()
 
 

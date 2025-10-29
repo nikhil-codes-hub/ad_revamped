@@ -10,7 +10,7 @@ from app_core import (
 def show_home_page():
     """Display the main AssistedDiscovery landing page."""
     st.title("🔍 AssistedDiscovery")
-    st.caption("AI-Powered NDC XML Analysis & Pattern Discovery")
+    st.caption("AI-Powered NDC XML Analysis & Pattern Discovery | Version 2.0.0")
 
     # Current Status
     current_workspace = st.session_state.get("current_workspace", "default")

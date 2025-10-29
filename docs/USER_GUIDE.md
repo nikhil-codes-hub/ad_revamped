@@ -7,9 +7,9 @@
 3. [Configuration](#configuration)
 4. [Core Workflows](#core-workflows)
 5. [Node Configuration](#node-configuration)
-6. [Discovery Workflow](#discovery-workflow)
+6. [Pattern Extractor Workflow](#pattern-extractor-workflow)
 7. [Pattern Manager](#pattern-manager)
-8. [Identify Workflow](#identify-workflow)
+8. [Discovery Workflow](#discovery-workflow)
 9. [Workspaces](#workspaces)
 10. [Troubleshooting](#troubleshooting)
 11. [Best Practices](#best-practices)
@@ -34,9 +34,9 @@ AssistedDiscovery is an AI-powered tool that helps you understand and document N
 
 **Relationship**: A reference from one node to another (e.g., Passenger → Segment)
 
-**Discovery**: The process of analyzing XML structure and generating reusable patterns
+**Pattern Extractor**: The process of analyzing XML structure and generating reusable patterns from existing airline XML
 
-**Identify**: The process of comparing XML against known patterns
+**Discovery**: The process of comparing XML against known patterns to validate new airlines
 
 **Workspace**: An isolated environment for a specific airline or project
 
@@ -46,7 +46,7 @@ AssistedDiscovery uses **Large Language Models (LLMs)** to analyze XML structure
 
 **⚠️ Results May Vary**:
 - **LLMs can make mistakes**: Like humans, AI can misinterpret or miss information
-- **Non-deterministic**: Running Discovery/Identify on the same XML file multiple times may produce slightly different results
+- **Non-deterministic**: Running Pattern Extractor or Discovery on the same XML file multiple times may produce slightly different results
 - **Confidence scores matter**: Always review low-confidence matches (< 85%)
 - **Human validation required**: Treat results as AI-assisted suggestions, not absolute truth
 
@@ -123,7 +123,7 @@ Your feedback helps improve AssistedDiscovery. Please report:
 
 ### Quick Start: Create a Workspace
 
-Before running Discovery, you should create a **workspace** for your project or airline.
+Before running Pattern Extractor or Discovery, you should create a **workspace** for your project or airline.
 
 **What is a Workspace?**
 A workspace is an isolated environment that stores all your data (patterns, runs, configurations) separately. Think of it as a project folder.
@@ -165,7 +165,7 @@ Workspaces:
 └─ Testing       (For experiments)
 ```
 
-**Important**: Always check which workspace you're in before running Discovery or Identify!
+**Important**: Always check which workspace you're in before running Pattern Extractor or Discovery!
 
 For detailed workspace management, see the [Workspaces](#workspaces) section.
 
@@ -336,7 +336,7 @@ Workspace: [WestJet ▼]
 
 AssistedDiscovery has four main workflows:
 
-### 1. Discovery Workflow 🔍
+### 1. Pattern Extractor Workflow 🔬
 
 **Purpose**: Analyze existing airline XML files to extract and generate reusable patterns
 
@@ -354,12 +354,12 @@ AssistedDiscovery has four main workflows:
 
 ---
 
-### 2. Identify Workflow 🎯
+### 2. Discovery Workflow 🎯
 
 **Purpose**: Validate XML from new/unknown airlines against saved patterns from existing airlines
 
 **When to use**:
-- After Discovery has generated patterns from existing airlines
+- After Pattern Extractor has generated patterns from existing airlines
 - Validating new airline XML files against known patterns
 - Checking how closely new airline matches existing patterns
 - Identifying deviations and differences from standard patterns
@@ -407,13 +407,13 @@ Node Configuration tells AssistedDiscovery **which nodes to extract** and **what
 
 ### Why Configure Nodes?
 
-Node configuration is **required** before running Discovery. You must configure which nodes to extract from your XML.
+Node configuration is **required** before running Pattern Extractor. You must configure which nodes to extract from your XML.
 
 **Benefits**:
 - ✅ **Controlled Extraction**: Only extract nodes you care about
 - ✅ **Better Relationships**: Define expected references between nodes
 - ✅ **Consistent Results**: Same extraction rules across runs
-- ✅ **Required Step**: Discovery will only extract nodes that are configured and enabled
+- ✅ **Required Step**: Pattern Extractor will only extract nodes that are configured and enabled
 
 ### Access Node Configuration
 
@@ -496,7 +496,7 @@ Node configuration is **required** before running Discovery. You must configure 
      ✅ Saved 47 node configurations!
         • 9 parent nodes enabled for extraction
      💡 Configurations saved successfully. Parent nodes will auto-extract
-        their descendants during Discovery.
+        their descendants during Pattern Extraction.
      ```
 
 #### Important Notes:
@@ -517,7 +517,7 @@ To **disable** a node that was previously enabled for extraction:
 
 **What happens when you disable a node:**
 - The node is marked as `enabled = false` in the database
-- The node will **NOT be extracted** during Discovery
+- The node will **NOT be extracted** during Pattern Extraction
 - All descendants of that node will also be skipped during extraction
 - The configuration remains saved but inactive
 
@@ -534,7 +534,7 @@ When you save, you'll see:
    • 1 parent node disabled (not extracted)
 ```
 
-**Important**: Disabling a parent node automatically disables all its descendants. They will not be extracted during Discovery, even if they were previously enabled.
+**Important**: Disabling a parent node automatically disables all its descendants. They will not be extracted during Pattern Extraction, even if they were previously enabled.
 
 #### Re-loading Your Configuration:
 
@@ -562,25 +562,25 @@ The table shows all configured nodes:
 
 ## Discovery Workflow
 
-Discovery is the core workflow that extracts structure and relationships from XML.
+Discovery is the workflow that validates new airline XML against known patterns from existing airlines.
 
 ### When to Run Discovery
 
-**For Existing Airlines**:
-- Analyzing known/existing airline XML formats
-- Creating pattern library from existing airline data
-- Documenting standard XML structures
+**For New/Unknown Airlines**:
+- Validating new airline XML formats against known patterns
+- Checking compliance with existing airline patterns
+- Identifying deviations from standard structures
 
-**Periodic Updates**:
-- XML structure changes in existing airlines
-- New fields added to existing patterns
-- Updating pattern library
+**Quality Assurance**:
+- Regression testing after XML changes
+- Validating updated airline implementations
+- Detecting breaking changes
 
 ### Step-by-Step: Running Discovery
 
 #### Step 1: Access Discovery Page
 
-Click **🔍 Discovery** in the sidebar
+Click **🎯 Discovery** in the sidebar
 
 #### Step 2: Select Workspace
 
@@ -625,7 +625,7 @@ Airline: WS (WestJet)
 
 #### Step 5: Start Discovery
 
-Click **🚀 Start Discovery** button
+Click **🔍 Start Discovery** button
 
 **What Happens Next**:
 
@@ -634,7 +634,7 @@ Click **🚀 Start Discovery** button
    🔍 Detecting NDC version and message type...
    ```
 
-2. **Node Extraction** (1-3 minutes)
+2. **Node Extraction** (1-2 minutes)
    ```
    📥 Extracting node structures from XML...
    Progress: [=========>          ] 45%
@@ -643,21 +643,21 @@ Click **🚀 Start Discovery** button
    - Sends subtrees to LLM for analysis
    - LLM extracts structure information
 
-3. **Relationship Analysis** (1-2 minutes)
+3. **Pattern Matching** (30 seconds)
    ```
-   🔗 Analyzing relationships between nodes...
+   🎯 Matching against known patterns...
    ```
-   - Discovers references between nodes
-   - Validates expected references
-   - Classifies relationships
+   - Compares extracted nodes to existing patterns
+   - Calculates confidence scores
+   - Classifies match verdicts
 
-4. **Pattern Generation** (30 seconds)
+4. **Gap Analysis** (10 seconds)
    ```
-   🎨 Generating reusable patterns...
+   📊 Analyzing deviations and new patterns...
    ```
-   - Creates pattern templates from extracted node structures
-   - Deduplicates similar patterns
-   - Stores for future Identify runs
+   - Identifies new patterns not in library
+   - Calculates match statistics
+   - Generates deviation report
 
 5. **Completion**
    ```
@@ -686,126 +686,133 @@ Airline: WS (WestJet)
 
 ---
 
-### Discovery Results: Statistics
+### Discovery Results: Pattern Matching Summary
 
 ```
-📈 Extraction Statistics
+📊 Pattern Matching Results
 
-Nodes Analyzed: 47
-Relationships Found: 18
-Patterns Generated: 12
+Total Nodes Analyzed: 45
+Match Rate: 87.5%
 
-Breakdown by Section:
-├─ PassengerList: 8 nodes
-├─ SegmentList: 6 nodes
-├─ FareList: 12 nodes
-├─ ServiceList: 5 nodes
-└─ Order: 16 nodes
+Verdict Breakdown:
+✅ EXACT_MATCH: 32 (71%)
+🟡 HIGH_MATCH: 7 (16%)
+🟠 PARTIAL_MATCH: 3 (7%)
+⚪ NO_MATCH: 2 (4%)
+🔴 NEW_PATTERN: 1 (2%)
 ```
+
+**What the verdicts mean**:
+
+**EXACT_MATCH** ✅ (Confidence ≥ 95%):
+- Node perfectly matches known pattern
+- All must-have attributes present
+- Structure identical
+
+**HIGH_MATCH** 🟡 (Confidence 85-95%):
+- Close match to pattern
+- Minor differences (optional fields)
+- Generally acceptable
+
+**PARTIAL_MATCH** 🟠 (Confidence 70-85%):
+- Some differences from pattern
+- Missing some expected fields or extra fields
+- Review recommended
+
+**LOW_MATCH/NO_MATCH** ⚪ (Confidence < 70%):
+- Significant deviation from pattern
+- Structure changed
+- Investigation required
+
+**NEW_PATTERN** 🔴:
+- No matching pattern found
+- Completely new node structure
+- Consider running Pattern Extractor
 
 ---
 
-### Discovery Results: Relationships
+### Discovery Results: Pattern Matches Table
 
-```
-🔗 Relationship Summary
-
-✅ Valid Relationships: 15
-❌ Broken Relationships: 3
-📋 Expected Validated: 12
-⚠️ Expected Missing: 2
-🔍 Unexpected Discovered: 4
-```
-
-**Expand to see details**:
-
-**Expected & Validated** ✅📋:
-```
-PassengerList → SegmentList
-Reference: SegmentRefID
-Status: Valid
-Confidence: 95%
-```
-
-**Expected but Missing** ❌📋:
-```
-PassengerList → ServiceList
-Reference: ServiceRefID (expected but not found)
-Status: Broken
-```
-
-**Unexpected Discoveries** ✅🔍:
-```
-PassengerList → BaggageList
-Reference: BaggageRefID
-Status: Valid (newly discovered)
-Confidence: 87%
-Note: This reference was not configured but AI found it
-```
+| Node Type | Section Path | Explanation | Confidence | Verdict |
+|-----------|-------------|-------------|------------|---------|
+| Passenger | PassengerList | Perfect match: All expected fields present | 100% | EXACT_MATCH ✅ |
+| Segment | SegmentList | Close match: Optional field 'OperatingCarrier' missing | 89% | HIGH_MATCH 🟡 |
+| Service | ServiceList | No matching pattern found | N/A | NEW_PATTERN 🔴 |
 
 ---
 
-### Discovery Results: Generated Patterns
+### Discovery Results: Gap Analysis
 
 ```
-🎨 Generated Patterns: 12
+🔍 Gap Analysis
 
-Patterns are now available in Pattern Manager for:
-- Future validation (Identify workflow)
-- Export/documentation
-- Cross-airline comparison
+New Patterns Discovered: 1
+Structural Deviations: 3
+Match Coverage: 87.5%
+
+Missing Patterns:
+• ServiceList (no matching pattern in library)
+
+Deviations from Expected:
+• Segment - optional field 'OperatingCarrier' missing
+• Fare - extra field 'PromoCode' not in pattern
+• Order - child structure differs slightly
 ```
 
-Click **View in Pattern Manager** to see patterns.
+Click **View Detailed Comparison** to analyze deviations.
 
 ---
 
 ### Common Discovery Scenarios
 
-#### Scenario 1: Creating Patterns from Existing Airline
+#### Scenario 1: Validating New Airline Against Known Patterns
 
-**Situation**: Analyzing an existing airline's XML to create reusable patterns.
+**Situation**: Validating new airline XML against patterns from existing airlines.
+
+**Steps**:
+1. Select workspace containing patterns from existing airlines
+2. Upload new airline's XML file
+3. Run Discovery
+4. Review pattern matches:
+   - EXACT_MATCH = perfect compliance
+   - HIGH_MATCH = minor variations
+   - NEW_PATTERN = unique structures
+
+**Result**: Validation report showing how well new airline conforms to existing patterns.
+
+---
+
+#### Scenario 2: Detecting Breaking Changes
+
+**Situation**: Airline updated their XML structure, need to detect changes.
+
+**Steps**:
+1. Use the workspace for that airline (e.g., `WestJet`)
+2. Upload updated XML file
+3. Run Discovery
+4. Compare results:
+   - NEW_PATTERN verdicts = new structures added
+   - NO_MATCH verdicts = structures removed/changed
+   - Reduced confidence scores = structural modifications
+
+**Result**: Change detection report highlighting breaking changes.
+
+---
+
+#### Scenario 3: Creating Patterns from Existing Airline (Use Pattern Extractor Instead)
+
+**Situation**: Building initial pattern library from existing airline XML.
+
+**Action**: Use **Pattern Extractor Workflow** instead of Discovery.
 
 **Steps**:
 1. Create new workspace: `Airline_Code` (e.g., `WestJet`)
 2. Configure nodes in Node Config (select which nodes to extract)
 3. Upload existing airline XML file
-4. Run Discovery
-5. Review generated patterns and relationships
+4. Run **Pattern Extractor** (not Discovery)
+5. Review generated patterns
 
-**Result**: Pattern library created for this existing airline, ready for future Identify operations with new airlines.
-
----
-
-#### Scenario 2: Updating Existing Patterns
-
-**Situation**: Existing airline's XML structure has changed, need to update patterns.
-
-**Steps**:
-1. Use the existing workspace for that airline (e.g., `WestJet`)
-2. Upload updated XML file with new structure
-3. Run Discovery
-4. Compare:
-   - New relationships discovered = structural additions
-   - Missing expected references = structural changes
-
-**Result**: Updated pattern library reflecting new structure.
-
----
-
-#### Scenario 3: Validating New Airline (Use Identify Instead)
-
-**Situation**: New airline XML needs validation against existing patterns.
-
-**Action**: Use **Identify Workflow** instead of Discovery.
-
-**Steps**:
-1. Use workspace containing patterns from existing airlines
-2. Upload new airline's XML file
-3. Run **Identify** (not Discovery)
-4. Review pattern matches to see how closely new airline matches existing patterns
-
-**Result**: Compatibility report showing how well new airline conforms to known patterns.
+**Result**: Pattern library created for future Discovery validation of new airlines.
 
 ---
 
@@ -946,32 +953,34 @@ Sample XML snippets that match this pattern
 
 ---
 
-## Identify Workflow
+## Pattern Extractor Workflow
 
-Identify validates new XML files against existing patterns.
+Pattern Extractor analyzes existing airline XML to extract and generate reusable patterns.
 
-### When to Use Identify
+### When to Use Pattern Extractor
 
-**For New/Unknown Airlines**:
-- You've run Discovery on existing airlines and generated patterns
-- Now you want to validate new airline XML files against those patterns
+**For Existing Airlines**:
+- You have XML from known/existing airlines
+- Need to build initial pattern library for future validation
+- Want to document standard XML structures
 
 **Use Cases**:
-- New Airline Validation: Check how closely a new airline's XML matches existing patterns
-- Compliance Testing: Verify new airline follows standard structures
-- Deviation Detection: Identify differences from known patterns
-- Onboarding: Assess compatibility of new airline XML with existing systems
+- Pattern Library Creation: Extract patterns from reference airline XML
+- Documentation: Generate reusable pattern templates
+- Baseline Establishment: Create standard patterns for comparison
+- Knowledge Base Building: Store structural knowledge from existing implementations
 
 ### Prerequisites
 
-✅ **Patterns must exist** in workspace (from Discovery)
-✅ **Patterns must match XML type** (same message_root)
+✅ **Node Configuration** must be set up (which nodes to extract)
+✅ **Workspace** should be created for the airline
+✅ **XML file** from existing/known airline
 
-### Step-by-Step: Running Identify
+### Step-by-Step: Running Pattern Extractor
 
-#### Step 1: Access Identify Page
+#### Step 1: Access Pattern Extractor Page
 
-Click **🎯 Identify** in sidebar
+Click **🔬 Pattern Extractor** in sidebar
 
 #### Step 2: Select Workspace
 
@@ -979,185 +988,110 @@ Click **🎯 Identify** in sidebar
 Workspace: [Dropdown]
 ```
 
-Same workspace where you ran Discovery.
+Select workspace for this airline.
 
 #### Step 3: Upload XML File
 
-- Upload the XML file you want to validate
-- Must be same message type as patterns (e.g., OrderViewRS)
+- Upload existing airline XML file
+- System will auto-detect message type and version
 
-**Version Compatibility**:
-- ✅ Same version as patterns: Full validation
-- ⚠️ Different version: Partial validation (structure may differ)
+**Supported Types**:
+- ✅ OrderViewRS, AirShoppingRS, OfferPriceRS, etc.
+- ✅ All NDC versions (17.2, 18.1, 19.2, 21.3)
 
-#### Step 4: Start Identify
+#### Step 4: Start Pattern Extraction
 
-Click **🔍 Start Identify**
+Click **🚀 Start Pattern Extraction**
 
 **What Happens**:
 
-1. **Extract Node Structures** (1-2 minutes)
-   - Same extraction as Discovery
-   - Analyzes relationships between nodes
-   - No pattern generation
+1. **Extract Node Structures** (1-3 minutes)
+   - Parses XML into subtrees
+   - Sends to LLM for structure analysis
+   - Extracts node attributes and children
 
-2. **Match Against Patterns** (30 seconds)
-   - Compare each extracted node to existing patterns
-   - Compare relationships against expected patterns
-   - Calculate similarity scores
-   - Classify matches
+2. **Analyze Relationships** (1-2 minutes)
+   - Discovers references between nodes
+   - Validates expected references
+   - Classifies relationship types
 
-3. **Generate Report** (instant)
+3. **Generate Patterns** (30 seconds)
+   - Creates reusable pattern templates
+   - Deduplicates similar patterns
+   - Stores in pattern library
 
----
-
-### Identify Results
-
-#### Pattern Matching Summary
-
-```
-📊 Pattern Matching Results
-
-Total Nodes Analyzed: 45
-Match Rate: 87.5%
-
-Verdict Breakdown:
-✅ EXACT_MATCH: 32 (71%)
-🟡 HIGH_MATCH: 7 (16%)
-🟠 PARTIAL_MATCH: 3 (7%)
-⚪ NO_MATCH: 2 (4%)
-🔴 NEW_PATTERN: 1 (2%)
-```
-
-**What the verdicts mean**:
-
-**EXACT_MATCH** ✅ (Confidence ≥ 95%):
-- Node perfectly matches known pattern
-- All must-have attributes present
-- Structure identical
-
-**HIGH_MATCH** 🟡 (Confidence 85-95%):
-- Close match to pattern
-- Minor differences (optional fields)
-- Generally acceptable
-
-**PARTIAL_MATCH** 🟠 (Confidence 70-85%):
-- Some differences from pattern
-- Missing some expected fields or extra fields
-- Review recommended
-
-**LOW_MATCH/NO_MATCH** ⚪ (Confidence < 70%):
-- Significant deviation from pattern
-- Structure changed
-- Investigation required
-
-**NEW_PATTERN** 🔴:
-- No matching pattern found
-- Completely new node structure
-- Consider running Discovery
+4. **Complete** (instant)
 
 ---
 
-#### Pattern Matches Table
+### Pattern Extractor Results
 
-| Node Type | Section Path | Explanation | Confidence | Verdict |
-|-----------|-------------|-------------|------------|---------|
-| Passenger | PassengerList | Perfect match: All expected fields present | 100% | EXACT_MATCH ✅ |
-| Segment | SegmentList | Close match: Optional field 'OperatingCarrier' missing | 89% | HIGH_MATCH 🟡 |
-| Service | ServiceList | No matching pattern found | N/A | NEW_PATTERN 🔴 |
-
----
-
-#### Detailed Match Analysis
-
-**Click any match to see detailed comparison**:
-
-**Match Summary**:
-```
-Node: Passenger at /PassengerList
-Pattern ID: 42
-Verdict: HIGH_MATCH 🟡
-Confidence: 89%
-```
-
-**Quick Explanation**:
-```
-✅ Strong match: 'Passenger' closely matches the expected pattern
-with 89% confidence. Optional field 'MiddleName' is present but not required.
-```
-
-**Detailed Comparison**:
-
-**Attributes**:
-```
-✅ Matched: PaxID, GivenName, Surname, PaxRefID
-✅ Extra (OK): MiddleName (optional field present)
-❌ Missing: (none)
-```
-
-**Children**:
-```
-✅ Matched: ContactInfo
-✅ Extra: FrequentFlyer (bonus data)
-❌ Missing: (none)
-```
-
-**References**:
-```
-✅ Matched: SegmentRefID → SegmentList
-✅ Matched: FareRefID → FareList
-```
-
-**Full JSON Comparison**:
-- Expand to see side-by-side comparison of extracted node vs known pattern
-
----
-
-#### Get AI Explanation
-
-**For complex deviations**, click **🤖 Get Detailed AI Explanation**:
+#### Extraction Summary
 
 ```
-🤖 AI Analysis
+📊 Pattern Extraction Results
 
-The Passenger node in this XML file is structurally similar to the
-known pattern, with 89% confidence. The main differences are:
+Total Nodes Extracted: 47
+Relationships Found: 18
+Patterns Generated: 12
 
-1. Additional Field: 'MiddleName' is present but was marked optional
-   in the pattern. This is acceptable and common for middle name variations.
-
-2. All required fields are present: PaxID, GivenName, Surname match
-   the pattern requirements exactly.
-
-3. References are valid: Both SegmentRefID and FareRefID correctly
-   point to existing nodes in the XML.
-
-Recommendation: This is a HIGH_MATCH and acceptable variation. No
-action needed unless 'MiddleName' should be mandatory.
+Breakdown by Section:
+├─ PassengerList: 8 nodes
+├─ SegmentList: 6 nodes
+├─ FareList: 12 nodes
+├─ ServiceList: 5 nodes
+└─ Order: 16 nodes
 ```
 
-**Cached**: Explanations are cached for performance.
+#### Relationship Analysis
 
----
+```
+🔗 Relationship Summary
 
-### Identify Workflow Tips
+✅ Valid Relationships: 15
+❌ Broken Relationships: 3
+📋 Expected Validated: 12
+⚠️ Expected Missing: 2
+🔍 Unexpected Discovered: 4
+```
 
-**Best Practices**:
+**Expected & Validated** ✅📋:
+```
+PassengerList → SegmentList
+Reference: SegmentRefID
+Status: Valid
+Confidence: 95%
+```
 
-1. **Run Discovery First**: Always have patterns before Identify
-2. **Same Message Type**: Identify OrderViewRS against OrderViewRS patterns
-3. **Review NEW_PATTERN**: These may indicate structure changes
-4. **Investigate NO_MATCH**: Could be data quality issues
+**Expected but Missing** ❌📋:
+```
+PassengerList → ServiceList
+Reference: ServiceRefID (expected but not found)
+Status: Broken
+```
 
-**Common Issues**:
+**Unexpected Discoveries** ✅🔍:
+```
+PassengerList → BaggageList
+Reference: BaggageRefID
+Status: Valid (newly discovered)
+Confidence: 87%
+Note: This reference was not configured but AI found it
+```
 
-**"No pattern matches found"**:
-- Cause: No patterns exist for this message type
-- Solution: Run Discovery first to generate patterns
+#### Generated Patterns
 
-**Low confidence scores**:
-- Cause: XML structure changed since Discovery
-- Solution: Review differences, possibly re-run Discovery
+```
+🎨 Generated Patterns: 12
+
+Patterns are now available in Pattern Manager for:
+- Future validation (Discovery workflow)
+- Export/documentation
+- Cross-airline comparison
+```
+
+Click **View in Pattern Manager** to see patterns.
+
 
 ---
 
@@ -1360,9 +1294,9 @@ When you see an error, always check the log files for detailed information:
 
 ---
 
-### Discovery/Identify Issues
+### Pattern Extraction/Discovery Issues
 
-#### "No patterns extracted"
+#### "No patterns extracted" (Pattern Extractor)
 
 **Causes**:
 - XML file empty or corrupted
@@ -1387,11 +1321,11 @@ When you see an error, always check the log files for detailed information:
 
 ---
 
-#### "No patterns found" when running Identify
+#### "No patterns found" when running Discovery
 
 **Cause**: No patterns exist for this message type/version
 
-**Solution**: Run Discovery first to generate patterns
+**Solution**: Run Pattern Extractor first to generate patterns
 
 **Example**:
 ```
@@ -1402,8 +1336,8 @@ Your XML: 21.3/AirShoppingRS
 ```
 
 **Fix**: Either:
-- Run Discovery on AirShoppingRS to create patterns
-- Use OrderViewRS file for Identify
+- Run Pattern Extractor on AirShoppingRS to create patterns
+- Use OrderViewRS file for Discovery
 
 ---
 
@@ -1417,7 +1351,7 @@ Your XML: 21.3/AirShoppingRS
 **Solutions**:
 
 1. **Check Logs**: Look for specific error
-2. **Retry**: Re-run Discovery
+2. **Retry**: Re-run Pattern Extractor or Discovery
 3. **Smaller XML**: Try with smaller sample file first
 4. **Increase Timeout**: Contact administrator if persistent
 
@@ -1468,7 +1402,7 @@ Your XML: 21.3/AirShoppingRS
 
 **Solutions**:
 
-1. **Wait**: Discovery/Identify can take 3-5 minutes
+1. **Wait**: Pattern Extractor can take 3-5 minutes, Discovery 30 seconds
 2. **Check Logs**: Backend logs show progress
 3. **Refresh**: Ctrl+F5 (hard refresh)
 4. **Clear Cache**: Browser → Clear cache and cookies
@@ -1495,7 +1429,7 @@ Your XML: 21.3/AirShoppingRS
 
 ### Performance Issues
 
-#### Discovery is very slow (>10 minutes)
+#### Pattern Extractor is very slow (>10 minutes)
 
 **Causes**:
 - Large XML file (>10MB)
@@ -1505,7 +1439,7 @@ Your XML: 21.3/AirShoppingRS
 **Solutions**:
 
 1. **Configure Nodes**: Only extract important nodes
-2. **Smaller Sample**: Use smaller XML file for initial Discovery
+2. **Smaller Sample**: Use smaller XML file for initial pattern extraction
 3. **Check Logs**: See which step is slow
 
 ---
@@ -1527,18 +1461,18 @@ Your XML: 21.3/AirShoppingRS
 
 ## Best Practices
 
-### Discovery Workflow
+### Pattern Extractor Workflow
 
 **Do**:
-- ✅ Configure expected references before Discovery
+- ✅ Configure expected references before pattern extraction
 - ✅ Use representative XML samples (not minimal test files)
 - ✅ Review unexpected discoveries (they may reveal issues)
-- ✅ Run Discovery when XML format changes
+- ✅ Run Pattern Extractor when building initial pattern library
 - ✅ Use one workspace per airline/project
 
 **Don't**:
 - ❌ Skip node configuration for important nodes
-- ❌ Run Discovery on every single file (use Identify instead)
+- ❌ Run Pattern Extractor on every single file (use Discovery instead for validation)
 - ❌ Ignore broken references (investigate root cause)
 - ❌ Mix airlines in same workspace
 
@@ -1559,18 +1493,18 @@ Your XML: 21.3/AirShoppingRS
 
 ---
 
-### Identify Workflow
+### Discovery Workflow
 
 **Do**:
-- ✅ Run Identify on test files before production
+- ✅ Run Discovery on test files before production
 - ✅ Investigate NEW_PATTERN verdicts
-- ✅ Use Identify for regression testing
-- ✅ Archive identify results for audit trail
+- ✅ Use Discovery for regression testing
+- ✅ Archive discovery results for audit trail
 
 **Don't**:
 - ❌ Ignore low confidence matches
-- ❌ Run Identify without patterns
-- ❌ Skip AI explanations for deviations
+- ❌ Run Discovery without patterns (run Pattern Extractor first)
+- ❌ Skip reviewing deviations and new patterns
 
 ---
 
@@ -1595,7 +1529,7 @@ Your XML: 21.3/AirShoppingRS
 - ✅ Test LLM connection after configuration
 - ✅ Restart backend after config changes
 - ✅ Document configuration settings
-- ✅ Set expected references for known node types
+- ✅ Configure expected references before Pattern Extraction
 
 **Don't**:
 - ❌ Share API keys
@@ -1695,12 +1629,12 @@ A: No, it requires internet connection for LLM API calls (Azure OpenAI or Gemini
 A: Not directly. Export/import patterns to share data between users. In the future, a centralised database will be used to share data between users.
 
 **Q: Can I modify extracted patterns?**
-A: Run Discovery again with refined configuration.
+A: Run Pattern Extractor again with refined configuration.
 
 **Q: How accurate is relationship discovery?**
 A: LLM-based discovery has ~85-95% accuracy. Always validate unexpected discoveries and review confidence scores.
 
-**Q: Why do I get different results when running Discovery twice on the same XML?**
+**Q: Why do I get different results when running Pattern Extractor or Discovery twice on the same XML?**
 A: AssistedDiscovery uses AI (LLMs) which are non-deterministic. Each run may produce slightly different results due to:
 - Random sampling in AI models
 - Different interpretation of ambiguous structures
@@ -1729,7 +1663,7 @@ Think of AssistedDiscovery as an **intelligent assistant**, not a perfect oracle
 
 **Q: How can I improve accuracy?**
 A: Several ways:
-1. **Configure expected references** in Node Configuration before Discovery
+1. **Configure expected references** in Node Configuration before Pattern Extraction
 2. **Use representative XML samples** (not edge cases)
 3. **Review and validate** all unexpected discoveries
 4. **Run multiple times** and compare for consistency

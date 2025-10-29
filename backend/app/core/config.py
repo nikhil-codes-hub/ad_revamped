@@ -86,6 +86,16 @@ class Settings(BaseSettings):
     PII_MASKING_ENABLED: bool = Field(default=True, description="Enable PII masking")
     MAX_SNIPPET_LENGTH: int = Field(default=120, description="Maximum snippet length in characters")
 
+    # Parallel Processing Configuration
+    MAX_PARALLEL_NODES: int = Field(
+        default=10,
+        description="Maximum number of nodes to process in parallel during Discovery"
+    )
+    ENABLE_PARALLEL_PROCESSING: bool = Field(
+        default=True,
+        description="Enable parallel node processing (set to False for debugging)"
+    )
+
     # Monitoring
     ENABLE_METRICS: bool = Field(default=True, description="Enable Prometheus metrics")
     METRICS_PORT: int = Field(default=9090, description="Metrics server port")

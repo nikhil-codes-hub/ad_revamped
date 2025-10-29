@@ -119,6 +119,16 @@ IMPORTANT RULES:
 10. Include confidence score (0.0-1.0)
 11. Return ONLY valid JSON array with ONE container fact: [{{container_fact}}]
 12. Be thorough - include all children, don't truncate
+13. **CRITICAL JSON FORMATTING**: Your response must be STRICT JSON - NO comments allowed!
+    - Do NOT include // comments in your JSON response
+    - Do NOT include /* */ comments in your JSON response
+    - Do NOT add trailing commas
+    - All property names MUST be in double quotes
+    - All string values MUST be in double quotes (not single quotes)
+    - **SNIPPET FORMATTING**: Keep XML snippets SHORT and on a SINGLE LINE
+      * Remove all newlines from snippet values
+      * Limit snippets to 100 characters maximum
+      * Example: "snippet": "<PaxList><Pax><PaxID>PAX1</PaxID><PTC>ADT</PTC></Pax></PaxList>"
 
 SPECIAL EXTRACTION PATTERNS:
 - PassengerID / PaxID → extract to attributes.id

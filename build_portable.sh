@@ -402,10 +402,28 @@ __pycache__/
 .DS_Store
 EOF
 
+# Detect platform for zip naming
+PLATFORM_OS=$(uname -s)
+case "$PLATFORM_OS" in
+    Darwin*)
+        PLATFORM_NAME="Mac"
+        ;;
+    Linux*)
+        PLATFORM_NAME="Linux"
+        ;;
+    MINGW*|MSYS*|CYGWIN*)
+        PLATFORM_NAME="Windows"
+        ;;
+    *)
+        PLATFORM_NAME="Unknown"
+        ;;
+esac
+
 # Create zip archive for distribution
 echo "🗜️ Creating distribution archive..."
 cd portable_dist
-zip -r -q "../AssistedDiscovery-Portable-$(uname -s)-$(uname -m).zip" .
+ZIP_NAME="AssistedDiscovery-${PLATFORM_NAME}.zip"
+zip -r -q "../${ZIP_NAME}" .
 cd ..
 
 echo ""
@@ -415,10 +433,12 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo "📦 Files created:"
 echo "  - portable_dist/ (distribution folder)"
-echo "  - AssistedDiscovery-Portable-$(uname -s)-$(uname -m).zip (archive)"
+echo "  - ${ZIP_NAME} (archive)"
+echo ""
+echo "🖥️  Platform: ${PLATFORM_NAME}"
 echo ""
 echo "📋 User Instructions:"
-echo "  1. Extract ZIP file"
+echo "  1. Extract ${ZIP_NAME}"
 echo "  2. Run ./setup.sh (one time setup)"
 echo "  3. Run ./start_app.sh to start application"
 echo "  4. Configure LLM via Config page (⚙️) in the UI"

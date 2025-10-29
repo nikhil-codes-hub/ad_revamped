@@ -77,10 +77,16 @@ def setup_logging() -> None:
     root_logger = logging.getLogger()
     root_logger.setLevel(getattr(logging, settings.LOG_LEVEL))
 
-    # Console handler
+    # Clear any existing handlers to avoid duplicates
+    root_logger.handlers.clear()
+
+    # Console handler with more detailed format
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(getattr(logging, settings.LOG_LEVEL))
-    console_handler.setFormatter(logging.Formatter("%(message)s"))
+    console_handler.setFormatter(logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        datefmt='%H:%M:%S'
+    ))
 
     # Add handlers
     root_logger.addHandler(console_handler)

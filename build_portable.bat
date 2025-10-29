@@ -1,7 +1,7 @@
 @echo off
 REM Create Portable Distribution for AssistedDiscovery Revamp
 echo 🚀 Creating Portable AssistedDiscovery Application
-echo Platform: Windows
+echo Platform  Windows
 
 REM Clean previous builds
 echo 🧹 Cleaning previous builds...
@@ -21,7 +21,7 @@ xcopy /E /I backend\app portable_dist\backend\app
 copy backend\requirements.txt portable_dist\backend\
 if exist backend\alembic.ini copy backend\alembic.ini portable_dist\backend\
 if exist backend\alembic xcopy /E /I backend\alembic portable_dist\backend\alembic
-
+̦
 REM Copy frontend files
 echo 📋 Copying frontend files...
 xcopy /E /I frontend\streamlit_ui portable_dist\frontend\streamlit_ui
@@ -47,7 +47,7 @@ echo REM Check if Python is installed >> portable_dist\setup.bat
 echo python --version ^>nul 2^>^&1 >> portable_dist\setup.bat
 echo if errorlevel 1 ^( >> portable_dist\setup.bat
 echo     echo ❌ Python is not installed. Please install Python 3.12 first. >> portable_dist\setup.bat
-echo     echo Download from: https://www.python.org/downloads/ >> portable_dist\setup.bat
+echo     echo Download from  https://www.python.org/downloads/ >> portable_dist\setup.bat
 echo     pause >> portable_dist\setup.bat
 echo     exit /b 1 >> portable_dist\setup.bat
 echo ^) >> portable_dist\setup.bat
@@ -100,7 +100,7 @@ echo         echo Created .env from template >> portable_dist\setup.bat
 echo         echo Please update .env with your LLM credentials >> portable_dist\setup.bat
 echo     ^) else ^( >> portable_dist\setup.bat
 echo         ^(echo # LLM Provider Configuration^) ^> .env >> portable_dist\setup.bat
-echo         ^(echo # Supported providers: azure, gemini^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo # Supported providers  azure, gemini^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo LLM_PROVIDER=azure^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo.^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo # Azure OpenAI Configuration^) ^>^> .env >> portable_dist\setup.bat
@@ -129,7 +129,7 @@ echo. >> portable_dist\setup.bat
 echo echo. >> portable_dist\setup.bat
 echo echo ✅ Setup complete! Isolated environments created. >> portable_dist\setup.bat
 echo echo. >> portable_dist\setup.bat
-echo echo 📝 Next Steps: >> portable_dist\setup.bat
+echo echo 📝 Next Steps  >> portable_dist\setup.bat
 echo echo    1. Update .env with your Azure OpenAI credentials >> portable_dist\setup.bat
 echo echo    2. Run start_app.bat to start the application >> portable_dist\setup.bat
 echo pause >> portable_dist\setup.bat
@@ -164,7 +164,7 @@ echo REM Start backend >> portable_dist\start_app.bat
 echo echo 🔧 Starting backend API server... >> portable_dist\start_app.bat
 echo cd /d backend >> portable_dist\start_app.bat
 echo set PYTHONPATH=%%cd%% >> portable_dist\start_app.bat
-echo start "AssistedDiscovery-Backend" ..\backend_env\Scripts\uvicorn app.main:app --host 0.0.0.0 --port 8000 >> portable_dist\start_app.bat
+echo start "AssistedDiscovery-Backend" cmd /k "..\backend_env\Scripts\uvicorn app.main:app --host 0.0.0.0 --port 8000" >> portable_dist\start_app.bat
 echo cd /d .. >> portable_dist\start_app.bat
 echo. >> portable_dist\start_app.bat
 echo REM Wait for backend to start >> portable_dist\start_app.bat
@@ -174,7 +174,7 @@ echo. >> portable_dist\start_app.bat
 echo REM Start frontend >> portable_dist\start_app.bat
 echo echo 🎨 Starting frontend UI... >> portable_dist\start_app.bat
 echo cd /d frontend\streamlit_ui >> portable_dist\start_app.bat
-echo start "AssistedDiscovery-Frontend" ..\..\frontend_env\Scripts\streamlit run AssistedDiscovery.py --server.port 8501 --server.headless true >> portable_dist\start_app.bat
+echo start "AssistedDiscovery-Frontend" cmd /k "..\..\frontend_env\Scripts\streamlit run AssistedDiscovery.py --server.port 8501 --server.headless true" >> portable_dist\start_app.bat
 echo cd /d ..\.. >> portable_dist\start_app.bat
 echo. >> portable_dist\start_app.bat
 echo REM Wait for frontend to start >> portable_dist\start_app.bat
@@ -186,9 +186,9 @@ echo echo ━━━━━━━━━━━━━━━━━━━━━━━�
 echo echo ✅ AssistedDiscovery is running! >> portable_dist\start_app.bat
 echo echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ >> portable_dist\start_app.bat
 echo echo. >> portable_dist\start_app.bat
-echo echo 📍 Frontend UI:  http://localhost:8501 >> portable_dist\start_app.bat
-echo echo 📍 Backend API:  http://localhost:8000 >> portable_dist\start_app.bat
-echo echo 📍 API Docs:     http://localhost:8000/docs >> portable_dist\start_app.bat
+echo echo 📍 Frontend UI   http://localhost:8501 >> portable_dist\start_app.bat
+echo echo 📍 Backend API   http://localhost:8000 >> portable_dist\start_app.bat
+echo echo 📍 API Docs      http://localhost:8000/docs >> portable_dist\start_app.bat
 echo echo. >> portable_dist\start_app.bat
 echo echo 🌐 Opening browser... >> portable_dist\start_app.bat
 echo timeout /t 2 /nobreak ^>nul >> portable_dist\start_app.bat
@@ -248,8 +248,8 @@ echo - Python 3.9 or later >> portable_dist\README.txt
 echo - Windows 10 or later >> portable_dist\README.txt
 echo - Internet connection for initial setup >> portable_dist\README.txt
 echo - 8GB RAM minimum (recommended) >> portable_dist\README.txt
-echo - Browser: Chrome, Firefox, Safari, or Edge >> portable_dist\README.txt
-echo - Disk space: 2GB for dependencies >> portable_dist\README.txt
+echo - Browser  Chrome, Firefox, Safari, or Edge >> portable_dist\README.txt
+echo - Disk space  2GB for dependencies >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
 echo ## Features >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
@@ -265,7 +265,7 @@ echo ## Configuration >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
 echo **No manual .env editing required!** >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
-echo Configure LLM credentials via the web UI: >> portable_dist\README.txt
+echo Configure LLM credentials via the web UI  >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
 echo 1. Start the application (start_app.bat) >> portable_dist\README.txt
 echo 2. Open http://localhost:8501 in your browser >> portable_dist\README.txt
@@ -284,8 +284,8 @@ echo - stop_app.bat - Stop all running services >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
 echo ## Ports >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
-echo - Frontend (Streamlit): 8501 >> portable_dist\README.txt
-echo - Backend (FastAPI): 8000 >> portable_dist\README.txt
+echo - Frontend (Streamlit)  8501 >> portable_dist\README.txt
+echo - Backend (FastAPI)  8000 >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
 echo ## Troubleshooting >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
@@ -295,7 +295,7 @@ echo - During installation, check "Add Python to PATH" >> portable_dist\README.t
 echo. >> portable_dist\README.txt
 echo ### Dependencies Install Failed >> portable_dist\README.txt
 echo - Ensure internet connection is active >> portable_dist\README.txt
-echo - Try: python -m pip install --upgrade pip >> portable_dist\README.txt
+echo - Try  python -m pip install --upgrade pip >> portable_dist\README.txt
 echo - Then run setup.bat again >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
 echo ### Backend Fails to Start >> portable_dist\README.txt
@@ -324,7 +324,7 @@ echo. >> portable_dist\README.txt
 echo backend_env\     - Backend virtual environment (created by setup.bat) >> portable_dist\README.txt
 echo frontend_env\    - Frontend virtual environment (created by setup.bat) >> portable_dist\README.txt
 echo. >> portable_dist\README.txt
-echo Build Date: Created with build_portable.bat >> portable_dist\README.txt
+echo Build Date  Created with build_portable.bat >> portable_dist\README.txt
 
 REM Create .gitignore
 echo backend_env/ > portable_dist\.gitignore
@@ -336,19 +336,19 @@ echo *.pyc >> portable_dist\.gitignore
 
 REM Create zip archive
 echo 🗜️ Creating distribution archive...
-powershell -command "Compress-Archive -Path 'portable_dist\*' -DestinationPath 'AssistedDiscovery-Portable-Windows.zip' -Force"
+powershell -command "Compress-Archive -Path 'portable_dist\*' -DestinationPath 'AssistedDiscovery-Windows.zip' -Force"
 
 echo.
 echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo 🎉 Portable distribution created successfully!
 echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo.
-echo 📦 Files created:
+echo 📦 Files created 
 echo   - portable_dist\ (distribution folder)
-echo   - AssistedDiscovery-Portable-Windows.zip (archive)
+echo   - AssistedDiscovery-Windows.zip (archive)
 echo.
-echo 📋 User Instructions:
-echo   1. Extract ZIP file
+echo 📋 User Instructions 
+echo   1. Extract AssistedDiscovery-Windows.zip
 echo   2. Run setup.bat (one time setup)
 echo   3. Run start_app.bat to start application
 echo   4. Configure LLM via Config page in the UI

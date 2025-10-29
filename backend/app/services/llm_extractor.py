@@ -267,8 +267,77 @@ class LLMNodeFactsExtractor:
             logger.error(f"   Traceback:\n{traceback.format_exc()}")
             raise ValueError(f"LLM API Error: {type(e).__name__}: {str(e)}")
 
+    def _clean_json_string(self, json_str: str) -> str:
+        """
+        Clean common JSON formatting issues from LLM responses.
+
+        Handles:
+        - Trailing commas in arrays and objects
+        - Single quotes to double quotes
+        - Unescaped quotes in strings
+        - Extra commas
+        - Control characters in string values
+        """
+        import re
+
+        # Remove trailing commas before closing brackets/braces
+        json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
+
+        # Remove multiple consecutive commas
+        json_str = re.sub(r',\s*,', ',', json_str)
+
+        # Remove comments (// and /* */)
+        json_str = re.sub(r'//.*?\n', '\n', json_str)
+        json_str = re.sub(r'/\*.*?\*/', '', json_str, flags=re.DOTALL)
+
+        # Fix unescaped control characters in string values
+        # More robust approach using a state machine-like pattern
+        def escape_control_chars(match):
+            """Escape control characters within a JSON string value."""
+            string_content = match.group(1)
+            # Only escape control characters, not already-escaped sequences
+            # Don't double-escape things that are already escaped
+            result = []
+            i = 0
+            while i < len(string_content):
+                char = string_content[i]
+                if char == '\\' and i + 1 < len(string_content):
+                    # Already escaped sequence - keep as is
+                    result.append(char)
+                    result.append(string_content[i + 1])
+                    i += 2
+                elif char == '\n':
+                    result.append('\\n')
+                    i += 1
+                elif char == '\r':
+                    result.append('\\r')
+                    i += 1
+                elif char == '\t':
+                    result.append('\\t')
+                    i += 1
+                elif char == '\b':
+                    result.append('\\b')
+                    i += 1
+                elif char == '\f':
+                    result.append('\\f')
+                    i += 1
+                elif ord(char) < 32 and char not in '\n\r\t\b\f':
+                    # Remove other control characters
+                    i += 1
+                else:
+                    result.append(char)
+                    i += 1
+            return f'"{"".join(result)}"'
+
+        # Match string values: opening quote, content (may span lines), closing quote
+        # Pattern: " followed by anything except unescaped ", then closing "
+        # This handles escaped quotes within strings correctly
+        json_str = re.sub(r'"((?:[^"\\]|\\.)*)(?<!\\)"', escape_control_chars, json_str, flags=re.DOTALL)
+
+        return json_str
+
     def _parse_llm_response(self, llm_response: str) -> List[Dict[str, Any]]:
-        """Parse and validate LLM response."""
+        """Parse and validate LLM response with improved error handling."""
         try:
             response_content = llm_response.strip()
 
@@ -285,6 +354,9 @@ class LLMNodeFactsExtractor:
                 end = response_content.find('```', start)
                 if end != -1:
                     response_content = response_content[start:end].strip()
+
+            # Clean the JSON string
+            response_content = self._clean_json_string(response_content)
 
             # Try direct JSON parsing
             facts = []
@@ -312,7 +384,16 @@ class LLMNodeFactsExtractor:
 
             except json.JSONDecodeError as e:
                 logger.error(f"JSON parsing failed: {e}")
-                logger.debug(f"Content that failed: {response_content[:200]}...")
+                logger.error(f"Failed content (first 500 chars): {response_content[:500]}...")
+                logger.error(f"Error location: line {e.lineno}, column {e.colno}")
+
+                # Try to show the problematic section
+                if e.pos and e.pos > 0:
+                    start = max(0, e.pos - 50)
+                    end = min(len(response_content), e.pos + 50)
+                    logger.error(f"Context around error: ...{response_content[start:end]}...")
+
+                logger.warning("Returning empty result due to JSON parse error")
                 return []
 
             if not isinstance(facts, list):

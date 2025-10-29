@@ -1,0 +1,326 @@
+{
+    // AssistedDiscovery Debug Configurations
+    // Updated for workspace-based SQLite architecture
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "AD 🎯 Debug Streamlit Frontend",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "${workspaceFolder}/frontend/streamlit_ui/AssistedDiscovery.py",
+                "--server.port",
+                "8501",
+                "--server.headless",
+                "false",
+                "--browser.gatherUsageStats",
+                "false",
+                "--server.enableCORS",
+                "true"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/frontend/streamlit_ui",
+                "STREAMLIT_BROWSER_GATHER_USAGE_STATS": "false",
+                "API_BASE_URL": "http://localhost:8000"
+            },
+            "cwd": "${workspaceFolder}/frontend/streamlit_ui",
+            "purpose": ["debug-in-terminal"]
+        },
+        {
+            "name": "AD 🚀 Debug FastAPI Backend (Uvicorn)",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "app.main:app",
+                "--host", "0.0.0.0",
+                "--port", "8000",
+                "--reload",
+                "--log-level", "debug"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend",
+                "DEBUG": "true",
+                "ENVIRONMENT": "development"
+            },
+            "cwd": "${workspaceFolder}/backend",
+            "purpose": ["debug-in-terminal"],
+            "subProcess": true
+        },
+        {
+            "name": "AD 🗃️ Debug Discovery Workflow",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/app/services/discovery_workflow.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend",
+                "DEBUG": "true"
+            },
+            "cwd": "${workspaceFolder}/backend",
+            "args": []
+        },
+        {
+            "name": "AD 🎨 Debug Pattern Generator",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/app/services/pattern_generator.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend",
+                "DEBUG": "true"
+            },
+            "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "name": "AD 🎯 Debug Identify Workflow",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/app/services/identify_workflow.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend",
+                "DEBUG": "true"
+            },
+            "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "name": "AD 🧩 Debug XML Parser Service",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/app/services/xml_parser.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend",
+                "DEBUG": "true"
+            },
+            "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "name": "AD 🗄️ Debug Workspace Database",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/app/services/workspace_db.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend",
+                "DEBUG": "true"
+            },
+            "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "name": "AD 🧪 Debug Current Python File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/backend:${workspaceFolder}/frontend/streamlit_ui"
+            },
+            "cwd": "${fileDirname}"
+        },
+        {
+            "name": "AD 🏃‍♂️ Run Frontend (No Debug)",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "${workspaceFolder}/frontend/streamlit_ui/AssistedDiscovery.py",
+                "--server.port",
+                "8501"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/frontend/streamlit_ui",
+                "API_BASE_URL": "http://localhost:8000"
+            },
+            "cwd": "${workspaceFolder}/frontend/streamlit_ui"
+        },
+        {
+            "name": "AD 🧹 Debug SQLite Schema Fix",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/test_workspace_db.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend",
+                "DEBUG": "true"
+            },
+            "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "name": "AD 🧪 Run All Tests",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/",
+                "-v",
+                "--tb=short"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend"
+            },
+            "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "name": "AD 🧪 Run Unit Tests",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/unit/",
+                "-v",
+                "--tb=short"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend"
+            },
+            "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "name": "AD 🧪 Run Integration Tests",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/integration/",
+                "-v",
+                "--tb=short"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend"
+            },
+            "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "name": "AD 📊 Run Tests with Coverage",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/unit/",
+                "--cov=app",
+                "--cov-report=term",
+                "--cov-report=html",
+                "-v"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend"
+            },
+            "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "name": "AD 🎯 Run Current Test File",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "${file}",
+                "-v",
+                "--tb=short"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend"
+            },
+            "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "name": "AD 🔍 Debug Current Test",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "${file}",
+                "-v",
+                "-s"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend"
+            },
+            "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "name": "AD ⏮️ Re-run Failed Tests",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "--lf",
+                "-v",
+                "--tb=short"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend"
+            },
+            "cwd": "${workspaceFolder}/backend"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "AD 🚀🎯 Full Stack (Backend + Frontend)",
+            "configurations": [
+                "AD 🚀 Debug FastAPI Backend (Uvicorn)",
+                "AD 🎯 Debug Streamlit Frontend"
+            ],
+            "stopAll": true,
+            "presentation": {
+                "group": "AD-fullstack",
+                "order": 1
+            }
+        },
+        {
+            "name": "AD 🔬 Discovery + Backend",
+            "configurations": [
+                "AD 🚀 Debug FastAPI Backend (Uvicorn)",
+                "AD 🗃️ Debug Discovery Workflow"
+            ],
+            "stopAll": true,
+            "presentation": {
+                "group": "AD-workflows",
+                "order": 2
+            }
+        },
+        {
+            "name": "AD 🎨 Pattern Manager + Backend",
+            "configurations": [
+                "AD 🚀 Debug FastAPI Backend (Uvicorn)",
+                "AD 🎨 Debug Pattern Generator"
+            ],
+            "stopAll": true,
+            "presentation": {
+                "group": "AD-workflows",
+                "order": 3
+            }
+        }
+    ]
+}
