@@ -402,7 +402,9 @@ graph TB
 
 ## Class Diagrams
 
-### Core Data Models
+### Core Transactional Models
+
+**Note**: These models represent the primary data entities with transactional relationships.
 
 ```mermaid
 classDiagram
@@ -465,34 +467,6 @@ classDiagram
         +DateTime created_at
     }
 
-    class NodeConfiguration {
-        +BigInteger id PK
-        +String spec_version
-        +String message_root
-        +String airline_code (nullable)
-        +String section_path
-        +String node_type
-        +JSON extraction_config
-        +Boolean enabled
-        +String created_by
-        +DateTime created_at
-        +DateTime updated_at
-    }
-
-    class NdcTargetPath {
-        +Integer id PK
-        +String spec_version
-        +String message_root
-        +Text path_local
-        +String extractor_key
-        +Boolean is_required
-        +String importance
-        +JSON constraints_json
-        +Text notes
-        +DateTime created_at
-        +DateTime updated_at
-    }
-
     class AssociationFact {
         +BigInteger id PK
         +String run_id FK
@@ -551,7 +525,70 @@ classDiagram
 
     Run --> RunKind
     Run --> RunStatus
+```
+
+### Configuration & Lookup Models
+
+**Note**: These models store system configuration and are queried by services, but have no foreign key relationships to transactional data.
+
+```mermaid
+classDiagram
+    class NodeConfiguration {
+        +BigInteger id PK
+        +String spec_version
+        +String message_root
+        +String airline_code (nullable)
+        +String section_path
+        +String node_type
+        +JSON extraction_config
+        +Boolean enabled
+        +String created_by
+        +DateTime created_at
+        +DateTime updated_at
+    }
+
+    class NdcTargetPath {
+        +Integer id PK
+        +String spec_version
+        +String message_root
+        +Text path_local
+        +String extractor_key
+        +Boolean is_required
+        +String importance
+        +JSON constraints_json
+        +Text notes
+        +DateTime created_at
+        +DateTime updated_at
+    }
+
+    class NdcPathAlias {
+        +Integer id PK
+        +String from_spec_version
+        +String from_message_root
+        +Text from_path_local
+        +String to_spec_version
+        +String to_message_root
+        +Text to_path_local
+        +Boolean is_bidirectional
+        +String reason
+        +DateTime created_at
+    }
+
+    class ImportanceLevel {
+        <<enumeration>>
+        CRITICAL
+        HIGH
+        MEDIUM
+        LOW
+    }
+
     NdcTargetPath --> ImportanceLevel
+
+    note for NodeConfiguration "Actively used: 97 configurations\nQueried by DiscoveryWorkflow\nto control node extraction"
+
+    note for NdcTargetPath "Fallback mechanism (currently unused)\nTable exists but empty (0 rows)\nHardcoded paths used instead"
+
+    note for NdcPathAlias "Cross-version path mapping\nSupports NDC version migration"
 ```
 
 ### Service Layer Classes
@@ -674,6 +711,10 @@ classDiagram
 
 ## Database Schema Relationships
 
+### Transactional Data Schema
+
+**Note**: Shows foreign key relationships between core entities.
+
 ```mermaid
 erDiagram
     Run ||--o{ NodeFact : "contains"
@@ -741,47 +782,6 @@ erDiagram
         datetime created_at
     }
 
-    NodeConfiguration {
-        bigint id PK
-        string spec_version
-        string message_root
-        string airline_code "nullable for global"
-        string section_path
-        string node_type
-        json extraction_config "BA rules"
-        bool enabled
-        string created_by
-        datetime created_at
-        datetime updated_at
-    }
-
-    NdcTargetPath {
-        int id PK
-        string spec_version
-        string message_root
-        text path_local "XPath pattern"
-        string extractor_key "template|generic_llm"
-        bool is_required
-        string importance "critical|high|medium|low"
-        json constraints_json
-        text notes
-        datetime created_at
-        datetime updated_at
-    }
-
-    NdcPathAlias {
-        int id PK
-        string from_spec_version
-        string from_message_root
-        text from_path_local
-        string to_spec_version
-        string to_message_root
-        text to_path_local
-        bool is_bidirectional
-        string reason
-        datetime created_at
-    }
-
     AssociationFact {
         bigint id PK
         string run_id FK
@@ -807,6 +807,68 @@ erDiagram
         datetime created_at
     }
 ```
+
+### Configuration & Lookup Schema
+
+**Note**: These tables store system configuration with no foreign key relationships. Queried by services but not related to transactional data.
+
+```mermaid
+erDiagram
+    NodeConfiguration {
+        bigint id PK
+        string spec_version
+        string message_root
+        string airline_code "nullable - global if null"
+        string section_path
+        string node_type
+        json extraction_config "BA rules"
+        bool enabled "97 active configs"
+        string created_by
+        datetime created_at
+        datetime updated_at
+    }
+
+    NdcTargetPath {
+        int id PK
+        string spec_version
+        string message_root
+        text path_local "XPath pattern"
+        string extractor_key "template or generic_llm"
+        bool is_required
+        string importance "critical, high, medium, low"
+        json constraints_json
+        text notes
+        datetime created_at
+        datetime updated_at
+    }
+
+    NdcPathAlias {
+        int id PK
+        string from_spec_version
+        string from_message_root
+        text from_path_local
+        string to_spec_version
+        string to_message_root
+        text to_path_local
+        bool is_bidirectional
+        string reason "Version migration mapping"
+        datetime created_at
+    }
+
+    ReferenceType {
+        bigint id PK
+        string type_name UK "e.g., pax_reference"
+        string description
+        json metadata_json
+        datetime created_at
+    }
+```
+
+**Usage Notes**:
+- **NodeConfiguration**: Actively used (97 rows). Queried by `DiscoveryWorkflow._should_extract_node()` to control node extraction. Has API: `/api/v1/node-configs`.
+- **NdcTargetPath**: Fallback mechanism (0 rows - empty). Code queries it but uses hardcoded paths. Designed for dynamic configuration.
+- **NdcPathAlias**: Cross-version path mapping. Supports NDC version migration scenarios.
+- **ReferenceType**: Lookup table for relationship types used by `NodeRelationship`.
 
 ---
 
