@@ -14,6 +14,7 @@ import httpx
 
 from app.models.database import NodeFact, NodeRelationship, NodeConfiguration
 from app.core.config import settings
+from app.prompts import get_relationship_discovery_prompt, get_relationship_system_prompt
 
 logger = structlog.get_logger(__name__)
 
@@ -313,7 +314,7 @@ class RelationshipAnalyzer:
         logger.debug(f"   Source XML preview: {source_xml[:200]}...")
         logger.debug(f"   Target XML preview: {target_xml[:200]}...")
 
-        prompt = self._build_discovery_prompt(
+        prompt = get_relationship_discovery_prompt(
             source_fact.node_type,
             source_xml,
             target_fact.node_type,
@@ -335,7 +336,7 @@ class RelationshipAnalyzer:
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are an XML relationship analysis expert. Your task is to identify reference fields that link XML elements. Always return valid JSON with the exact schema specified. Be consistent across multiple calls with the same input."
+                        "content": get_relationship_system_prompt()
                     },
                     {"role": "user", "content": prompt}
                 ],
@@ -388,69 +389,6 @@ class RelationshipAnalyzer:
             logger.error(f"   Traceback: {traceback.format_exc()}")
             return None
 
-    def _build_discovery_prompt(
-        self,
-        source_type: str,
-        source_xml: str,
-        target_type: str,
-        target_xml: str
-    ) -> str:
-        """Build LLM prompt for reference discovery with consistent formatting."""
-        return f"""You are analyzing XML node relationships. Determine if SOURCE contains reference fields that point to TARGET.
-
-**SOURCE NODE**: {source_type}
-```xml
-{source_xml}
-```
-
-**TARGET NODE**: {target_type}
-```xml
-{target_xml}
-```
-
-**INSTRUCTIONS**:
-1. Look for reference fields in SOURCE that contain IDs/Keys matching TARGET
-2. Common patterns: <PaxRefID>, <SegmentKey>, <JourneyRefID>, attributes ending in "RefID", "Ref", "ID", "Key"
-3. Only report references if you find actual ID fields that would link these nodes
-
-**REQUIRED JSON SCHEMA** (return EXACTLY this structure, no additional fields):
-{{
-  "has_references": boolean,
-  "references": [
-    {{
-      "reference_type": "string (semantic name: pax_reference, segment_reference, journey_reference, etc.)",
-      "reference_field": "string (exact XML element/attribute name)",
-      "reference_value": "string (actual ID value from SOURCE)",
-      "confidence": number (0.0 to 1.0)
-    }}
-  ],
-  "discovery_notes": "string (brief explanation)"
-}}
-
-**EXAMPLES**:
-
-Example 1 - Reference Found:
-{{
-  "has_references": true,
-  "references": [
-    {{
-      "reference_type": "pax_reference",
-      "reference_field": "PaxRefID",
-      "reference_value": "PAX1",
-      "confidence": 0.95
-    }}
-  ],
-  "discovery_notes": "Found PaxRefID field linking to passenger"
-}}
-
-Example 2 - No Reference:
-{{
-  "has_references": false,
-  "references": [],
-  "discovery_notes": "No reference fields found linking these nodes"
-}}
-
-**YOUR ANALYSIS** (return ONLY valid JSON, no markdown):"""
 
     def _validate_reference_instances(
         self,

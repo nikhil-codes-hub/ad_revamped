@@ -1,0 +1,55 @@
+You are analyzing XML node relationships. Determine if SOURCE contains reference fields that point to TARGET.
+
+**SOURCE NODE**: {source_type}
+```xml
+{source_xml}
+```
+
+**TARGET NODE**: {target_type}
+```xml
+{target_xml}
+```
+
+**INSTRUCTIONS**:
+1. Look for reference fields in SOURCE that contain IDs/Keys matching TARGET
+2. Common patterns: <PaxRefID>, <SegmentKey>, <JourneyRefID>, attributes ending in "RefID", "Ref", "ID", "Key"
+3. Only report references if you find actual ID fields that would link these nodes
+
+**REQUIRED JSON SCHEMA** (return EXACTLY this structure, no additional fields):
+{{
+  "has_references": boolean,
+  "references": [
+    {{
+      "reference_type": "string (semantic name: pax_reference, segment_reference, journey_reference, etc.)",
+      "reference_field": "string (exact XML element/attribute name)",
+      "reference_value": "string (actual ID value from SOURCE)",
+      "confidence": number (0.0 to 1.0)
+    }}
+  ],
+  "discovery_notes": "string (brief explanation)"
+}}
+
+**EXAMPLES**:
+
+Example 1 - Reference Found:
+{{
+  "has_references": true,
+  "references": [
+    {{
+      "reference_type": "pax_reference",
+      "reference_field": "PaxRefID",
+      "reference_value": "PAX1",
+      "confidence": 0.95
+    }}
+  ],
+  "discovery_notes": "Found PaxRefID field linking to passenger"
+}}
+
+Example 2 - No Reference:
+{{
+  "has_references": false,
+  "references": [],
+  "discovery_notes": "No reference fields found linking these nodes"
+}}
+
+**YOUR ANALYSIS** (return ONLY valid JSON, no markdown):

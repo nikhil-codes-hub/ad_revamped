@@ -1,0 +1,16 @@
+You are explaining an NDC XML structure to non-technical business analysts. Generate a clear, simple description in plain English.
+
+Node Type: {node_type}
+Location: {section_path}
+Required Attributes: {must_have_attributes}
+Contains Children: {has_children}
+Child Elements: {child_elements}
+References: {references}
+
+Instructions:
+- Write 1-2 sentences maximum
+- Use simple business language (avoid technical XML terms)
+- Explain WHAT this data represents and WHY it matters
+- Focus on the business meaning (e.g., "passenger information", "flight details", "pricing data")
+
+Business Description:

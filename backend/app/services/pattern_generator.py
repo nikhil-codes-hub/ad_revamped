@@ -19,6 +19,7 @@ from app.models.database import NodeFact, Pattern, Run
 from app.core.config import settings
 from app.services.llm_extractor import get_llm_extractor
 from app.services.utils import normalize_iata_prefix
+from app.prompts import get_pattern_description_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -355,22 +356,14 @@ class PatternGenerator:
             child_structure = decision_rule.get('child_structure', {})
             reference_patterns = decision_rule.get('reference_patterns', [])
 
-            prompt = f"""You are explaining an NDC XML structure to non-technical business analysts. Generate a clear, simple description in plain English.
-
-Node Type: {node_type}
-Location: {section_path}
-Required Attributes: {', '.join(must_have) if must_have else 'None'}
-Contains Children: {'Yes' if child_structure.get('has_children', False) else 'No'}
-Child Elements: {', '.join(child_structure.get('child_types', [])) if child_structure.get('child_types') else 'None'}
-References: {', '.join([p.get('type', '') for p in reference_patterns]) if reference_patterns else 'None'}
-
-Instructions:
-- Write 1-2 sentences maximum
-- Use simple business language (avoid technical XML terms)
-- Explain WHAT this data represents and WHY it matters
-- Focus on the business meaning (e.g., "passenger information", "flight details", "pricing data")
-
-Business Description:"""
+            prompt = get_pattern_description_prompt(
+                node_type=node_type,
+                section_path=section_path,
+                must_have_attributes=', '.join(must_have) if must_have else 'None',
+                has_children='Yes' if child_structure.get('has_children', False) else 'No',
+                child_elements=', '.join(child_structure.get('child_types', [])) if child_structure.get('child_types') else 'None',
+                references=', '.join([p.get('type', '') for p in reference_patterns]) if reference_patterns else 'None'
+            )
 
             if hasattr(sync_client, "chat"):
                 response = sync_client.chat.completions.create(
