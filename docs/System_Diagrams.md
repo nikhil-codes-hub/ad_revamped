@@ -187,14 +187,14 @@ flowchart TB
         FastAPI --> CORS
 
         subgraph "API Endpoints"
-            RunsAPI[/api/v1/runs]
-            PatternsAPI[/api/v1/patterns]
-            NodeFactsAPI[/api/v1/node_facts]
-            IdentifyAPI[/api/v1/identify]
-            NodeConfigsAPI[/api/v1/node-configs]
-            RefTypesAPI[/api/v1/reference-types]
-            RelationsAPI[/api/v1/relationships]
-            LLMConfigAPI[/api/v1/llm-config]
+            RunsAPI["/api/v1/runs"]
+            PatternsAPI["/api/v1/patterns"]
+            NodeFactsAPI["/api/v1/node_facts"]
+            IdentifyAPI["/api/v1/identify"]
+            NodeConfigsAPI["/api/v1/node-configs"]
+            RefTypesAPI["/api/v1/reference-types"]
+            RelationsAPI["/api/v1/relationships"]
+            LLMConfigAPI["/api/v1/llm-config"]
         end
     end
 
@@ -228,12 +228,12 @@ flowchart TB
             WS_Airline1[(airline1.db<br/>SQLite)]
             WS_Airline2[(airline2.db<br/>SQLite)]
         end
-        Storage[Local Storage<br/>backend/data/workspaces/]
+        Storage["Local Storage<br/>backend/data/workspaces/"]
     end
 
     subgraph "Observability"
-        Logger[Structured Logging<br/>structlog]
-        Health[Health Check<br/>/health]
+        Logger["Structured Logging<br/>structlog"]
+        Health["Health Check<br/>/health"]
     end
 
     UI -->|HTTP| CORS
@@ -817,7 +817,7 @@ erDiagram
 ```mermaid
 flowchart LR
     subgraph "Input"
-        XML[NDC XML File<br/>17.2/19.2/21.3]
+        XML["NDC XML File<br/>17.2/19.2/21.3"]
         ConfigDB[(Configuration DB<br/>NdcTargetPath<br/>NodeConfiguration)]
     end
 
@@ -900,12 +900,12 @@ flowchart LR
     end
 
     subgraph "Verdict Assignment"
-        V95[EXACT_MATCH<br/>≥95%]
-        V85[HIGH_MATCH<br/>≥85%]
-        V70[PARTIAL_MATCH<br/>≥70%]
-        V50[LOW_MATCH<br/>≥50%]
-        V0[NO_MATCH<br/><50%]
-        VNew[NEW_PATTERN<br/>No candidates]
+        V95["EXACT_MATCH<br/>≥95%"]
+        V85["HIGH_MATCH<br/>≥85%"]
+        V70["PARTIAL_MATCH<br/>≥70%"]
+        V50["LOW_MATCH<br/>≥50%"]
+        V0["NO_MATCH<br/><50%"]
+        VNew["NEW_PATTERN<br/>No candidates"]
     end
 
     subgraph "Gap Analysis"
@@ -1080,26 +1080,26 @@ flowchart TB
     end
 
     subgraph "Workspace Storage"
-        DataDir[backend/data/workspaces/]
+        DataDir["backend/data/workspaces/"]
 
         subgraph "default workspace"
             Default[default.db]
-            DefaultUploads[uploads/]
+            DefaultUploads["uploads/"]
         end
 
         subgraph "SQ workspace"
             SQ[SQ.db]
-            SQUploads[uploads/]
+            SQUploads["uploads/"]
         end
 
         subgraph "AF workspace"
             AF[AF.db]
-            AFUploads[uploads/]
+            AFUploads["uploads/"]
         end
 
         subgraph "BA workspace"
             BA[BA.db]
-            BAUploads[uploads/]
+            BAUploads["uploads/"]
         end
     end
 
