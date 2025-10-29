@@ -207,14 +207,14 @@ flowchart TB
         FastAPI --> CORS
 
         subgraph "API Endpoints"
-            RunsAPI["/api/v1/runs"]
-            PatternsAPI["/api/v1/patterns"]
-            NodeFactsAPI["/api/v1/node_facts"]
-            IdentifyAPI["/api/v1/identify"]
-            NodeConfigsAPI["/api/v1/node-configs"]
-            RefTypesAPI["/api/v1/reference-types"]
-            RelationsAPI["/api/v1/relationships"]
-            LLMConfigAPI["/api/v1/llm-config"]
+            RunsAPI["Runs API<br/>/api/v1/runs"]
+            PatternsAPI["Patterns API<br/>/api/v1/patterns"]
+            NodeFactsAPI["NodeFacts API<br/>/api/v1/node_facts"]
+            IdentifyAPI["Identify API<br/>/api/v1/identify"]
+            NodeConfigsAPI["NodeConfigs API<br/>/api/v1/node-configs"]
+            RefTypesAPI["ReferenceTypes API<br/>/api/v1/reference-types"]
+            RelationsAPI["Relationships API<br/>/api/v1/relationships"]
+            LLMConfigAPI["LLM Config API<br/>/api/v1/llm-config"]
         end
     end
 
