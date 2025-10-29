@@ -1192,17 +1192,17 @@ flowchart TB
     end
 
     UI --> WSSelector
-    WSSelector -->|workspace="default"| FastAPI
-    WSSelector -->|workspace="SQ"| FastAPI
-    WSSelector -->|workspace="AF"| FastAPI
-    WSSelector -->|workspace="BA"| FastAPI
+    WSSelector -->|workspace: default| FastAPI
+    WSSelector -->|workspace: SQ| FastAPI
+    WSSelector -->|workspace: AF| FastAPI
+    WSSelector -->|workspace: BA| FastAPI
 
     FastAPI --> WSFactory
 
-    WSFactory -->|get_session("default")| Default
-    WSFactory -->|get_session("SQ")| SQ
-    WSFactory -->|get_session("AF")| AF
-    WSFactory -->|get_session("BA")| BA
+    WSFactory -->|get_session: default| Default
+    WSFactory -->|get_session: SQ| SQ
+    WSFactory -->|get_session: AF| AF
+    WSFactory -->|get_session: BA| BA
 
     Default -.-> Tables
     SQ -.-> Tables
