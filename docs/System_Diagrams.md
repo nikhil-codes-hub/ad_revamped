@@ -604,11 +604,11 @@ classDiagram
 
     NdcTargetPath --> ImportanceLevel
 
-    note for NodeConfiguration "Actively used: 97 configurations\nQueried by DiscoveryWorkflow\nto control node extraction"
+    note for NodeConfiguration "✅ ACTIVELY USED: 97 configurations\nQueried by DiscoveryWorkflow\nPriority 1 for target path resolution"
 
-    note for NdcTargetPath "Fallback mechanism (currently unused)\nTable exists but empty (0 rows)\nHardcoded paths used instead"
+    note for NdcTargetPath "⚠️ DESIGNED BUT UNUSED\nPriority 2 fallback (0 rows)\nNever reached - NodeConfigs always used\nFalls through to hardcoded paths"
 
-    note for NdcPathAlias "Cross-version path mapping\nSupports NDC version migration"
+    note for NdcPathAlias "❌ DEAD CODE: Not used anywhere\n0 rows, no service references\nModel exists but never queried"
 ```
 
 ### Service Layer Classes
@@ -886,11 +886,17 @@ erDiagram
     }
 ```
 
-**Usage Notes**:
-- **NodeConfiguration**: Actively used (97 rows). Queried by `DiscoveryWorkflow._should_extract_node()` to control node extraction. Has API: `/api/v1/node-configs`.
-- **NdcTargetPath**: Fallback mechanism (0 rows - empty). Code queries it but uses hardcoded paths. Designed for dynamic configuration.
-- **NdcPathAlias**: Cross-version path mapping. Supports NDC version migration scenarios.
-- **ReferenceType**: Lookup table for relationship types used by `NodeRelationship`.
+**Usage Status & Notes**:
+
+**✅ ACTIVELY USED**:
+- **NodeConfiguration** (97 rows): Queried by `DiscoveryWorkflow._should_extract_node()` and `_get_node_configurations()` to control node extraction. Priority 1 in target path resolution strategy. Has API: `/api/v1/node-configs`.
+- **ReferenceType**: Lookup table for relationship types used by `NodeRelationship` and relationship analysis services.
+
+**⚠️ DESIGNED BUT UNUSED**:
+- **NdcTargetPath** (0 rows): Priority 2 fallback in `DiscoveryWorkflow._get_target_paths_from_db()`. Never reached because NodeConfigurations (Priority 1) always has data. When both are empty, falls through to hardcoded paths (Priority 3). Code exists but not actively used.
+
+**❌ DEAD CODE**:
+- **NdcPathAlias** (0 rows): Model defined in `database.py` but never imported or queried by any service. Originally designed for cross-version path mapping but not implemented. Can be removed or kept for future use.
 
 ---
 
