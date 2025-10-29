@@ -3,9 +3,17 @@
 **Last Updated**: 2025-10-29
 **Note**: All diagrams reflect the current implementation with SQLite workspace databases and Azure OpenAI GPT-4o
 
+## ⚠️ Terminology Note
+
+**UI vs Backend Naming**:
+- **UI: "Pattern Extractor"** → Backend: `DiscoveryWorkflow` service
+- **UI: "Discovery"** → Backend: `IdentifyWorkflow` service
+
+This document uses **UI terminology** for user-facing descriptions but references actual backend class names for code accuracy.
+
 ## Table of Contents
-1. [Discovery Flow Sequence Diagram](#discovery-flow-sequence-diagram)
-2. [Identify Flow Sequence Diagram](#identify-flow-sequence-diagram)
+1. [Pattern Extractor Flow (Backend: Discovery)](#pattern-extractor-flow-backend-discovery)
+2. [Discovery Flow (Backend: Identify)](#discovery-flow-backend-identify)
 3. [System Architecture Overview](#system-architecture-overview)
 4. [Component Architecture](#component-architecture)
 5. [Class Diagrams](#class-diagrams)
@@ -16,7 +24,13 @@
 
 ---
 
-## Discovery Flow Sequence Diagram
+## Pattern Extractor Flow (Backend: Discovery)
+
+**Purpose**: Extract patterns from airline XML files to build a pattern library.
+
+**Backend Service**: `DiscoveryWorkflow` (code name: "discovery")
+**UI Page**: 🔬 Pattern Extractor
+**API Endpoint**: `/api/v1/runs` with `kind=discovery`
 
 ```mermaid
 sequenceDiagram
@@ -92,7 +106,13 @@ sequenceDiagram
     Note over Client,WSDb: Client can query results via /api/v1/runs/{run_id}
 ```
 
-## Identify Flow Sequence Diagram
+## Discovery Flow (Backend: Identify)
+
+**Purpose**: Discover differences in new airline XML by validating against known patterns.
+
+**Backend Service**: `IdentifyWorkflow` (code name: "identify")
+**UI Page**: 🎯 Discovery
+**API Endpoint**: `/api/v1/runs` with `kind=identify`
 
 ```mermaid
 sequenceDiagram
@@ -170,9 +190,9 @@ flowchart TB
         subgraph "UI Pages"
             Config[0_Config]
             NodeMgr[1_Node_Manager]
-            PatExt[2_Pattern_Extractor<br/>🔬 Discovery Backend]
+            PatExt["2_Pattern_Extractor 🔬<br/>(Backend: DiscoveryWorkflow)"]
             PatMgr[3_Pattern_Manager]
-            Disc[4_Discovery<br/>🎯 Identify Backend]
+            Disc["4_Discovery 🎯<br/>(Backend: IdentifyWorkflow)"]
         end
         UI --> Config
         UI --> NodeMgr
@@ -200,8 +220,8 @@ flowchart TB
 
     subgraph "Service Layer"
         subgraph "Workflow Orchestrators"
-            DiscWF[DiscoveryWorkflow<br/>Pattern Extraction]
-            IdentWF[IdentifyWorkflow<br/>Pattern Matching]
+            DiscWF["DiscoveryWorkflow<br/>(UI: Pattern Extractor)<br/>Pattern Extraction"]
+            IdentWF["IdentifyWorkflow<br/>(UI: Discovery)<br/>Pattern Matching"]
         end
 
         subgraph "Core Services"
@@ -317,8 +337,8 @@ graph TB
         end
 
         subgraph "services/"
-            DiscWF[discovery_workflow.py<br/>DiscoveryWorkflow<br/>- run_discovery<br/>- get_run_summary]
-            IdentWF[identify_workflow.py<br/>IdentifyWorkflow<br/>- run_identify<br/>- calculate_similarity<br/>- generate_gap_report]
+            DiscWF["discovery_workflow.py<br/>DiscoveryWorkflow<br/>(UI: Pattern Extractor)<br/>- run_discovery<br/>- get_run_summary"]
+            IdentWF["identify_workflow.py<br/>IdentifyWorkflow<br/>(UI: Discovery)<br/>- run_identify<br/>- calculate_similarity<br/>- generate_gap_report"]
             XMLParse[xml_parser.py<br/>XmlStreamingParser<br/>- stream_parse_targets<br/>- detect_ndc_version]
             LLMExt[llm_extractor.py<br/>LLMExtractor<br/>- extract_facts<br/>- Azure/OpenAI client]
             PatGen[pattern_generator.py<br/>PatternGenerator<br/>- generate_patterns<br/>- signature_hash]
@@ -596,6 +616,7 @@ classDiagram
 ```mermaid
 classDiagram
     class DiscoveryWorkflow {
+        <<UI: Pattern Extractor>>
         -Session db_session
         -Optional~str~ message_root
         +__init__(db_session)
@@ -610,6 +631,7 @@ classDiagram
     }
 
     class IdentifyWorkflow {
+        <<UI: Discovery>>
         -Session db_session
         -DiscoveryWorkflow discovery
         -PatternGenerator pattern_gen
@@ -874,7 +896,7 @@ erDiagram
 
 ## Data Flow Diagram
 
-### Discovery (Pattern Extraction) Data Flow
+### Pattern Extractor Data Flow (Backend: Discovery)
 
 ```mermaid
 flowchart LR
@@ -941,7 +963,7 @@ flowchart LR
     style NodeDB fill:#3b82f6,color:#fff
 ```
 
-### Identify (Pattern Matching) Data Flow
+### Discovery Data Flow (Backend: Identify)
 
 ```mermaid
 flowchart LR
@@ -1260,9 +1282,9 @@ ad/
 │       ├── pages/               # UI pages
 │       │   ├── 0_Config.py
 │       │   ├── 1_Node_Manager.py
-│       │   ├── 2_Pattern_Extractor.py  # Discovery UI
+│       │   ├── 2_Pattern_Extractor.py  # Pattern extraction (uses DiscoveryWorkflow)
 │       │   ├── 3_Pattern_Manager.py
-│       │   └── 4_Discovery.py          # Identify UI
+│       │   └── 4_Discovery.py          # Pattern validation (uses IdentifyWorkflow)
 │       └── utils/               # UI utilities
 │
 └── docs/                        # Documentation
@@ -1345,7 +1367,7 @@ workspace.db (SQLite)
 - Input tokens: $0.005 per 1K tokens
 - Output tokens: $0.015 per 1K tokens
 - Average: $0.50 - $2.00 per 10 MB XML
-- Identify runs: $0.10 - $0.50 per run (fewer LLM calls)
+- Discovery runs (IdentifyWorkflow): $0.10 - $0.50 per run (fewer LLM calls)
 
 **Storage Costs**:
 - SQLite: Free (local storage)
@@ -1358,12 +1380,12 @@ workspace.db (SQLite)
 
 This document provides comprehensive architectural diagrams for the AssistedDiscovery system, including:
 
-✅ **Sequence Diagrams**: Discovery and Identify workflows with actual service calls
+✅ **Sequence Diagrams**: Pattern Extractor and Discovery workflows with actual service calls
 ✅ **System Architecture**: Complete component view with FastAPI, services, and Azure OpenAI
 ✅ **Component Diagrams**: Backend structure with all modules and dependencies
 ✅ **Class Diagrams**: Data models and service classes with methods
 ✅ **Database Schema**: ER diagrams showing all relationships
-✅ **Data Flow**: Separate flows for Discovery and Identify processes
+✅ **Data Flow**: Separate flows for Pattern Extractor and Discovery processes
 ✅ **Error Handling**: Comprehensive error handling with retry logic
 ✅ **Workspace Architecture**: SQLite-based isolation design
 ✅ **Performance Notes**: Memory, speed, and cost characteristics
