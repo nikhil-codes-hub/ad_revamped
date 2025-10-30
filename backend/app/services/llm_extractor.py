@@ -127,14 +127,11 @@ class LLMNodeFactsExtractor:
             total_children = len(root)
 
             # Determine if this is a container
-            # Container if: has repeating children OR element name suggests plural
-            # Ensure element_name is a string before calling endswith
-            element_name_str = str(element_name)
-            is_container = (
-                max_repetition > 1 or  # Has repeating child elements
-                (element_name_str.endswith('List') and total_children > 0) or
-                (element_name_str.endswith('s') and total_children > 0 and max_repetition == total_children)
-            )
+            # Any element with children is a container - it should be extracted as one structural unit
+            # with nested children. The granularity of extraction is controlled by database configuration
+            # (which paths are targeted), not by this logic.
+            # Leaf elements (total_children == 0) naturally use item extraction.
+            is_container = total_children > 0
 
             result = {
                 'is_container': is_container,
@@ -227,14 +224,24 @@ class LLMNodeFactsExtractor:
             processing_time = int((datetime.now() - start_time).total_seconds() * 1000)
 
             content = response.choices[0].message.content
-            logger.info(f"✅ LLM API call successful ({len(content)} chars, {processing_time}ms)")
+            finish_reason = response.choices[0].finish_reason
+
+            # Check for truncation
+            if finish_reason == "length":
+                logger.warning(f"⚠️ LLM response TRUNCATED due to token limit!")
+                logger.warning(f"   Token limit: {self.max_tokens}")
+                logger.warning(f"   Tokens used: {response.usage.total_tokens}")
+                logger.warning(f"   Response may contain incomplete JSON")
+
+            logger.info(f"✅ LLM API call successful ({len(content)} chars, {processing_time}ms, finish_reason={finish_reason})")
             logger.debug(f"   Response preview: {content[:200]}...")
 
             return {
                 "content": content,
                 "tokens_used": response.usage.total_tokens,
                 "processing_time_ms": processing_time,
-                "model": response.model
+                "model": response.model,
+                "finish_reason": finish_reason
             }
 
         except openai.AuthenticationError as e:
@@ -286,9 +293,10 @@ class LLMNodeFactsExtractor:
         # Remove multiple consecutive commas
         json_str = re.sub(r',\s*,', ',', json_str)
 
-        # Remove comments (// and /* */)
-        json_str = re.sub(r'//.*?\n', '\n', json_str)
-        json_str = re.sub(r'/\*.*?\*/', '', json_str, flags=re.DOTALL)
+        # Remove comments (// and /* */) - ONLY at start of line to avoid matching URLs
+        # Match // only when preceded by start-of-line or whitespace (not inside strings)
+        json_str = re.sub(r'^\s*//.*?$', '', json_str, flags=re.MULTILINE)
+        json_str = re.sub(r'^\s*/\*.*?\*/\s*$', '', json_str, flags=re.MULTILINE | re.DOTALL)
 
         # Fix unescaped control characters in string values
         # More robust approach using a state machine-like pattern
@@ -336,7 +344,124 @@ class LLMNodeFactsExtractor:
 
         return json_str
 
-    def _parse_llm_response(self, llm_response: str) -> List[Dict[str, Any]]:
+    def _has_incomplete_string(self, json_str: str) -> bool:
+        """
+        Detect if JSON contains incomplete string values (missing closing quotes).
+
+        Returns True if the JSON appears to have strings that were cut off mid-value.
+        """
+        import re
+
+        # Look for common patterns of incomplete strings in JSON:
+        # 1. Field name followed by opening quote, but no closing quote before next field/delimiter
+        # Pattern: "field_name": "value_without_closing_quote\n    "next_field"
+        incomplete_patterns = [
+            r'"[^"]+"\s*:\s*"[^"]*\n\s*"[^"]+"\s*:',  # Next field starts without closing prev string
+            r'"[^"]+"\s*:\s*"[^"]*\n\s*\{',  # Opening brace without closing string
+            r'"[^"]+"\s*:\s*"[^"]*\n\s*\[',  # Opening bracket without closing string
+            r'"[^"]+"\s*:\s*"[^"]*\n\s*\}',  # Closing brace without closing string
+        ]
+
+        for pattern in incomplete_patterns:
+            if re.search(pattern, json_str):
+                logger.warning(f"Detected incomplete string pattern: {pattern}")
+                return True
+
+        return False
+
+    def _try_fix_truncated_json(self, json_str: str) -> str:
+        """
+        Attempt to fix truncated JSON by finding complete objects.
+
+        Strategy: Look for patterns like "},\n  {" which indicate a boundary between
+        complete objects in an array. Keep everything up to the last such boundary.
+        """
+        import re
+        import json
+
+        stripped = json_str.rstrip()
+        if not stripped:
+            return json_str
+
+        # Try parsing as-is first
+        try:
+            json.loads(json_str)
+            return json_str  # Already valid
+        except json.JSONDecodeError:
+            pass
+
+        if not json_str.strip().startswith('['):
+            logger.warning("Not a JSON array - cannot recover")
+            return '[]'
+
+        # NEW: Check for incomplete strings first
+        if self._has_incomplete_string(json_str):
+            logger.warning("⚠️ Detected incomplete string values - likely mid-string truncation")
+            logger.warning("   Will attempt to recover complete objects only")
+
+        # Strategy: Find the last occurrence of "},\n" which indicates end of a complete object
+        # This pattern is more reliable than just looking for "}" because it shows:
+        # 1. Object closed with "}"
+        # 2. Comma indicating more items follow
+        # 3. Newline (typical formatting in truncated responses)
+
+        # Look for patterns that indicate a complete object boundary
+        # Pattern 1: },\n (object end with comma and newline)
+        # Pattern 2: }\n] (last object followed by array close)
+
+        object_end_patterns = [
+            (r'},\s*\n\s*{', 'between objects'),  # Between objects
+            (r'},\s*\n\s*\]', 'last object'),      # Before array close
+        ]
+
+        best_pos = -1
+        best_desc = None
+
+        for pattern, desc in object_end_patterns:
+            matches = list(re.finditer(pattern, json_str))
+            if matches:
+                # Get the position right after the "},"
+                last_match = matches[-1]
+                match_end = last_match.start() + 1  # Position after "}"
+                if match_end > best_pos:
+                    best_pos = match_end
+                    best_desc = desc
+
+        if best_pos > 0:
+            # Found a good truncation point
+            test_json = json_str[:best_pos+1]  # Include the "}"
+            test_json = re.sub(r',\s*$', '', test_json)  # Remove trailing comma
+            test_json = test_json + '\n]'  # Close array
+
+            try:
+                parsed = json.loads(test_json)
+                if isinstance(parsed, list) and len(parsed) > 0:
+                    logger.info(f"✅ Recovered {len(parsed)} complete objects ({best_desc})")
+                    logger.info(f"   Discarded {len(json_str) - best_pos - 1} chars of incomplete data")
+                    return test_json
+            except json.JSONDecodeError as e:
+                logger.warning(f"Recovery attempt failed even at object boundary: {e}")
+
+        # Fallback: Try progressively removing content from the end
+        # Look for any "}" and try parsing up to there
+        for pos in range(len(json_str)-1, 0, -1):
+            if json_str[pos] == '}':
+                test_json = json_str[:pos+1]
+                test_json = re.sub(r',\s*$', '', test_json)
+                test_json = test_json + '\n]'
+
+                try:
+                    parsed = json.loads(test_json)
+                    if isinstance(parsed, list) and len(parsed) > 0:
+                        logger.info(f"✅ Recovered {len(parsed)} objects (fallback method)")
+                        return test_json
+                except json.JSONDecodeError:
+                    continue
+
+        logger.warning("❌ Could not recover any complete objects from truncated JSON")
+        return '[]'
+
+    def _parse_llm_response(self, llm_response: str, finish_reason: str = "stop") -> List[Dict[str, Any]]:
         """Parse and validate LLM response with improved error handling."""
         try:
             response_content = llm_response.strip()
@@ -355,8 +480,55 @@ class LLMNodeFactsExtractor:
                 if end != -1:
                     response_content = response_content[start:end].strip()
 
-            # Clean the JSON string
-            response_content = self._clean_json_string(response_content)
+            # PROACTIVE DETECTION: Assume truncation for any JSON parse error
+            # Better to attempt recovery unnecessarily than to crash
+            looks_truncated = False
+            if finish_reason == "length":
+                looks_truncated = True
+                logger.warning("⚠️ Response truncated (finish_reason=length)")
+            else:
+                # Quick validation check - try parsing raw content
+                try:
+                    json.loads(response_content)
+                    # Valid JSON - no truncation
+                except json.JSONDecodeError as e:
+                    # ANY parse error could indicate truncation
+                    looks_truncated = True
+                    logger.warning(f"⚠️ JSON parse error on raw content: {e}")
+                    logger.warning("   Will attempt truncation recovery before cleaning")
+                except Exception as e:
+                    # Unexpected error - still try recovery
+                    looks_truncated = True
+                    logger.warning(f"⚠️ Unexpected parse error: {e}")
+
+            # IMPORTANT: Fix truncation BEFORE cleaning
+            # _clean_json_string can break truncated JSON with its aggressive regex
+            skip_cleaning = False
+            if looks_truncated:
+                logger.info("🔧 Attempting recovery on raw response before cleaning...")
+                original_len = len(response_content)
+                response_content = self._try_fix_truncated_json(response_content)
+                logger.info(f"   Recovery: {original_len} chars → {len(response_content)} chars")
+
+                # Check if recovery returned empty result
+                if response_content == '[]':
+                    logger.warning("   ⚠️ Recovery returned empty array - no complete objects found")
+                    logger.warning("   This is expected if ALL objects were incomplete")
+                    # Return early with empty result
+                    return []
+
+                # Skip aggressive cleaning after truncation recovery
+                # The recovery should have produced valid JSON already
+                skip_cleaning = True
+                logger.info("   Skipping aggressive JSON cleaning (already recovered)")
+
+            # Clean the JSON string (only if not recovered from truncation)
+            if not skip_cleaning:
+                response_content = self._clean_json_string(response_content)
+            else:
+                # Minimal cleaning: just remove trailing commas
+                import re
+                response_content = re.sub(r',(\s*[}\]])', r'\1', response_content)
 
             # Try direct JSON parsing
             facts = []
@@ -393,8 +565,26 @@ class LLMNodeFactsExtractor:
                     end = min(len(response_content), e.pos + 50)
                     logger.error(f"Context around error: ...{response_content[start:end]}...")
 
-                logger.warning("Returning empty result due to JSON parse error")
-                return []
+                # FALLBACK: Try truncation recovery as last resort
+                # This helps if finish_reason wasn't properly detected
+                logger.warning("🔧 Attempting truncation recovery as fallback...")
+                try:
+                    recovered = self._try_fix_truncated_json(llm_response.strip())
+                    if recovered != '[]':
+                        logger.info("Retrying with recovered JSON...")
+                        facts = json.loads(recovered)
+                        if isinstance(facts, list) and len(facts) > 0:
+                            logger.info(f"✅ Fallback recovery successful: {len(facts)} facts")
+                        else:
+                            logger.warning("Fallback recovery produced empty result")
+                            return []
+                    else:
+                        logger.warning("Fallback recovery failed - returning empty result")
+                        return []
+                except Exception as fallback_error:
+                    logger.error(f"Fallback recovery also failed: {fallback_error}")
+                    logger.warning("Returning empty result due to JSON parse error")
+                    return []
 
             if not isinstance(facts, list):
                 logger.warning(f"LLM returned non-list response: {type(facts)}")
@@ -561,8 +751,11 @@ class LLMNodeFactsExtractor:
             # Call LLM
             llm_response = await self._call_llm(prompt)
 
-            # Parse response
-            node_facts = self._parse_llm_response(llm_response["content"])
+            # Parse response (pass finish_reason to detect truncation)
+            node_facts = self._parse_llm_response(
+                llm_response["content"],
+                finish_reason=llm_response.get("finish_reason", "stop")
+            )
 
             # Log quality breaks without aborting workflow
             for fact in node_facts:
