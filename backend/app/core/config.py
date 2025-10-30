@@ -64,7 +64,7 @@ class Settings(BaseSettings):
     # LLM Provider Selection
     LLM_PROVIDER: str = Field(default="azure", description="LLM provider: azure, openai, or gemini")
 
-    MAX_TOKENS_PER_REQUEST: int = Field(default=4000, description="Maximum tokens per LLM request")
+    MAX_TOKENS_PER_REQUEST: int = Field(default=16000, description="Maximum tokens per LLM request")
     LLM_TEMPERATURE: float = Field(default=0.1, description="LLM temperature for consistent outputs")
     LLM_TOP_P: float = Field(default=0.0, description="LLM top_p for deterministic outputs")
 

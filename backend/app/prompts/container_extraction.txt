@@ -27,12 +27,10 @@ Each child's node_type should be: "{repeating_tag}"
     "summary": "brief description of what this container holds"
   }},
   "quality_checks": {{
-    // Summarize validation status for this container
-    "status": "error",  // Use "error" if any required element is missing, otherwise "ok"
-    "missing_elements": [
-      // List every missing or empty element with context, leave [] if none
-      // Example: {{"path": "{element_name}[1]/{repeating_tag}[1]/PTC", "reason": "{repeating_tag} missing required PTC"}}
-    ]
+    // ONLY report validation status if there are OBVIOUS structural problems
+    // Do NOT guess about "commonly expected" elements - only report truly critical missing data
+    "status": "ok",  // Use "error" ONLY if container is completely empty or malformed, otherwise "ok"
+    "missing_elements": []  // Leave empty unless container/children are completely empty or have no IDs
   }},
   "business_intelligence": {{
     // For PassengerList/PaxList: count by PTC (ADT/CHD/INF)
@@ -57,10 +55,7 @@ Each child's node_type should be: "{repeating_tag}"
         // Example: if XML has <DistanceMeasure>3430</DistanceMeasure>, use "DistanceMeasure": "3430"
         "id": "PAX1",  // PassengerID, PaxID, or similar - use EXACT XML tag name
         "type": "ADT",  // PTC code if applicable - use EXACT XML tag name
-        "name": "MR JOHN DOE",  // Constructed full name if applicable
-        "missing_elements": [
-          // List element names that are expected for this child but absent or empty (leave [] if none)
-        ]
+        "name": "MR JOHN DOE"  // Constructed full name if applicable
         // ... other relevant attributes with EXACT XML tag names
       }},
       "references": {{
@@ -99,9 +94,9 @@ IMPORTANT RULES:
    - If the XML tag is <Pax>, use "Pax" NOT "Passenger"
    - If the XML tag is <Passenger>, use "Passenger" NOT "Pax"
 5. Extract key attributes from each child (IDs, codes, values)
-   - If a required or commonly expected element is missing or empty, add it to the child's "missing_elements" list and to the container-level quality_checks.missing_elements array. Include an XPath-style path and a short reason.
-   - After evaluating all children, set quality_checks.status = "error" if any missing elements exist anywhere in the container (including nested descendants); otherwise use "ok".
-   - Mirror every missing element detected in children into the quality_checks.missing_elements array with the appropriate indexed path (e.g., "{element_name}[1]/{repeating_tag}[1]/PTC").
+   - Extract ONLY what is actually present in the XML
+   - Do NOT add missing_elements or quality checks unless the container is completely empty
+   - Focus on accurate extraction, not validation
 6. Extract ALL reference elements: look for elements ending with "Ref", "RefID", "ID" that point to other nodes
 6. Build business_intelligence object with relevant aggregations:
    - For PassengerList/PaxList: count ADT/CHD/INF from PTC values
