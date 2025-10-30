@@ -265,6 +265,47 @@ class PatternGenerator:
 
         return decision_rule
 
+    def _normalize_child_structure_for_hash(self, child_structure: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Normalize child structure for consistent hashing.
+
+        Removes variable/inconsistent fields that LLM may name differently across runs:
+        - reference_fields (e.g., "pax_references" vs "pax", "segment_references" vs "segments")
+        - other LLM-generated variable names
+
+        Keeps only structural elements:
+        - has_children, is_container
+        - child_types (sorted for consistency)
+        - required_attributes from child_structures (sorted)
+        """
+        if not child_structure:
+            return {}
+
+        normalized = {
+            'has_children': child_structure.get('has_children', False),
+            'is_container': child_structure.get('is_container', False),
+        }
+
+        # Include child types (sorted for consistency)
+        if 'child_types' in child_structure:
+            normalized['child_types'] = sorted(child_structure['child_types'])
+
+        # Include child structures but only structural elements (not variable reference field names)
+        if 'child_structures' in child_structure:
+            normalized_children = []
+            for child in child_structure['child_structures']:
+                normalized_child = {
+                    'node_type': child.get('node_type', ''),
+                    # Sort attributes for consistency
+                    'required_attributes': sorted(child.get('required_attributes', []))
+                    # NOTE: Exclude reference_fields - LLM names these inconsistently
+                }
+                normalized_children.append(normalized_child)
+            # Sort children by node_type for consistency
+            normalized['child_structures'] = sorted(normalized_children, key=lambda x: x['node_type'])
+
+        return normalized
+
     def generate_signature_hash(self, decision_rule: Dict[str, Any],
                                 spec_version: str,
                                 section_path: str) -> str:
@@ -275,20 +316,29 @@ class PatternGenerator:
         - Normalized section path
         - Node type
         - Required attributes
-        - Child structure
-        - Reference patterns
+        - Child structure (normalized to exclude LLM-variable fields like reference_fields)
+        - Reference patterns (types only, not field names)
         - Spec version
+
+        NOTE: airline_code is intentionally NOT included in the hash.
+        Patterns with the same structure across different airlines share the same hash.
+        The airline_code field in the Pattern table is for informational/filtering purposes only.
         """
         # Extract message_root from decision_rule or section_path
         message_root = decision_rule.get('message_root', section_path.split('/')[0] if '/' in section_path else '')
+
+        # Normalize child structure to exclude variable fields
+        normalized_child_structure = self._normalize_child_structure_for_hash(
+            decision_rule.get('child_structure', {})
+        )
 
         components = {
             'path': self._normalize_path(section_path, message_root),
             'version': spec_version,
             'node_type': decision_rule.get('node_type', ''),
-            'must_have': decision_rule.get('must_have_attributes', []),
-            'child_structure': decision_rule.get('child_structure', {}),
-            'references': [p.get('type', '') for p in decision_rule.get('reference_patterns', [])]
+            'must_have': sorted(decision_rule.get('must_have_attributes', [])),  # Sort for consistency
+            'child_structure': normalized_child_structure,
+            'references': sorted([p.get('type', '') for p in decision_rule.get('reference_patterns', [])])  # Sort for consistency
         }
 
         # Create deterministic JSON string
@@ -422,13 +472,18 @@ class PatternGenerator:
             section_path
         )
 
-        # Check if pattern already exists (including airline_code)
+        # Check if pattern already exists by signature_hash (which is UNIQUE)
+        # Note: signature_hash is globally unique, so we query by hash alone
+        # This is more efficient and avoids NULL comparison issues with airline_code
         existing = self.db_session.query(Pattern).filter(
-            Pattern.spec_version == spec_version,
-            Pattern.message_root == message_root,
-            Pattern.airline_code == airline_code,
             Pattern.signature_hash == signature_hash
         ).first()
+
+        # If pattern exists but airline_code has changed, update it
+        if existing and existing.airline_code != airline_code:
+            logger.info(f"Pattern {existing.id} found with different airline_code: "
+                       f"{existing.airline_code} -> {airline_code}")
+            existing.airline_code = airline_code
 
         if existing:
             # Update existing pattern
