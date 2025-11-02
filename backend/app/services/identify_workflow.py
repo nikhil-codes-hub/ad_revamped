@@ -235,9 +235,11 @@ class IdentifyWorkflow:
         from app.models.database import NodeRelationship
 
         # Query patterns for same version/message/airline (VERSION & AIRLINE FILTERED!)
+        # Only match against active patterns (not superseded)
         query = self.db_session.query(Pattern).filter(
             Pattern.spec_version == spec_version,
-            Pattern.message_root == message_root
+            Pattern.message_root == message_root,
+            Pattern.superseded_by.is_(None)  # Exclude superseded patterns
         )
 
         # Filter by airline_code if provided
@@ -795,9 +797,11 @@ class IdentifyWorkflow:
         logger.info("Phase 3.1: Identifying missing patterns from uploaded XML")
 
         # Get all expected patterns for this version/message/airline
+        # Only include active patterns (not superseded)
         expected_patterns_query = self.db_session.query(Pattern).filter(
             Pattern.spec_version == match_version,
-            Pattern.message_root == match_message_root
+            Pattern.message_root == match_message_root,
+            Pattern.superseded_by.is_(None)  # Exclude superseded patterns
         )
         if match_airline_code:
             expected_patterns_query = expected_patterns_query.filter(Pattern.airline_code == match_airline_code)

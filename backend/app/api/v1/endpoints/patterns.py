@@ -146,7 +146,8 @@ async def list_patterns(
                 examples=p.examples or [],
                 created_at=p.created_at.isoformat() if p.created_at else None,
                 last_seen_at=p.last_seen_at.isoformat() if p.last_seen_at else None,
-                description=p.description
+                description=p.description,
+                superseded_by=p.superseded_by
             )
             for p in patterns
         ]
@@ -190,7 +191,8 @@ async def get_pattern(pattern_id: int) -> PatternResponse:
             {"node_type": "BookingReference", "snippet": "<BookingReference ID=ABC123>"}
         ],
         created_at="2025-09-26T10:30:00Z",
-        last_seen_at="2025-09-26T11:45:00Z"
+        last_seen_at="2025-09-26T11:45:00Z",
+        superseded_by=None
     )
 
 
@@ -299,7 +301,7 @@ async def generate_patterns(
             "success": results.get('success', False),
             "message": "Pattern generation completed",
             "statistics": {
-                "node_facts_analyzed": results.get('node_facts_analyzed', 0),
+                "elements_analyzed": results.get('node_facts_analyzed', 0),
                 "pattern_groups": results.get('pattern_groups', 0),
                 "patterns_created": results.get('patterns_created', 0),
                 "patterns_updated": results.get('patterns_updated', 0)
@@ -433,6 +435,152 @@ Return a JSON object with:
         except Exception as e:
             logger.error("LLM modification failed", error=str(e))
             raise HTTPException(status_code=500, detail=f"LLM modification failed: {str(e)}")
+
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
+
+
+@router.delete("/{pattern_id}")
+async def delete_pattern(
+    pattern_id: int,
+    workspace: str = Query("default", description="Workspace name")
+) -> Dict[str, Any]:
+    """
+    Delete a pattern by ID.
+
+    **WARNING**: This permanently deletes the pattern and all associated matches.
+    Use with caution.
+
+    - **pattern_id**: ID of the pattern to delete
+    - **workspace**: Workspace name (default: 'default')
+
+    Returns:
+        Success message with deleted pattern information
+    """
+    logger.info(f"Deleting pattern {pattern_id} from workspace: {workspace}")
+
+    # Get workspace database session
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
+
+    try:
+        # Find the pattern
+        pattern = db.query(Pattern).filter(Pattern.id == pattern_id).first()
+
+        if not pattern:
+            raise HTTPException(status_code=404, detail=f"Pattern {pattern_id} not found")
+
+        # Store pattern info for response before deletion
+        deleted_info = {
+            "pattern_id": pattern.id,
+            "section_path": pattern.section_path,
+            "spec_version": pattern.spec_version,
+            "message_root": pattern.message_root,
+            "airline_code": pattern.airline_code,
+            "node_type": pattern.decision_rule.get('node_type', 'Unknown') if pattern.decision_rule else 'Unknown',
+            "times_seen": pattern.times_seen,
+            "created_at": pattern.created_at.isoformat() if pattern.created_at else None
+        }
+
+        # Delete the pattern (CASCADE will delete associated pattern_matches)
+        db.delete(pattern)
+        db.commit()
+
+        logger.info(f"Pattern {pattern_id} deleted successfully", deleted_info=deleted_info)
+
+        return {
+            "success": True,
+            "message": f"Pattern {pattern_id} deleted successfully",
+            "deleted_pattern": deleted_info
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to delete pattern {pattern_id}: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Failed to delete pattern: {str(e)}")
+
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
+
+
+@router.delete("/bulk")
+async def delete_patterns_bulk(
+    pattern_ids: List[int] = Body(..., description="List of pattern IDs to delete"),
+    workspace: str = Query("default", description="Workspace name")
+) -> Dict[str, Any]:
+    """
+    Delete multiple patterns at once.
+
+    **WARNING**: This permanently deletes the patterns and all associated matches.
+    Use with caution.
+
+    - **pattern_ids**: List of pattern IDs to delete
+    - **workspace**: Workspace name (default: 'default')
+
+    Returns:
+        Success message with deletion statistics
+    """
+    logger.info(f"Bulk deleting {len(pattern_ids)} patterns from workspace: {workspace}")
+
+    if not pattern_ids:
+        raise HTTPException(status_code=400, detail="No pattern IDs provided")
+
+    # Get workspace database session
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
+
+    try:
+        # Find all patterns
+        patterns = db.query(Pattern).filter(Pattern.id.in_(pattern_ids)).all()
+
+        if not patterns:
+            raise HTTPException(status_code=404, detail="No patterns found with provided IDs")
+
+        found_ids = {p.id for p in patterns}
+        missing_ids = set(pattern_ids) - found_ids
+
+        # Store pattern info for response
+        deleted_patterns = [
+            {
+                "pattern_id": p.id,
+                "section_path": p.section_path,
+                "node_type": p.decision_rule.get('node_type', 'Unknown') if p.decision_rule else 'Unknown'
+            }
+            for p in patterns
+        ]
+
+        # Delete all patterns (CASCADE will delete associated pattern_matches)
+        deleted_count = db.query(Pattern).filter(Pattern.id.in_(found_ids)).delete(synchronize_session=False)
+        db.commit()
+
+        logger.info(f"Bulk deletion complete: {deleted_count} patterns deleted")
+
+        return {
+            "success": True,
+            "message": f"Successfully deleted {deleted_count} patterns",
+            "deleted_count": deleted_count,
+            "deleted_patterns": deleted_patterns,
+            "missing_ids": list(missing_ids) if missing_ids else []
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to bulk delete patterns: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Failed to bulk delete patterns: {str(e)}")
 
     finally:
         try:

@@ -358,7 +358,37 @@ def merge_existing_configs(result: Dict[str, Any], workspace: Optional[str] = No
     return result
 
 
-def upload_file_for_run(file, run_kind: str, workspace: str = "default", target_version: Optional[str] = None, target_message_root: Optional[str] = None, target_airline_code: Optional[str] = None) -> Optional[Dict[str, Any]]:
+def check_pattern_conflicts(node_paths: list, spec_version: str, message_root: str, workspace: str = "default", airline_code: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """Check for pattern conflicts before extraction (pre-flight check)."""
+    try:
+        params = {
+            "workspace": workspace,
+            "spec_version": spec_version,
+            "message_root": message_root,
+            "node_paths": node_paths
+        }
+
+        if airline_code:
+            params["airline_code"] = airline_code
+
+        response = requests.post(
+            f"{API_BASE_URL}/runs/preflight-check",
+            params=params,
+            timeout=30
+        )
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.error(f"❌ Pre-flight check failed: {response.status_code}")
+            return None
+
+    except Exception as e:
+        st.error(f"❌ Pre-flight check error: {str(e)}")
+        return None
+
+
+def upload_file_for_run(file, run_kind: str, workspace: str = "default", target_version: Optional[str] = None, target_message_root: Optional[str] = None, target_airline_code: Optional[str] = None, conflict_resolution: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """Upload file and create a new run."""
     try:
         files = {"file": (file.name, file.getvalue(), "application/xml")}
@@ -374,6 +404,10 @@ def upload_file_for_run(file, run_kind: str, workspace: str = "default", target_
             params["target_message_root"] = target_message_root
         if target_airline_code:
             params["target_airline_code"] = target_airline_code
+
+        # Add conflict resolution strategy for discovery runs
+        if conflict_resolution:
+            params["conflict_resolution"] = conflict_resolution
 
         response = requests.post(
             f"{API_BASE_URL}/runs/",
@@ -549,6 +583,43 @@ def get_patterns(limit: int = 100, run_id: Optional[str] = None, workspace: str 
         return []
     except requests.exceptions.RequestException:
         return []
+
+
+def delete_pattern(pattern_id: int, workspace: str = "default") -> Optional[Dict[str, Any]]:
+    """Delete a single pattern by ID."""
+    try:
+        response = requests.delete(
+            f"{API_BASE_URL}/patterns/{pattern_id}",
+            params={"workspace": workspace},
+            timeout=10
+        )
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.error(f"Failed to delete pattern: {response.status_code}")
+            return None
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error deleting pattern: {str(e)}")
+        return None
+
+
+def delete_patterns_bulk(pattern_ids: List[int], workspace: str = "default") -> Optional[Dict[str, Any]]:
+    """Delete multiple patterns by IDs."""
+    try:
+        response = requests.delete(
+            f"{API_BASE_URL}/patterns/bulk",
+            params={"workspace": workspace},
+            json=pattern_ids,
+            timeout=15
+        )
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.error(f"Failed to delete patterns: {response.status_code}")
+            return None
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error deleting patterns: {str(e)}")
+        return None
 
 
 def detect_version_and_airline(file) -> Optional[Dict[str, Any]]:
@@ -802,22 +873,21 @@ def show_pattern_extractor_page():
                 del st.session_state.pattern_extractor_using_shared_file
 
     if uploaded_file:
-        col1, col2, col3 = st.columns([2, 1, 1])
+        # Auto-detect version and airline from XML if not already done
+        if 'discovery_detect_result' not in st.session_state:
+            with st.spinner("🔍 Analyzing XML and detecting version..."):
+                detect_result = detect_version_and_airline(uploaded_file)
+                if detect_result:
+                    st.session_state.discovery_detect_result = detect_result
+                    st.rerun()
+
+        col1, col2 = st.columns([3, 1])
         with col1:
             st.write(f"**Filename:** {uploaded_file.name}")
             st.write(f"**Size:** {uploaded_file.size:,} bytes")
         with col2:
-            if st.button("📋 Show Configured Nodes", help="View configured nodes for this XML", use_container_width=True):
-                # Detect version and airline from XML
-                with st.spinner("Analyzing XML..."):
-                    detect_result = detect_version_and_airline(uploaded_file)
-
-                if detect_result:
-                    st.session_state.discovery_detect_result = detect_result
-                    st.rerun()
-        with col3:
             if 'discovery_detect_result' in st.session_state:
-                if st.button("🔄 Clear", help="Clear detection and upload new file", use_container_width=True):
+                if st.button("🔄 Clear & Upload New", help="Clear detection and upload new file", use_container_width=True):
                     del st.session_state.discovery_detect_result
                     st.rerun()
 
@@ -911,6 +981,75 @@ def show_pattern_extractor_page():
 
             st.divider()
 
+        # Pre-flight Conflict Check (before showing Start Extraction button)
+        conflict_check_result = None
+
+        if 'discovery_detect_result' in st.session_state:
+            detect_result = st.session_state.discovery_detect_result
+
+            # Get enabled node paths for conflict check
+            configs_data = get_node_configurations(
+                spec_version=detect_result.get('spec_version'),
+                message_root=detect_result.get('message_root'),
+                airline_code=detect_result.get('airline_code'),
+                workspace=current_workspace
+            )
+
+            if configs_data:
+                configs = configs_data.get('configurations', [])
+                enabled_paths = [cfg['section_path'] for cfg in configs if cfg.get('enabled')]
+
+                if enabled_paths:
+                    # Run pre-flight check
+                    with st.spinner("🔍 Checking for pattern conflicts..."):
+                        conflict_check_result = check_pattern_conflicts(
+                            node_paths=enabled_paths,
+                            spec_version=detect_result.get('spec_version'),
+                            message_root=detect_result.get('message_root'),
+                            workspace=current_workspace,
+                            airline_code=detect_result.get('airline_code')
+                        )
+
+        # Show conflict warning if found
+        if conflict_check_result and conflict_check_result.get('has_conflicts'):
+            conflicts = conflict_check_result.get('conflicts', [])
+
+            st.warning(f"⚠️ **Pattern Conflict Detected** ({len(conflicts)} conflict(s))")
+
+            for idx, conflict in enumerate(conflicts):
+                with st.expander(f"🔴 Conflict {idx + 1}: {conflict['extracting_path']}", expanded=True):
+                    st.write(f"**Type:** {conflict['conflict_type']}")
+                    st.write(f"**Impact:** {conflict['impact_description']}")
+
+                    st.write("**Existing Patterns:**")
+                    for existing in conflict['existing_patterns'][:3]:
+                        st.caption(f"• `{existing['section_path']}` ({existing['times_seen']} occurrences)")
+                    if len(conflict['existing_patterns']) > 3:
+                        st.caption(f"  ...and {len(conflict['existing_patterns']) - 3} more")
+
+            st.info("💡 **What should happen to the existing patterns?**")
+
+            # Let user choose resolution strategy
+            resolution_choice = st.radio(
+                "Choose conflict resolution strategy:",
+                options=[
+                    ("replace", "🔄 **Replace** - Delete old patterns, keep new (Recommended)"),
+                    ("keep_both", "📦 **Keep Both** - Keep both old and new patterns"),
+                    ("merge", "🔀 **Merge** - Mark old patterns as superseded")
+                ],
+                format_func=lambda x: x[1],
+                key="conflict_resolution_choice",
+                help="REPLACE: Clean matching, all data preserved in new pattern\n"
+                     "KEEP_BOTH: May cause ambiguous matches\n"
+                     "MERGE: Preserves history for audit"
+            )
+
+            st.session_state.conflict_resolution_strategy = resolution_choice[0]
+        else:
+            # No conflicts - allow extraction without resolution strategy
+            if 'conflict_resolution_strategy' in st.session_state:
+                del st.session_state.conflict_resolution_strategy
+
         # Start Extraction button
         col1, col2, col3 = st.columns(3)
         with col2:
@@ -942,7 +1081,16 @@ def show_pattern_extractor_page():
                 time.sleep(5.0)
 
                 # Step 2: Start processing
-                result = upload_file_for_run(uploaded_file, "discovery", workspace=current_workspace)
+                # Get conflict resolution strategy if conflicts were detected
+                # Default to 'replace' if no conflicts detected (handles backend auto-conflict resolution)
+                conflict_resolution = st.session_state.get('conflict_resolution_strategy', 'replace')
+
+                result = upload_file_for_run(
+                    uploaded_file,
+                    "discovery",
+                    workspace=current_workspace,
+                    conflict_resolution=conflict_resolution
+                )
 
                 if result:
                     # Check if there was an error during processing
@@ -983,7 +1131,7 @@ def show_pattern_extractor_page():
                         progress_bar.progress(30)
                         time.sleep(0.2)
 
-                        status_text.text("🤖 LLM extracting NodeFacts...")
+                        status_text.text("🤖 LLM extracting elements...")
                         progress_bar.progress(50)
                         time.sleep(0.3)
 
@@ -1043,7 +1191,7 @@ def show_pattern_extractor_run_details(run_id: str, workspace: str = "default"):
             airline_display = f"{run_details['airline_code']}"
         st.metric("Airline", airline_display)
     with col4:
-        st.metric("NodeFacts", run_details.get("node_facts_count", 0))
+        st.metric("Elements", run_details.get("elements_analyzed", 0))
     with col5:
         st.metric("Duration", f"{run_details.get('duration_seconds', 0)}s")
 
@@ -1083,10 +1231,10 @@ def show_pattern_extractor_run_details(run_id: str, workspace: str = "default"):
     st.subheader("🔗 Discovered Relationships")
     rel_summary = get_relationship_summary(run_id, workspace)
 
-    # Check if NodeFacts were extracted
-    if run_details.get("node_facts_count", 0) == 0:
-        st.warning("⚠️ No NodeFacts were extracted during this Discovery run. Relationships cannot be analyzed without NodeFacts.")
-        st.info("💡 This usually means no target paths are configured for this NDC version and message type. Configure target paths in the Configuration page.")
+    # Check if elements were extracted
+    if run_details.get("elements_analyzed", 0) == 0:
+        st.warning("⚠️ No elements were extracted during this Pattern Extractor run. Relationships cannot be analyzed without extracted elements.")
+        st.info("💡 This could mean the XML file doesn't contain the expected structure, or the extraction didn't find matching elements. Check the extraction logs for details.")
     elif rel_summary and rel_summary.get('statistics', {}).get('total_relationships', 0) > 0:
         stats = rel_summary['statistics']
 
@@ -1153,15 +1301,15 @@ def show_pattern_extractor_run_details(run_id: str, workspace: str = "default"):
             st.caption("Legend: ✅ Valid relationship | ❌ Broken relationship (target not found)")
         else:
             st.info("No relationship details available")
-    elif run_details.get("node_facts_count", 0) > 0:
-        # NodeFacts exist but no relationships were found
+    elif run_details.get("elements_analyzed", 0) > 0:
+        # Elements exist but no relationships were found
         st.info("ℹ️ No cross-references were found between data elements in this XML file.")
         st.caption("This is normal for some XML structures that don't link different sections together.")
 
     st.divider()
 
-    # NodeFacts table - hidden in expander for technical users only
-    with st.expander("🔧 Technical Details: Extracted NodeFacts (Advanced)", expanded=False):
+    # Elements table - hidden in expander for technical users only
+    with st.expander("🔧 Technical Details: Extracted Elements (Advanced)", expanded=False):
         st.caption("Internal data structure used for pattern generation. For technical users only.")
         node_facts = get_node_facts(run_id, limit=200, workspace=workspace)
 
@@ -1190,12 +1338,12 @@ def show_pattern_extractor_run_details(run_id: str, workspace: str = "default"):
             df_nf = pd.DataFrame(nf_data)
             st.dataframe(df_nf, use_container_width=True, hide_index=True)
 
-            # Detailed view for selected NodeFact
+            # Detailed view for selected element
             st.divider()
-            st.subheader("🔎 NodeFact Details")
+            st.subheader("🔎 Element Details")
 
             nf_options = {f"ID {nf['id']} - {nf['node_type']}": nf for nf in node_facts}
-            selected_nf = st.selectbox("Select NodeFact:", list(nf_options.keys()))
+            selected_nf = st.selectbox("Select Element:", list(nf_options.keys()))
 
             if selected_nf:
                 nf = nf_options[selected_nf]
@@ -1230,7 +1378,7 @@ def show_pattern_extractor_run_details(run_id: str, workspace: str = "default"):
                     else:
                         st.info("No business intelligence")
         else:
-            st.info("No NodeFacts found for this run")
+            st.info("No elements found for this run")
 
 
 def show_discovery_page(current_workspace: Optional[str] = None):
@@ -1309,7 +1457,7 @@ def show_discovery_page(current_workspace: Optional[str] = None):
                         progress_bar.progress(25)
                         time.sleep(0.2)
 
-                        status_text.text("🤖 LLM extracting NodeFacts...")
+                        status_text.text("🤖 LLM extracting elements...")
                         progress_bar.progress(45)
                         time.sleep(0.3)
 
@@ -1404,7 +1552,7 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
         # Summary metrics
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
-            st.metric("Total NodeFacts", stats.get('total_node_facts', 0))
+            st.metric("Total Elements", stats.get('total_node_facts', 0))
         with col2:
             st.metric("Match Rate", f"{stats.get('match_rate', 0):.1f}%")
         with col3:
@@ -1660,7 +1808,8 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
 
     match_options = {}
     for m in matches:
-        node_label = f"{m['node_fact']['node_type']} @ {m['node_fact']['section_path']}"
+        element = m.get('element', {})
+        node_label = f"{element.get('node_type', 'Unknown')} @ {element.get('section_path', 'Unknown')}"
         verdict_label = m['verdict']
         confidence_label = f"{m.get('confidence', 0):.1%}"
         coverage = None
@@ -1750,14 +1899,14 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                 with st.expander("🔍 View Full JSON Comparison"):
                     col1, col2 = st.columns(2)
                     with col1:
-                        st.write("**NodeFact Structure:**")
+                        st.write("**Element Structure:**")
                         st.json(fact_json)
                     with col2:
                         st.write("**Pattern Decision Rule:**")
                         st.json(decision_rule)
             else:
                 st.warning("🆕 No pattern matched - this is a NEW pattern!")
-                st.write("**NodeFact Structure:**")
+                st.write("**Element Structure:**")
                 st.json(fact_json)
     else:
         # Show helpful message about why no patterns were found
@@ -1970,6 +2119,9 @@ def show_patterns_page(embedded: bool = False):
 
 def _render_patterns_tab(patterns, workspace):
     """Render the patterns tab content."""
+    # Create pattern lookup by ID for superseded_by references
+    pattern_lookup = {p['id']: p for p in patterns}
+
     # Convert patterns to DataFrame for display
     pattern_data = []
     for pattern in patterns:
@@ -1979,8 +2131,24 @@ def _render_patterns_tab(patterns, workspace):
         if desc and len(desc) > 80:
             desc = desc[:77] + "..."
 
+        # Determine status
+        superseded_by = pattern.get('superseded_by')
+        if superseded_by:
+            # Look up the superseding pattern to get its name
+            superseding_pattern = pattern_lookup.get(superseded_by)
+            if superseding_pattern:
+                # Extract the last segment from section_path (e.g., "PaxList" from ".../PaxList")
+                superseding_path = superseding_pattern.get('section_path', '')
+                superseding_name = superseding_path.split('/')[-1] if superseding_path else f"#{superseded_by}"
+                status = f"🔴 Replaced (by {superseding_name})"
+            else:
+                status = f"🔴 Replaced (by #{superseded_by})"
+        else:
+            status = "🟢 Active"
+
         pattern_data.append({
             "ID": pattern['id'],
+            "Status": status,
             "Section Path": pattern['section_path'],
             "Node Type": decision_rule.get('node_type', 'Unknown'),
             "Description": desc if desc else "N/A",
@@ -1988,7 +2156,8 @@ def _render_patterns_tab(patterns, workspace):
             "Airline": pattern.get('airline_code', 'N/A'),
             "Message": pattern['message_root'],
             "Must-Have Attrs": len(decision_rule.get('must_have_attributes', [])),
-            "Has Children": "✓" if decision_rule.get('child_structure', {}).get('has_children') else ""
+            "Has Children": "✓" if decision_rule.get('child_structure', {}).get('has_children') else "",
+            "_superseded_by": superseded_by  # Hidden field for filtering
         })
 
     df_patterns = pd.DataFrame(pattern_data)
@@ -2005,21 +2174,35 @@ def _render_patterns_tab(patterns, workspace):
         st.metric("Node Types", unique_types)
 
     st.divider()
-    
+
     # Filters
     st.subheader("🔧 Filters")
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
+        status_filter = st.selectbox(
+            "Status:",
+            options=["All", "Active Only", "Replaced Only"],
+            help="Filter patterns by their status"
+        )
+
+    with col2:
         versions = ["All"] + sorted(list(set(p['spec_version'] for p in patterns)))
         selected_version = st.selectbox("Version:", versions)
 
-    with col2:
+    with col3:
         node_types = ["All"] + sorted(list(set(p.get('decision_rule', {}).get('node_type', 'Unknown') for p in patterns)))
         selected_type = st.selectbox("Node Type:", node_types)
 
     # Apply filters
     filtered_df = df_patterns.copy()
+
+    # Apply status filter
+    if status_filter == "Active Only":
+        filtered_df = filtered_df[filtered_df['_superseded_by'].isna()]
+    elif status_filter == "Replaced Only":
+        filtered_df = filtered_df[filtered_df['_superseded_by'].notna()]
+
     if selected_version != "All":
         filtered_df = filtered_df[filtered_df['Version'] == selected_version]
     if selected_type != "All":
@@ -2036,16 +2219,28 @@ def _render_patterns_tab(patterns, workspace):
         pattern_id = row.get('ID')
         pattern_id_map[idx] = pattern_id
 
+        # Exclude _superseded_by from display (it's just for filtering)
         table_rows.append({
             "Select": False,
-            **{k: row[k] for k in filtered_df.columns if k != 'ID'}
+            **{k: row[k] for k in filtered_df.columns if k not in ['ID', '_superseded_by']}
         })
 
     df = pd.DataFrame(table_rows)
 
+    # Style function for replaced rows
+    def highlight_superseded(row):
+        """Apply gray background to replaced patterns."""
+        if row['Status'].startswith('🔴'):
+            # Light gray background for replaced rows
+            return ['background-color: #e0e0e0; opacity: 0.7'] * len(row)
+        return [''] * len(row)
+
+    # Apply styling and display
+    styled_df = df.style.apply(highlight_superseded, axis=1)
+
     # Data editor with checkbox
     edited_df = st.data_editor(
-        df,
+        styled_df,
         hide_index=True,
         use_container_width=True,
         column_config={
@@ -2055,6 +2250,11 @@ def _render_patterns_tab(patterns, workspace):
                 default=False
             ),
             "Must-Have Attrs": st.column_config.NumberColumn("Must-Have Attrs", format="%d"),
+            "Status": st.column_config.TextColumn(
+                "Status",
+                help="🟢 Active patterns are used for matching. 🔴 Replaced patterns are ignored during Discovery.",
+                width="medium"
+            ),
         },
         disabled=[col for col in df.columns if col != "Select"],
         key=f"pattern_manager_select_primary_{workspace}")
@@ -2066,11 +2266,11 @@ def _render_patterns_tab(patterns, workspace):
         if edited_df.iloc[idx]["Select"]
     ]
 
-    # Export and Import buttons
+    # Export, Import, and Delete buttons
     st.divider()
     selected_count = len(selected_pattern_ids)
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns(3)
     with col1:
         if st.button(f"📤 Export Selected ({selected_count})",
                     disabled=selected_count == 0,
@@ -2085,10 +2285,51 @@ def _render_patterns_tab(patterns, workspace):
             st.session_state.show_import_dialog = True
 
     with col3:
-        st.metric("Total", len(filtered_df))
+        if st.button(f"🗑️ Delete Selected ({selected_count})",
+                    disabled=selected_count == 0,
+                    use_container_width=True,
+                    type="secondary",
+                    key="delete_selected_button"):
+            st.session_state.confirm_delete_patterns = selected_pattern_ids
 
-    with col4:
+    # Metrics row
+    col_metric1, col_metric2 = st.columns(2)
+    with col_metric1:
+        st.metric("Total Patterns", len(filtered_df))
+    with col_metric2:
         st.metric("Selected", selected_count)
+
+    # Delete confirmation dialog
+    if st.session_state.get('confirm_delete_patterns'):
+        patterns_to_delete = st.session_state.confirm_delete_patterns
+        st.warning(f"⚠️ **Confirm Deletion**")
+        st.write(f"You are about to delete **{len(patterns_to_delete)} pattern(s)**.")
+        st.caption("This action cannot be undone. The patterns and all associated matches will be permanently deleted.")
+
+        # Show which patterns will be deleted
+        with st.expander("📋 Patterns to be deleted"):
+            for pid in patterns_to_delete:
+                pattern = next((p for p in patterns if p['id'] == pid), None)
+                if pattern:
+                    st.write(f"• ID {pid}: {pattern['section_path']} ({pattern.get('decision_rule', {}).get('node_type', 'Unknown')})")
+
+        col_confirm, col_cancel = st.columns(2)
+        with col_confirm:
+            if st.button("✅ Confirm Delete", type="primary", use_container_width=True, key="confirm_delete_yes"):
+                with st.spinner(f"Deleting {len(patterns_to_delete)} pattern(s)..."):
+                    result = delete_patterns_bulk(patterns_to_delete, workspace)
+                    if result and result.get('success'):
+                        st.success(f"✅ Successfully deleted {result.get('deleted_count', len(patterns_to_delete))} pattern(s)!")
+                        del st.session_state.confirm_delete_patterns
+                        st.rerun()
+                    else:
+                        st.error("❌ Failed to delete patterns. Check the logs for details.")
+                        del st.session_state.confirm_delete_patterns
+
+        with col_cancel:
+            if st.button("❌ Cancel", use_container_width=True, key="confirm_delete_no"):
+                del st.session_state.confirm_delete_patterns
+                st.rerun()
 
     # Import dialog
     if st.session_state.get('show_import_dialog', False):

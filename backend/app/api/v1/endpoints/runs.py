@@ -12,10 +12,11 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-from app.models.schemas import RunCreate, RunResponse, RunStatus
+from app.models.schemas import RunCreate, RunResponse, RunStatus, ConflictDetectionResponse, ConflictResolution
 from app.services.workspace_db import get_workspace_db
 from app.services.discovery_workflow import create_discovery_workflow
 from app.services.identify_workflow import create_identify_workflow
+from app.services.conflict_detector import create_conflict_detector
 from app.models.database import Run, RunKind, RunStatus as DbRunStatus
 import logging
 
@@ -30,7 +31,8 @@ async def create_run(
     workspace: str = Query("default", description="Workspace name (e.g., default, SQ, LATAM)"),
     target_version: Optional[str] = Query(None, description="Target NDC version for identify (e.g., 18.1)"),
     target_message_root: Optional[str] = Query(None, description="Target message root for identify (e.g., OrderViewRS)"),
-    target_airline_code: Optional[str] = Query(None, description="Target airline code for identify (e.g., SQ, AF)")
+    target_airline_code: Optional[str] = Query(None, description="Target airline code for identify (e.g., SQ, AF)"),
+    conflict_resolution: Optional[str] = Query(None, regex="^(replace|keep_both|merge)$", description="How to resolve pattern conflicts (discovery only)")
 ) -> RunResponse:
     """
     Create a new Discovery or Identify run.
@@ -40,6 +42,10 @@ async def create_run(
     - **target_version**: (Identify only) Specific NDC version to match against
     - **target_message_root**: (Identify only) Specific message root to match against
     - **target_airline_code**: (Identify only) Specific airline code to match against
+    - **conflict_resolution**: (Discovery only) How to handle pattern conflicts:
+        - 'replace': Delete existing conflicting patterns (recommended)
+        - 'keep_both': Keep both old and new patterns (may cause ambiguous matches)
+        - 'merge': Mark old patterns as superseded by new ones
     """
     logger.info(f"Creating new {kind} run: {file.filename}")
 
@@ -69,7 +75,10 @@ async def create_run(
             # Run appropriate workflow based on kind
             if kind == "discovery":
                 workflow = create_discovery_workflow(db)
-                results = workflow.run_discovery(temp_file_path)
+                results = workflow.run_discovery(
+                    temp_file_path,
+                    conflict_resolution=conflict_resolution
+                )
             elif kind == "identify":
                 workflow = create_identify_workflow(db)
                 results = workflow.run_identify(
@@ -97,7 +106,7 @@ async def create_run(
                 created_at=results['started_at'],
                 finished_at=results.get('finished_at'),
                 duration_seconds=results.get('duration_seconds'),
-                node_facts_count=results.get('node_facts_extracted', 0),
+                elements_analyzed=results.get('node_facts_extracted', 0),
                 subtrees_processed=results.get('subtrees_processed', 0),
                 spec_version=results.get('version_info', {}).get('spec_version') if results.get('version_info') else None,
                 message_root=results.get('version_info', {}).get('message_root') if results.get('version_info') else None,
@@ -174,7 +183,7 @@ async def get_run_status(
         file_size_bytes=run_summary['file_size_bytes'],
         created_at=run_summary['started_at'],
         finished_at=run_summary['finished_at'],
-        node_facts_count=run_summary['node_facts_count'],
+        elements_analyzed=run_summary['node_facts_count'],
         duration_seconds=run_summary['duration_seconds'],
         spec_version=run_summary['spec_version'],
         message_root=run_summary['message_root'],
@@ -275,6 +284,66 @@ async def list_runs(
             ))
 
         return response_runs
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
+
+
+@router.post("/preflight-check", response_model=ConflictDetectionResponse)
+async def check_pattern_conflicts(
+    workspace: str = Query("default", description="Workspace name"),
+    spec_version: Optional[str] = Query(None, description="NDC spec version (e.g., 21.3)"),
+    message_root: Optional[str] = Query(None, description="Message root (e.g., AirShoppingRS)"),
+    airline_code: Optional[str] = Query(None, description="Airline code (e.g., AS)"),
+    node_paths: List[str] = Query(..., description="List of node paths to extract (e.g., /PaxList)")
+) -> ConflictDetectionResponse:
+    """
+    Check for pattern conflicts before running extraction.
+
+    Detects conflicts when:
+    - Extracting a parent node when child patterns already exist (e.g., extracting /PaxList when /PaxList/Pax exists)
+    - Extracting a child node when parent pattern already exists (e.g., extracting /Pax when /PaxList exists)
+
+    Returns a list of conflicts with recommendations for resolution.
+    """
+    logger.info(f"Preflight check for {len(node_paths)} paths in workspace: {workspace}")
+
+    if not node_paths:
+        raise HTTPException(status_code=400, detail="No node paths provided")
+
+    if not spec_version or not message_root:
+        raise HTTPException(
+            status_code=400,
+            detail="spec_version and message_root are required for conflict detection"
+        )
+
+    # Get workspace database session
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
+
+    try:
+        # Create conflict detector
+        detector = create_conflict_detector(db)
+
+        # Check for conflicts
+        result = detector.check_conflicts(
+            extracting_paths=node_paths,
+            spec_version=spec_version,
+            message_root=message_root,
+            airline_code=airline_code
+        )
+
+        logger.info(f"Preflight check complete: {len(result.conflicts)} conflicts detected")
+        return result
+
+    except Exception as e:
+        logger.error(f"Error during preflight check: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Preflight check failed: {str(e)}")
+
     finally:
         try:
             next(db_generator)

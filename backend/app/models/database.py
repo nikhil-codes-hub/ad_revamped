@@ -243,6 +243,7 @@ class Pattern(Base):
     times_seen = Column(Integer, default=1, comment="Number of times this pattern was discovered")
     created_by_model = Column(String(50), comment="LLM model that created this pattern")
     examples = Column(JSON, comment="Masked examples of nodes matching this pattern")
+    superseded_by = Column(BigInteger, ForeignKey("patterns.id", ondelete="SET NULL"), nullable=True, comment="Pattern ID that supersedes this pattern (for conflict resolution)")
     created_at = Column(DateTime, default=func.now())
     last_seen_at = Column(DateTime, default=func.now(), onupdate=func.now())
 

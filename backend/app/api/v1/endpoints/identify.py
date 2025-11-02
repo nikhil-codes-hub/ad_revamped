@@ -83,11 +83,11 @@ async def get_identify_matches(
 
             result = {
                 "match_id": match.id,
-                "node_fact": {
+                "element": {
                     "id": node_fact.id if node_fact else None,
                     "node_type": node_fact.node_type if node_fact else None,
                     "section_path": node_fact.section_path if node_fact else None,
-                    "fact_json": node_fact.fact_json if node_fact else {}
+                    "structure": node_fact.fact_json if node_fact else {}
                 },
                 "pattern": {
                     "id": pattern.id if pattern else None,
@@ -201,7 +201,7 @@ async def get_gap_analysis(
                 if status == 'error':
                     node_fact = node_facts.get(match.node_fact_id)
                     quality_alerts.append({
-                        "node_fact_id": match.node_fact_id,
+                        "element_id": match.node_fact_id,
                         "node_type": node_fact.node_type if node_fact else None,
                         "section_path": node_fact.section_path if node_fact else None,
                         "match_percentage": match_percentage_value,
@@ -218,9 +218,11 @@ async def get_gap_analysis(
 
         # Find missing patterns (patterns in library but NOT in uploaded XML)
         # Get all expected patterns for this run's version/message/airline
+        # Only include active patterns (not superseded)
         expected_patterns_query = db.query(Pattern).filter(
             Pattern.spec_version == run.spec_version,
-            Pattern.message_root == run.message_root
+            Pattern.message_root == run.message_root,
+            Pattern.superseded_by.is_(None)  # Exclude superseded patterns
         )
         if run.airline_code:
             expected_patterns_query = expected_patterns_query.filter(Pattern.airline_code == run.airline_code)
@@ -322,10 +324,10 @@ async def get_new_patterns(
 
             if node_fact:
                 results.append({
-                    "node_fact_id": node_fact.id,
+                    "element_id": node_fact.id,
                     "node_type": node_fact.node_type,
                     "section_path": node_fact.section_path,
-                    "fact_structure": node_fact.fact_json,
+                    "structure": node_fact.fact_json,
                     "spec_version": node_fact.spec_version,
                     "message_root": node_fact.message_root
                 })

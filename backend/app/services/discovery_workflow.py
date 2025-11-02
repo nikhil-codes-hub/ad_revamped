@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 
 from app.core.config import settings
-from app.models.database import Run, RunKind, RunStatus, NodeFact, NdcTargetPath, NodeConfiguration
+from app.models.database import Run, RunKind, RunStatus, NodeFact, NdcTargetPath, NodeConfiguration, Pattern
 from app.services.xml_parser import XmlStreamingParser, create_parser_for_version, XmlSubtree, detect_ndc_version_fast
 from app.services.template_extractor import template_extractor
 from app.services.llm_extractor import get_llm_extractor
@@ -314,7 +314,8 @@ class DiscoveryWorkflow:
             # For now, try all templates
             return template_extractor.get_available_templates()
 
-    def run_discovery(self, xml_file_path: str, skip_pattern_generation: bool = False) -> Dict[str, Any]:
+    def run_discovery(self, xml_file_path: str, skip_pattern_generation: bool = False,
+                     conflict_resolution: Optional[str] = None) -> Dict[str, Any]:
         """
         Run complete discovery workflow on XML file using optimized two-phase approach.
 
@@ -327,6 +328,8 @@ class DiscoveryWorkflow:
             xml_file_path: Path to XML file to process
             skip_pattern_generation: If True, skip Phase 3 (pattern generation).
                                     Used when calling from Identify workflow.
+            conflict_resolution: Strategy for resolving pattern conflicts (replace/keep_both/merge).
+                                Only used during pattern generation.
 
         Returns:
             Dict containing workflow results and statistics
@@ -387,7 +390,7 @@ class DiscoveryWorkflow:
                     airline_name=version_info.airline_name
                 )
 
-                # PRIORITY 1: Try to load node configurations (BA-defined extraction rules)
+                # Load node configurations (BA-defined extraction rules)
                 node_configs = self._get_node_configurations(
                     spec_version=version_info.spec_version,
                     message_root=version_info.message_root,
@@ -395,59 +398,28 @@ class DiscoveryWorkflow:
                 )
 
                 if node_configs:
-                    # Use node configurations as primary target paths
+                    # Use node configurations as target paths
                     target_paths = self._convert_node_configs_to_target_paths(node_configs)
                     optimization_strategy = "node_configurations"
-                    logger.info(f"Using {len(target_paths)} BA-configured target paths")
+                    logger.info(f"Using {len(target_paths)} configured target paths")
                 else:
-                    # PRIORITY 2: Fallback to ndc_target_paths table
-                    target_paths = self._get_target_paths_from_db(
-                        version_info.spec_version,
-                        version_info.message_root
+                    # No node configurations found - cannot proceed
+                    error_msg = (
+                        f"No node configurations found for {version_info.spec_version}/{version_info.message_root}"
+                        f"{f'/{version_info.airline_code}' if version_info.airline_code else '/Global'}. "
+                        f"Please configure nodes in Node Manager before running Pattern Extractor."
                     )
-                    optimization_strategy = "ndc_target_paths"
-                    warning_msg = (f"No node configurations found for {version_info.spec_version}/{version_info.message_root}. "
-                                  f"Using fallback target paths from ndc_target_paths table. "
-                                  f"Please configure nodes in Node Manager for better control.")
-                    workflow_results['warning'] = warning_msg
-                    logger.warning(warning_msg)
+                    logger.error(error_msg)
+                    raise ValueError(error_msg)
 
             else:
-                # FALLBACK: Version detection failed
-                logger.warning("Fast version detection failed - applying fallback strategy")
-
-                # Try common versions as fallback (ordered by frequency in our XMLs)
-                fallback_versions = [
-                    ('21.3', 'OrderViewRS'),  # Most modern
-                    ('18.1', 'OrderViewRS'),  # Very common
-                    ('17.2', 'OrderViewRS'),  # Legacy but common
-                    ('19.2', 'OrderViewRS'),  # Alternative
-                ]
-
-                target_paths = []
-                fallback_version_used = None
-
-                for version, message_root in fallback_versions:
-                    candidate_paths = self._get_target_paths_from_db(version, message_root)
-                    if candidate_paths:
-                        target_paths = candidate_paths
-                        fallback_version_used = f"{version}/{message_root}"
-                        logger.info(f"Using fallback version: {fallback_version_used}")
-                        self.message_root = message_root
-                        break
-
-                if not target_paths:
-                    # Last resort - this should not happen if DB is populated
-                    logger.error("No target paths found even for common versions")
-                    raise ValueError("Version detection failed and no fallback versions available. "
-                                   "Please ensure target paths are loaded in database or "
-                                   "specify version manually.")
-
-                optimization_strategy = f"fallback_version_{fallback_version_used}"
-                logger.info(f"Loaded {len(target_paths)} target paths for fallback version {fallback_version_used}")
-
-            if not target_paths:
-                raise ValueError("No target paths found in database")
+                # Version detection failed - cannot proceed
+                logger.error("Fast version detection failed - cannot determine spec version and message root")
+                raise ValueError(
+                    "Could not detect NDC version and message root from XML file. "
+                    "Please ensure the XML file has valid NDC structure with version information "
+                    "in the root element or PayloadAttributes section."
+                )
 
             # PHASE 2: Targeted XML processing
             logger.info(f"Phase 2: XML processing with {optimization_strategy}")
@@ -514,6 +486,9 @@ class DiscoveryWorkflow:
 
             logger.info(f"Collected {len(subtrees_to_process)} subtrees for processing "
                        f"({nodes_skipped_by_config} skipped by config)")
+
+            # Initialize parallel_results to avoid UnboundLocalError
+            parallel_results = None
 
             # Process nodes - Parallel or Sequential based on configuration
             if use_parallel and len(subtrees_to_process) > 0:
@@ -648,7 +623,7 @@ class DiscoveryWorkflow:
             })
 
             # Add processing error info to workflow results for API response
-            if use_parallel and parallel_results.get('processing_errors'):
+            if use_parallel and parallel_results and parallel_results.get('processing_errors'):
                 workflow_results['processing_errors_count'] = len(parallel_results['processing_errors'])
                 if total_facts_extracted > 0:
                     # Partial success - add warning
@@ -703,6 +678,87 @@ class DiscoveryWorkflow:
             # PHASE 3: Pattern Generation (if NodeFacts were extracted AND not skipped)
             if total_facts_extracted > 0 and not skip_pattern_generation:
                 logger.info(f"Phase 3: Generating patterns from {total_facts_extracted} NodeFacts (auto-discovery mode)")
+
+                # Initialize patterns_to_supersede for MERGE strategy
+                patterns_to_supersede = []
+
+                # PHASE 3a: Conflict Detection and Resolution (if requested)
+                if conflict_resolution and version_info:
+                    logger.info(f"Detecting and resolving pattern conflicts with strategy: {conflict_resolution}")
+                    try:
+                        from app.services.conflict_detector import create_conflict_detector
+                        from app.models.schemas import ConflictResolution
+
+                        detector = create_conflict_detector(self.db_session)
+
+                        # Extract section paths from target_paths for conflict detection
+                        # target_paths is a list of dicts with 'path_local' key
+                        extracting_section_paths = []
+                        for tp in target_paths:
+                            # Build full section path from path_local
+                            # path_local format: "/AirShoppingRS/Response/DataLists/PaxList"
+                            path_local = tp.get('path_local', '')
+                            if path_local:
+                                # Strip leading slash and check if it already has message_root
+                                path_clean = path_local.lstrip('/')
+                                if not path_clean.startswith(version_info.message_root):
+                                    # Doesn't have message_root, add it
+                                    full_path = f"{version_info.message_root}/{path_clean}"
+                                else:
+                                    # Already has message_root, use as-is
+                                    full_path = path_clean
+                                extracting_section_paths.append(full_path)
+
+                        logger.info(f"Checking conflicts for {len(extracting_section_paths)} paths: {extracting_section_paths[:5]}")
+
+                        # Detect conflicts for the paths being extracted
+                        conflict_check = detector.check_conflicts(
+                            extracting_paths=extracting_section_paths,
+                            spec_version=version_info.spec_version,
+                            message_root=version_info.message_root,
+                            airline_code=version_info.airline_code
+                        )
+
+                        if conflict_check.has_conflicts:
+                            logger.info(f"Found {len(conflict_check.conflicts)} conflicts - applying resolution: {conflict_resolution}")
+
+                            # Apply resolution strategy
+                            resolution_enum = ConflictResolution(conflict_resolution.lower())
+                            resolution_result = detector.resolve_conflicts(
+                                conflicts=conflict_check.conflicts,
+                                resolution_strategy=resolution_enum
+                            )
+
+                            # Store patterns to supersede for MERGE strategy
+                            patterns_to_supersede = resolution_result.get('patterns_to_supersede', [])
+
+                            workflow_results['conflict_resolution'] = {
+                                'conflicts_detected': len(conflict_check.conflicts),
+                                'strategy_applied': conflict_resolution,
+                                'patterns_deleted': resolution_result.get('patterns_deleted', 0),
+                                'patterns_superseded': resolution_result.get('patterns_superseded', 0)
+                            }
+
+                            logger.info(f"Conflict resolution complete: "
+                                      f"{resolution_result.get('patterns_deleted', 0)} patterns deleted, "
+                                      f"{resolution_result.get('patterns_superseded', 0)} patterns to supersede")
+                        else:
+                            logger.info("No pattern conflicts detected")
+                            workflow_results['conflict_resolution'] = {
+                                'conflicts_detected': 0,
+                                'strategy_applied': None
+                            }
+                    except Exception as e:
+                        logger.error(f"Conflict resolution failed: {e}")
+                        import traceback
+                        logger.error(traceback.format_exc())
+                        # Continue with pattern generation even if conflict resolution fails
+                        workflow_results['conflict_resolution'] = {
+                            'success': False,
+                            'error': str(e)
+                        }
+
+                # PHASE 3b: Pattern Generation
                 try:
                     pattern_generator = create_pattern_generator(self.db_session)
                     pattern_results = pattern_generator.generate_patterns_from_run(run_id)
@@ -712,6 +768,37 @@ class DiscoveryWorkflow:
                     logger.info(f"Pattern generation completed: "
                                f"{pattern_results.get('patterns_created', 0)} created, "
                                f"{pattern_results.get('patterns_updated', 0)} updated")
+
+                    # PHASE 3c: Update superseded patterns (for MERGE strategy)
+                    if patterns_to_supersede and version_info:
+                        logger.info(f"Updating {len(patterns_to_supersede)} superseded patterns")
+
+                        for supersede_info in patterns_to_supersede:
+                            pattern_id = supersede_info['pattern_id']
+                            extracting_path = supersede_info['extracting_path']
+
+                            # Find the newly created pattern for this path
+                            new_pattern = self.db_session.query(Pattern).filter(
+                                Pattern.section_path == extracting_path,
+                                Pattern.spec_version == version_info.spec_version,
+                                Pattern.message_root == version_info.message_root,
+                                Pattern.airline_code == version_info.airline_code,
+                                Pattern.superseded_by.is_(None)  # Active pattern
+                            ).order_by(Pattern.created_at.desc()).first()
+
+                            if new_pattern:
+                                # Update the old pattern to mark it as superseded
+                                old_pattern = self.db_session.query(Pattern).filter(
+                                    Pattern.id == pattern_id
+                                ).first()
+
+                                if old_pattern:
+                                    old_pattern.superseded_by = new_pattern.id
+                                    logger.info(f"Marked pattern {pattern_id} ({old_pattern.section_path}) as superseded by pattern {new_pattern.id}")
+
+                        self.db_session.commit()
+                        logger.info(f"Successfully updated {len(patterns_to_supersede)} superseded patterns")
+
                 except Exception as e:
                     logger.error(f"Pattern generation failed for run {run_id}: {e}")
                     workflow_results['pattern_generation'] = {

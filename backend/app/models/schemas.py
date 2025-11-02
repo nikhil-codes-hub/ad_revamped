@@ -63,7 +63,7 @@ class RunResponse(BaseModel):
     created_at: Optional[str] = Field(None, description="When run was created (ISO format)")
     finished_at: Optional[str] = Field(None, description="When run finished (ISO format)")
     duration_seconds: Optional[int] = Field(None, description="Run duration in seconds")
-    node_facts_count: Optional[int] = Field(None, description="Number of node facts extracted")
+    elements_analyzed: Optional[int] = Field(None, description="Number of XML elements analyzed")
     subtrees_processed: Optional[int] = Field(None, description="Number of subtrees processed")
     error_details: Optional[str] = Field(None, description="Error information if failed")
     warning: Optional[str] = Field(None, description="Warning message (e.g., no node configs found)")
@@ -105,6 +105,7 @@ class PatternResponse(BaseModel):
     examples: Optional[List[Dict[str, Any]]] = Field(None, description="Example matches")
     created_at: str = Field(..., description="When pattern was created (ISO format)")
     last_seen_at: str = Field(..., description="When pattern was last seen (ISO format)")
+    superseded_by: Optional[int] = Field(None, description="Pattern ID that supersedes this pattern (if superseded)")
 
     class Config:
         from_attributes = True
@@ -114,7 +115,7 @@ class PatternMatchResponse(BaseModel):
     """Response model for pattern matches."""
     id: int = Field(..., description="Unique match identifier")
     run_id: str = Field(..., description="Associated run ID")
-    node_fact_id: int = Field(..., description="Node fact that was matched")
+    element_id: int = Field(..., description="XML element that was matched")
     pattern_id: int = Field(..., description="Pattern that matched")
     confidence: Decimal = Field(..., description="Confidence score 0.000-1.000")
     verdict: Verdict = Field(..., description="Classification verdict")
@@ -243,3 +244,45 @@ class RelationshipStatsResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# Conflict Detection Schemas
+
+class ConflictType(str, Enum):
+    """Types of pattern conflicts."""
+    PARENT_CHILD = "parent_child"  # Extracting parent when child patterns exist
+    CHILD_PARENT = "child_parent"  # Extracting child when parent pattern exists
+    SIBLING = "sibling"            # Extracting sibling at different granularity
+
+
+class ConflictResolution(str, Enum):
+    """Strategies for resolving pattern conflicts."""
+    REPLACE = "replace"        # Delete conflicting patterns, keep new ones
+    KEEP_BOTH = "keep_both"    # Keep both (may cause ambiguous matches)
+    MERGE = "merge"            # Mark old patterns as superseded by new
+
+
+class ExistingPatternInfo(BaseModel):
+    """Information about an existing pattern that conflicts."""
+    id: int = Field(..., description="Pattern ID")
+    section_path: str = Field(..., description="Pattern section path")
+    times_seen: int = Field(..., description="Number of times pattern was seen")
+    created_at: str = Field(..., description="When pattern was created")
+    node_type: str = Field(..., description="Node type of the pattern")
+
+
+class PatternConflict(BaseModel):
+    """Details about a pattern conflict."""
+    extracting_path: str = Field(..., description="Path being extracted")
+    conflict_type: ConflictType = Field(..., description="Type of conflict")
+    existing_patterns: List[ExistingPatternInfo] = Field(..., description="Conflicting patterns")
+    recommendation: ConflictResolution = Field(..., description="Recommended resolution")
+    impact_description: str = Field(..., description="Human-readable impact description")
+
+
+class ConflictDetectionResponse(BaseModel):
+    """Response from conflict detection check."""
+    has_conflicts: bool = Field(..., description="Whether conflicts were detected")
+    conflicts: List[PatternConflict] = Field(default_factory=list, description="List of conflicts")
+    can_proceed: bool = Field(..., description="Whether extraction can proceed safely")
+    warning_message: Optional[str] = Field(None, description="Warning message if conflicts exist")
