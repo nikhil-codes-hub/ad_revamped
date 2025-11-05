@@ -443,76 +443,6 @@ Return a JSON object with:
             pass
 
 
-@router.delete("/{pattern_id}")
-async def delete_pattern(
-    pattern_id: int,
-    workspace: str = Query("default", description="Workspace name")
-) -> Dict[str, Any]:
-    """
-    Delete a pattern by ID.
-
-    **WARNING**: This permanently deletes the pattern and all associated matches.
-    Use with caution.
-
-    - **pattern_id**: ID of the pattern to delete
-    - **workspace**: Workspace name (default: 'default')
-
-    Returns:
-        Success message with deleted pattern information
-    """
-    logger.info(f"Deleting pattern {pattern_id} from workspace: {workspace}")
-
-    # Get workspace database session
-    db_generator = get_workspace_db(workspace)
-    db = next(db_generator)
-
-    try:
-        # Find the pattern
-        pattern = db.query(Pattern).filter(Pattern.id == pattern_id).first()
-
-        if not pattern:
-            raise HTTPException(status_code=404, detail=f"Pattern {pattern_id} not found")
-
-        # Store pattern info for response before deletion
-        deleted_info = {
-            "pattern_id": pattern.id,
-            "section_path": pattern.section_path,
-            "spec_version": pattern.spec_version,
-            "message_root": pattern.message_root,
-            "airline_code": pattern.airline_code,
-            "node_type": pattern.decision_rule.get('node_type', 'Unknown') if pattern.decision_rule else 'Unknown',
-            "times_seen": pattern.times_seen,
-            "created_at": pattern.created_at.isoformat() if pattern.created_at else None
-        }
-
-        # Delete the pattern (CASCADE will delete associated pattern_matches)
-        db.delete(pattern)
-        db.commit()
-
-        logger.info(f"Pattern {pattern_id} deleted successfully", deleted_info=deleted_info)
-
-        return {
-            "success": True,
-            "message": f"Pattern {pattern_id} deleted successfully",
-            "deleted_pattern": deleted_info
-        }
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        db.rollback()
-        logger.error(f"Failed to delete pattern {pattern_id}: {e}")
-        import traceback
-        logger.error(traceback.format_exc())
-        raise HTTPException(status_code=500, detail=f"Failed to delete pattern: {str(e)}")
-
-    finally:
-        try:
-            next(db_generator)
-        except StopIteration:
-            pass
-
-
 @router.delete("/bulk")
 async def delete_patterns_bulk(
     pattern_ids: List[int] = Body(..., description="List of pattern IDs to delete"),
@@ -581,6 +511,71 @@ async def delete_patterns_bulk(
         import traceback
         logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Failed to bulk delete patterns: {str(e)}")
+
+    finally:
+        try:
+            next(db_generator)
+        except StopIteration:
+            pass
+
+
+@router.delete("/{pattern_id}")
+async def delete_pattern(
+    pattern_id: int,
+    workspace: str = Query("default", description="Workspace name")
+) -> Dict[str, Any]:
+    """
+    Delete a single pattern by ID.
+
+    **WARNING**: This permanently deletes the pattern and all associated matches.
+    Use with caution.
+
+    - **pattern_id**: Pattern ID to delete
+    - **workspace**: Workspace name (default: 'default')
+
+    Returns:
+        Success message with pattern details
+    """
+    logger.info(f"Deleting pattern {pattern_id} from workspace: {workspace}")
+
+    # Get workspace database session
+    db_generator = get_workspace_db(workspace)
+    db = next(db_generator)
+
+    try:
+        # Find the pattern
+        pattern = db.query(Pattern).filter(Pattern.id == pattern_id).first()
+
+        if not pattern:
+            raise HTTPException(status_code=404, detail=f"Pattern with ID {pattern_id} not found")
+
+        # Store pattern info for response
+        pattern_info = {
+            "pattern_id": pattern.id,
+            "section_path": pattern.section_path,
+            "node_type": pattern.decision_rule.get('node_type', 'Unknown') if pattern.decision_rule else 'Unknown'
+        }
+
+        # Delete the pattern (CASCADE will delete associated pattern_matches)
+        db.delete(pattern)
+        db.commit()
+
+        logger.info(f"Pattern {pattern_id} deleted successfully")
+
+        return {
+            "success": True,
+            "message": f"Successfully deleted pattern {pattern_id}",
+            "deleted_pattern": pattern_info
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to delete pattern {pattern_id}: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Failed to delete pattern: {str(e)}")
 
     finally:
         try:

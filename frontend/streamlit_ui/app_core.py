@@ -606,16 +606,19 @@ def delete_pattern(pattern_id: int, workspace: str = "default") -> Optional[Dict
 def delete_patterns_bulk(pattern_ids: List[int], workspace: str = "default") -> Optional[Dict[str, Any]]:
     """Delete multiple patterns by IDs."""
     try:
-        response = requests.delete(
+        response = requests.request(
+            "DELETE",
             f"{API_BASE_URL}/patterns/bulk",
             params={"workspace": workspace},
-            json=pattern_ids,
+            data=json.dumps(pattern_ids),
+            headers={"Content-Type": "application/json"},
             timeout=15
         )
         if response.status_code == 200:
             return response.json()
         else:
             st.error(f"Failed to delete patterns: {response.status_code}")
+            st.error(f"Response: {response.text}")
             return None
     except requests.exceptions.RequestException as e:
         st.error(f"Error deleting patterns: {str(e)}")

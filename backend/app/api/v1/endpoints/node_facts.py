@@ -154,7 +154,7 @@ async def get_node_fact_associations(node_fact_id: int):
     # 3. Show relationship types and reference keys
 
     return {
-        "node_fact_id": node_fact_id,
+        "element_id": node_fact_id,
         "outgoing_associations": [],
         "incoming_associations": [],
         "total_associations": 0

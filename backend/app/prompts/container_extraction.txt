@@ -46,17 +46,15 @@ Each child's node_type should be: "{repeating_tag}"
   ],
   "children": [
     {{
-      "node_type": "{repeating_tag}",
+      "node_type": "ACTUAL_XML_TAG_NAME_OF_THIS_CHILD",  // CRITICAL: Use THIS child's actual XML tag name (e.g., if XML is <CorrelationID>, use "CorrelationID")
       "ordinal": 1,
       "attributes": {{
-        // **CRITICAL**: Use EXACT XML child element tag names as attribute keys (e.g., "DistanceMeasure", NOT "distance")
-        // Extract ALL direct child elements as attributes with their exact XML tag names
-        // Do NOT normalize, translate, or simplify element names
-        // Example: if XML has <DistanceMeasure>3430</DistanceMeasure>, use "DistanceMeasure": "3430"
-        "id": "PAX1",  // PassengerID, PaxID, or similar - use EXACT XML tag name
-        "type": "ADT",  // PTC code if applicable - use EXACT XML tag name
-        "name": "MR JOHN DOE"  // Constructed full name if applicable
-        // ... other relevant attributes with EXACT XML tag names
+        // **CRITICAL**: Extract this child's sub-children (elements nested INSIDE this child) as attributes
+        // - If this child HAS sub-children: extract them with their exact XML tag names as keys
+        //   Example: <Pax><PaxID>123</PaxID><PTC>ADT</PTC></Pax> → {{"PaxID": "123", "PTC": "ADT"}}
+        // - If this child is a LEAF (just text, no sub-children): extract as {{"value": "the text content"}}
+        //   Example: <CorrelationID>abc123</CorrelationID> → {{"value": "abc123"}}
+        // - DO NOT extract SIBLING elements as attributes - only elements nested INSIDE this child
       }},
       "references": {{
         // Extract ALL reference elements (InfantRef, ContactInfoRef, PassengerRef, etc.)
@@ -69,13 +67,15 @@ Each child's node_type should be: "{repeating_tag}"
       "snippet": "brief XML snippet"
     }},
     {{
-      "node_type": "{repeating_tag}",
+      "node_type": "ACTUAL_XML_TAG_NAME_OF_THIS_CHILD",  // Each child gets its own ACTUAL XML tag name (can differ from other children)
       "ordinal": 2,
-      "attributes": {{"similar structure"}},
+      "attributes": {{
+        // Same rules as above: sub-children OR {{"value": "text"}} for leaf elements
+      }},
       "references": {{"similar structure"}},
       "snippet": "brief XML snippet"
     }}
-    // ... include ALL children
+    // ... include ALL children - EACH with its own ACTUAL XML tag name as node_type
   ],
   "refs": {{
     "any_id_references": "reference_values"
@@ -90,9 +90,11 @@ IMPORTANT RULES:
 3. Each child MUST have: node_type, ordinal, attributes, references, snippet
 4. **CRITICAL**: Use EXACT XML tag names for node_type - do NOT translate or interpret them
    - Container node_type MUST be: {element_name}
-   - Child node_type MUST be: {repeating_tag}
-   - If the XML tag is <Pax>, use "Pax" NOT "Passenger"
-   - If the XML tag is <Passenger>, use "Passenger" NOT "Pax"
+   - Each child's node_type MUST be the ACTUAL XML tag name for THAT specific child
+   - If the XML has <Pax>, use "Pax" NOT "Passenger"
+   - If the XML has <ContactInfo>, use "ContactInfo" exactly
+   - **DO NOT force all children to have node_type "{repeating_tag}"** - each child gets its own actual XML tag name
+   - Containers can have HETEROGENEOUS children (mixed child element types)
 5. Extract key attributes from each child (IDs, codes, values)
    - Extract ONLY what is actually present in the XML
    - Do NOT add missing_elements or quality checks unless the container is completely empty
@@ -135,13 +137,52 @@ SPECIAL EXTRACTION PATTERNS:
 
 **FINAL REMINDER BEFORE YOU RESPOND**:
 - The ROOT container's "node_type" MUST BE: "{element_name}" (the container/list element)
-- Each child's "node_type" MUST BE: "{repeating_tag}" (the repeating child element)
+- Each child's "node_type" MUST BE the ACTUAL XML tag name for that specific child
 - For example: If extracting <PaxList> containing <Pax> children:
   - Container node_type = "PaxList" (NOT "Pax")
-  - Child node_type = "Pax"
+  - Each <Pax> child's node_type = "Pax"
+- For heterogeneous containers (containers with mixed child types):
+  - Container node_type = the actual container XML tag name
+  - EACH child gets its own actual XML tag name (they can be different!)
 
-⚠️ COMMON MISTAKE TO AVOID:
-DO NOT set the container's node_type to "{repeating_tag}" - that's the CHILD element name!
-The container's node_type MUST be "{element_name}".
+EXAMPLE 1 - Heterogeneous container with LEAF children (text-only elements):
+XML: <SomeContainer><LeafA>text-value-1</LeafA><LeafB>text-value-2</LeafB></SomeContainer>
+✅ CORRECT extraction:
+{{
+  "node_type": "SomeContainer",
+  "children": [
+    {{"node_type": "LeafA", "ordinal": 1, "attributes": {{"value": "text-value-1"}}, "references": {{}}}},
+    {{"node_type": "LeafB", "ordinal": 2, "attributes": {{"value": "text-value-2"}}, "references": {{}}}}
+  ]
+}}
+❌ WRONG extraction (DO NOT DO THIS):
+{{
+  "node_type": "SomeContainer",
+  "children": [
+    {{"node_type": "LeafA", "ordinal": 1, "attributes": {{"LeafB": "text-value-2"}}}},  // WRONG! LeafB is a sibling, not an attribute of LeafA!
+    {{"node_type": "LeafA", "ordinal": 2, ...}}  // WRONG! Second child should be "LeafB"!
+  ]
+}}
+
+EXAMPLE 2 - Heterogeneous container with nested children:
+XML: <Container><ItemA><SubX>1</SubX></ItemA><ItemB><SubY>2</SubY></ItemB></Container>
+✅ CORRECT extraction:
+{{
+  "node_type": "Container",
+  "children": [
+    {{"node_type": "ItemA", "ordinal": 1, "attributes": {{"SubX": "1"}}, "references": {{}}}},
+    {{"node_type": "ItemB", "ordinal": 2, "attributes": {{"SubY": "2"}}, "references": {{}}}}
+  ]
+}}
+
+⚠️ COMMON MISTAKES TO AVOID:
+1. DO NOT set the container's node_type to a child element name - it must be "{element_name}"
+2. DO NOT force all children to have node_type "{repeating_tag}" - use each child's ACTUAL XML tag name
+3. DO NOT assume all children are the same type - containers can have mixed/heterogeneous children
+4. **CRITICAL**: DO NOT extract SIBLING elements as attributes of a child!
+   - Only extract elements that are nested INSIDE a child as that child's attributes
+   - If <Container> has children <A> and <B>, do NOT put "B" in <A>'s attributes
+   - Siblings are separate entries in the children array, not attributes of each other
+5. For LEAF elements (elements with just text, no sub-children), use {{"value": "text content"}}
 
 Response must be valid JSON array: [{{container_fact}}]

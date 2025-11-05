@@ -77,6 +77,9 @@ class WorkspaceSessionFactory:
         # Ensure pattern_matches table has expected schema (nullable pattern_id + autoincrement id)
         self._ensure_pattern_matches_schema()
 
+        # Ensure patterns table has superseded_by column for conflict resolution
+        self._ensure_patterns_superseded_by()
+
         # Create session factory
         self.SessionLocal = sessionmaker(
             bind=self.engine,
@@ -263,6 +266,52 @@ class WorkspaceSessionFactory:
             conn.execute(text("DROP TABLE pattern_matches_old"))
             conn.execute(text("PRAGMA foreign_keys=ON"))
             conn.commit()
+
+    def _ensure_patterns_superseded_by(self):
+        """
+        Ensure patterns table has superseded_by column for conflict resolution.
+
+        This column tracks which pattern supersedes/replaces another pattern
+        when resolving conflicts between parent and child patterns.
+        Migration: 007_add_superseded_by_to_patterns
+        """
+        from sqlalchemy import inspect, text
+
+        inspector = inspect(self.engine)
+
+        # Check if patterns table exists
+        if "patterns" not in inspector.get_table_names():
+            logger.info("Patterns table doesn't exist yet - will be created with superseded_by column")
+            return
+
+        # Check if superseded_by column already exists
+        with self.engine.connect() as conn:
+            table_info = conn.execute(text("PRAGMA table_info(patterns)")).fetchall()
+            columns = {row[1]: row for row in table_info}  # column_name -> row
+
+            if "superseded_by" in columns:
+                logger.debug("Patterns table already has superseded_by column")
+                return
+
+            logger.info("Adding superseded_by column to patterns table")
+
+            # SQLite supports adding columns with ALTER TABLE
+            # Add superseded_by column (nullable, references patterns.id)
+            try:
+                conn.execute(text("""
+                    ALTER TABLE patterns
+                    ADD COLUMN superseded_by INTEGER NULL
+                    REFERENCES patterns(id) ON DELETE SET NULL
+                """))
+                conn.commit()
+                logger.info("Successfully added superseded_by column to patterns table")
+            except Exception as e:
+                logger.error(f"Failed to add superseded_by column: {e}")
+                # If column already exists, this is fine
+                if "duplicate column name" in str(e).lower():
+                    logger.info("Column already exists, skipping")
+                else:
+                    raise
 
     def get_session(self) -> Session:
         """Get a new database session."""
