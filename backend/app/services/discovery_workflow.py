@@ -89,17 +89,24 @@ class DiscoveryWorkflow:
         if message_root:
             query = query.filter(NodeConfiguration.message_root == message_root)
 
-        # Get both airline-specific and global configs (NULL airline_code)
+        # Try to get airline-specific and global configs (NULL airline_code)
         if airline_code:
-            query = query.filter(
+            airline_query = query.filter(
                 (NodeConfiguration.airline_code == airline_code) |
                 (NodeConfiguration.airline_code == None)
             )
+            configs_list = airline_query.all()
+
+            # If no configs found for this airline, fall back to ANY airline's configs
+            if not configs_list:
+                logger.warning(f"No node configs found for {spec_version}/{message_root}/{airline_code}. "
+                             f"Falling back to any available configs for {spec_version}/{message_root}")
+                configs_list = query.all()  # Get configs from any airline
         else:
-            query = query.filter(NodeConfiguration.airline_code == None)
+            configs_list = query.filter(NodeConfiguration.airline_code == None).all()
 
         configs = {}
-        for config in query.all():
+        for config in configs_list:
             configs[config.section_path] = {
                 'id': config.id,
                 'node_type': config.node_type,
