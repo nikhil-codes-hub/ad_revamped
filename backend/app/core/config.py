@@ -70,7 +70,7 @@ class Settings(BaseSettings):
 
     # XML Processing
     MAX_XML_SIZE_MB: int = Field(default=100, description="Maximum XML file size in MB")
-    MAX_SUBTREE_SIZE_KB: int = Field(default=4, description="Maximum subtree size for LLM in KB")
+    MAX_SUBTREE_SIZE_KB: int = Field(default=20, description="Maximum subtree size for LLM in KB")
     MICRO_BATCH_SIZE: int = Field(default=6, description="NodeFacts per LLM batch")
 
     # Pattern Discovery
