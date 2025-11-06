@@ -175,7 +175,7 @@ class DiscoveryWorkflow:
 
         run = Run(
             id=run_id,
-            kind=RunKind.DISCOVERY,
+            kind=RunKind.PATTERN_EXTRACTOR,
             status=RunStatus.STARTED,
             filename=Path(file_path).name,
             file_size_bytes=file_size,

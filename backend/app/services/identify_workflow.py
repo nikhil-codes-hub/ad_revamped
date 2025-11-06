@@ -531,10 +531,10 @@ class IdentifyWorkflow:
 
         run_id = discovery_results['run_id']
 
-        # Update run kind to IDENTIFY
+        # Update run kind to DISCOVERY
         run = self.db_session.query(Run).filter(Run.id == run_id).first()
         if run:
-            run.kind = RunKind.IDENTIFY
+            run.kind = RunKind.DISCOVERY
             self.db_session.commit()
 
         node_facts_extracted = discovery_results.get('node_facts_extracted', 0)
