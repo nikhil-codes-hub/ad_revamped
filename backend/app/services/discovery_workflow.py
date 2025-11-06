@@ -273,12 +273,12 @@ class DiscoveryWorkflow:
                                      allow_cross_airline: bool = False,
                                      allow_cross_version: bool = False) -> List[Dict[str, Any]]:
         """
-        Match a single NodeFact against patterns (cross-airline, cross-version).
+        Match a single NodeFact against patterns (cross-airline, cross-version, cross-message).
 
         Args:
             node_fact: NodeFact to match
             spec_version: NDC version to match against (ignored if allow_cross_version=True)
-            message_root: Message root to match against (always required)
+            message_root: Message root of the uploaded XML (used for logging only, not for filtering)
             airline_code: Airline code to match against (ignored if allow_cross_airline=True)
             allow_cross_airline: If True, match against patterns from all airlines
             allow_cross_version: If True, match against patterns from all NDC versions
@@ -288,10 +288,9 @@ class DiscoveryWorkflow:
         """
         from app.models.database import NodeRelationship
 
-        # Query patterns - only filter by message_root (always required)
+        # Query patterns - match against ALL message types (cross-message matching)
         # Only match against active patterns (not superseded)
         query = self.db_session.query(Pattern).filter(
-            Pattern.message_root == message_root,
             Pattern.superseded_by.is_(None)  # Exclude superseded patterns
         )
 
@@ -900,6 +899,8 @@ class DiscoveryWorkflow:
         logger.info("Phase 3.1: Identifying missing patterns from uploaded XML")
 
         # Get all expected patterns for this version/message/airline
+        # NOTE: We filter by message_root here (unlike pattern matching which is cross-message)
+        # because gap analysis should only show relevant missing patterns for the uploaded XML's message type
         # Only include active patterns (not superseded)
         expected_patterns_query = self.db_session.query(Pattern).filter(
             Pattern.spec_version == match_version,

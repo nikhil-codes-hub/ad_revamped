@@ -1402,30 +1402,14 @@ def show_discovery_page(current_workspace: Optional[str] = None):
         uploaded_file = st.file_uploader("Choose an NDC XML file", type=['xml'], key="discovery_upload")
 
         if uploaded_file:
-            # Get available patterns to populate message root filter
-            all_patterns = get_patterns(limit=200, workspace=current_workspace)
-            available_msg_roots = sorted(set(p.get('message_root', '') for p in all_patterns if p.get('message_root')))
-
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write(f"**Filename:** {uploaded_file.name}")
-                st.write(f"**Size:** {uploaded_file.size:,} bytes")
-            with col2:
-                st.write("**Match Against:**")
-                target_msg_root = st.selectbox(
-                    "📋 Message Root:",
-                    options=["Auto-detect (from XML)"] + available_msg_roots,
-                    key="discovery_target_msg_root"
-                )
-                st.info("ℹ️ Discovery automatically matches across **all airlines** and **all NDC versions**")
+            st.write(f"**Filename:** {uploaded_file.name}")
+            st.write(f"**Size:** {uploaded_file.size:,} bytes")
+            st.info("ℹ️ Discovery automatically matches across **all airlines**, **all NDC versions**, and **all message types** for maximum coverage")
 
             if st.button("Start Discovery", type="primary", key="start_discovery"):
                     import time
                     progress_bar = st.progress(0)
                     status_text = st.empty()
-
-                    # Prepare filter parameters
-                    filter_msg_root = None if target_msg_root == "Auto-detect (from XML)" else target_msg_root
 
                     status_text.text("📤 Uploading XML file to backend...")
                     progress_bar.progress(5)
@@ -1440,7 +1424,7 @@ def show_discovery_page(current_workspace: Optional[str] = None):
                         "discovery",
                         workspace=current_workspace,
                         target_version=None,  # Cross-version matching enabled
-                        target_message_root=filter_msg_root,
+                        target_message_root=None,  # Cross-message matching enabled
                         target_airline_code=None,  # Cross-airline matching enabled
                         allow_cross_airline=True  # Always match across all airlines and versions
                     )
@@ -1536,6 +1520,7 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
 
     # Gap Analysis
     gap_analysis = get_gap_analysis(run_id, workspace)
+    quality_alerts = []  # Initialize to avoid UnboundLocalError later
 
     if gap_analysis:
         stats = gap_analysis.get('statistics', {})

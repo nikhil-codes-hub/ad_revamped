@@ -29,10 +29,10 @@ async def create_run(
     kind: str = Query(..., regex="^(pattern_extractor|discovery)$", description="Type of run: pattern_extractor or discovery"),
     file: UploadFile = File(...),
     workspace: str = Query("default", description="Workspace name (e.g., default, SQ, LATAM)"),
-    target_version: Optional[str] = Query(None, description="Target NDC version for discovery (e.g., 18.1)"),
-    target_message_root: Optional[str] = Query(None, description="Target message root for discovery (e.g., OrderViewRS)"),
-    target_airline_code: Optional[str] = Query(None, description="Target airline code for discovery (e.g., SQ, AF)"),
-    allow_cross_airline: bool = Query(True, description="Enable cross-airline pattern matching for discovery (e.g., match Alaska XML against 6X patterns)"),
+    target_version: Optional[str] = Query(None, description="Target NDC version for discovery (not used - kept for backwards compatibility)"),
+    target_message_root: Optional[str] = Query(None, description="Target message root for discovery (not used - kept for backwards compatibility)"),
+    target_airline_code: Optional[str] = Query(None, description="Target airline code for discovery (not used - kept for backwards compatibility)"),
+    allow_cross_airline: bool = Query(True, description="Enable cross-airline pattern matching for discovery (always enabled)"),
     conflict_resolution: Optional[str] = Query(None, regex="^(replace|keep_both|merge)$", description="How to resolve pattern conflicts (pattern_extractor only)")
 ) -> RunResponse:
     """
@@ -40,14 +40,16 @@ async def create_run(
 
     - **kind**: Type of run - 'pattern_extractor' for pattern learning, 'discovery' for pattern matching
     - **file**: XML file to process (OrderViewRS format)
-    - **target_version**: (Discovery only) Specific NDC version to match against
-    - **target_message_root**: (Discovery only) Specific message root to match against
-    - **target_airline_code**: (Discovery only) Specific airline code to match against
-    - **allow_cross_airline**: (Discovery only) Enable cross-airline pattern matching - matches patterns from all airlines instead of just the detected airline
+    - **target_version**: (Not used - kept for backwards compatibility)
+    - **target_message_root**: (Not used - kept for backwards compatibility)
+    - **target_airline_code**: (Not used - kept for backwards compatibility)
+    - **allow_cross_airline**: (Always enabled - kept for backwards compatibility)
     - **conflict_resolution**: (Pattern Extractor only) How to handle pattern conflicts:
         - 'replace': Delete existing conflicting patterns (recommended)
         - 'keep_both': Keep both old and new patterns (may cause ambiguous matches)
         - 'merge': Mark old patterns as superseded by new ones
+
+    **Note**: Discovery now matches across ALL airlines, ALL NDC versions, and ALL message types for maximum coverage.
     """
     logger.info(f"Creating new {kind} run: {file.filename}")
 
@@ -85,10 +87,10 @@ async def create_run(
                 workflow = create_discovery_workflow(db)
                 results = workflow.run_identify(
                     temp_file_path,
-                    target_version=target_version,
-                    target_message_root=target_message_root,
-                    target_airline_code=target_airline_code,
-                    allow_cross_airline=allow_cross_airline
+                    target_version=None,  # Cross-version matching always enabled
+                    target_message_root=None,  # Cross-message matching always enabled
+                    target_airline_code=None,  # Cross-airline matching always enabled
+                    allow_cross_airline=True  # Always enabled
                 )
             else:
                 raise HTTPException(status_code=400, detail=f"Invalid run kind: {kind}")
