@@ -157,8 +157,8 @@ async def get_run_status(
     db = next(db_generator)
 
     try:
-        # Get run from database
-        workflow = create_discovery_workflow(db)
+        # Get run from database using PatternExtractorWorkflow (has get_run_summary method)
+        workflow = create_pattern_extractor_workflow(db)
         run_summary = workflow.get_run_summary(run_id)
     finally:
         try:
