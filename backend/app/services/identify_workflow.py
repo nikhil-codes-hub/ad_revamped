@@ -613,15 +613,29 @@ class IdentifyWorkflow:
 
             quality_summary = ""
             if missing_elements:
-                details = []
+                # Deduplicate and count missing elements for cleaner display
+                from collections import Counter
+                error_counts = Counter()
                 for item in missing_elements:
                     if isinstance(item, dict):
                         path = item.get('path', 'unknown path')
                         reason = item.get('reason', 'unspecified reason')
-                        details.append(f"{path} ({reason})")
+                        error_key = f"{path} ({reason})"
+                        error_counts[error_key] += 1
                     else:
-                        details.append(str(item))
-                quality_summary = "; ".join(details)
+                        error_counts[str(item)] += 1
+
+                # Build summary with counts
+                details = []
+                for error, count in error_counts.most_common():
+                    if count > 1:
+                        details.append(f"{error} [x{count}]")
+                    else:
+                        details.append(error)
+
+                quality_summary = "; ".join(details[:10])  # Limit to top 10 unique errors
+                if len(error_counts) > 10:
+                    quality_summary += f" ... and {len(error_counts) - 10} more unique errors"
 
             matches = self.match_node_fact_to_patterns(
                 nf,
