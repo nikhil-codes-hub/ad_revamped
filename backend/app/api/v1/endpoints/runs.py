@@ -14,8 +14,8 @@ from sqlalchemy.orm import Session
 
 from app.models.schemas import RunCreate, RunResponse, RunStatus, ConflictDetectionResponse, ConflictResolution
 from app.services.workspace_db import get_workspace_db
+from app.services.pattern_extractor_workflow import create_pattern_extractor_workflow
 from app.services.discovery_workflow import create_discovery_workflow
-from app.services.identify_workflow import create_identify_workflow
 from app.services.conflict_detector import create_conflict_detector
 from app.models.database import Run, RunKind, RunStatus as DbRunStatus
 import logging
@@ -76,13 +76,13 @@ async def create_run(
         try:
             # Run appropriate workflow based on kind
             if kind == "pattern_extractor":
-                workflow = create_discovery_workflow(db)  # Will be renamed to create_pattern_extractor_workflow
+                workflow = create_pattern_extractor_workflow(db)
                 results = workflow.run_discovery(
                     temp_file_path,
                     conflict_resolution=conflict_resolution
                 )
             elif kind == "discovery":
-                workflow = create_identify_workflow(db)  # Will be renamed to create_discovery_workflow
+                workflow = create_discovery_workflow(db)
                 results = workflow.run_identify(
                     temp_file_path,
                     target_version=target_version,

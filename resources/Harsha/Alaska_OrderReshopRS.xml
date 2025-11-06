@@ -1,0 +1,431 @@
+<IATA_OrderReshopRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage">
+	<Response>
+		<DataLists xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<ContactInfoList>
+				<ContactInfo>
+					<ContactInfoID>CI1</ContactInfoID>
+					<EmailAddress>
+						<EmailAddressText/>
+					</EmailAddress>
+					<Individual>
+						<GivenName/>
+						<Surname/>
+					</Individual>
+					<Phone>
+						<AreaCodeNumber>206</AreaCodeNumber>
+						<ContactTypeText>PER</ContactTypeText>
+						<CountryDialingCode>1</CountryDialingCode>
+						<ExtensionNumber>EX</ExtensionNumber>
+						<PhoneNumber>1111111</PhoneNumber>
+					</Phone>
+				</ContactInfo>
+				<ContactInfo>
+					<ContactInfoID>CI2</ContactInfoID>
+					<EmailAddress>
+						<EmailAddressText/>
+					</EmailAddress>
+					<Individual>
+						<GivenName/>
+						<Surname/>
+					</Individual>
+					<Phone>
+						<AreaCodeNumber>206</AreaCodeNumber>
+						<ContactTypeText>PER</ContactTypeText>
+						<CountryDialingCode>1</CountryDialingCode>
+						<ExtensionNumber>EX</ExtensionNumber>
+						<PhoneNumber>2222222</PhoneNumber>
+					</Phone>
+				</ContactInfo>
+			</ContactInfoList>
+			<DatedMarketingSegmentList>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-05-06T08:43:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>LAX</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedMarketingSegmentId>42be7514-67bd-47d0-8211-096cb141bcc7</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>0f3ae19a-8583-4bfc-a90c-aba4c5b86b21</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2025-05-06T06:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>1316</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+				<DatedMarketingSegment>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-05-07T12:50:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Arrival>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<DatedMarketingSegmentId>1cf85058-0a54-4bf6-a6dc-aeb06e3519ef</DatedMarketingSegmentId>
+					<DatedOperatingSegmentRefId>55c0f584-4ca0-43c3-94fb-53be42211d07</DatedOperatingSegmentRefId>
+					<Dep>
+						<AircraftScheduledDateTime>2025-05-07T10:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>LAX</IATA_LocationCode>
+					</Dep>
+					<MarketingCarrierFlightNumberText>0798</MarketingCarrierFlightNumberText>
+				</DatedMarketingSegment>
+			</DatedMarketingSegmentList>
+			<DatedOperatingLegList>
+				<DatedOperatingLeg>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-05-06T08:43:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>LAX</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Boeing 737-900 (Winglets)</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>de3f905a-a9d2-4da8-8071-8273d81321c5</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2025-05-06T06:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Dep>
+				</DatedOperatingLeg>
+				<DatedOperatingLeg>
+					<Arrival>
+						<AircraftScheduledDateTime>2025-05-07T12:50:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>SEA</IATA_LocationCode>
+					</Arrival>
+					<CarrierAircraftType>
+						<CarrierAircraftTypeCode>73J</CarrierAircraftTypeCode>
+						<CarrierAircraftTypeName>Boeing 737-900 (Winglets)</CarrierAircraftTypeName>
+					</CarrierAircraftType>
+					<DatedOperatingLegID>d8436646-d969-4d53-9c9a-886725ea46e7</DatedOperatingLegID>
+					<Dep>
+						<AircraftScheduledDateTime>2025-05-07T10:00:00</AircraftScheduledDateTime>
+						<IATA_LocationCode>LAX</IATA_LocationCode>
+					</Dep>
+				</DatedOperatingLeg>
+			</DatedOperatingLegList>
+			<DatedOperatingSegmentList>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<CarrierName>ALASKA AIRLINES</CarrierName>
+					<DatedOperatingSegmentId>0f3ae19a-8583-4bfc-a90c-aba4c5b86b21</DatedOperatingSegmentId>
+					<Duration>PT2H43M</Duration>
+					<OperatingCarrierFlightNumberText>1316</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+				<DatedOperatingSegment>
+					<CarrierDesigCode>AS</CarrierDesigCode>
+					<CarrierName>ALASKA AIRLINES</CarrierName>
+					<DatedOperatingSegmentId>55c0f584-4ca0-43c3-94fb-53be42211d07</DatedOperatingSegmentId>
+					<Duration>PT2H50M</Duration>
+					<OperatingCarrierFlightNumberText>0798</OperatingCarrierFlightNumberText>
+				</DatedOperatingSegment>
+			</DatedOperatingSegmentList>
+			<PaxJourneyList>
+				<PaxJourney>
+					<Duration>PT2H43M</Duration>
+					<PaxJourneyID>JOUR1</PaxJourneyID>
+					<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+				</PaxJourney>
+				<PaxJourney>
+					<Duration>PT2H50M</Duration>
+					<PaxJourneyID>JOUR2</PaxJourneyID>
+					<PaxSegmentRefID>SEG2</PaxSegmentRefID>
+				</PaxJourney>
+			</PaxJourneyList>
+			<PaxList>
+				<Pax>
+					<Individual>
+						<Birthdate>1980-01-01</Birthdate>
+						<GenderCode>M</GenderCode>
+						<GivenName/>
+						<IndividualID>1.1</IndividualID>
+						<Surname/>
+					</Individual>
+					<LoyaltyProgramAccount>
+						<LoyaltyProgram>
+							<Carrier/>
+						</LoyaltyProgram>
+					</LoyaltyProgramAccount>
+					<PaxID>1.1</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+				<Pax>
+					<Individual>
+						<Birthdate>2000-01-01</Birthdate>
+						<GenderCode>M</GenderCode>
+						<GivenName/>
+						<IndividualID>2.1</IndividualID>
+						<Surname/>
+					</Individual>
+					<LoyaltyProgramAccount>
+						<AccountNumber/>
+						<LoyaltyProgram>
+							<Carrier>
+								<AirlineDesigCode>AS</AirlineDesigCode>
+							</Carrier>
+						</LoyaltyProgram>
+					</LoyaltyProgramAccount>
+					<PaxID>2.1</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+			</PaxList>
+			<PaxSegmentList>
+				<PaxSegment>
+					<CabinTypeAssociationChoice>
+						<SegmentCabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>Main</CabinTypeName>
+						</SegmentCabinType>
+					</CabinTypeAssociationChoice>
+					<DatedMarketingSegmentRefId>42be7514-67bd-47d0-8211-096cb141bcc7</DatedMarketingSegmentRefId>
+					<MarketingCarrierRBD_Code>O</MarketingCarrierRBD_Code>
+					<PaxSegmentID>SEG1</PaxSegmentID>
+				</PaxSegment>
+				<PaxSegment>
+					<CabinTypeAssociationChoice>
+						<SegmentCabinType>
+							<CabinTypeCode>5</CabinTypeCode>
+							<CabinTypeName>Main</CabinTypeName>
+						</SegmentCabinType>
+					</CabinTypeAssociationChoice>
+					<DatedMarketingSegmentRefId>1cf85058-0a54-4bf6-a6dc-aeb06e3519ef</DatedMarketingSegmentRefId>
+					<MarketingCarrierRBD_Code>O</MarketingCarrierRBD_Code>
+					<PaxSegmentID>SEG2</PaxSegmentID>
+				</PaxSegment>
+			</PaxSegmentList>
+			<PenaltyList/>
+		</DataLists>
+		<Order xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<OrderID/>
+			<OwnerCode>AS</OwnerCode>
+		</Order>
+		<ReshopResults xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+			<ReshopOffers>
+				<Offer>
+					<DeleteOrderItem>
+						<ExistingOrderItem>
+							<OrderItemRefID>OI1</OrderItemRefID>
+						</ExistingOrderItem>
+						<OfferItemID>OFFERITEM1</OfferItemID>
+						<PriceDifferential>
+							<DifferentialTypeCode>Refund</DifferentialTypeCode>
+							<DiffPrice>
+								<FareDetail>
+									<PaxRefID>1.1</PaxRefID>
+									<Price>
+										<BaseAmount CurCode="USD">-182.32</BaseAmount>
+										<DueByAirlineAmount CurCode="USD">226.59</DueByAirlineAmount>
+										<DueToAirlineAmount CurCode="USD">0.00</DueToAirlineAmount>
+										<TaxSummary>
+											<Tax>
+												<Amount CurCode="USD">-11.20</Amount>
+												<DescText>United States Passenger Civil Aviation
+                                                    Security Service Fee</DescText>
+												<TaxCode>AY</TaxCode>
+											</Tax>
+											<Tax>
+												<Amount CurCode="USD">-5.20</Amount>
+												<DescText>United States Flight Segment Tax Domestic</DescText>
+												<TaxCode>ZP</TaxCode>
+											</Tax>
+											<Tax>
+												<Amount CurCode="USD">-5.20</Amount>
+												<DescText>United States Flight Segment Tax Domestic</DescText>
+												<TaxCode>ZP</TaxCode>
+											</Tax>
+											<Tax>
+												<Amount CurCode="USD">-4.50</Amount>
+												<DescText>US Passenger Facility Charge</DescText>
+												<TaxCode>XF</TaxCode>
+											</Tax>
+											<Tax>
+												<Amount CurCode="USD">-4.50</Amount>
+												<DescText>US Passenger Facility Charge</DescText>
+												<TaxCode>XF</TaxCode>
+											</Tax>
+											<Tax>
+												<Amount CurCode="USD">-13.67</Amount>
+												<DescText>US Transportation Tax</DescText>
+												<TaxCode>US</TaxCode>
+											</Tax>
+										</TaxSummary>
+										<TotalAmount CurCode="USD">-226.59</TotalAmount>
+									</Price>
+								</FareDetail>
+							</DiffPrice>
+							<NewPrice>
+								<FareDetail>
+									<FareComponent>
+										<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+										<Price>
+											<BaseAmount CurCode="USD">0.00</BaseAmount>
+											<TotalAmount CurCode="USD">0.00</TotalAmount>
+										</Price>
+									</FareComponent>
+									<PaxRefID>1.1</PaxRefID>
+								</FareDetail>
+								<Price>
+									<BaseAmount CurCode="USD">0.00</BaseAmount>
+									<TotalAmount CurCode="USD">0.00</TotalAmount>
+								</Price>
+							</NewPrice>
+							<OldPrice>
+								<FareDetail>
+									<FareComponent>
+										<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+										<Price>
+											<TotalAmount CurCode="USD">226.59</TotalAmount>
+										</Price>
+									</FareComponent>
+									<PaxRefID>1.1</PaxRefID>
+								</FareDetail>
+								<Price>
+									<BaseAmount CurCode="USD">182.32</BaseAmount>
+									<TaxSummary>
+										<Tax>
+											<Amount CurCode="USD">11.20</Amount>
+											<DescText>United States Passenger Civil Aviation
+                                                Security Service Fee</DescText>
+											<TaxCode>AY</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="USD">13.67</Amount>
+											<DescText>US Transportation Tax</DescText>
+											<TaxCode>US</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="USD">9.00</Amount>
+											<DescText>US Passenger Facility Charge</DescText>
+											<TaxCode>XF</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="USD">10.40</Amount>
+											<DescText>United States Flight Segment Tax Domestic</DescText>
+											<TaxCode>ZP</TaxCode>
+										</Tax>
+										<TotalTaxAmount CurCode="USD">44.27</TotalTaxAmount>
+									</TaxSummary>
+									<TotalAmount CurCode="USD">226.59</TotalAmount>
+								</Price>
+							</OldPrice>
+						</PriceDifferential>
+					</DeleteOrderItem>
+					<DeleteOrderItem>
+						<ExistingOrderItem>
+							<OrderItemRefID>OI2</OrderItemRefID>
+						</ExistingOrderItem>
+						<OfferItemID>OFFERITEM1</OfferItemID>
+						<PriceDifferential>
+							<DifferentialTypeCode>Refund</DifferentialTypeCode>
+							<DiffPrice>
+								<FareDetail>
+									<PaxRefID>2.1</PaxRefID>
+									<Price>
+										<BaseAmount CurCode="USD">-182.32</BaseAmount>
+										<DueByAirlineAmount CurCode="USD">226.59</DueByAirlineAmount>
+										<DueToAirlineAmount CurCode="USD">0.00</DueToAirlineAmount>
+										<TaxSummary>
+											<Tax>
+												<Amount CurCode="USD">-11.20</Amount>
+												<DescText>United States Passenger Civil Aviation
+                                                    Security Service Fee</DescText>
+												<TaxCode>AY</TaxCode>
+											</Tax>
+											<Tax>
+												<Amount CurCode="USD">-5.20</Amount>
+												<DescText>United States Flight Segment Tax Domestic</DescText>
+												<TaxCode>ZP</TaxCode>
+											</Tax>
+											<Tax>
+												<Amount CurCode="USD">-5.20</Amount>
+												<DescText>United States Flight Segment Tax Domestic</DescText>
+												<TaxCode>ZP</TaxCode>
+											</Tax>
+											<Tax>
+												<Amount CurCode="USD">-4.50</Amount>
+												<DescText>US Passenger Facility Charge</DescText>
+												<TaxCode>XF</TaxCode>
+											</Tax>
+											<Tax>
+												<Amount CurCode="USD">-4.50</Amount>
+												<DescText>US Passenger Facility Charge</DescText>
+												<TaxCode>XF</TaxCode>
+											</Tax>
+											<Tax>
+												<Amount CurCode="USD">-13.67</Amount>
+												<DescText>US Transportation Tax</DescText>
+												<TaxCode>US</TaxCode>
+											</Tax>
+										</TaxSummary>
+										<TotalAmount CurCode="USD">-226.59</TotalAmount>
+									</Price>
+								</FareDetail>
+							</DiffPrice>
+							<NewPrice>
+								<FareDetail>
+									<FareComponent>
+										<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+										<Price>
+											<BaseAmount CurCode="USD">0.00</BaseAmount>
+											<TotalAmount CurCode="USD">0.00</TotalAmount>
+										</Price>
+									</FareComponent>
+									<PaxRefID>2.1</PaxRefID>
+								</FareDetail>
+								<Price>
+									<BaseAmount CurCode="USD">0.00</BaseAmount>
+									<TotalAmount CurCode="USD">0.00</TotalAmount>
+								</Price>
+							</NewPrice>
+							<OldPrice>
+								<FareDetail>
+									<FareComponent>
+										<PaxSegmentRefID>SEG1</PaxSegmentRefID>
+										<Price>
+											<TotalAmount CurCode="USD">226.59</TotalAmount>
+										</Price>
+									</FareComponent>
+									<PaxRefID>2.1</PaxRefID>
+								</FareDetail>
+								<Price>
+									<BaseAmount CurCode="USD">182.32</BaseAmount>
+									<TaxSummary>
+										<Tax>
+											<Amount CurCode="USD">11.20</Amount>
+											<DescText>United States Passenger Civil Aviation
+                                                Security Service Fee</DescText>
+											<TaxCode>AY</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="USD">13.67</Amount>
+											<DescText>US Transportation Tax</DescText>
+											<TaxCode>US</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="USD">9.00</Amount>
+											<DescText>US Passenger Facility Charge</DescText>
+											<TaxCode>XF</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="USD">10.40</Amount>
+											<DescText>United States Flight Segment Tax Domestic</DescText>
+											<TaxCode>ZP</TaxCode>
+										</Tax>
+										<TotalTaxAmount CurCode="USD">44.27</TotalTaxAmount>
+									</TaxSummary>
+									<TotalAmount CurCode="USD">226.59</TotalAmount>
+								</Price>
+							</OldPrice>
+						</PriceDifferential>
+					</DeleteOrderItem>
+					<OfferID>OFFER1</OfferID>
+					<OwnerCode>AS</OwnerCode>
+					<TotalPrice>
+						<TotalAmount CurCode="USD">-453.18</TotalAmount>
+					</TotalPrice>
+				</Offer>
+			</ReshopOffers>
+		</ReshopResults>
+	</Response>
+	<PayloadAttributes>
+		<CorrelationID xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+            cb165c13-7d41-4986-a909-ad267c1e4909</CorrelationID>
+		<VersionNumber xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes">
+            21.3</VersionNumber>
+	</PayloadAttributes>
+</IATA_OrderReshopRS>
