@@ -1092,7 +1092,7 @@ def show_pattern_extractor_page():
 
                 result = upload_file_for_run(
                     uploaded_file,
-                    "discovery",
+                    "pattern_extractor",
                     workspace=current_workspace,
                     conflict_resolution=conflict_resolution
                 )
@@ -1456,7 +1456,7 @@ def show_discovery_page(current_workspace: Optional[str] = None):
 
                     result = upload_file_for_run(
                         uploaded_file,
-                        "identify",
+                        "discovery",
                         workspace=current_workspace,
                         target_version=filter_version,
                         target_message_root=filter_msg_root,
