@@ -388,7 +388,7 @@ def check_pattern_conflicts(node_paths: list, spec_version: str, message_root: s
         return None
 
 
-def upload_file_for_run(file, run_kind: str, workspace: str = "default", target_version: Optional[str] = None, target_message_root: Optional[str] = None, target_airline_code: Optional[str] = None, conflict_resolution: Optional[str] = None) -> Optional[Dict[str, Any]]:
+def upload_file_for_run(file, run_kind: str, workspace: str = "default", target_version: Optional[str] = None, target_message_root: Optional[str] = None, target_airline_code: Optional[str] = None, conflict_resolution: Optional[str] = None, allow_cross_airline: bool = False) -> Optional[Dict[str, Any]]:
     """Upload file and create a new run."""
     try:
         files = {"file": (file.name, file.getvalue(), "application/xml")}
@@ -404,6 +404,8 @@ def upload_file_for_run(file, run_kind: str, workspace: str = "default", target_
             params["target_message_root"] = target_message_root
         if target_airline_code:
             params["target_airline_code"] = target_airline_code
+        if allow_cross_airline:
+            params["allow_cross_airline"] = str(allow_cross_airline).lower()
 
         # Add conflict resolution strategy for discovery runs
         if conflict_resolution:
@@ -1427,6 +1429,12 @@ def show_discovery_page(current_workspace: Optional[str] = None):
                     options=["Auto-detect (from XML)"] + available_airlines,
                     key="discovery_target_airline"
                 )
+                allow_cross_airline = st.checkbox(
+                    "🌐 Enable cross-airline matching",
+                    value=False,
+                    help="Match against patterns from ALL airlines (e.g., match Alaska XML against 6X patterns)",
+                    key="discovery_allow_cross_airline"
+                )
 
             if st.button("Start Discovery", type="primary", key="start_discovery"):
                     import time
@@ -1452,7 +1460,8 @@ def show_discovery_page(current_workspace: Optional[str] = None):
                         workspace=current_workspace,
                         target_version=filter_version,
                         target_message_root=filter_msg_root,
-                        target_airline_code=filter_airline
+                        target_airline_code=filter_airline,
+                        allow_cross_airline=allow_cross_airline
                     )
 
                     if result:
