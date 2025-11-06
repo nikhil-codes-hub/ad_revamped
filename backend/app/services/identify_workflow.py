@@ -269,9 +269,17 @@ class IdentifyWorkflow:
                                      node_fact: NodeFact,
                                      spec_version: str,
                                      message_root: str,
-                                     airline_code: Optional[str] = None) -> List[Dict[str, Any]]:
+                                     airline_code: Optional[str] = None,
+                                     allow_cross_airline: bool = False) -> List[Dict[str, Any]]:
         """
         Match a single NodeFact against all patterns for the same version and airline.
+
+        Args:
+            node_fact: NodeFact to match
+            spec_version: NDC version to match against
+            message_root: Message root to match against
+            airline_code: Airline code to match against (can be None)
+            allow_cross_airline: If True, match against patterns from all airlines
 
         Returns:
             List of matches with confidence scores
@@ -286,16 +294,20 @@ class IdentifyWorkflow:
             Pattern.superseded_by.is_(None)  # Exclude superseded patterns
         )
 
-        # Filter by airline_code if provided
-        if airline_code:
+        # Filter by airline_code if provided AND cross-airline mode is disabled
+        if airline_code and not allow_cross_airline:
             query = query.filter(Pattern.airline_code == airline_code)
 
         patterns = query.all()
 
-        airline_info = f"/{airline_code}" if airline_code else ""
+        airline_info = f"/{airline_code}" if airline_code and not allow_cross_airline else ""
+        cross_airline_info = " (cross-airline mode)" if allow_cross_airline else ""
         if not patterns:
-            logger.info(f"No patterns found for {spec_version}/{message_root}{airline_info}")
+            logger.info(f"No patterns found for {spec_version}/{message_root}{airline_info}{cross_airline_info}")
             return []
+
+        if allow_cross_airline:
+            logger.info(f"Cross-airline matching enabled: found {len(patterns)} patterns across all airlines for {spec_version}/{message_root}")
 
         # Query ALL relationships for this NodeFact from database
         all_relationships = self.db_session.query(NodeRelationship).filter(
@@ -465,7 +477,8 @@ class IdentifyWorkflow:
                      xml_file_path: str,
                      target_version: Optional[str] = None,
                      target_message_root: Optional[str] = None,
-                     target_airline_code: Optional[str] = None) -> Dict[str, Any]:
+                     target_airline_code: Optional[str] = None,
+                     allow_cross_airline: bool = False) -> Dict[str, Any]:
         """
         Run identify workflow on new XML file.
 
@@ -478,6 +491,7 @@ class IdentifyWorkflow:
             target_version: Optional specific NDC version to match against (e.g., "18.1")
             target_message_root: Optional specific message root to match against (e.g., "OrderViewRS")
             target_airline_code: Optional specific airline code to match against (e.g., "SQ", "AF")
+            allow_cross_airline: If True, match against patterns from all airlines (default: False)
 
         Returns:
             Dict with identification results
@@ -506,6 +520,8 @@ class IdentifyWorkflow:
         logger.info(f"Detected: {spec_version}/{message_root} - Airline: {airline_code or 'N/A'}")
         if target_version or target_message_root or target_airline_code:
             logger.info(f"Matching against: {match_version}/{match_message_root} - Airline: {match_airline_code or 'N/A'}")
+        if allow_cross_airline:
+            logger.info(f"Cross-airline matching ENABLED - will match against patterns from all airlines")
 
         # PHASE 1: Extract NodeFacts (reuse Discovery workflow but mark as IDENTIFY run)
         logger.info("Phase 1: Extracting NodeFacts from XML")
@@ -607,7 +623,13 @@ class IdentifyWorkflow:
                         details.append(str(item))
                 quality_summary = "; ".join(details)
 
-            matches = self.match_node_fact_to_patterns(nf, match_version, match_message_root, match_airline_code)
+            matches = self.match_node_fact_to_patterns(
+                nf,
+                match_version,
+                match_message_root,
+                match_airline_code,
+                allow_cross_airline=allow_cross_airline
+            )
 
             if matches:
                 # Use best match
@@ -928,7 +950,8 @@ class IdentifyWorkflow:
                     'new_patterns': new_patterns_count,
                     'match_rate': gap_analysis['match_rate'],
                     'quality_breaks': quality_issue_count
-                }
+                },
+                'allow_cross_airline': allow_cross_airline
             }
             run.status = RunStatus.COMPLETED
             run.finished_at = datetime.utcnow()

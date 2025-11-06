@@ -32,6 +32,7 @@ async def create_run(
     target_version: Optional[str] = Query(None, description="Target NDC version for identify (e.g., 18.1)"),
     target_message_root: Optional[str] = Query(None, description="Target message root for identify (e.g., OrderViewRS)"),
     target_airline_code: Optional[str] = Query(None, description="Target airline code for identify (e.g., SQ, AF)"),
+    allow_cross_airline: bool = Query(False, description="Enable cross-airline pattern matching for identify (e.g., match Alaska XML against 6X patterns)"),
     conflict_resolution: Optional[str] = Query(None, regex="^(replace|keep_both|merge)$", description="How to resolve pattern conflicts (discovery only)")
 ) -> RunResponse:
     """
@@ -42,6 +43,7 @@ async def create_run(
     - **target_version**: (Identify only) Specific NDC version to match against
     - **target_message_root**: (Identify only) Specific message root to match against
     - **target_airline_code**: (Identify only) Specific airline code to match against
+    - **allow_cross_airline**: (Identify only) Enable cross-airline pattern matching - matches patterns from all airlines instead of just the detected airline
     - **conflict_resolution**: (Discovery only) How to handle pattern conflicts:
         - 'replace': Delete existing conflicting patterns (recommended)
         - 'keep_both': Keep both old and new patterns (may cause ambiguous matches)
@@ -85,7 +87,8 @@ async def create_run(
                     temp_file_path,
                     target_version=target_version,
                     target_message_root=target_message_root,
-                    target_airline_code=target_airline_code
+                    target_airline_code=target_airline_code,
+                    allow_cross_airline=allow_cross_airline
                 )
             else:
                 raise HTTPException(status_code=400, detail=f"Invalid run kind: {kind}")
