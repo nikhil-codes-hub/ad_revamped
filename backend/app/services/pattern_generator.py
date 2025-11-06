@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from openai import AzureOpenAI, OpenAI
 import httpx
 
-from app.models.database import NodeFact, Pattern, Run
+from app.models.database import NodeFact, Pattern, Run, NodeRelationship
 from app.core.config import settings
 from app.services.llm_extractor import get_llm_extractor
 from app.services.utils import normalize_iata_prefix
@@ -218,12 +218,14 @@ class PatternGenerator:
 
         return schema
 
-    def generate_decision_rule(self, facts_group: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def generate_decision_rule(self, facts_group: List[Dict[str, Any]],
+                              expected_relationships: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
         """
         Generate decision rule from a group of similar NodeFacts.
 
         Args:
             facts_group: List of fact_json dicts from similar NodeFacts
+            expected_relationships: List of expected relationships with is_valid status
 
         Returns:
             Decision rule dict
@@ -262,6 +264,10 @@ class PatternGenerator:
             'reference_patterns': reference_patterns,
             'business_intelligence_schema': bi_schema
         }
+
+        # Add expected relationships (with is_valid status from node_relationships table)
+        if expected_relationships:
+            decision_rule['expected_relationships'] = expected_relationships
 
         return decision_rule
 
@@ -305,6 +311,35 @@ class PatternGenerator:
             normalized['child_structures'] = sorted(normalized_children, key=lambda x: x['node_type'])
 
         return normalized
+
+    def _get_expected_relationships(self, run_id: str, section_path: str) -> List[Dict[str, Any]]:
+        """
+        Query node_relationships table to get expected relationships for a section_path.
+
+        Args:
+            run_id: Discovery run ID
+            section_path: Section path to get relationships for
+
+        Returns:
+            List of expected relationships with is_valid status
+        """
+        # Query all relationships where this section is the source
+        relationships = self.db_session.query(NodeRelationship).filter(
+            NodeRelationship.run_id == run_id,
+            NodeRelationship.source_section_path == section_path
+        ).all()
+
+        expected_rels = []
+        for rel in relationships:
+            expected_rels.append({
+                'target_section_path': rel.target_section_path,
+                'target_node_type': rel.target_node_type,
+                'reference_type': rel.reference_type,
+                'is_valid': rel.is_valid,  # KEY: Store the expected validity!
+                'confidence': float(rel.confidence) if rel.confidence else 1.0
+            })
+
+        return expected_rels
 
     def generate_signature_hash(self, decision_rule: Dict[str, Any],
                                 spec_version: str,
@@ -490,6 +525,9 @@ class PatternGenerator:
             existing.times_seen += 1
             existing.last_seen_at = datetime.utcnow()
 
+            # Update decision_rule (includes expected_relationships and other fields)
+            existing.decision_rule = decision_rule
+
             # Add new example (keep last 5)
             examples = existing.examples or []
             examples.append({
@@ -608,8 +646,14 @@ class PatternGenerator:
                 # Extract fact_json from each NodeFact
                 fact_jsons = [f['fact_json'] for f in facts]
 
-                # Generate decision rule (all references auto-discovered by LLM)
-                decision_rule = self.generate_decision_rule(fact_jsons)
+                # Get expected relationships from node_relationships table
+                expected_relationships = self._get_expected_relationships(run_id, section_path)
+
+                if expected_relationships:
+                    logger.debug(f"Found {len(expected_relationships)} expected relationships for {section_path}")
+
+                # Generate decision rule (includes expected relationships with is_valid status)
+                decision_rule = self.generate_decision_rule(fact_jsons, expected_relationships)
 
                 # Find or create pattern
                 pattern = self.find_or_create_pattern(

@@ -510,8 +510,98 @@ async def generate_detailed_explanation(
 
                     # Get a small XML snippet from the actual data for illustration
                     xml_snippet = node_structure.get('snippet', '')
+                    snippet_truncated = False
                     if xml_snippet and len(xml_snippet) > 500:
                         xml_snippet = xml_snippet[:500] + '...'
+                        snippet_truncated = True
+
+                    # Check for expected vs actual relationship mismatches
+                    expected_relationships = pattern_rule.get('expected_relationships', [])
+                    relationship_mismatch_details = ""
+
+                    if expected_relationships:
+                        # Build lookup map of actual relationships
+                        actual_rel_map = {}
+                        for rel in actual_refs:
+                            target = rel.get('target_section_path', '')
+                            actual_rel_map[target] = rel
+
+                        # Check for mismatches
+                        mismatches = []
+                        for expected in expected_relationships:
+                            target = expected.get('target_section_path', '')
+                            expected_valid = expected.get('is_valid', True)
+
+                            actual = actual_rel_map.get(target)
+                            if actual:
+                                actual_valid = actual.get('is_valid', True)
+                                if expected_valid != actual_valid:
+                                    status = "valid" if actual_valid else "broken"
+                                    expected_status = "valid" if expected_valid else "broken"
+                                    mismatches.append(f"{target}: expected {expected_status}, found {status}")
+
+                        if mismatches:
+                            relationship_mismatch_details = f"\n**Relationship Validation Mismatches**:\n"
+                            for m in mismatches:
+                                relationship_mismatch_details += f"• {m}\n"
+
+                    # Build dynamic few-shot examples based on issue types
+                    few_shot_examples = ""
+
+                    if missing_attrs or missing_elements:
+                        few_shot_examples += """
+**Example (Missing Required Data)**:
+The Problem: 15 out of 20 passengers (75%) are missing the required PTC (Passenger Type Code) field, which specifies whether each passenger is an adult (ADT), child (CHD), or infant (INF).
+
+Impact: Without PTC classification, the booking system cannot calculate age-appropriate pricing, assign correct meal preferences, or comply with TSA regulations requiring passenger type identification for security screening.
+
+Action: Fix the source system generating the PaxList to ensure every Pax element includes the PTC field with valid codes (ADT/CHD/INF).
+
+"""
+
+                    if extra_attrs:
+                        few_shot_examples += """
+**Example (Unexpected Extra Data)**:
+The Problem: The PaxList contains an unexpected "LoyaltyTier" attribute that is not part of the NDC 21.3 standard schema for this airline.
+
+Impact: This extra field may indicate a custom airline extension. While it doesn't break processing, it's not recognized by standard NDC parsers and may be ignored by downstream systems.
+
+Action: Verify with the airline if this is an intentional custom field. If so, document it as an airline-specific extension. If not, remove it from the source data generator.
+
+"""
+
+                    if (expected_child_types != actual_child_types) or (missing_child_types or extra_child_types):
+                        few_shot_examples += """
+**Example (Child Structure Mismatch)**:
+The Problem: The PaxSegmentList is missing the expected child element "CabinType" in 8 out of 10 segment entries, which should specify the booking class (Economy, Business, First) for each flight segment.
+
+Impact: Without CabinType information, the system cannot determine passenger seating assignments, meal service levels, or baggage allowances that vary by cabin class, potentially causing service delivery errors.
+
+Action: Ensure the source system populates the CabinType element within each PaxSegment to align with the expected NDC 21.3 schema structure for this airline.
+
+"""
+
+                    if missing_ref_types or extra_ref_types:
+                        few_shot_examples += """
+**Example (Missing Reference)**:
+The Problem: The BaggageAllowanceList is missing references to specific passengers (PaxRefID fields), making it impossible to determine which baggage allowances apply to which passengers in the booking.
+
+Impact: Without passenger references, the check-in system cannot validate baggage entitlements per traveler, potentially allowing excess baggage without payment or blocking legitimate baggage that should be included.
+
+Action: Update the source system to include PaxRefID fields in each BaggageAllowance entry, linking allowances to the corresponding passengers in PaxList.
+
+"""
+
+                    if not (missing_attrs or extra_attrs or missing_elements or (expected_child_types != actual_child_types) or missing_ref_types or extra_ref_types):
+                        few_shot_examples += """
+**Example (No Issues - Complete Data)**:
+The Problem: No quality issues detected - the DatedOperatingLegList data is complete and valid, matching the expected NDC 21.3 schema structure perfectly.
+
+Impact: Having complete and accurate leg-level flight information ensures reliable flight tracking, accurate departure/arrival time displays, and proper integration with airport operational systems.
+
+Action: No action required - continue processing as normal. The data meets all quality standards for this airline and message type.
+
+"""
 
                     prompt = f"""You are a data quality validator for airline {pattern.airline_code or 'N/A'}.
 
@@ -525,20 +615,29 @@ async def generate_detailed_explanation(
 {f"• Unexpected extra attributes: {', '.join(extra_attrs)}" if extra_attrs else ""}
 {f"• Child element mismatch - Expected: {', '.join(expected_child_types)} | Found: {', '.join(actual_child_types)}" if expected_child_types != actual_child_types else ""}
 {relationship_details if relationship_details else ""}
+{relationship_mismatch_details if relationship_mismatch_details else ""}
 {missing_details if missing_details else ""}
 
-**Current XML Sample**:
+**Current XML Sample** (for reference only{', TRUNCATED for display' if snippet_truncated else ''}):
 ```xml
 {xml_snippet}
 ```
 
-Provide a CLEAR, ACTIONABLE explanation in 3-4 sentences using the format below:
+IMPORTANT NOTES:
+- The XML snippet above is {('intentionally truncated to 500 characters for display purposes. The source XML is complete and well-formed.' if snippet_truncated else 'the full extracted content.')}
+- DO NOT report XML truncation or missing closing tags as a quality issue.
+- Only report quality issues explicitly listed in "Quality Issues Detected" section above.
+- If no quality issues are listed above, state that the data is complete and valid.
 
-**The Problem**: State EXACTLY what is wrong using the specific instance information above. Be precise - if "PaxList[1]/Pax[1]/PTC" is missing, say "Passenger #1 in the PaxList is missing the required PTC (Passenger Type Code) field." Calculate the percentage from the number of missing instances shown above.
+{few_shot_examples}
 
-**Impact**: Explain why this specific missing data matters for airline operations or data processing. Be concrete - for PTC, mention how ADT (adult), CHD (child), INF (infant) classification is needed for pricing, boarding, and regulatory compliance.
+Now provide YOUR explanation for the **{actual_type}** element using the same format:
 
-**Action**: Give a direct recommendation. If required data is missing, say "Fix the source system to ensure all passengers include PTC." If it's optional reference data, say "This reference field is optional and the XML remains valid."
+**The Problem**: State EXACTLY what is wrong using the specific instance information above. Be precise - if "PaxList[1]/Pax[1]/PTC" is missing, say "Passenger #1 in the PaxList is missing the required PTC (Passenger Type Code) field." If no issues are listed above, state "No quality issues detected - the data is complete and valid."
+
+**Impact**: Explain why this specific missing data matters for airline operations or data processing. Be concrete - for PTC, mention how ADT (adult), CHD (child), INF (infant) classification is needed for pricing, boarding, and regulatory compliance. If no issues, explain why having complete data is beneficial.
+
+**Action**: Give a direct recommendation. If required data is missing, say "Fix the source system to ensure all passengers include PTC." If it's optional reference data, say "This reference field is optional and the XML remains valid." If no issues, say "No action required - continue processing as normal."
 
 Be DIRECT and SPECIFIC. Use exact numbers and instance paths from the data above. Do NOT use vague phrases like "typically", "may not be required", or "some instances". Format with bold headings as shown above.
 """

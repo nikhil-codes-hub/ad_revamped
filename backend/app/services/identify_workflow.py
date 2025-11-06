@@ -206,18 +206,62 @@ class IdentifyWorkflow:
         if not node_type_matches:
             normalized_score = min(normalized_score, 0.20)
 
-        # 5. VALIDATION: Check for broken relationships (negative scenarios!)
-        # If the NodeFact has broken/invalid relationships, this indicates a data quality issue
-        # and should reduce the confidence score significantly
-        fact_relationships = node_fact_structure.get('relationships', [])
-        if fact_relationships:
-            broken_count = sum(1 for rel in fact_relationships if not rel.get('is_valid', True))
-            if broken_count > 0:
-                # Penalize broken relationships - reduce score by 30% per broken relationship
-                penalty = min(0.6, broken_count * 0.3)  # Cap at 60% penalty
+        # 5. VALIDATION: Check for relationship mismatches
+        # Compare actual relationships vs pattern's expected relationships
+        # Only penalize MISMATCHES (not expected broken relationships!)
+        expected_relationships = pattern_decision_rule.get('expected_relationships', [])
+
+        if expected_relationships:
+            # Pattern has expected relationships - compare actual vs expected
+            fact_relationships = node_fact_structure.get('relationships', [])
+
+            # Build lookup map: target_section_path -> actual relationship
+            actual_rel_map = {}
+            for rel in fact_relationships:
+                target = rel.get('target_section_path', '')
+                actual_rel_map[target] = rel
+
+            # Check for mismatches
+            mismatch_count = 0
+            for expected in expected_relationships:
+                target = expected.get('target_section_path', '')
+                expected_valid = bool(expected.get('is_valid', True))  # Ensure boolean
+
+                # Find corresponding actual relationship
+                actual = actual_rel_map.get(target)
+
+                if actual:
+                    actual_valid = bool(actual.get('is_valid', True))  # Ensure boolean
+
+                    # Mismatch: expected valid but got broken, or expected broken but got valid
+                    if expected_valid != actual_valid:
+                        mismatch_count += 1
+                        logger.debug(f"Relationship mismatch for {target}: "
+                                   f"expected is_valid={expected_valid} ({type(expected_valid).__name__}), "
+                                   f"actual is_valid={actual_valid} ({type(actual_valid).__name__})")
+                else:
+                    # Expected relationship is missing - this is also a mismatch
+                    mismatch_count += 1
+                    logger.debug(f"Expected relationship to {target} is missing")
+
+            if mismatch_count > 0:
+                # Penalize relationship mismatches - 30% per mismatch
+                penalty = min(0.6, mismatch_count * 0.3)  # Cap at 60% penalty
                 normalized_score = normalized_score * (1.0 - penalty)
-                logger.warning(f"Node has {broken_count} broken relationship(s), applying {penalty*100:.0f}% penalty. "
+                logger.warning(f"Node has {mismatch_count} relationship mismatch(es), applying {penalty*100:.0f}% penalty. "
                              f"Original score: {normalized_score/(1.0-penalty):.2f}, New score: {normalized_score:.2f}")
+        else:
+            # Pattern has NO expected relationships - use old logic for backward compatibility
+            fact_relationships = node_fact_structure.get('relationships', [])
+            if fact_relationships:
+                broken_count = sum(1 for rel in fact_relationships if not rel.get('is_valid', True))
+                if broken_count > 0:
+                    # Penalize broken relationships - reduce score by 30% per broken relationship
+                    penalty = min(0.6, broken_count * 0.3)  # Cap at 60% penalty
+                    normalized_score = normalized_score * (1.0 - penalty)
+                    logger.warning(f"Node has {broken_count} broken relationship(s) (pattern has no expected relationships), "
+                                 f"applying {penalty*100:.0f}% penalty. "
+                                 f"Original score: {normalized_score/(1.0-penalty):.2f}, New score: {normalized_score:.2f}")
 
         return normalized_score
 
@@ -253,13 +297,24 @@ class IdentifyWorkflow:
             logger.info(f"No patterns found for {spec_version}/{message_root}{airline_info}")
             return []
 
-        # Check for broken relationships in the database for this NodeFact
-        broken_relationships = self.db_session.query(NodeRelationship).filter(
-            NodeRelationship.source_node_fact_id == node_fact.id,
-            NodeRelationship.is_valid == False
+        # Query ALL relationships for this NodeFact from database
+        all_relationships = self.db_session.query(NodeRelationship).filter(
+            NodeRelationship.source_node_fact_id == node_fact.id
         ).all()
 
-        broken_count = len(broken_relationships)
+        # Build relationships list for fact_structure
+        relationships_list = []
+        broken_count = 0
+        for rel in all_relationships:
+            relationships_list.append({
+                'target_section_path': rel.target_section_path,
+                'target_node_type': rel.target_node_type,
+                'reference_type': rel.reference_type,
+                'is_valid': rel.is_valid
+            })
+            if not rel.is_valid:
+                broken_count += 1
+
         if broken_count > 0:
             logger.warning(f"NodeFact {node_fact.id} ({node_fact.node_type}) has {broken_count} broken relationship(s)")
 
@@ -272,6 +327,9 @@ class IdentifyWorkflow:
             except json.JSONDecodeError:
                 logger.warning("Failed to decode NodeFact fact_json for node %s", node_fact.id)
                 fact_structure = {}
+
+        # Add relationships to fact_structure for comparison
+        fact_structure['relationships'] = relationships_list
 
         fact_node_normalized = self._normalize_node_type(
             fact_structure.get('node_type') or node_fact.node_type
@@ -313,13 +371,8 @@ class IdentifyWorkflow:
                 # Ensure mismatch-driven comparisons remain low confidence
                 confidence = min(confidence, 0.4)
 
-            # Apply penalty for broken relationships (NEGATIVE SCENARIO DETECTION!)
-            if broken_count > 0:
-                penalty = min(0.6, broken_count * 0.3)  # 30% penalty per broken relationship, cap at 60%
-                original_confidence = confidence
-                confidence = confidence * (1.0 - penalty)
-                logger.warning(f"Applying {penalty*100:.0f}% penalty for {broken_count} broken relationship(s). "
-                             f"Confidence: {original_confidence:.2f} → {confidence:.2f}")
+            # Relationship penalties are now handled inside calculate_pattern_similarity()
+            # by comparing actual relationships vs expected relationships from the pattern
 
             # Determine verdict based on confidence
             if confidence >= 0.95:

@@ -3506,7 +3506,6 @@ def show_node_manager_page():
 
                     # Send to API
                     if bulk_update_node_configurations(configurations, workspace=current_workspace):
-                        st.success(f"✅ Saved {len(configurations)} node configurations!")
                         st.success(f"   • {len(raw_checked_paths)} parent nodes enabled for extraction")
                         st.info("💡 Configurations saved successfully. Parent nodes will auto-extract their descendants during Discovery.")
                     else:
