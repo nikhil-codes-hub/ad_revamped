@@ -270,44 +270,57 @@ class DiscoveryWorkflow:
                                      spec_version: str,
                                      message_root: str,
                                      airline_code: Optional[str] = None,
-                                     allow_cross_airline: bool = False) -> List[Dict[str, Any]]:
+                                     allow_cross_airline: bool = False,
+                                     allow_cross_version: bool = False) -> List[Dict[str, Any]]:
         """
-        Match a single NodeFact against all patterns for the same version and airline.
+        Match a single NodeFact against patterns (cross-airline, cross-version).
 
         Args:
             node_fact: NodeFact to match
-            spec_version: NDC version to match against
-            message_root: Message root to match against
-            airline_code: Airline code to match against (can be None)
+            spec_version: NDC version to match against (ignored if allow_cross_version=True)
+            message_root: Message root to match against (always required)
+            airline_code: Airline code to match against (ignored if allow_cross_airline=True)
             allow_cross_airline: If True, match against patterns from all airlines
+            allow_cross_version: If True, match against patterns from all NDC versions
 
         Returns:
             List of matches with confidence scores
         """
         from app.models.database import NodeRelationship
 
-        # Query patterns for same version/message/airline (VERSION & AIRLINE FILTERED!)
+        # Query patterns - only filter by message_root (always required)
         # Only match against active patterns (not superseded)
         query = self.db_session.query(Pattern).filter(
-            Pattern.spec_version == spec_version,
             Pattern.message_root == message_root,
             Pattern.superseded_by.is_(None)  # Exclude superseded patterns
         )
 
-        # Filter by airline_code if provided AND cross-airline mode is disabled
+        # Filter by spec_version if cross-version mode is disabled
+        if not allow_cross_version:
+            query = query.filter(Pattern.spec_version == spec_version)
+
+        # Filter by airline_code if cross-airline mode is disabled
         if airline_code and not allow_cross_airline:
             query = query.filter(Pattern.airline_code == airline_code)
 
         patterns = query.all()
 
+        # Build log message
+        version_info = f"{spec_version}/" if not allow_cross_version else "all versions/"
         airline_info = f"/{airline_code}" if airline_code and not allow_cross_airline else ""
-        cross_airline_info = " (cross-airline mode)" if allow_cross_airline else ""
+        cross_info = []
+        if allow_cross_airline:
+            cross_info.append("cross-airline")
+        if allow_cross_version:
+            cross_info.append("cross-version")
+        mode_info = f" ({', '.join(cross_info)} mode)" if cross_info else ""
+
         if not patterns:
-            logger.info(f"No patterns found for {spec_version}/{message_root}{airline_info}{cross_airline_info}")
+            logger.info(f"No patterns found for {version_info}{message_root}{airline_info}{mode_info}")
             return []
 
-        if allow_cross_airline:
-            logger.info(f"Cross-airline matching enabled: found {len(patterns)} patterns across all airlines for {spec_version}/{message_root}")
+        if cross_info:
+            logger.info(f"Cross-matching enabled: found {len(patterns)} patterns for {message_root} ({', '.join(cross_info)})")
 
         # Query ALL relationships for this NodeFact from database
         all_relationships = self.db_session.query(NodeRelationship).filter(
@@ -642,7 +655,8 @@ class DiscoveryWorkflow:
                 match_version,
                 match_message_root,
                 match_airline_code,
-                allow_cross_airline=allow_cross_airline
+                allow_cross_airline=allow_cross_airline,
+                allow_cross_version=True  # Always match across all NDC versions
             )
 
             if matches:
