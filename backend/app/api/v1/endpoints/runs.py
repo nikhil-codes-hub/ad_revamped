@@ -32,7 +32,7 @@ async def create_run(
     target_version: Optional[str] = Query(None, description="Target NDC version for discovery (e.g., 18.1)"),
     target_message_root: Optional[str] = Query(None, description="Target message root for discovery (e.g., OrderViewRS)"),
     target_airline_code: Optional[str] = Query(None, description="Target airline code for discovery (e.g., SQ, AF)"),
-    allow_cross_airline: bool = Query(False, description="Enable cross-airline pattern matching for discovery (e.g., match Alaska XML against 6X patterns)"),
+    allow_cross_airline: bool = Query(True, description="Enable cross-airline pattern matching for discovery (e.g., match Alaska XML against 6X patterns)"),
     conflict_resolution: Optional[str] = Query(None, regex="^(replace|keep_both|merge)$", description="How to resolve pattern conflicts (pattern_extractor only)")
 ) -> RunResponse:
     """

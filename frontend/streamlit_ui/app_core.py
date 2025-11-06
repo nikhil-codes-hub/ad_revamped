@@ -1429,12 +1429,6 @@ def show_discovery_page(current_workspace: Optional[str] = None):
                     options=["Auto-detect (from XML)"] + available_airlines,
                     key="discovery_target_airline"
                 )
-                allow_cross_airline = st.checkbox(
-                    "🌐 Enable cross-airline matching",
-                    value=False,
-                    help="Match against patterns from ALL airlines (e.g., match Alaska XML against 6X patterns)",
-                    key="discovery_allow_cross_airline"
-                )
 
             if st.button("Start Discovery", type="primary", key="start_discovery"):
                     import time
@@ -1461,7 +1455,7 @@ def show_discovery_page(current_workspace: Optional[str] = None):
                         target_version=filter_version,
                         target_message_root=filter_msg_root,
                         target_airline_code=filter_airline,
-                        allow_cross_airline=allow_cross_airline
+                        allow_cross_airline=True  # Always match across airlines - Discovery is cross-airline by default
                     )
 
                     if result:
