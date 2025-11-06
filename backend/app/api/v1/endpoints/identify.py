@@ -1,7 +1,7 @@
 """
-Identify results endpoints for AssistedDiscovery.
+Discovery results endpoints for AssistedDiscovery.
 
-Retrieves pattern matching results and gap analysis from identify runs.
+Retrieves pattern matching results and gap analysis from discovery runs.
 """
 
 from typing import Optional
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/{run_id}/matches")
-async def get_identify_matches(
+async def get_discovery_matches(
     run_id: str,
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
@@ -26,24 +26,24 @@ async def get_identify_matches(
     workspace: str = Query("default", description="Workspace name")
 ):
     """
-    Get pattern matching results for an identify run.
+    Get pattern matching results for a discovery run.
 
-    - **run_id**: Identify run ID
+    - **run_id**: Discovery run ID
     - **limit**: Maximum matches to return
     - **offset**: Skip matches for pagination
     - **min_confidence**: Filter by minimum confidence score
     - **verdict**: Filter by verdict (EXACT_MATCH, HIGH_MATCH, PARTIAL_MATCH, etc.)
     """
-    logger.info(f"Getting identify matches for run: {run_id}")
+    logger.info(f"Getting discovery matches for run: {run_id}")
 
     with workspace_session(workspace) as db:
-        # Verify run exists and is identify type
+        # Verify run exists and is discovery type
         run = db.query(Run).filter(Run.id == run_id).first()
         if not run:
             raise HTTPException(status_code=404, detail="Run not found")
 
-        if run.kind != RunKind.IDENTIFY:
-            raise HTTPException(status_code=400, detail="Run is not an identify run")
+        if run.kind != RunKind.DISCOVERY:
+            raise HTTPException(status_code=400, detail="Run is not a discovery run")
 
         # Query pattern matches
         query = db.query(PatternMatch).filter(PatternMatch.run_id == run_id)
@@ -127,7 +127,7 @@ async def get_gap_analysis(
     workspace: str = Query("default", description="Workspace name")
 ):
     """
-    Get gap analysis for an identify run.
+    Get gap analysis for a discovery run.
 
     Shows:
     - Total NodeFacts analyzed
@@ -143,8 +143,8 @@ async def get_gap_analysis(
         if not run:
             raise HTTPException(status_code=404, detail="Run not found")
 
-        if run.kind != RunKind.IDENTIFY:
-            raise HTTPException(status_code=400, detail="Run is not an identify run")
+        if run.kind != RunKind.DISCOVERY:
+            raise HTTPException(status_code=400, detail="Run is not a discovery run")
 
         # Get all matches for this run
         all_matches = db.query(PatternMatch).filter(PatternMatch.run_id == run_id).all()
@@ -304,7 +304,7 @@ async def get_new_patterns(
     workspace: str = Query("default", description="Workspace name")
 ):
     """
-    Get list of new patterns discovered in an identify run.
+    Get list of new patterns discovered in a discovery run.
 
     Returns NodeFacts that didn't match any existing patterns.
     """

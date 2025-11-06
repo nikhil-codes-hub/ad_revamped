@@ -27,8 +27,8 @@ class ImportanceLevel(str, Enum):
 
 class RunKind(str, Enum):
     """Types of processing runs."""
-    DISCOVERY = "discovery"
-    IDENTIFY = "identify"
+    PATTERN_EXTRACTOR = "pattern_extractor"  # Extracts and learns patterns from XML
+    DISCOVERY = "discovery"  # Matches XML against learned patterns
 
 
 class RunStatus(str, Enum):

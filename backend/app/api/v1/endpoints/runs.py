@@ -1,7 +1,7 @@
 """
 Run management endpoints for AssistedDiscovery.
 
-Handles creation and monitoring of Discovery and Identify runs.
+Handles creation and monitoring of Pattern Extractor and Discovery runs.
 """
 
 import tempfile
@@ -26,25 +26,25 @@ logger = logging.getLogger(__name__)
 
 @router.post("/", response_model=RunResponse)
 async def create_run(
-    kind: str = Query(..., regex="^(discovery|identify)$", description="Type of run: discovery or identify"),
+    kind: str = Query(..., regex="^(pattern_extractor|discovery)$", description="Type of run: pattern_extractor or discovery"),
     file: UploadFile = File(...),
     workspace: str = Query("default", description="Workspace name (e.g., default, SQ, LATAM)"),
-    target_version: Optional[str] = Query(None, description="Target NDC version for identify (e.g., 18.1)"),
-    target_message_root: Optional[str] = Query(None, description="Target message root for identify (e.g., OrderViewRS)"),
-    target_airline_code: Optional[str] = Query(None, description="Target airline code for identify (e.g., SQ, AF)"),
-    allow_cross_airline: bool = Query(False, description="Enable cross-airline pattern matching for identify (e.g., match Alaska XML against 6X patterns)"),
-    conflict_resolution: Optional[str] = Query(None, regex="^(replace|keep_both|merge)$", description="How to resolve pattern conflicts (discovery only)")
+    target_version: Optional[str] = Query(None, description="Target NDC version for discovery (e.g., 18.1)"),
+    target_message_root: Optional[str] = Query(None, description="Target message root for discovery (e.g., OrderViewRS)"),
+    target_airline_code: Optional[str] = Query(None, description="Target airline code for discovery (e.g., SQ, AF)"),
+    allow_cross_airline: bool = Query(False, description="Enable cross-airline pattern matching for discovery (e.g., match Alaska XML against 6X patterns)"),
+    conflict_resolution: Optional[str] = Query(None, regex="^(replace|keep_both|merge)$", description="How to resolve pattern conflicts (pattern_extractor only)")
 ) -> RunResponse:
     """
-    Create a new Discovery or Identify run.
+    Create a new Pattern Extractor or Discovery run.
 
-    - **kind**: Type of run - 'discovery' for pattern learning, 'identify' for pattern matching
+    - **kind**: Type of run - 'pattern_extractor' for pattern learning, 'discovery' for pattern matching
     - **file**: XML file to process (OrderViewRS format)
-    - **target_version**: (Identify only) Specific NDC version to match against
-    - **target_message_root**: (Identify only) Specific message root to match against
-    - **target_airline_code**: (Identify only) Specific airline code to match against
-    - **allow_cross_airline**: (Identify only) Enable cross-airline pattern matching - matches patterns from all airlines instead of just the detected airline
-    - **conflict_resolution**: (Discovery only) How to handle pattern conflicts:
+    - **target_version**: (Discovery only) Specific NDC version to match against
+    - **target_message_root**: (Discovery only) Specific message root to match against
+    - **target_airline_code**: (Discovery only) Specific airline code to match against
+    - **allow_cross_airline**: (Discovery only) Enable cross-airline pattern matching - matches patterns from all airlines instead of just the detected airline
+    - **conflict_resolution**: (Pattern Extractor only) How to handle pattern conflicts:
         - 'replace': Delete existing conflicting patterns (recommended)
         - 'keep_both': Keep both old and new patterns (may cause ambiguous matches)
         - 'merge': Mark old patterns as superseded by new ones
@@ -75,14 +75,14 @@ async def create_run(
 
         try:
             # Run appropriate workflow based on kind
-            if kind == "discovery":
-                workflow = create_discovery_workflow(db)
+            if kind == "pattern_extractor":
+                workflow = create_discovery_workflow(db)  # Will be renamed to create_pattern_extractor_workflow
                 results = workflow.run_discovery(
                     temp_file_path,
                     conflict_resolution=conflict_resolution
                 )
-            elif kind == "identify":
-                workflow = create_identify_workflow(db)
+            elif kind == "discovery":
+                workflow = create_identify_workflow(db)  # Will be renamed to create_discovery_workflow
                 results = workflow.run_identify(
                     temp_file_path,
                     target_version=target_version,
@@ -231,7 +231,7 @@ async def get_run_report(run_id: str):
 async def list_runs(
     limit: int = Query(default=10, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
-    kind: Optional[str] = Query(default=None, regex="^(discovery|identify)$"),
+    kind: Optional[str] = Query(default=None, regex="^(pattern_extractor|discovery)$"),
     workspace: str = Query("default", description="Workspace name")
 ) -> List[RunResponse]:
     """
@@ -239,7 +239,7 @@ async def list_runs(
 
     - **limit**: Maximum number of runs to return (1-100)
     - **offset**: Number of runs to skip for pagination
-    - **kind**: Filter by run type (optional)
+    - **kind**: Filter by run type (pattern_extractor or discovery) (optional)
     - **workspace**: Workspace name (default: 'default')
     """
     logger.info(f"Listing runs from workspace: {workspace}, limit={limit}, offset={offset}, kind={kind}")
