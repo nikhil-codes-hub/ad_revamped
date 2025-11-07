@@ -1585,7 +1585,8 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
             for alert in quality_alerts:
                 qc = alert.get("quality_checks", {}) or {}
                 coverage = alert.get("match_percentage", qc.get("match_percentage", 0))
-                node_fact_id = alert.get("node_fact_id")
+                # Quality alerts use 'element_id' not 'node_fact_id'
+                node_fact_id = alert.get("element_id") or alert.get("node_fact_id")
 
                 # Get pattern info from match
                 # In cross-airline mode, there may be multiple matches per node_fact
