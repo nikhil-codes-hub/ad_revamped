@@ -260,7 +260,7 @@ class Pattern(Base):
 
 
 class PatternMatch(Base):
-    """Results of pattern matching during identify runs."""
+    """Results of pattern matching during discovery runs."""
 
     __tablename__ = "pattern_matches"
 

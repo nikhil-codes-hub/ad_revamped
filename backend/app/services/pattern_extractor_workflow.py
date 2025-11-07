@@ -329,12 +329,12 @@ class PatternExtractorWorkflow:
         Phase 1: Fast version detection from XML root element
         Phase 2: Targeted processing with version-specific target paths
         Phase 2.5: Relationship analysis (always runs)
-        Phase 3: Pattern generation (skipped when called from Identify mode)
+        Phase 3: Pattern generation (skipped when called from Discovery mode)
 
         Args:
             xml_file_path: Path to XML file to process
             skip_pattern_generation: If True, skip Phase 3 (pattern generation).
-                                    Used when calling from Identify workflow.
+                                    Used when calling from Discovery workflow.
             conflict_resolution: Strategy for resolving pattern conflicts (replace/keep_both/merge).
                                 Only used during pattern generation.
 
@@ -813,7 +813,7 @@ class PatternExtractorWorkflow:
                         'error': str(e)
                     }
             elif skip_pattern_generation:
-                logger.info("Phase 3: Pattern generation SKIPPED (called from Identify mode)")
+                logger.info("Phase 3: Pattern generation SKIPPED (called from Discovery mode)")
 
             # ALL PHASES COMPLETE - Now update run status and set finished_at timestamp
             workflow_results.update({

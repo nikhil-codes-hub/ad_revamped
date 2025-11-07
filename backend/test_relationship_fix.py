@@ -13,8 +13,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from app.services.pattern_extractor_workflow import create_pattern_extractor_workflow
 from app.services.discovery_workflow import create_discovery_workflow
-from app.services.identify_workflow import IdentifyWorkflow
 from app.models.database import Pattern
 
 # Test with Test10 workspace
@@ -41,19 +41,19 @@ def test_relationship_fix():
 
         print(f"✅ Found XML file: {XML_FILE}")
 
-        # Step 2: Run Discovery to regenerate patterns with expected_relationships
+        # Step 2: Run Pattern Extraction to regenerate patterns with expected_relationships
         print("\n" + "=" * 80)
-        print("STEP 1: Running Discovery to regenerate patterns")
+        print("STEP 1: Running Pattern Extraction to regenerate patterns")
         print("=" * 80)
 
-        discovery = create_discovery_workflow(session)
-        discovery_result = discovery.run_discovery(
+        pattern_extractor = create_pattern_extractor_workflow(session)
+        discovery_result = pattern_extractor.run_discovery(
             xml_file_path=XML_FILE,
             skip_pattern_generation=False,
             conflict_resolution='replace'
         )
 
-        print(f"\n✅ Discovery completed:")
+        print(f"\n✅ Pattern Extraction completed:")
         print(f"   - Run ID: {discovery_result['run_id']}")
         print(f"   - Status: {discovery_result['status']}")
         print(f"   - NodeFacts extracted: {discovery_result['node_facts_extracted']}")
@@ -88,17 +88,17 @@ def test_relationship_fix():
             print("❌ Pattern not found!")
             return
 
-        # Step 4: Run Identify to verify no penalty for expected broken relationships
+        # Step 4: Run Discovery to verify no penalty for expected broken relationships
         print("\n" + "=" * 80)
-        print("STEP 3: Running Identify to test penalty logic")
+        print("STEP 3: Running Discovery to test penalty logic")
         print("=" * 80)
 
-        identify = IdentifyWorkflow(session)
-        identify_result = identify.run_identify(
+        discovery = create_discovery_workflow(session)
+        identify_result = discovery.run_identify(
             xml_file_path=XML_FILE
         )
 
-        print(f"\n✅ Identify completed:")
+        print(f"\n✅ Discovery completed:")
         print(f"   - Run ID: {identify_result['run_id']}")
         print(f"   - Status: {identify_result['status']}")
 

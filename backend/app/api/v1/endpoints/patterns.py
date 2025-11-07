@@ -205,7 +205,7 @@ async def get_pattern_matches(
     """
     Get recent matches for a specific pattern.
 
-    Shows which node facts have been matched by this pattern in identify runs.
+    Shows which node facts have been matched by this pattern in discovery runs.
     """
     logger.info("Getting pattern matches", pattern_id=pattern_id, limit=limit, offset=offset)
 

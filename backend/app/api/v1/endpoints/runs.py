@@ -203,8 +203,8 @@ async def get_run_report(run_id: str):
     """
     Get the detailed report for a completed run.
 
-    For Discovery runs: Returns discovered patterns and statistics
-    For Identify runs: Returns gap analysis and coverage metrics
+    For Pattern Extractor runs: Returns extracted patterns and statistics
+    For Discovery runs: Returns gap analysis and coverage metrics
     """
     logger.info("Getting run report", run_id=run_id)
 
