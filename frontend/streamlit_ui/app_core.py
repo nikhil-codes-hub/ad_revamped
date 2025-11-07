@@ -523,10 +523,10 @@ def get_node_facts(run_id: str, limit: int = 100, workspace: str = "default") ->
 
 
 def get_identify_matches(run_id: str, limit: int = 100, workspace: str = "default") -> Optional[Dict[str, Any]]:
-    """Get pattern matching results for an identify run."""
+    """Get pattern matching results for a discovery run."""
     try:
         response = requests.get(
-            f"{API_BASE_URL}/identify/{run_id}/matches",
+            f"{API_BASE_URL}/discovery/{run_id}/matches",
             params={"limit": limit, "workspace": workspace},
             timeout=15
         )
@@ -538,10 +538,10 @@ def get_identify_matches(run_id: str, limit: int = 100, workspace: str = "defaul
 
 
 def get_gap_analysis(run_id: str, workspace: str = "default") -> Optional[Dict[str, Any]]:
-    """Get gap analysis for an identify run."""
+    """Get gap analysis for a discovery run."""
     try:
         response = requests.get(
-            f"{API_BASE_URL}/identify/{run_id}/gap-analysis",
+            f"{API_BASE_URL}/discovery/{run_id}/gap-analysis",
             params={"workspace": workspace},
             timeout=15
         )
@@ -556,7 +556,7 @@ def get_detailed_explanation(match_id: int, workspace: str = "default") -> Optio
     """Generate detailed LLM explanation for a pattern match."""
     try:
         response = requests.post(
-            f"{API_BASE_URL}/identify/matches/{match_id}/explain",
+            f"{API_BASE_URL}/discovery/matches/{match_id}/explain",
             params={"workspace": workspace} if workspace else None,
             timeout=30  # LLM calls may take longer
         )
