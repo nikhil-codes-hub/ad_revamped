@@ -1214,9 +1214,10 @@ def show_pattern_extractor_run_details(run_id: str, workspace: str = "default"):
         for p in patterns[:10]:  # Show top 10
             decision_rule = p.get('decision_rule', {})
             pattern_preview.append({
-                "Node Type": decision_rule.get('node_type', 'Unknown'),
-                "Version": p.get('spec_version', 'N/A'),
+                "Message": p.get('message_root', 'N/A'),
                 "Airline": p.get('airline_code', 'N/A'),
+                "Version": p.get('spec_version', 'N/A'),
+                "Node Type": decision_rule.get('node_type', 'Unknown'),
                 "Section Path": p['section_path'],
                 "Must-Have Attrs": len(decision_rule.get('must_have_attributes', [])),
                 "Has Children": "✓" if decision_rule.get('child_structure', {}).get('has_children') else "",
@@ -1566,11 +1567,79 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
         if quality_alerts:
             st.warning(f"Detected {len(quality_alerts)} quality break(s) requiring review.")
 
+            # Get matches to enrich quality alerts with pattern info
+            matches_data = get_identify_matches(run_id, limit=200, workspace=workspace)
+
+            # Build lookup from node_fact_id to match
+            match_lookup = {}
+            if matches_data and matches_data.get('matches'):
+                for match in matches_data['matches']:
+                    node_fact_id = match.get('node_fact', {}).get('id')
+                    if node_fact_id:
+                        # Store all matches for this node_fact_id (may be multiple in cross-airline mode)
+                        if node_fact_id not in match_lookup:
+                            match_lookup[node_fact_id] = []
+                        match_lookup[node_fact_id].append(match)
+
             alert_table = []
             for alert in quality_alerts:
                 qc = alert.get("quality_checks", {}) or {}
                 coverage = alert.get("match_percentage", qc.get("match_percentage", 0))
+                node_fact_id = alert.get("node_fact_id")
+
+                # Get pattern info from match
+                # In cross-airline mode, there may be multiple matches per node_fact
+                message = "N/A"
+                airline = "N/A"
+                version = "N/A"
+
+                if node_fact_id and node_fact_id in match_lookup:
+                    # Check all matches for this node_fact to find the one with matching quality issues
+                    # Use the first match by default, but try to find a better match if possible
+                    matches_for_node = match_lookup[node_fact_id]
+
+                    # Try to find the match that corresponds to this specific alert
+                    # by comparing quality_checks
+                    best_match = matches_for_node[0]  # Default to first
+
+                    # If there are multiple matches and this alert has specific missing elements,
+                    # try to match by comparing missing elements
+                    if len(matches_for_node) > 1 and qc.get('missing_elements'):
+                        alert_missing = set()
+                        for item in qc.get('missing_elements', []):
+                            if isinstance(item, dict):
+                                path = item.get('path', '')
+                                if '/' in path:
+                                    attr = path.split('/')[-1]
+                                    alert_missing.add(attr)
+
+                        # Find match with most similar missing elements
+                        for match in matches_for_node:
+                            match_qc = match.get('quality_checks', {})
+                            if isinstance(match_qc, dict):
+                                match_missing = set()
+                                for item in match_qc.get('missing_elements', []):
+                                    if isinstance(item, dict):
+                                        path = item.get('path', '')
+                                        if '/' in path:
+                                            attr = path.split('/')[-1]
+                                            match_missing.add(attr)
+
+                                # If this match has the same missing elements, use it
+                                if alert_missing and match_missing and alert_missing & match_missing:
+                                    best_match = match
+                                    break
+
+                    pattern = best_match.get('pattern')
+                    if pattern:
+                        message = pattern.get('message_root', 'N/A')
+                        airline = pattern.get('airline_code', 'N/A')
+                        version = pattern.get('spec_version', 'N/A')
+
                 alert_table.append({
+                    "Message": message,
+                    "Airline": airline,
+                    "Version": version,
                     "Node Type": alert.get("node_type", "Unknown"),
                     "Section Path": alert.get("section_path", "N/A"),
                     "Coverage": f"{coverage:.1f}%",
@@ -1676,12 +1745,12 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                 seen_patterns.add(pattern_key)
 
                 match_table.append({
+                    "Message": pattern.get('message_root', 'N/A'),
+                    "Airline": pattern.get('airline_code', 'N/A'),
+                    "Version": pattern.get('spec_version', 'N/A'),
                     "Node Type": pattern_node_type,  # Show pattern's node type, not the individual node
                     "Section Path": pattern_section,
                     "Explanation": match.get('quick_explanation', 'No explanation available'),
-                    "Pattern Airline": pattern.get('airline_code', 'N/A'),
-                    "Pattern Version": pattern.get('spec_version', 'N/A'),
-                    "Pattern Message": pattern.get('message_root', 'N/A'),
                     "Times Seen": pattern.get('times_seen', 0),
                     "Confidence": f"{match.get('confidence', 0):.1%}",
                     "Verdict": match.get('verdict', 'UNKNOWN'),
@@ -1690,12 +1759,12 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
             else:
                 # No pattern matched - show the node fact info
                 match_table.append({
+                    "Message": "N/A",
+                    "Airline": "N/A",
+                    "Version": "N/A",
                     "Node Type": node_fact.get('node_type'),
                     "Section Path": node_fact.get('section_path'),
                     "Explanation": match.get('quick_explanation', 'No explanation available'),
-                    "Pattern Airline": "N/A",
-                    "Pattern Version": "N/A",
-                    "Pattern Message": "N/A",
                     "Times Seen": 0,
                     "Confidence": f"{match.get('confidence', 0):.1%}",
                     "Verdict": match.get('verdict', 'UNKNOWN'),
@@ -1893,7 +1962,9 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                             actual = structured_comparison.get('actual', {})
 
                             # Visual summary badges
-                            st.write("**📊 Quality Summary:**")
+                            using_child_stats = summary.get('using_child_stats', False)
+                            stats_label = " (child attrs)" if using_child_stats else ""
+                            st.write(f"**📊 Quality Summary{stats_label}:**")
                             col1, col2, col3, col4 = st.columns(4)
                             with col1:
                                 req_attrs = summary.get('required_attrs_match', 'N/A')
@@ -1936,13 +2007,17 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                                         st.write(f"- `{attr}`")
 
                                 exp_children = expected.get('children', {})
-                                child_types = exp_children.get('types', [])
-                                if child_types:
+                                child_requirements = exp_children.get('requirements', [])
+                                if child_requirements:
                                     st.write("**Expected Children:**")
                                     repeatable = exp_children.get('repeatable', False)
-                                    for child_type in child_types:
+                                    for req in child_requirements:
+                                        child_type = req.get('node_type', 'Unknown')
+                                        required_attrs = req.get('required_attributes', [])
                                         repeat_marker = " (repeatable)" if repeatable else ""
                                         st.write(f"- `{child_type}`{repeat_marker}")
+                                        if required_attrs:
+                                            st.write(f"  **Required child attributes:** {', '.join(f'`{attr}`' for attr in required_attrs)}")
 
                             with right_col:
                                 st.markdown("### 📄 Your XML")
@@ -1978,12 +2053,25 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                                     for sample in samples[:2]:  # Show max 2 samples
                                         idx = sample.get('index', 0)
                                         node_type = sample.get('node_type', '')
-                                        attrs = sample.get('attributes', {})
+                                        attrs_status = sample.get('attributes_status', [])
                                         st.write(f"- Instance {idx}: `{node_type}`")
-                                        if attrs:
-                                            for k, v in list(attrs.items())[:3]:  # Show max 3 attrs
-                                                v_str = str(v)[:30] + "..." if len(str(v)) > 30 else str(v)
-                                                st.write(f"  - `{k}`: {v_str}")
+                                        if attrs_status:
+                                            for attr_info in attrs_status:
+                                                name = attr_info.get('name', '')
+                                                status = attr_info.get('status', '')
+                                                value = attr_info.get('value', '')
+
+                                                if status == 'match':
+                                                    icon = "✅"
+                                                    v_str = str(value)[:30] + "..." if len(str(value)) > 30 else str(value)
+                                                    st.write(f"  {icon} `{name}`: {v_str}")
+                                                elif status == 'missing':
+                                                    icon = "❌"
+                                                    st.write(f"  {icon} `{name}` (missing)")
+                                                elif status == 'extra':
+                                                    icon = "⚠️"
+                                                    v_str = str(value)[:30] + "..." if len(str(value)) > 30 else str(value)
+                                                    st.write(f"  {icon} `{name}`: {v_str} (extra)")
 
                                     more = actual_children.get('more_count', 0)
                                     if more > 0:
@@ -2255,14 +2343,14 @@ def _render_patterns_tab(patterns, workspace):
             status = "🟢 Active"
 
         pattern_data.append({
+            "Message": pattern['message_root'],
+            "Airline": pattern.get('airline_code', 'N/A'),
+            "Version": pattern['spec_version'],
             "ID": pattern['id'],
             "Status": status,
-            "Section Path": pattern['section_path'],
             "Node Type": decision_rule.get('node_type', 'Unknown'),
+            "Section Path": pattern['section_path'],
             "Description": desc if desc else "N/A",
-            "Version": pattern['spec_version'],
-            "Airline": pattern.get('airline_code', 'N/A'),
-            "Message": pattern['message_root'],
             "Must-Have Attrs": len(decision_rule.get('must_have_attributes', [])),
             "Has Children": "✓" if decision_rule.get('child_structure', {}).get('has_children') else "",
             "_superseded_by": superseded_by  # Hidden field for filtering

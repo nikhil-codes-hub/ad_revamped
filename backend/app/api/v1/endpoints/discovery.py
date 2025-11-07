@@ -83,6 +83,29 @@ def build_structured_comparison(pattern_rule: dict, node_structure: dict, qualit
                 attr_name = path
             missing_element_counts[attr_name] += 1
 
+    # Process child structures to extract required attributes per child type
+    # Deduplicate by node_type (pattern may have multiple entries for same child type)
+    children_requirements_map = {}
+    for child_struct in expected_child_structures:
+        node_type = child_struct.get('node_type', 'Unknown')
+        required_attrs = set(child_struct.get('required_attributes', []))
+
+        # If we've seen this node_type before, intersect the attributes
+        # (only attributes required in ALL instances are truly required)
+        if node_type in children_requirements_map:
+            children_requirements_map[node_type] &= required_attrs
+        else:
+            children_requirements_map[node_type] = required_attrs
+
+    # Convert to list format
+    children_requirements = [
+        {
+            "node_type": node_type,
+            "required_attributes": sorted(list(attrs))
+        }
+        for node_type, attrs in children_requirements_map.items()
+    ]
+
     # Build expected structure
     expected_structure = {
         "node_type": expected_type,
@@ -93,7 +116,7 @@ def build_structured_comparison(pattern_rule: dict, node_structure: dict, qualit
         "children": {
             "types": sorted(list(expected_child_types)),
             "repeatable": expected_children_spec.get('repeatable', False),
-            "child_structures": expected_child_structures
+            "requirements": children_requirements  # Structured requirements for each child type
         }
     }
 
@@ -115,22 +138,55 @@ def build_structured_comparison(pattern_rule: dict, node_structure: dict, qualit
     for attr in sorted(extra_attrs):
         actual_attrs_status.append({"name": attr, "status": "extra", "required": False})
 
-    # Build children summary
+    # Build children summary with attribute status
     children_summary = {
         "total_instances": len(actual_children),
         "types_found": sorted(list(actual_child_types)),
         "sample_instances": []
     }
 
-    # Sample first 2-3 children with their attributes
+    # Build lookup for child requirements by node_type
+    child_requirements_by_type = {}
+    for req in children_requirements:
+        child_requirements_by_type[req['node_type']] = set(req['required_attributes'])
+
+    # Sample first 2-3 children with their attributes and status
     for idx, child in enumerate(actual_children[:3]):
+        child_type = child.get('node_type', 'Unknown')
         child_attrs = child.get('attributes', {})
         child_attrs_filtered = {k: v for k, v in child_attrs.items() if k not in METADATA_FIELDS}
 
+        # Get required attributes for this child type
+        required_child_attrs = child_requirements_by_type.get(child_type, set())
+
+        # Build attribute status for this child
+        child_attrs_status = []
+        for req_attr in sorted(required_child_attrs):
+            if req_attr in child_attrs_filtered:
+                child_attrs_status.append({
+                    "name": req_attr,
+                    "status": "match",
+                    "value": child_attrs_filtered[req_attr]
+                })
+            else:
+                child_attrs_status.append({
+                    "name": req_attr,
+                    "status": "missing"
+                })
+
+        # Add any extra attributes
+        extra_child_attrs = set(child_attrs_filtered.keys()) - required_child_attrs
+        for extra_attr in sorted(extra_child_attrs):
+            child_attrs_status.append({
+                "name": extra_attr,
+                "status": "extra",
+                "value": child_attrs_filtered[extra_attr]
+            })
+
         children_summary["sample_instances"].append({
             "index": idx + 1,
-            "node_type": child.get('node_type', 'Unknown'),
-            "attributes": child_attrs_filtered
+            "node_type": child_type,
+            "attributes_status": child_attrs_status
         })
 
     if len(actual_children) > 3:
@@ -146,14 +202,42 @@ def build_structured_comparison(pattern_rule: dict, node_structure: dict, qualit
     total_required_attrs = len(expected_attrs)
     matched_required_attrs = len(matched_attrs)
 
-    summary = {
-        "required_attrs_match": f"{matched_required_attrs}/{total_required_attrs}",
-        "required_attrs_percentage": int((matched_required_attrs / total_required_attrs * 100) if total_required_attrs > 0 else 100),
-        "missing_attrs_count": len(missing_attrs),
-        "extra_attrs_count": len(extra_attrs),
-        "children_with_issues": sum(1 for item in missing_elements if isinstance(item, dict)),
-        "coverage_percentage": quality_checks.get('match_percentage', 100)
-    }
+    # For container nodes with no parent attributes, calculate child attribute coverage
+    child_attr_match_count = 0
+    child_attr_total_count = 0
+
+    if total_required_attrs == 0 and children_requirements:
+        # Count child attribute matches across sample instances
+        for sample in children_summary.get("sample_instances", []):
+            for attr_info in sample.get("attributes_status", []):
+                if attr_info.get("status") == "match":
+                    child_attr_match_count += 1
+                # Count required attributes (match or missing)
+                if attr_info.get("status") in ["match", "missing"]:
+                    child_attr_total_count += 1
+
+    # Use child stats if parent has no required attributes
+    if total_required_attrs == 0 and child_attr_total_count > 0:
+        summary = {
+            "required_attrs_match": f"{child_attr_match_count}/{child_attr_total_count}",
+            "required_attrs_percentage": int((child_attr_match_count / child_attr_total_count * 100) if child_attr_total_count > 0 else 100),
+            "missing_attrs_count": child_attr_total_count - child_attr_match_count,
+            "extra_attrs_count": len(extra_attrs),
+            "children_with_issues": sum(1 for item in missing_elements if isinstance(item, dict)),
+            "coverage_percentage": quality_checks.get('match_percentage', 100),
+            "using_child_stats": True  # Flag to indicate we're showing child attribute stats
+        }
+    else:
+        # Use parent attribute stats
+        summary = {
+            "required_attrs_match": f"{matched_required_attrs}/{total_required_attrs}",
+            "required_attrs_percentage": int((matched_required_attrs / total_required_attrs * 100) if total_required_attrs > 0 else 100),
+            "missing_attrs_count": len(missing_attrs),
+            "extra_attrs_count": len(extra_attrs),
+            "children_with_issues": sum(1 for item in missing_elements if isinstance(item, dict)),
+            "coverage_percentage": quality_checks.get('match_percentage', 100),
+            "using_child_stats": False
+        }
 
     return {
         "expected": expected_structure,
@@ -751,14 +835,50 @@ Action: No action required - continue processing as normal. The data meets all q
 """
 
                     # Generate short summary (2-3 sentences max)
+                    # Build concise issue summary for LLM
+                    issue_summary = []
+
+                    # Parent-level attribute issues
+                    if missing_attrs:
+                        issue_summary.append(f"Missing parent attributes: {', '.join(list(missing_attrs)[:5])}")
+                    if extra_attrs:
+                        issue_summary.append(f"Extra attributes: {', '.join(list(extra_attrs)[:3])}")
+
+                    # Child element issues (most important for container nodes)
+                    if missing_elements:
+                        # Count unique missing attributes from children
+                        from collections import Counter
+                        missing_child_attrs = Counter()
+                        for item in missing_elements:
+                            if isinstance(item, dict):
+                                path = item.get('path', '')
+                                if '/' in path:
+                                    attr = path.split('/')[-1]
+                                    missing_child_attrs[attr] += 1
+
+                        top_missing = missing_child_attrs.most_common(5)
+                        if top_missing:
+                            missing_summary = ', '.join([f"{attr} (x{count})" for attr, count in top_missing])
+                            issue_summary.append(f"Missing child attributes: {missing_summary}")
+
+                    # Child structure issues
+                    if missing_child_types:
+                        issue_summary.append(f"Missing child types: {', '.join(list(missing_child_types))}")
+
+                    # Relationship issues
+                    if missing_ref_types:
+                        issue_summary.append(f"Missing relationships: {', '.join(list(missing_ref_types)[:3])}")
+
+                    issues_text = '; '.join(issue_summary) if issue_summary else 'None'
+
                     prompt = f"""You are analyzing airline XML data for {pattern.airline_code or 'N/A'}.
 
 Element: {actual_type}
 Coverage: {match_percentage:.1f}%
-Issues: {', '.join(list(missing_attrs)[:3]) if missing_attrs else 'None'}
+Issues Found: {issues_text}
 
 Write a 2-3 sentence summary explaining:
-1. What data is missing or wrong
+1. What specific data is missing or wrong (mention the actual field names)
 2. Why it matters for airline operations
 
 Be direct and specific. No bullet points, no headers, just a brief paragraph.

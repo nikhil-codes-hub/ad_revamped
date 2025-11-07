@@ -319,7 +319,13 @@ class DiscoveryWorkflow:
             return []
 
         if cross_info:
-            logger.info(f"Cross-matching enabled: found {len(patterns)} patterns for {message_root} ({', '.join(cross_info)})")
+            # Log details about which patterns were found
+            airline_breakdown = {}
+            for p in patterns:
+                airline = p.airline_code or "NULL"
+                airline_breakdown[airline] = airline_breakdown.get(airline, 0) + 1
+            airline_summary = ", ".join([f"{airline}:{count}" for airline, count in airline_breakdown.items()])
+            logger.info(f"Cross-matching enabled: found {len(patterns)} patterns for {message_root} ({', '.join(cross_info)}) - Airlines: {airline_summary}")
 
         # Query ALL relationships for this NodeFact from database
         all_relationships = self.db_session.query(NodeRelationship).filter(
@@ -527,7 +533,13 @@ class DiscoveryWorkflow:
         # Use target filters if provided, otherwise use detected values
         match_version = target_version if target_version else spec_version
         match_message_root = target_message_root if target_message_root else message_root
-        match_airline_code = target_airline_code if target_airline_code else airline_code
+
+        # For airline code: if cross-airline matching is enabled, don't use detected airline
+        # (keep as None so query doesn't filter by airline_code)
+        if allow_cross_airline:
+            match_airline_code = target_airline_code  # Will be None
+        else:
+            match_airline_code = target_airline_code if target_airline_code else airline_code
 
         logger.info(f"Detected: {spec_version}/{message_root} - Airline: {airline_code or 'N/A'}")
         if target_version or target_message_root or target_airline_code:
@@ -659,181 +671,205 @@ class DiscoveryWorkflow:
             )
 
             if matches:
-                # Use best match
-                best_match = matches[0]
+                # When cross-airline matching is enabled, save best match from EACH airline
+                # This allows users to compare how their XML matches against different airlines
+                matches_to_process = []
 
-                # ATTRIBUTE COMPARISON: Check if pattern's required_attributes exist in NodeFact
-                # This catches missing fields that the LLM didn't detect during extraction
-                pattern = best_match['pattern']
-                pattern_decision_rule = pattern.decision_rule or {}
+                if allow_cross_airline:
+                    # Group matches by airline_code
+                    from collections import defaultdict
+                    matches_by_airline = defaultdict(list)
+                    for match in matches:
+                        airline = match['pattern'].airline_code or "NULL"
+                        matches_by_airline[airline].append(match)
 
-                # Get child structures from pattern (for container nodes like DatedOperatingSegmentList)
-                pattern_child_structures = pattern_decision_rule.get('child_structure', {}).get('child_structures', [])
+                    # Take best match from each airline (already sorted by confidence)
+                    for airline, airline_matches in matches_by_airline.items():
+                        matches_to_process.append(airline_matches[0])
+                else:
+                    # Single-airline mode: use only the best match
+                    matches_to_process.append(matches[0])
 
-                # For container nodes, check child attributes
-                if pattern_child_structures and fact_payload.get('children'):
-                    for child_struct_pattern in pattern_child_structures:
-                        required_child_attrs = set(child_struct_pattern.get('required_attributes', []))
+                # Process each selected match
+                for best_match in matches_to_process:
+                    # Reset quality tracking for each match
+                    missing_elements = []
+                    quality_checks = {'status': 'ok', 'missing_elements': []}
+                    quality_status = 'ok'
+                    match_percentage = 100.0
 
-                        # Check each child instance in the NodeFact
-                        children = fact_payload.get('children', [])
-                        for idx, child in enumerate(children):
-                            if not isinstance(child, dict):
-                                continue
+                    # ATTRIBUTE COMPARISON: Check if pattern's required_attributes exist in NodeFact
+                    # This catches missing fields that the LLM didn't detect during extraction
+                    pattern = best_match['pattern']
+                    pattern_decision_rule = pattern.decision_rule or {}
 
-                            child_attrs = child.get('attributes', {})
-                            # Filter out metadata fields
-                            METADATA_FIELDS = {'summary', 'child_count', 'confidence', 'node_ordinal', 'missing_elements'}
-                            actual_child_attrs = set(child_attrs.keys()) - METADATA_FIELDS
-
-                            # Helper function for fuzzy attribute matching (handles LLM normalization)
-                            def attrs_match_fuzzy(pattern_attr: str, actual_attrs: set) -> bool:
-                                """Check if pattern attribute exists in actual attributes (with fuzzy matching)."""
-                                # Exact match
-                                if pattern_attr in actual_attrs:
-                                    return True
-
-                                # Normalize both to lowercase for comparison
-                                pattern_lower = pattern_attr.lower()
-
-                                for actual_attr in actual_attrs:
-                                    actual_lower = actual_attr.lower()
-
-                                    # Case-insensitive exact match
-                                    if pattern_lower == actual_lower:
+                    # Get child structures from pattern (for container nodes like DatedOperatingSegmentList)
+                    pattern_child_structures = pattern_decision_rule.get('child_structure', {}).get('child_structures', [])
+    
+                    # For container nodes, check child attributes
+                    if pattern_child_structures and fact_payload.get('children'):
+                        for child_struct_pattern in pattern_child_structures:
+                            required_child_attrs = set(child_struct_pattern.get('required_attributes', []))
+    
+                            # Check each child instance in the NodeFact
+                            children = fact_payload.get('children', [])
+                            for idx, child in enumerate(children):
+                                if not isinstance(child, dict):
+                                    continue
+    
+                                child_attrs = child.get('attributes', {})
+                                # Filter out metadata fields
+                                METADATA_FIELDS = {'summary', 'child_count', 'confidence', 'node_ordinal', 'missing_elements'}
+                                actual_child_attrs = set(child_attrs.keys()) - METADATA_FIELDS
+    
+                                # Helper function for fuzzy attribute matching (handles LLM normalization)
+                                def attrs_match_fuzzy(pattern_attr: str, actual_attrs: set) -> bool:
+                                    """Check if pattern attribute exists in actual attributes (with fuzzy matching)."""
+                                    # Exact match
+                                    if pattern_attr in actual_attrs:
                                         return True
-
-                                    # Semantic equivalents (e.g., "distance" <-> "DistanceMeasure")
-                                    # Check if one is contained in the other
-                                    if pattern_lower in actual_lower or actual_lower in pattern_lower:
-                                        # Additional check: ensure they're semantically related
-                                        # "distance" should match "DistanceMeasure" but not "distant_code"
-                                        if len(pattern_lower) >= 4 and len(actual_lower) >= 4:
-                                            # Check if the shorter term is a significant substring of the longer
-                                            shorter = pattern_lower if len(pattern_lower) < len(actual_lower) else actual_lower
-                                            longer = actual_lower if shorter == pattern_lower else pattern_lower
-
-                                            # If shorter is at least 4 chars and starts the longer, it's a match
-                                            if longer.startswith(shorter):
-                                                return True
-
-                                            # Special case: normalized names like "duration" matches "Duration"
-                                            # (already covered by case-insensitive check above)
-
-                                return False
-
-                            # Find missing required attributes (with fuzzy matching to handle LLM normalization)
-                            missing_attrs = set()
-                            for required_attr in required_child_attrs - METADATA_FIELDS:
-                                if not attrs_match_fuzzy(required_attr, actual_child_attrs):
-                                    missing_attrs.add(required_attr)
-
-                            if missing_attrs:
-                                # Add to missing_elements
-                                child_node_type = child.get('node_type', 'Unknown')
-                                child_ordinal = child.get('ordinal', idx + 1)
-                                child_path = f"{nf.node_type}[1]/{child_node_type}[{child_ordinal}]"
-
-                                for missing_attr in missing_attrs:
-                                    missing_elements.append({
-                                        'path': f"{child_path}/{missing_attr}",
-                                        'reason': f"Required attribute '{missing_attr}' not found in {child_node_type}"
-                                    })
-
-                                # Update quality checks
-                                if not quality_checks.get('missing_elements'):
-                                    quality_checks['missing_elements'] = []
-                                quality_checks['missing_elements'].extend(missing_elements)
-                                quality_checks['status'] = 'error'
-
-                                # Recalculate match percentage
-                                total_children = len(children)
-                                children_with_issues = len([c for c in children if any(
-                                    attr not in (set(c.get('attributes', {}).keys()) - METADATA_FIELDS)
-                                    for attr in required_child_attrs - METADATA_FIELDS
-                                )])
-                                match_percentage = ((total_children - children_with_issues) / total_children * 100) if total_children > 0 else 0
-                                quality_checks['match_percentage'] = match_percentage
-                                quality_status = 'error'
-
-                # Generate quick explanation
-                quick_explanation = self.get_quick_explanation(
-                    node_fact=nf,
-                    pattern=best_match['pattern'],
-                    confidence=best_match['confidence'],
-                    verdict=best_match['verdict']
-                )
-
-                if quality_status == 'error':
-                    quality_issue_count += 1
-                    quality_alerts.append({
+    
+                                    # Normalize both to lowercase for comparison
+                                    pattern_lower = pattern_attr.lower()
+    
+                                    for actual_attr in actual_attrs:
+                                        actual_lower = actual_attr.lower()
+    
+                                        # Case-insensitive exact match
+                                        if pattern_lower == actual_lower:
+                                            return True
+    
+                                        # Semantic equivalents (e.g., "distance" <-> "DistanceMeasure")
+                                        # Check if one is contained in the other
+                                        if pattern_lower in actual_lower or actual_lower in pattern_lower:
+                                            # Additional check: ensure they're semantically related
+                                            # "distance" should match "DistanceMeasure" but not "distant_code"
+                                            if len(pattern_lower) >= 4 and len(actual_lower) >= 4:
+                                                # Check if the shorter term is a significant substring of the longer
+                                                shorter = pattern_lower if len(pattern_lower) < len(actual_lower) else actual_lower
+                                                longer = actual_lower if shorter == pattern_lower else pattern_lower
+    
+                                                # If shorter is at least 4 chars and starts the longer, it's a match
+                                                if longer.startswith(shorter):
+                                                    return True
+    
+                                                # Special case: normalized names like "duration" matches "Duration"
+                                                # (already covered by case-insensitive check above)
+    
+                                    return False
+    
+                                # Find missing required attributes (with fuzzy matching to handle LLM normalization)
+                                missing_attrs = set()
+                                for required_attr in required_child_attrs - METADATA_FIELDS:
+                                    if not attrs_match_fuzzy(required_attr, actual_child_attrs):
+                                        missing_attrs.add(required_attr)
+    
+                                if missing_attrs:
+                                    # Add to missing_elements
+                                    child_node_type = child.get('node_type', 'Unknown')
+                                    child_ordinal = child.get('ordinal', idx + 1)
+                                    child_path = f"{nf.node_type}[1]/{child_node_type}[{child_ordinal}]"
+    
+                                    for missing_attr in missing_attrs:
+                                        missing_elements.append({
+                                            'path': f"{child_path}/{missing_attr}",
+                                            'reason': f"Required attribute '{missing_attr}' not found in {child_node_type}"
+                                        })
+    
+                                    # Update quality checks
+                                    if not quality_checks.get('missing_elements'):
+                                        quality_checks['missing_elements'] = []
+                                    quality_checks['missing_elements'].extend(missing_elements)
+                                    quality_checks['status'] = 'error'
+    
+                                    # Recalculate match percentage
+                                    total_children = len(children)
+                                    children_with_issues = len([c for c in children if any(
+                                        attr not in (set(c.get('attributes', {}).keys()) - METADATA_FIELDS)
+                                        for attr in required_child_attrs - METADATA_FIELDS
+                                    )])
+                                    match_percentage = ((total_children - children_with_issues) / total_children * 100) if total_children > 0 else 0
+                                    quality_checks['match_percentage'] = match_percentage
+                                    quality_status = 'error'
+    
+                    # Generate quick explanation
+                    quick_explanation = self.get_quick_explanation(
+                        node_fact=nf,
+                        pattern=best_match['pattern'],
+                        confidence=best_match['confidence'],
+                        verdict=best_match['verdict']
+                    )
+    
+                    if quality_status == 'error':
+                        quality_issue_count += 1
+                        quality_alerts.append({
+                            'node_fact_id': nf.id,
+                            'node_type': nf.node_type,
+                            'section_path': nf.section_path,
+                            'match_percentage': match_percentage,
+                            'missing_elements': missing_elements,
+                            'quality_checks': quality_checks
+                        })
+    
+                        adjusted_confidence = best_match['confidence']
+                        if match_percentage is not None:
+                            adjusted_confidence = min(adjusted_confidence, max(match_percentage, 0) / 100.0)
+                            best_match['confidence'] = adjusted_confidence
+    
+                        best_match['verdict'] = 'QUALITY_BREAK'
+    
+                        if quality_summary:
+                            quick_explanation = (
+                                f"{quick_explanation} ⚠️ Quality break detected: {quality_summary}."
+                            )
+                        else:
+                            quick_explanation = (
+                                f"{quick_explanation} ⚠️ Quality break detected: Missing required content."
+                            )
+    
+                    # Store match
+                    self.store_pattern_match(
+                        run_id=run_id,
+                        node_fact=nf,
+                        pattern_id=best_match['pattern_id'],
+                        confidence=best_match['confidence'],
+                        verdict=best_match['verdict'],
+                        quick_explanation=quick_explanation,
+                        quality_checks=quality_checks
+                    )
+    
+                    match_results.append({
                         'node_fact_id': nf.id,
                         'node_type': nf.node_type,
                         'section_path': nf.section_path,
-                        'match_percentage': match_percentage,
-                        'missing_elements': missing_elements,
-                        'quality_checks': quality_checks
+                        'quality_checks': quality_checks,
+                        'best_match': {
+                            'pattern_id': best_match['pattern_id'],
+                            'confidence': best_match['confidence'],
+                            'verdict': best_match['verdict'],
+                            'quality_checks': quality_checks
+                        },
+                        'all_matches': [
+                            {
+                                'pattern_id': m['pattern_id'],
+                                'confidence': m['confidence'],
+                                'verdict': m['verdict']
+                            }
+                            for m in matches[:5]  # Top 5 matches
+                        ]
                     })
-
-                    adjusted_confidence = best_match['confidence']
-                    if match_percentage is not None:
-                        adjusted_confidence = min(adjusted_confidence, max(match_percentage, 0) / 100.0)
-                        best_match['confidence'] = adjusted_confidence
-
-                    best_match['verdict'] = 'QUALITY_BREAK'
-
-                    if quality_summary:
-                        quick_explanation = (
-                            f"{quick_explanation} ⚠️ Quality break detected: {quality_summary}."
-                        )
-                    else:
-                        quick_explanation = (
-                            f"{quick_explanation} ⚠️ Quality break detected: Missing required content."
-                        )
-
-                # Store match
-                self.store_pattern_match(
-                    run_id=run_id,
-                    node_fact=nf,
-                    pattern_id=best_match['pattern_id'],
-                    confidence=best_match['confidence'],
-                    verdict=best_match['verdict'],
-                    quick_explanation=quick_explanation,
-                    quality_checks=quality_checks
-                )
-
-                match_results.append({
-                    'node_fact_id': nf.id,
-                    'node_type': nf.node_type,
-                    'section_path': nf.section_path,
-                    'quality_checks': quality_checks,
-                    'best_match': {
-                        'pattern_id': best_match['pattern_id'],
-                        'confidence': best_match['confidence'],
-                        'verdict': best_match['verdict'],
-                        'quality_checks': quality_checks
-                    },
-                    'all_matches': [
-                        {
-                            'pattern_id': m['pattern_id'],
-                            'confidence': m['confidence'],
-                            'verdict': m['verdict']
-                        }
-                        for m in matches[:5]  # Top 5 matches
-                    ]
-                })
-
-                if best_match['confidence'] >= 0.70 and quality_status != 'error':
-                    matched_count += 1
-                if best_match['confidence'] >= 0.85 and quality_status != 'error':
-                    high_confidence_count += 1
-
-                # Update pattern times_seen for high confidence matches
-                if best_match['confidence'] >= 0.85:
-                    pattern = best_match['pattern']
-                    pattern.times_seen += 1
-                    pattern.last_seen_at = datetime.utcnow()
-
+    
+                    if best_match['confidence'] >= 0.70 and quality_status != 'error':
+                        matched_count += 1
+                    if best_match['confidence'] >= 0.85 and quality_status != 'error':
+                        high_confidence_count += 1
+    
+                    # Update pattern times_seen for high confidence matches
+                    if best_match['confidence'] >= 0.85:
+                        pattern = best_match['pattern']
+                        pattern.times_seen += 1
+                        pattern.last_seen_at = datetime.utcnow()
+    
             else:
                 # No patterns found - this is a NEW pattern
                 new_patterns_count += 1
