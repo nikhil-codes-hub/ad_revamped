@@ -1879,11 +1879,116 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                     explanation_response = get_detailed_explanation(match_id, workspace=workspace)
                     if explanation_response:
                         detailed_explanation = explanation_response.get('detailed_explanation', '')
-                        is_cached = explanation_response.get('cached', False)
+                        structured_comparison = explanation_response.get('structured_comparison')
 
-                        # cache_label = " (cached)" if is_cached else " (newly generated)"
-                        st.success(f"✨ AI Explanation")
+                        # Show AI summary
+                        st.success(f"✨ AI Summary")
                         st.markdown(detailed_explanation)
+
+                        # Show side-by-side comparison if available
+                        if structured_comparison:
+                            st.divider()
+                            summary = structured_comparison.get('summary', {})
+                            expected = structured_comparison.get('expected', {})
+                            actual = structured_comparison.get('actual', {})
+
+                            # Visual summary badges
+                            st.write("**📊 Quality Summary:**")
+                            col1, col2, col3, col4 = st.columns(4)
+                            with col1:
+                                req_attrs = summary.get('required_attrs_match', 'N/A')
+                                req_pct = summary.get('required_attrs_percentage', 0)
+                                color = "🟢" if req_pct == 100 else "🟡" if req_pct >= 75 else "🔴"
+                                st.metric(f"{color} Required Attributes", req_attrs)
+                            with col2:
+                                coverage = summary.get('coverage_percentage', 0)
+                                color = "🟢" if coverage == 100 else "🟡" if coverage >= 75 else "🔴"
+                                st.metric(f"{color} Coverage", f"{coverage:.1f}%")
+                            with col3:
+                                missing = summary.get('missing_attrs_count', 0)
+                                st.metric("❌ Missing", missing)
+                            with col4:
+                                issues = summary.get('children_with_issues', 0)
+                                st.metric("⚠️ Child Issues", issues)
+
+                            st.divider()
+                            st.write("**🔍 Side-by-Side Comparison:**")
+
+                            # Side-by-side columns
+                            left_col, right_col = st.columns(2)
+
+                            with left_col:
+                                st.markdown("### 📋 Expected Pattern")
+                                st.markdown(f"**Node Type:** `{expected.get('node_type', 'Unknown')}`")
+
+                                exp_attrs = expected.get('attributes', {})
+                                required = exp_attrs.get('required', [])
+                                optional = exp_attrs.get('optional', [])
+
+                                if required:
+                                    st.write("**Required Attributes:**")
+                                    for attr in required:
+                                        st.write(f"- `{attr}`")
+
+                                if optional:
+                                    st.write("**Optional Attributes:**")
+                                    for attr in optional:
+                                        st.write(f"- `{attr}`")
+
+                                exp_children = expected.get('children', {})
+                                child_types = exp_children.get('types', [])
+                                if child_types:
+                                    st.write("**Expected Children:**")
+                                    repeatable = exp_children.get('repeatable', False)
+                                    for child_type in child_types:
+                                        repeat_marker = " (repeatable)" if repeatable else ""
+                                        st.write(f"- `{child_type}`{repeat_marker}")
+
+                            with right_col:
+                                st.markdown("### 📄 Your XML")
+                                st.markdown(f"**Node Type:** `{actual.get('node_type', 'Unknown')}`")
+
+                                actual_attrs = actual.get('attributes', [])
+                                if actual_attrs:
+                                    st.write("**Attributes:**")
+                                    for attr in actual_attrs:
+                                        name = attr.get('name', '')
+                                        status = attr.get('status', '')
+                                        missing_count = attr.get('missing_count', 0)
+
+                                        if status == 'match':
+                                            icon = "✅"
+                                        elif status == 'missing':
+                                            icon = "❌"
+                                            if missing_count > 0:
+                                                name += f" (missing in {missing_count} instances)"
+                                        elif status == 'extra':
+                                            icon = "⚠️"
+                                        else:
+                                            icon = "•"
+
+                                        st.write(f"{icon} `{name}`")
+
+                                actual_children = actual.get('children', {})
+                                total = actual_children.get('total_instances', 0)
+                                samples = actual_children.get('sample_instances', [])
+
+                                if samples:
+                                    st.write(f"**Children** ({total} total):")
+                                    for sample in samples[:2]:  # Show max 2 samples
+                                        idx = sample.get('index', 0)
+                                        node_type = sample.get('node_type', '')
+                                        attrs = sample.get('attributes', {})
+                                        st.write(f"- Instance {idx}: `{node_type}`")
+                                        if attrs:
+                                            for k, v in list(attrs.items())[:3]:  # Show max 3 attrs
+                                                v_str = str(v)[:30] + "..." if len(str(v)) > 30 else str(v)
+                                                st.write(f"  - `{k}`: {v_str}")
+
+                                    more = actual_children.get('more_count', 0)
+                                    if more > 0:
+                                        st.write(f"  ... and {more} more similar instances")
+
                     else:
                         st.error("Failed to generate explanation. Please try again.")
 

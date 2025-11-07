@@ -16,6 +16,152 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+def build_structured_comparison(pattern_rule: dict, node_structure: dict, quality_checks: dict) -> dict:
+    """
+    Build a structured side-by-side comparison for visualization.
+
+    Returns a dict with 'expected' and 'actual' structures for side-by-side display.
+    """
+    from collections import Counter
+
+    METADATA_FIELDS = {'summary', 'child_count', 'confidence', 'node_ordinal', 'missing_elements'}
+
+    # Extract data from pattern
+    expected_type = pattern_rule.get('node_type', 'Unknown')
+    expected_attrs = set(pattern_rule.get('must_have_attributes', []))
+    optional_attrs = set(pattern_rule.get('optional_attributes', []))
+    expected_children_spec = pattern_rule.get('child_structure', {})
+    expected_child_types = set(expected_children_spec.get('child_types', []))
+    expected_child_structures = expected_children_spec.get('child_structures', [])
+
+    # Extract data from actual node
+    actual_type = node_structure.get('node_type', 'Unknown')
+    all_actual_attrs = set(node_structure.get('attributes', {}).keys())
+    actual_attrs = all_actual_attrs - METADATA_FIELDS
+    actual_children = node_structure.get('children', [])
+
+    # Normalize children
+    if isinstance(actual_children, str):
+        try:
+            import json
+            actual_children = json.loads(actual_children)
+        except:
+            actual_children = []
+    elif isinstance(actual_children, dict):
+        actual_children = [actual_children]
+
+    normalized_children = []
+    for child in (actual_children or []):
+        if isinstance(child, str):
+            try:
+                import json
+                child = json.loads(child)
+            except:
+                continue
+        if isinstance(child, dict):
+            normalized_children.append(child)
+    actual_children = normalized_children
+
+    actual_child_types = set(child.get('node_type', '') for child in actual_children) if actual_children else set()
+
+    # Calculate matches and differences
+    matched_attrs = expected_attrs & actual_attrs
+    missing_attrs = expected_attrs - actual_attrs
+    extra_attrs = actual_attrs - expected_attrs - optional_attrs
+
+    # Get missing elements details from quality checks
+    missing_elements = quality_checks.get('missing_elements', [])
+    missing_element_counts = Counter()
+
+    for item in missing_elements:
+        if isinstance(item, dict):
+            path = item.get('path', '')
+            # Extract just the attribute name from path like "PaxList[1]/Pax[1]/title"
+            if '/' in path:
+                attr_name = path.split('/')[-1]
+            else:
+                attr_name = path
+            missing_element_counts[attr_name] += 1
+
+    # Build expected structure
+    expected_structure = {
+        "node_type": expected_type,
+        "attributes": {
+            "required": sorted(list(expected_attrs)),
+            "optional": sorted(list(optional_attrs))
+        },
+        "children": {
+            "types": sorted(list(expected_child_types)),
+            "repeatable": expected_children_spec.get('repeatable', False),
+            "child_structures": expected_child_structures
+        }
+    }
+
+    # Build actual structure with status indicators
+    actual_attrs_status = []
+    for attr in sorted(expected_attrs):
+        if attr in actual_attrs:
+            actual_attrs_status.append({"name": attr, "status": "match", "required": True})
+        else:
+            count = missing_element_counts.get(attr, 0)
+            actual_attrs_status.append({"name": attr, "status": "missing", "required": True, "missing_count": count})
+
+    for attr in sorted(optional_attrs):
+        if attr in actual_attrs:
+            actual_attrs_status.append({"name": attr, "status": "match", "required": False})
+        else:
+            actual_attrs_status.append({"name": attr, "status": "missing", "required": False})
+
+    for attr in sorted(extra_attrs):
+        actual_attrs_status.append({"name": attr, "status": "extra", "required": False})
+
+    # Build children summary
+    children_summary = {
+        "total_instances": len(actual_children),
+        "types_found": sorted(list(actual_child_types)),
+        "sample_instances": []
+    }
+
+    # Sample first 2-3 children with their attributes
+    for idx, child in enumerate(actual_children[:3]):
+        child_attrs = child.get('attributes', {})
+        child_attrs_filtered = {k: v for k, v in child_attrs.items() if k not in METADATA_FIELDS}
+
+        children_summary["sample_instances"].append({
+            "index": idx + 1,
+            "node_type": child.get('node_type', 'Unknown'),
+            "attributes": child_attrs_filtered
+        })
+
+    if len(actual_children) > 3:
+        children_summary["more_count"] = len(actual_children) - 3
+
+    actual_structure = {
+        "node_type": actual_type,
+        "attributes": actual_attrs_status,
+        "children": children_summary
+    }
+
+    # Calculate summary stats
+    total_required_attrs = len(expected_attrs)
+    matched_required_attrs = len(matched_attrs)
+
+    summary = {
+        "required_attrs_match": f"{matched_required_attrs}/{total_required_attrs}",
+        "required_attrs_percentage": int((matched_required_attrs / total_required_attrs * 100) if total_required_attrs > 0 else 100),
+        "missing_attrs_count": len(missing_attrs),
+        "extra_attrs_count": len(extra_attrs),
+        "children_with_issues": sum(1 for item in missing_elements if isinstance(item, dict)),
+        "coverage_percentage": quality_checks.get('match_percentage', 100)
+    }
+
+    return {
+        "expected": expected_structure,
+        "actual": actual_structure,
+        "summary": summary
+    }
+
+
 @router.get("/{run_id}/matches")
 async def get_discovery_matches(
     run_id: str,
@@ -364,6 +510,7 @@ async def generate_detailed_explanation(
             return {
                 "match_id": match_id,
                 "detailed_explanation": match_metadata['detailed_explanation'],
+                "structured_comparison": match_metadata.get('structured_comparison'),
                 "cached": True
             }
 
@@ -603,43 +750,18 @@ Action: No action required - continue processing as normal. The data meets all q
 
 """
 
-                    prompt = f"""You are a data quality validator for airline {pattern.airline_code or 'N/A'}.
+                    # Generate short summary (2-3 sentences max)
+                    prompt = f"""You are analyzing airline XML data for {pattern.airline_code or 'N/A'}.
 
-**Element Being Validated**: {actual_type}
-**Quality Coverage**: {match_percentage:.1f}% (Based on actual data inspection)
-**Pattern Confidence**: {float(match.confidence or 0) * 100:.0f}%
-{relationship_glossary if relationship_glossary else ""}
+Element: {actual_type}
+Coverage: {match_percentage:.1f}%
+Issues: {', '.join(list(missing_attrs)[:3]) if missing_attrs else 'None'}
 
-**Quality Issues Detected**:
-{f"• Missing required attributes: {', '.join(missing_attrs)}" if missing_attrs else ""}
-{f"• Unexpected extra attributes: {', '.join(extra_attrs)}" if extra_attrs else ""}
-{f"• Child element mismatch - Expected: {', '.join(expected_child_types)} | Found: {', '.join(actual_child_types)}" if expected_child_types != actual_child_types else ""}
-{relationship_details if relationship_details else ""}
-{relationship_mismatch_details if relationship_mismatch_details else ""}
-{missing_details if missing_details else ""}
+Write a 2-3 sentence summary explaining:
+1. What data is missing or wrong
+2. Why it matters for airline operations
 
-**Current XML Sample** (for reference only{', TRUNCATED for display' if snippet_truncated else ''}):
-```xml
-{xml_snippet}
-```
-
-IMPORTANT NOTES:
-- The XML snippet above is {('intentionally truncated to 500 characters for display purposes. The source XML is complete and well-formed.' if snippet_truncated else 'the full extracted content.')}
-- DO NOT report XML truncation or missing closing tags as a quality issue.
-- Only report quality issues explicitly listed in "Quality Issues Detected" section above.
-- If no quality issues are listed above, state that the data is complete and valid.
-
-{few_shot_examples}
-
-Now provide YOUR explanation for the **{actual_type}** element using the same format:
-
-**The Problem**: State EXACTLY what is wrong using the specific instance information above. Be precise - if "PaxList[1]/Pax[1]/PTC" is missing, say "Passenger #1 in the PaxList is missing the required PTC (Passenger Type Code) field." If no issues are listed above, state "No quality issues detected - the data is complete and valid."
-
-**Impact**: Explain why this specific missing data matters for airline operations or data processing. Be concrete - for PTC, mention how ADT (adult), CHD (child), INF (infant) classification is needed for pricing, boarding, and regulatory compliance. If no issues, explain why having complete data is beneficial.
-
-**Action**: Give a direct recommendation. If required data is missing, say "Fix the source system to ensure all passengers include PTC." If it's optional reference data, say "This reference field is optional and the XML remains valid." If no issues, say "No action required - continue processing as normal."
-
-Be DIRECT and SPECIFIC. Use exact numbers and instance paths from the data above. Do NOT use vague phrases like "typically", "may not be required", or "some instances". Format with bold headings as shown above.
+Be direct and specific. No bullet points, no headers, just a brief paragraph.
 """
                 else:
                     # Perfect match - keep it simple
@@ -667,8 +789,19 @@ Be factual and concise. Format as a paragraph, NOT bullet points.
             # Call LLM (async)
             detailed_explanation = await llm.generate_explanation_async(prompt)
 
+            # Build structured comparison for side-by-side visualization
+            structured_comparison = None
+            if pattern and is_mismatch:
+                structured_comparison = build_structured_comparison(
+                    pattern_rule,
+                    node_structure,
+                    match_metadata.get('quality_checks', {})
+                )
+
             # Store in match_metadata (cache for future requests)
             match_metadata['detailed_explanation'] = detailed_explanation
+            if structured_comparison:
+                match_metadata['structured_comparison'] = structured_comparison
             match.match_metadata = match_metadata
             db.add(match)
             db.commit()
@@ -678,6 +811,7 @@ Be factual and concise. Format as a paragraph, NOT bullet points.
             return {
                 "match_id": match_id,
                 "detailed_explanation": detailed_explanation,
+                "structured_comparison": structured_comparison,
                 "cached": False
             }
 
