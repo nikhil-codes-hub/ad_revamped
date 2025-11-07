@@ -1849,13 +1849,25 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
             if missing_items:
                 st.write("**Missing Elements:**")
                 if isinstance(missing_items, list):
+                    # Deduplicate missing elements with counts
+                    from collections import Counter
+                    error_counts = Counter()
+
                     for item in missing_items:
                         if isinstance(item, dict):
                             path = item.get("path", "unknown path")
                             reason = item.get("reason", "unspecified reason")
-                            st.write(f"- `{path}` • {reason}")
+                            error_key = f"{path} • {reason}"
+                            error_counts[error_key] += 1
                         else:
-                            st.write(f"- {item}")
+                            error_counts[str(item)] += 1
+
+                    # Display unique errors with counts
+                    for error, count in error_counts.most_common():
+                        if count > 1:
+                            st.write(f"- `{error}` **[x{count}]**")
+                        else:
+                            st.write(f"- `{error}`")
                 else:
                     st.write(f"- {missing_items}")
 
