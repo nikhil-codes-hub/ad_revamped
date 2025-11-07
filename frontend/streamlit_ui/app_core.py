@@ -1574,7 +1574,7 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
             match_lookup = {}
             if matches_data and matches_data.get('matches'):
                 for match in matches_data['matches']:
-                    node_fact_id = match.get('node_fact', {}).get('id')
+                    node_fact_id = match.get('element', {}).get('id')
                     if node_fact_id:
                         # Store all matches for this node_fact_id (may be multiple in cross-airline mode)
                         if node_fact_id not in match_lookup:
