@@ -1478,24 +1478,37 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
         return
 
     def summarize_missing_elements(elements: Any) -> str:
-        """Format missing element metadata for display."""
+        """Format missing element metadata for display with deduplication."""
         if not elements:
             return "—"
         if isinstance(elements, list):
-            parts = []
+            from collections import Counter
+            error_counts = Counter()
+
+            # Count occurrences of each unique error
             for item in elements:
                 if isinstance(item, dict):
-                    path = item.get("path")
-                    reason = item.get("reason")
-                    if path and reason:
-                        parts.append(f"{path} ({reason})")
-                    elif path:
-                        parts.append(path)
-                    elif reason:
-                        parts.append(reason)
+                    path = item.get("path", "unknown path")
+                    reason = item.get("reason", "unspecified reason")
+                    error_key = f"{path} ({reason})"
+                    error_counts[error_key] += 1
                 else:
-                    parts.append(str(item))
-            return "; ".join(parts) if parts else "—"
+                    error_counts[str(item)] += 1
+
+            # Build summary with counts for duplicates
+            details = []
+            for error, count in error_counts.most_common():
+                if count > 1:
+                    details.append(f"{error} [x{count}]")
+                else:
+                    details.append(error)
+
+            # Limit to top 10 unique errors
+            result = "; ".join(details[:10])
+            if len(error_counts) > 10:
+                result += f" ... and {len(error_counts) - 10} more"
+
+            return result if result else "—"
         return str(elements)
 
     # Show basic run info first
