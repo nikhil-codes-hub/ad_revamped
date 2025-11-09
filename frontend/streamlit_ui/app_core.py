@@ -1588,6 +1588,10 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
         else:
             st.metric("Duration", "N/A")
 
+    # Show warning if no patterns were available for this message type
+    if run_details.get("warning"):
+        st.warning(f"⚠️ {run_details['warning']}")
+
     st.divider()
 
     # Gap Analysis
