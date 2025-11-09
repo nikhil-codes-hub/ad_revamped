@@ -628,6 +628,41 @@ class DiscoveryWorkflow:
         # PHASE 2: Match NodeFacts against patterns
         logger.info(f"Phase 2: Matching {node_facts_extracted} NodeFacts against patterns")
 
+        # Check if patterns exist for this message type
+        available_patterns_query = self.db_session.query(Pattern).filter(
+            Pattern.message_root == match_message_root,
+            Pattern.superseded_by.is_(None)  # Only active patterns
+        )
+        if not allow_cross_version:
+            available_patterns_query = available_patterns_query.filter(Pattern.spec_version == match_version)
+
+        available_patterns_count = available_patterns_query.count()
+
+        warning_message = None
+        if available_patterns_count == 0:
+            logger.warning(f"⚠️ No patterns found for {match_message_root} (version: {match_version})")
+
+            # Check if patterns exist for OTHER message types
+            other_message_patterns = self.db_session.query(Pattern.message_root).filter(
+                Pattern.superseded_by.is_(None)
+            ).distinct().all()
+            other_messages = [p[0] for p in other_message_patterns if p[0] != match_message_root]
+
+            warning_message = f"No patterns available for '{match_message_root}' message type."
+            if other_messages:
+                warning_message += f" You have patterns for: {', '.join(other_messages)}. Please upload XML for one of these message types or create patterns for '{match_message_root}' first."
+            else:
+                warning_message += " No patterns exist in this workspace yet. Please use Pattern Extractor to create patterns first."
+
+            logger.warning(warning_message)
+
+            # Store warning in Run object
+            if run:
+                run.warning = warning_message
+                self.db_session.commit()
+        else:
+            logger.info(f"Found {available_patterns_count} pattern(s) available for {match_message_root}")
+
         node_facts = self.db_session.query(NodeFact).filter(
             NodeFact.run_id == run_id
         ).all()
