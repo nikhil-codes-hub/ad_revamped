@@ -879,7 +879,10 @@ def show_pattern_extractor_page():
 
     if uploaded_file:
         # Auto-detect version and airline from XML if not already done
-        if 'discovery_detect_result' not in st.session_state:
+        # Skip auto-detection if we just completed an extraction (to prevent conflicts from re-appearing)
+        has_recent_run = st.session_state.pattern_extractor_selected_run is not None
+
+        if 'discovery_detect_result' not in st.session_state and not has_recent_run:
             with st.spinner("🔍 Analyzing XML and detecting version..."):
                 detect_result = detect_version_and_airline(uploaded_file)
                 if detect_result:
@@ -1034,19 +1037,45 @@ def show_pattern_extractor_page():
 
             st.info("💡 **What should happen to the existing patterns?**")
 
-            # Let user choose resolution strategy
-            resolution_choice = st.radio(
-                "Choose conflict resolution strategy:",
-                options=[
+            # Determine which resolution strategies to show
+            # For exact_match_variation conflicts, recommend ENHANCE
+            has_exact_match = any(c.get('conflict_type') == 'exact_match_variation' for c in conflicts)
+
+            # Build resolution options
+            if has_exact_match:
+                # Show ENHANCE as recommended for exact matches
+                resolution_options = [
+                    ("enhance", "🌟 **Enhance** - Add new structure as variation to existing pattern (Recommended)"),
+                    ("replace", "🔄 **Replace** - Delete old pattern, keep new"),
+                    ("keep_both", "📦 **Keep Both** - Keep both old and new patterns"),
+                    ("merge", "🔀 **Merge** - Mark old pattern as superseded by new")
+                ]
+                help_text = (
+                    "ENHANCE: Adds the new structure as a variation to the existing pattern (keeps both structures in one pattern)\n"
+                    "REPLACE: Deletes old pattern entirely\n"
+                    "KEEP_BOTH: Creates duplicate patterns (may cause ambiguous matches)\n"
+                    "MERGE: Marks old pattern as superseded but preserves it for history"
+                )
+            else:
+                # For parent/child conflicts, don't show ENHANCE
+                resolution_options = [
                     ("replace", "🔄 **Replace** - Delete old patterns, keep new (Recommended)"),
                     ("keep_both", "📦 **Keep Both** - Keep both old and new patterns"),
                     ("merge", "🔀 **Merge** - Mark old patterns as superseded")
-                ],
+                ]
+                help_text = (
+                    "REPLACE: Clean matching, all data preserved in new pattern\n"
+                    "KEEP_BOTH: May cause ambiguous matches\n"
+                    "MERGE: Preserves history for audit"
+                )
+
+            # Let user choose resolution strategy
+            resolution_choice = st.radio(
+                "Choose conflict resolution strategy:",
+                options=resolution_options,
                 format_func=lambda x: x[1],
                 key="conflict_resolution_choice",
-                help="REPLACE: Clean matching, all data preserved in new pattern\n"
-                     "KEEP_BOTH: May cause ambiguous matches\n"
-                     "MERGE: Preserves history for audit"
+                help=help_text
             )
 
             st.session_state.conflict_resolution_strategy = resolution_choice[0]
@@ -1162,6 +1191,17 @@ def show_pattern_extractor_page():
                             st.warning(f"⚠️ {result['warning']}")
 
                         st.session_state.pattern_extractor_selected_run = result['id']
+
+                        # Clear detection result to prevent preflight check from running again on rerun
+                        if 'discovery_detect_result' in st.session_state:
+                            del st.session_state.discovery_detect_result
+
+                        # Clear shared file states to allow uploading new file
+                        if 'pattern_extractor_using_shared_file' in st.session_state:
+                            del st.session_state.pattern_extractor_using_shared_file
+                        if 'shared_xml_file' in st.session_state:
+                            del st.session_state.shared_xml_file
+
                         st.rerun()
 
     st.divider()
@@ -1169,7 +1209,16 @@ def show_pattern_extractor_page():
     # Show results from current session
     if st.session_state.pattern_extractor_selected_run:
         run_id = st.session_state.pattern_extractor_selected_run
-        st.success(f"📊 Pattern Extraction Results (Run: {run_id[:12]}...)")
+
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            st.success(f"📊 Pattern Extraction Results (Run: {run_id[:12]}...)")
+        with col2:
+            if st.button("🔄 New Extraction", key="new_extraction_btn", use_container_width=True):
+                # Clear the selected run to allow new file upload
+                st.session_state.pattern_extractor_selected_run = None
+                st.rerun()
+
         show_pattern_extractor_run_details(run_id, current_workspace)
     else:
         st.info("👆 Upload an XML file above to see pattern extraction results")
@@ -1207,7 +1256,16 @@ def show_pattern_extractor_run_details(run_id: str, workspace: str = "default"):
     patterns = get_patterns(limit=200, run_id=run_id, workspace=workspace)
 
     if patterns:
-        st.success(f"✅ {len(patterns)} pattern(s) extracted and saved from this discovery run")
+        # Check if any patterns were enhanced (from metadata)
+        metadata = run_details.get("metadata_json", {}) or {}
+        pattern_gen = metadata.get("pattern_generation", {})
+        patterns_enhanced = pattern_gen.get("patterns_enhanced", 0)
+        patterns_created = pattern_gen.get("patterns_created", len(patterns))
+
+        if patterns_enhanced > 0:
+            st.success(f"✅ {patterns_created} new pattern(s) created and {patterns_enhanced} pattern(s) enhanced with new variations")
+        else:
+            st.success(f"✅ {len(patterns)} pattern(s) extracted and saved from this discovery run")
 
         # Quick preview of patterns
         pattern_preview = []
@@ -1737,6 +1795,16 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                 pattern_node_type = pattern.get('decision_rule', {}).get('node_type', 'Unknown')
                 pattern_section = pattern.get('section_path', 'N/A')
 
+                # Get variation info from match metadata
+                match_metadata = match.get('match_metadata', {})
+                variation_id = match_metadata.get('variation_id') if isinstance(match_metadata, dict) else None
+
+                # Display variation info
+                if variation_id is not None:
+                    variation_display = f"Var #{variation_id}"
+                else:
+                    variation_display = ""
+
                 # Create unique key for deduplication
                 pattern_key = f"{pattern_node_type}|{pattern_section}"
 
@@ -1751,6 +1819,7 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                     "Version": pattern.get('spec_version', 'N/A'),
                     "Node Type": pattern_node_type,  # Show pattern's node type, not the individual node
                     "Section Path": pattern_section,
+                    "Variation": variation_display,
                     "Explanation": match.get('quick_explanation', 'No explanation available'),
                     "Times Seen": pattern.get('times_seen', 0),
                     "Confidence": f"{match.get('confidence', 0):.1%}",
@@ -1765,6 +1834,7 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                     "Version": "N/A",
                     "Node Type": node_fact.get('node_type'),
                     "Section Path": node_fact.get('section_path'),
+                    "Variation": "",  # No variation for unmatched nodes
                     "Explanation": match.get('quick_explanation', 'No explanation available'),
                     "Times Seen": 0,
                     "Confidence": f"{match.get('confidence', 0):.1%}",
@@ -2343,6 +2413,15 @@ def _render_patterns_tab(patterns, workspace):
         else:
             status = "🟢 Active"
 
+        # Calculate variation count
+        # Check if decision_rule uses variations format
+        if 'variations' in decision_rule:
+            variation_count = len(decision_rule.get('variations', []))
+            variations_display = f"{variation_count} variations" if variation_count > 1 else "1 variation"
+        else:
+            variation_count = 1
+            variations_display = ""
+
         pattern_data.append({
             "Message": pattern['message_root'],
             "Airline": pattern.get('airline_code', 'N/A'),
@@ -2351,6 +2430,7 @@ def _render_patterns_tab(patterns, workspace):
             "Status": status,
             "Node Type": decision_rule.get('node_type', 'Unknown'),
             "Section Path": pattern['section_path'],
+            "Variations": variations_display,
             "Description": desc if desc else "N/A",
             "Must-Have Attrs": len(decision_rule.get('must_have_attributes', [])),
             "Has Children": "✓" if decision_rule.get('child_structure', {}).get('has_children') else "",
@@ -2406,7 +2486,44 @@ def _render_patterns_tab(patterns, workspace):
         filtered_df = filtered_df[filtered_df['Node Type'] == selected_type]
 
     st.divider()
-    st.subheader(f"📋 Patterns ({len(filtered_df)} total)")
+
+    # Quick view of patterns with variations (auto-expanded)
+    patterns_with_variations = [p for p in patterns if 'variations' in p.get('decision_rule', {})]
+    if patterns_with_variations:
+        with st.expander(f"🌟 **Patterns with Multiple Variations ({len(patterns_with_variations)})**", expanded=True):
+            st.caption("These patterns have multiple variations showing different structural possibilities for the same node type.")
+
+            for pattern in patterns_with_variations[:5]:  # Show first 5
+                decision_rule = pattern.get('decision_rule', {})
+                variations = decision_rule.get('variations', [])
+
+                st.markdown(f"**Pattern #{pattern['id']}** - {decision_rule.get('node_type', 'Unknown')} @ `{pattern['section_path']}`")
+                st.caption(f"📊 {len(variations)} variations | {pattern['message_root']} | {pattern.get('airline_code', 'N/A')} | v{pattern['spec_version']}")
+
+                # Show variation summary
+                for idx, variation in enumerate(variations, 1):
+                    variation_id = variation.get('variation_id', idx)
+                    description = variation.get('description', '')
+                    must_have = variation.get('must_have_attributes', [])
+                    child_structure = variation.get('child_structure', {})
+                    has_children = child_structure.get('has_children', False)
+
+                    if description:
+                        # Show business description if available
+                        st.markdown(f"  • **Variation #{variation_id}**: {description}")
+                    else:
+                        # Fallback to technical summary
+                        st.markdown(f"  • **Variation #{variation_id}**: {len(must_have)} must-have attrs, {'Has children' if has_children else 'No children'}")
+
+                st.markdown("---")
+
+            if len(patterns_with_variations) > 5:
+                st.caption(f"... and {len(patterns_with_variations) - 5} more. Select patterns in the table below to view full details.")
+
+    st.subheader(f"📋 All Patterns ({len(filtered_df)} total)")
+
+    if patterns_with_variations:
+        st.info(f"💡 **Tip:** Select any pattern using the checkbox to view detailed variation information below the table.")
 
     # Prepare table with Select checkbox
     table_rows = []
@@ -2443,7 +2560,7 @@ def _render_patterns_tab(patterns, workspace):
         column_config={
             "Select": st.column_config.CheckboxColumn(
                 "Select",
-                help="Select pattern for export",
+                help="Select to view pattern details (including variations), export, or delete",
                 default=False
             ),
             "Must-Have Attrs": st.column_config.NumberColumn("Must-Have Attrs", format="%d"),
@@ -2462,6 +2579,105 @@ def _render_patterns_tab(patterns, workspace):
         for idx in range(len(edited_df))
         if edited_df.iloc[idx]["Select"]
     ]
+
+    # Show variation details for selected patterns
+    if selected_pattern_ids:
+        st.divider()
+        st.subheader("🔍 Pattern Details")
+
+        for pattern_id in selected_pattern_ids:
+            pattern = next((p for p in patterns if p['id'] == pattern_id), None)
+            if not pattern:
+                continue
+
+            decision_rule = pattern.get('decision_rule', {})
+            variations = decision_rule.get('variations', [])
+
+            # Pattern header
+            with st.expander(f"**Pattern #{pattern_id}** - {decision_rule.get('node_type', 'Unknown')} @ {pattern['section_path']}", expanded=True):
+                st.caption(f"Message: {pattern['message_root']} | Airline: {pattern.get('airline_code', 'N/A')} | Version: {pattern['spec_version']}")
+
+                if pattern.get('description'):
+                    st.info(f"📝 {pattern['description']}")
+
+                # Show variations
+                if variations:
+                    st.markdown(f"**{len(variations)} Variation(s)**")
+
+                    for idx, variation in enumerate(variations, 1):
+                        variation_id = variation.get('variation_id', idx)
+                        variation_description = variation.get('description', '')
+
+                        with st.container():
+                            st.markdown(f"##### Variation #{variation_id}")
+
+                            # Show business description prominently
+                            if variation_description:
+                                st.info(f"📄 **Business Context:** {variation_description}")
+
+                            # Technical details in expandable section
+                            with st.expander("🔧 Technical Details", expanded=False):
+                                col1, col2 = st.columns(2)
+
+                                with col1:
+                                    st.markdown("**Must-Have Attributes:**")
+                                    must_have = variation.get('must_have_attributes', [])
+                                    if must_have:
+                                        for attr in must_have:
+                                            st.markdown(f"• `{attr}`")
+                                    else:
+                                        st.caption("None")
+
+                                    optional = variation.get('optional_attributes', [])
+                                    if optional:
+                                        st.markdown("**Optional Attributes:**")
+                                        for attr in optional:
+                                            st.markdown(f"• `{attr}` (optional)")
+
+                                with col2:
+                                    child_structure = variation.get('child_structure', {})
+                                    if child_structure and child_structure.get('has_children'):
+                                        st.markdown("**Child Structure:**")
+                                        st.caption(f"Container: {child_structure.get('is_container', False)}")
+
+                                        child_types = child_structure.get('child_types', [])
+                                        if child_types:
+                                            st.markdown(f"Child Types: `{', '.join(child_types)}`")
+
+                                        child_structures = child_structure.get('child_structures', [])
+                                        if child_structures:
+                                            st.markdown("**Expected Children:**")
+                                            for child_struct in child_structures:
+                                                child_type = child_struct.get('node_type', 'Unknown')
+                                                req_attrs = child_struct.get('required_attributes', [])
+                                                st.markdown(f"• `{child_type}`: {len(req_attrs)} required attr(s)")
+                                                if req_attrs:
+                                                    st.caption(f"   Requires: {', '.join(req_attrs)}")
+                                    else:
+                                        st.markdown("**Children:** None")
+
+                            if idx < len(variations):
+                                st.divider()
+                else:
+                    # Legacy format (no variations)
+                    st.markdown("**Single Pattern (Legacy Format)**")
+                    col1, col2 = st.columns(2)
+
+                    with col1:
+                        st.markdown("**Must-Have Attributes:**")
+                        must_have = decision_rule.get('must_have_attributes', [])
+                        if must_have:
+                            for attr in must_have:
+                                st.markdown(f"• `{attr}`")
+                        else:
+                            st.caption("None")
+
+                    with col2:
+                        child_structure = decision_rule.get('child_structure', {})
+                        if child_structure and child_structure.get('has_children'):
+                            st.markdown("**Has Children:** Yes")
+                        else:
+                            st.markdown("**Has Children:** No")
 
     # Export, Import, and Delete buttons
     st.divider()
@@ -3843,6 +4059,50 @@ def render_sidebar() -> str:
     """Render the common sidebar controls and return the active workspace."""
 
     apply_custom_theme()
+
+    # Detect page changes and clear page-specific session state
+    # Get current page name from the main module
+    import __main__
+    import os
+    current_script = getattr(__main__, '__file__', None)
+    if current_script:
+        # Extract just the filename (e.g., "2_Pattern_Extractor.py" or "AssistedDiscovery.py")
+        current_page = os.path.basename(current_script)
+    else:
+        current_page = 'unknown'
+
+    # Check if page has changed
+    last_page = st.session_state.get('_last_page')
+    if last_page != current_page and last_page is not None:
+        # Page changed - clear page-specific session state
+        page_specific_keys = [
+            # Pattern Extractor page state
+            'discovery_detect_result',
+            'pattern_extractor_selected_run',  # Clear to allow re-detection when returning to page
+            # NOTE: shared_xml_file and pattern_extractor_using_shared_file are intentionally
+            # NOT cleared here - they're meant to persist when navigating from Node Manager
+            # to Pattern Extractor to enable the "Use This File" feature
+
+            # Node Manager page state
+            'analyzed_nodes',
+            'node_checked_paths_raw',
+            'node_checked_paths_effective',
+            'uploaded_xml_content',
+            'uploaded_xml_filename',
+
+            # Discovery page state
+            'discovery_uploaded_file',
+            'discovery_detect_info',
+
+            # Pattern Manager page state
+            'selected_patterns_for_export',
+        ]
+
+        for key in page_specific_keys:
+            st.session_state.pop(key, None)
+
+    # Update last page tracker
+    st.session_state._last_page = current_page
 
     st.sidebar.subheader("🗂️ Workspace")
 

@@ -103,16 +103,21 @@ class ConflictDetector:
             # Normalize path (removes IATA_ prefix if present)
             normalized_extracting_path = self._normalize_path(extracting_path, message_root)
 
-            # Check for parent-child conflicts
+            # Check for parent-child conflicts and exact matches
             parent_conflicts = []  # Extracting parent when child patterns exist
             child_conflicts = []   # Extracting child when parent pattern exists
+            exact_match_patterns = []  # Same path - potential for enhancement
 
             for pattern in existing_patterns:
                 # Normalize pattern path (removes IATA_ prefix if present)
                 normalized_pattern_path = self._normalize_path(pattern.section_path, message_root)
 
+                # Check for exact path match (enhancement opportunity)
+                if normalized_pattern_path == normalized_extracting_path:
+                    exact_match_patterns.append(pattern)
+
                 # Check if we're extracting a parent of an existing pattern
-                if self._is_parent_path(normalized_extracting_path, normalized_pattern_path, message_root):
+                elif self._is_parent_path(normalized_extracting_path, normalized_pattern_path, message_root):
                     parent_conflicts.append(pattern)
 
                 # Check if we're extracting a child of an existing pattern
@@ -120,14 +125,20 @@ class ConflictDetector:
                     child_conflicts.append(pattern)
 
             # Create conflict entries
-            if parent_conflicts:
+            # Priority: exact match > parent > child
+            if exact_match_patterns:
+                logger.info(f"Exact match found: extracting '{normalized_extracting_path}' matches {len(exact_match_patterns)} existing pattern(s) - enhancement possible")
+                conflicts.append(self._create_exact_match_conflict(
+                    extracting_path=extracting_path,
+                    existing_patterns=exact_match_patterns
+                ))
+            elif parent_conflicts:
                 logger.info(f"Parent-child conflict: extracting '{normalized_extracting_path}' conflicts with {len(parent_conflicts)} child pattern(s)")
                 conflicts.append(self._create_parent_child_conflict(
                     extracting_path=extracting_path,
                     existing_patterns=parent_conflicts
                 ))
-
-            if child_conflicts:
+            elif child_conflicts:
                 logger.info(f"Child-parent conflict: extracting '{normalized_extracting_path}' conflicts with {len(child_conflicts)} parent pattern(s)")
                 conflicts.append(self._create_child_parent_conflict(
                     extracting_path=extracting_path,
@@ -151,6 +162,47 @@ class ConflictDetector:
             conflicts=conflicts,
             can_proceed=True,  # Can always proceed with user's choice
             warning_message=warning_message
+        )
+
+    def _create_exact_match_conflict(
+        self,
+        extracting_path: str,
+        existing_patterns: List[Pattern]
+    ) -> PatternConflict:
+        """Create conflict for extracting same path (enhancement opportunity)."""
+        existing_info = [
+            ExistingPatternInfo(
+                id=p.id,
+                section_path=p.section_path,
+                times_seen=p.times_seen,
+                created_at=p.created_at.isoformat() if p.created_at else "",
+                node_type=p.decision_rule.get('node_type', 'Unknown') if p.decision_rule else 'Unknown'
+            )
+            for p in existing_patterns
+        ]
+
+        # Check if existing pattern has variations
+        from app.utils.pattern_variations import get_variation_count
+        existing_pattern = existing_patterns[0]  # Use first pattern
+        variation_count = get_variation_count(existing_pattern.decision_rule or {})
+
+        if variation_count > 1:
+            variation_info = f" (currently has {variation_count} variations)"
+        else:
+            variation_info = ""
+
+        impact_description = (
+            f"A pattern for '{extracting_path}' already exists{variation_info}. "
+            f"You can ENHANCE the existing pattern by adding this new structure as a variation, "
+            f"or use another resolution strategy."
+        )
+
+        return PatternConflict(
+            extracting_path=extracting_path,
+            conflict_type=ConflictType.EXACT_MATCH_VARIATION,
+            existing_patterns=existing_info,
+            recommendation=ConflictResolution.ENHANCE,  # Recommend ENHANCE for exact matches
+            impact_description=impact_description
         )
 
     def _create_parent_child_conflict(
@@ -261,6 +313,17 @@ class ConflictDetector:
                     })
                 patterns_superseded += len(pattern_ids)
                 logger.info(f"Will supersede {len(pattern_ids)} patterns for {conflict.extracting_path}")
+
+            elif resolution_strategy == ConflictResolution.ENHANCE:
+                # Mark patterns for enhancement (will be handled in pattern_extractor_workflow)
+                for pattern_id in pattern_ids:
+                    patterns_to_supersede.append({
+                        'pattern_id': pattern_id,
+                        'extracting_path': conflict.extracting_path,
+                        'action': 'enhance'  # Special marker for enhancement
+                    })
+                logger.info(f"Will enhance {len(pattern_ids)} pattern(s) with new variation for {conflict.extracting_path}")
+                print(f"🌟🌟🌟 ENHANCE: Will enhance pattern {pattern_ids} for {conflict.extracting_path} 🌟🌟🌟")
 
             elif resolution_strategy == ConflictResolution.KEEP_BOTH:
                 # Do nothing - keep both patterns

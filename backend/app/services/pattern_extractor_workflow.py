@@ -13,6 +13,7 @@ from pathlib import Path
 import hashlib
 
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy import create_engine
 
 from app.core.config import settings
@@ -776,35 +777,185 @@ class PatternExtractorWorkflow:
                                f"{pattern_results.get('patterns_created', 0)} created, "
                                f"{pattern_results.get('patterns_updated', 0)} updated")
 
-                    # PHASE 3c: Update superseded patterns (for MERGE strategy)
+                    # PHASE 3c: Update superseded patterns (for MERGE strategy) or enhance patterns (for ENHANCE strategy)
                     if patterns_to_supersede and version_info:
-                        logger.info(f"Updating {len(patterns_to_supersede)} superseded patterns")
+                        logger.info(f"Processing {len(patterns_to_supersede)} pattern updates/enhancements")
+                        logger.info(f"patterns_to_supersede: {patterns_to_supersede}")
+                        print(f"🔥🔥🔥 PHASE 3c: Processing {len(patterns_to_supersede)} pattern updates 🔥🔥🔥")
+                        print(f"patterns_to_supersede: {patterns_to_supersede}")
+
+                        from app.utils.pattern_variations import add_variation, create_variation_from_node, generate_variation_descriptions
+
+                        patterns_enhanced = 0
+                        patterns_merged = 0
+                        patterns_to_generate_descriptions = []  # Track patterns that need variation descriptions
 
                         for supersede_info in patterns_to_supersede:
                             pattern_id = supersede_info['pattern_id']
                             extracting_path = supersede_info['extracting_path']
+                            action = supersede_info.get('action', 'merge')  # Default to merge for backward compatibility
+
+                            logger.info(f"Processing supersede for path: {extracting_path}, action: {action}, pattern_id: {pattern_id}")
+
+                            # Normalize the extracting_path to match how patterns are stored
+                            # Remove IATA_ prefix if present
+                            from app.services.utils import normalize_iata_prefix
+                            normalized_path = normalize_iata_prefix(extracting_path, version_info.message_root)
+
+                            logger.info(f"Normalized path: {normalized_path}")
 
                             # Find the newly created pattern for this path
+                            # Try both the original path and normalized path
                             new_pattern = self.db_session.query(Pattern).filter(
-                                Pattern.section_path == extracting_path,
+                                Pattern.section_path.in_([extracting_path, normalized_path]),
                                 Pattern.spec_version == version_info.spec_version,
                                 Pattern.message_root == version_info.message_root,
                                 Pattern.airline_code == version_info.airline_code,
                                 Pattern.superseded_by.is_(None)  # Active pattern
                             ).order_by(Pattern.created_at.desc()).first()
 
-                            if new_pattern:
-                                # Update the old pattern to mark it as superseded
-                                old_pattern = self.db_session.query(Pattern).filter(
-                                    Pattern.id == pattern_id
-                                ).first()
+                            if not new_pattern:
+                                logger.error(f"Could not find newly created pattern for {extracting_path} or {normalized_path} - skipping ENHANCE")
+                                logger.error(f"Available patterns: {[p.section_path for p in self.db_session.query(Pattern).filter(Pattern.spec_version == version_info.spec_version, Pattern.message_root == version_info.message_root).all()]}")
+                                continue
 
-                                if old_pattern:
-                                    old_pattern.superseded_by = new_pattern.id
-                                    logger.info(f"Marked pattern {pattern_id} ({old_pattern.section_path}) as superseded by pattern {new_pattern.id}")
+                            # Get existing pattern
+                            existing_pattern = self.db_session.query(Pattern).filter(
+                                Pattern.id == pattern_id
+                            ).first()
+
+                            if not existing_pattern:
+                                logger.warning(f"Could not find existing pattern {pattern_id} - skipping")
+                                continue
+
+                            if action == 'enhance':
+                                # ENHANCE: Add new structure as variation to existing pattern
+                                logger.info(f"Enhancing pattern {pattern_id} ({existing_pattern.section_path}) with new variation")
+
+                                try:
+                                    # Get the NodeFact that was used to create the new pattern
+                                    # Normalize the extracting_path to match NodeFact section_path format (with leading slash)
+                                    normalized_extracting_path = extracting_path if extracting_path.startswith('/') else f'/{extracting_path}'
+
+                                    # Find NodeFact with matching section_path from this run
+                                    node_fact = self.db_session.query(NodeFact).filter(
+                                        NodeFact.run_id == run_id,
+                                        NodeFact.section_path == normalized_extracting_path
+                                    ).first()
+
+                                    if not node_fact:
+                                        logger.error(f"Could not find NodeFact for {normalized_extracting_path} in run {run_id}")
+                                        # List available paths for debugging
+                                        all_node_facts = self.db_session.query(NodeFact).filter(
+                                            NodeFact.run_id == run_id
+                                        ).all()
+                                        logger.error(f"Available section_paths: {[nf.section_path for nf in all_node_facts]}")
+                                        continue
+
+                                    # Create variation from node structure
+                                    logger.info(f"NodeFact attributes: {node_fact.fact_json.get('attributes', {})}")
+                                    new_variation = create_variation_from_node(node_fact.fact_json)
+                                    logger.info(f"Created new variation with {len(new_variation.get('must_have_attributes', []))} attrs: {new_variation}")
+
+                                    # Add variation to existing pattern's decision_rule
+                                    old_decision_rule = existing_pattern.decision_rule or {}
+                                    logger.info(f"Old decision_rule format: {old_decision_rule.keys()}")
+
+                                    updated_decision_rule = add_variation(
+                                        old_decision_rule,
+                                        new_variation
+                                    )
+                                    logger.info(f"Updated decision_rule has {len(updated_decision_rule.get('variations', []))} variations")
+
+                                    # Update existing pattern
+                                    existing_pattern.decision_rule = updated_decision_rule
+                                    flag_modified(existing_pattern, 'decision_rule')  # Mark JSON column as modified
+                                    existing_pattern.times_seen += 1
+                                    existing_pattern.last_seen_at = datetime.utcnow()
+
+                                    logger.info(f"After assignment, pattern.decision_rule has {len(existing_pattern.decision_rule.get('variations', []))} variations")
+
+                                    # Delete the newly created pattern (we don't need it - we enhanced the existing one)
+                                    self.db_session.delete(new_pattern)
+
+                                    patterns_enhanced += 1
+                                    logger.info(f"✅ Enhanced pattern {pattern_id} with new variation (now has {len(updated_decision_rule.get('variations', []))} variations)")
+
+                                    # Track this pattern for description generation
+                                    patterns_to_generate_descriptions.append({
+                                        'pattern': existing_pattern,
+                                        'node_type': updated_decision_rule.get('node_type'),
+                                        'section_path': existing_pattern.section_path
+                                    })
+
+                                except Exception as e:
+                                    logger.error(f"Failed to enhance pattern {pattern_id}: {e}")
+                                    import traceback
+                                    logger.error(traceback.format_exc())
+                                    # Continue with next pattern
+
+                            else:
+                                # MERGE: Mark old pattern as superseded by new one
+                                existing_pattern.superseded_by = new_pattern.id
+                                patterns_merged += 1
+                                logger.info(f"Marked pattern {pattern_id} ({existing_pattern.section_path}) as superseded by pattern {new_pattern.id}")
 
                         self.db_session.commit()
-                        logger.info(f"Successfully updated {len(patterns_to_supersede)} superseded patterns")
+                        logger.info(f"Successfully processed pattern updates: {patterns_enhanced} enhanced, {patterns_merged} superseded")
+
+                        # Verify the update was persisted
+                        if patterns_enhanced > 0:
+                            for supersede_info in patterns_to_supersede:
+                                if supersede_info.get('action') == 'enhance':
+                                    pattern_id = supersede_info['pattern_id']
+                                    verified_pattern = self.db_session.query(Pattern).filter(Pattern.id == pattern_id).first()
+                                    if verified_pattern:
+                                        verified_variations = verified_pattern.decision_rule.get('variations', [])
+                                        logger.info(f"🔍 VERIFICATION: Pattern {pattern_id} now has {len(verified_variations)} variations in DB: {verified_pattern.decision_rule.keys()}")
+                                    break  # Just check the first one
+
+                        # Generate business-friendly descriptions for variations
+                        if patterns_to_generate_descriptions:
+                            logger.info(f"Generating business descriptions for {len(patterns_to_generate_descriptions)} enhanced pattern(s)")
+
+                            try:
+                                llm_extractor = get_llm_extractor()
+                                if llm_extractor and llm_extractor.client:
+                                    for pattern_info in patterns_to_generate_descriptions:
+                                        pattern = pattern_info['pattern']
+                                        variations = pattern.decision_rule.get('variations', [])
+
+                                        if len(variations) > 1:
+                                            logger.info(f"Generating descriptions for pattern {pattern.id} with {len(variations)} variations")
+
+                                            # Generate descriptions
+                                            updated_variations = generate_variation_descriptions(
+                                                variations,
+                                                pattern_info['node_type'],
+                                                pattern_info['section_path'],
+                                                llm_client=llm_extractor.client
+                                            )
+
+                                            # Update pattern with descriptions
+                                            pattern.decision_rule['variations'] = updated_variations
+                                            flag_modified(pattern, 'decision_rule')
+
+                                    # Commit the description updates
+                                    self.db_session.commit()
+                                    logger.info("✅ Variation descriptions generated and saved")
+                                else:
+                                    logger.warning("LLM client not available, skipping variation description generation")
+                            except Exception as e:
+                                logger.warning(f"Failed to generate variation descriptions: {e}")
+                                # Don't fail the whole workflow if description generation fails
+
+                        # Update workflow results with enhancement count
+                        if patterns_enhanced > 0:
+                            workflow_results['pattern_generation']['patterns_enhanced'] = patterns_enhanced
+                            # Adjust created count (we deleted enhanced patterns)
+                            workflow_results['pattern_generation']['patterns_created'] = (
+                                workflow_results['pattern_generation'].get('patterns_created', 0) - patterns_enhanced
+                            )
 
                 except Exception as e:
                     logger.error(f"Pattern generation failed for run {run_id}: {e}")

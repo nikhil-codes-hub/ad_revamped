@@ -55,13 +55,39 @@ class DiscoveryWorkflow:
 
     def calculate_pattern_similarity(self,
                                      node_fact_structure: Dict[str, Any],
-                                     pattern_decision_rule: Dict[str, Any]) -> float:
+                                     pattern_decision_rule: Dict[str, Any]) -> tuple[float, Optional[int]]:
         """
         Calculate similarity score between a NodeFact structure and a Pattern decision rule.
 
+        Supports both legacy single-pattern format and new variations format.
+        When variations exist, tries to match against each variation and returns the best match.
+
         Returns:
-            Float between 0.0 and 1.0 representing similarity
+            Tuple of (confidence: float 0.0-1.0, variation_id: int or None)
         """
+        from app.utils.pattern_variations import is_variations_format, get_variations, match_node_to_variation
+
+        # Check if pattern uses variations format
+        if is_variations_format(pattern_decision_rule):
+            # NEW FORMAT: Try matching against each variation
+            variations = get_variations(pattern_decision_rule)
+            best_confidence = 0.0
+            best_variation_id = None
+
+            for variation in variations:
+                matches, confidence, details = match_node_to_variation(node_fact_structure, variation)
+
+                if matches and confidence == 1.0:
+                    # Perfect match found - return immediately
+                    return (1.0, variation.get('variation_id'))
+
+                if confidence > best_confidence:
+                    best_confidence = confidence
+                    best_variation_id = variation.get('variation_id')
+
+            return (best_confidence, best_variation_id)
+
+        # LEGACY FORMAT: Use existing similarity calculation
         score = 0.0
         total_weight = 0.0
 
@@ -263,7 +289,8 @@ class DiscoveryWorkflow:
                                  f"applying {penalty*100:.0f}% penalty. "
                                  f"Original score: {normalized_score/(1.0-penalty):.2f}, New score: {normalized_score:.2f}")
 
-        return normalized_score
+        # Return tuple for backward compatibility (None variation_id for legacy patterns)
+        return (normalized_score, None)
 
     def match_node_fact_to_patterns(self,
                                      node_fact: NodeFact,
@@ -391,8 +418,8 @@ class DiscoveryWorkflow:
                 else:
                     continue
 
-            # Calculate similarity
-            confidence = self.calculate_pattern_similarity(
+            # Calculate similarity (returns tuple: confidence, variation_id)
+            confidence, variation_id = self.calculate_pattern_similarity(
                 fact_structure,
                 pattern_decision_rule
             )
@@ -420,7 +447,8 @@ class DiscoveryWorkflow:
                 'pattern_id': pattern.id,
                 'pattern': pattern,
                 'confidence': confidence,
-                'verdict': verdict
+                'verdict': verdict,
+                'variation_id': variation_id  # Track which variation matched
             })
 
         # Sort by confidence (highest first)
@@ -472,13 +500,16 @@ class DiscoveryWorkflow:
                            confidence: float,
                            verdict: str,
                            quick_explanation: str = "",
-                           quality_checks: Optional[Dict[str, Any]] = None):
+                           quality_checks: Optional[Dict[str, Any]] = None,
+                           variation_id: Optional[int] = None):
         """Store pattern match result in database."""
         match_metadata = {
             'quick_explanation': quick_explanation
         }
         if isinstance(quality_checks, dict):
             match_metadata['quality_checks'] = quality_checks
+        if variation_id is not None:
+            match_metadata['variation_id'] = variation_id
 
         pattern_match = PatternMatch(
             run_id=run_id,
@@ -835,7 +866,8 @@ class DiscoveryWorkflow:
                         confidence=best_match['confidence'],
                         verdict=best_match['verdict'],
                         quick_explanation=quick_explanation,
-                        quality_checks=quality_checks
+                        quality_checks=quality_checks,
+                        variation_id=best_match.get('variation_id')  # Track which variation matched
                     )
     
                     match_results.append({
@@ -847,13 +879,15 @@ class DiscoveryWorkflow:
                             'pattern_id': best_match['pattern_id'],
                             'confidence': best_match['confidence'],
                             'verdict': best_match['verdict'],
-                            'quality_checks': quality_checks
+                            'quality_checks': quality_checks,
+                            'variation_id': best_match.get('variation_id')  # Include which variation matched
                         },
                         'all_matches': [
                             {
                                 'pattern_id': m['pattern_id'],
                                 'confidence': m['confidence'],
-                                'verdict': m['verdict']
+                                'verdict': m['verdict'],
+                                'variation_id': m.get('variation_id')  # Include for all matches
                             }
                             for m in matches[:5]  # Top 5 matches
                         ]

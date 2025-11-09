@@ -33,7 +33,7 @@ async def create_run(
     target_message_root: Optional[str] = Query(None, description="Target message root for discovery (not used - kept for backwards compatibility)"),
     target_airline_code: Optional[str] = Query(None, description="Target airline code for discovery (not used - kept for backwards compatibility)"),
     allow_cross_airline: bool = Query(True, description="Enable cross-airline pattern matching for discovery (always enabled)"),
-    conflict_resolution: Optional[str] = Query(None, regex="^(replace|keep_both|merge)$", description="How to resolve pattern conflicts (pattern_extractor only)")
+    conflict_resolution: Optional[str] = Query(None, regex="^(replace|keep_both|merge|enhance)$", description="How to resolve pattern conflicts (pattern_extractor only)")
 ) -> RunResponse:
     """
     Create a new Pattern Extractor or Discovery run.
@@ -48,10 +48,12 @@ async def create_run(
         - 'replace': Delete existing conflicting patterns (recommended)
         - 'keep_both': Keep both old and new patterns (may cause ambiguous matches)
         - 'merge': Mark old patterns as superseded by new ones
+        - 'enhance': Add new structure as variation to existing pattern
 
     **Note**: Discovery now matches across ALL airlines, ALL NDC versions, and ALL message types for maximum coverage.
     """
     logger.info(f"Creating new {kind} run: {file.filename}")
+    logger.info(f"conflict_resolution parameter received: {conflict_resolution}")
 
     # Validate file type
     if not file.filename.lower().endswith('.xml'):

@@ -253,6 +253,7 @@ class ConflictType(str, Enum):
     PARENT_CHILD = "parent_child"  # Extracting parent when child patterns exist
     CHILD_PARENT = "child_parent"  # Extracting child when parent pattern exists
     SIBLING = "sibling"            # Extracting sibling at different granularity
+    EXACT_MATCH_VARIATION = "exact_match_variation"  # Same path/airline/version, different structure - can enhance
 
 
 class ConflictResolution(str, Enum):
@@ -260,6 +261,7 @@ class ConflictResolution(str, Enum):
     REPLACE = "replace"        # Delete conflicting patterns, keep new ones
     KEEP_BOTH = "keep_both"    # Keep both (may cause ambiguous matches)
     MERGE = "merge"            # Mark old patterns as superseded by new
+    ENHANCE = "enhance"        # Add new structure as a variation to existing pattern
 
 
 class ExistingPatternInfo(BaseModel):
