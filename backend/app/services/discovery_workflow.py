@@ -300,25 +300,30 @@ class DiscoveryWorkflow:
                                      allow_cross_airline: bool = False,
                                      allow_cross_version: bool = False) -> List[Dict[str, Any]]:
         """
-        Match a single NodeFact against patterns (cross-airline, cross-version, cross-message).
+        Match a single NodeFact against patterns from the SAME message type.
+
+        Important: Patterns are matched ONLY within the same message_root.
+        We compare OrderReshopRS (6X) vs OrderReshopRS (AS), NOT OrderReshopRS vs AirShoppingRS.
 
         Args:
             node_fact: NodeFact to match
             spec_version: NDC version to match against (ignored if allow_cross_version=True)
-            message_root: Message root of the uploaded XML (used for logging only, not for filtering)
+            message_root: Message root to match against (ALWAYS filtered - no cross-message matching)
             airline_code: Airline code to match against (ignored if allow_cross_airline=True)
-            allow_cross_airline: If True, match against patterns from all airlines
-            allow_cross_version: If True, match against patterns from all NDC versions
+            allow_cross_airline: If True, match against patterns from all airlines (same message_root)
+            allow_cross_version: If True, match against patterns from all NDC versions (same message_root)
 
         Returns:
             List of matches with confidence scores
         """
         from app.models.database import NodeRelationship
 
-        # Query patterns - match against ALL message types (cross-message matching)
+        # Query patterns - ONLY match within the same message_root
+        # We compare same message types across airlines, NOT different message types
         # Only match against active patterns (not superseded)
         query = self.db_session.query(Pattern).filter(
-            Pattern.superseded_by.is_(None)  # Exclude superseded patterns
+            Pattern.superseded_by.is_(None),  # Exclude superseded patterns
+            Pattern.message_root == message_root  # CRITICAL: Same message type only
         )
 
         # Filter by spec_version if cross-version mode is disabled
