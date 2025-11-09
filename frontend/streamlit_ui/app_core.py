@@ -1463,7 +1463,7 @@ def show_discovery_page(current_workspace: Optional[str] = None):
         if uploaded_file:
             st.write(f"**Filename:** {uploaded_file.name}")
             st.write(f"**Size:** {uploaded_file.size:,} bytes")
-            st.info("ℹ️ Discovery automatically matches across **all airlines**, **all NDC versions**, and **all message types** for maximum coverage")
+            st.info("ℹ️ Discovery matches across **all airlines** and **all NDC versions** within the **same message type** (e.g., compares OrderReshopRS of 6X vs AS, not OrderReshopRS vs AirShoppingRS)")
 
             if st.button("Start Discovery", type="primary", key="start_discovery"):
                     import time
