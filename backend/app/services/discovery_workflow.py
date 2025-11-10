@@ -628,13 +628,11 @@ class DiscoveryWorkflow:
         # PHASE 2: Match NodeFacts against patterns
         logger.info(f"Phase 2: Matching {node_facts_extracted} NodeFacts against patterns")
 
-        # Check if patterns exist for this message type
+        # Check if patterns exist for this message type (across all versions)
         available_patterns_query = self.db_session.query(Pattern).filter(
             Pattern.message_root == match_message_root,
             Pattern.superseded_by.is_(None)  # Only active patterns
         )
-        if not allow_cross_version:
-            available_patterns_query = available_patterns_query.filter(Pattern.spec_version == match_version)
 
         available_patterns_count = available_patterns_query.count()
 
