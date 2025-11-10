@@ -45,27 +45,61 @@ Each child's node_type should be: "{repeating_tag}"
     {{"type": "contact_reference", "passenger": "PAX1", "contact": "CI1PAX1"}}
   ],
   "children": [
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // ⚠️⚠️⚠️ ABSOLUTELY CRITICAL - READ THIS BEFORE EXTRACTING CHILDREN ⚠️⚠️⚠️
+    // ═══════════════════════════════════════════════════════════════════════════════
+    //
+    // DO NOT FLATTEN NESTED STRUCTURES!
+    //
+    // If you see: <Pax><Individual><Birthdate>...</Birthdate><GivenName>...</GivenName></Individual></Pax>
+    //
+    // ❌ WRONG: Extract as Pax attributes: {{"birthdate": "...", "name": "..."}}
+    // ✅ CORRECT: Extract Individual as nested child in Pax's children array
+    //
+    // Rule: If an element contains OTHER ELEMENTS (not just text), it MUST be extracted
+    // as a nested child, NOT flattened into attributes!
+    // ═══════════════════════════════════════════════════════════════════════════════
+
     {{
       "node_type": "ACTUAL_XML_TAG_NAME_OF_THIS_CHILD",  // CRITICAL: Use THIS child's actual XML tag name (e.g., if XML is <CorrelationID>, use "CorrelationID")
       "ordinal": 1,
       "attributes": {{
-        // **CRITICAL EXTRACTION RULES**:
-        // 1. SIMPLE LEAF ELEMENTS (text-only, no nested children): Extract as attributes
-        //    Example: <Pax><PaxID>123</PaxID><PTC>ADT</PTC></Pax> → {{"PaxID": "123", "PTC": "ADT"}}
-        //    Example: <CorrelationID>abc123</CorrelationID> → {{"value": "abc123"}}
+        // ⚠️ CRITICAL EXTRACTION RULES - READ CAREFULLY ⚠️:
         //
-        // 2. STRUCTURED NESTED ELEMENTS (have their own nested children): DO NOT FLATTEN!
-        //    - DO NOT extract these as attributes
-        //    - Instead, extract them as nested children in a "children" array within this child
-        //    Example: <Pax><Individual><Birthdate>1980-01-01</Birthdate></Individual></Pax>
-        //    → Pax should have a "children" array containing Individual as a child
-        //    → DO NOT flatten to {{"birthdate": "1980-01-01"}}
+        // RULE 1: SIMPLE LEAF ELEMENTS (text-only, no nested children)
+        //    ✅ Extract these as attributes
+        //    Example: <Pax><PaxID>123</PaxID><PTC>ADT</PTC></Pax>
+        //    Result: {{"PaxID": "123", "PTC": "ADT"}}
         //
-        // 3. How to distinguish:
-        //    - LEAF: Element contains ONLY text → Extract as attribute
-        //    - STRUCTURED: Element contains OTHER ELEMENTS → Extract as nested child, NOT attribute
+        // RULE 2: STRUCTURED NESTED ELEMENTS (contain other elements, not just text)
+        //    ❌ DO NOT extract as attributes
+        //    ❌ DO NOT flatten
+        //    ❌ DO NOT combine fields
+        //    ✅ Extract as nested children in "children" array (see below)
         //
-        // 4. DO NOT extract SIBLING elements as attributes - only elements nested INSIDE this child
+        //    Example of STRUCTURED element:
+        //    <Pax>
+        //      <Individual>             ← This is STRUCTURED (has children)
+        //        <Birthdate>...</Birthdate>
+        //        <GivenName>...</GivenName>
+        //      </Individual>
+        //      <PaxID>123</PaxID>       ← This is LEAF (just text)
+        //    </Pax>
+        //
+        //    ❌ WRONG (flattened):
+        //    {{"PaxID": "123", "birthdate": "...", "name": "..."}}
+        //
+        //    ✅ CORRECT (preserved structure):
+        //    {{"PaxID": "123"}}, with Individual in children array below
+        //
+        // RULE 3: How to distinguish LEAF vs STRUCTURED:
+        //    - LEAF: Element contains ONLY TEXT (no child elements)
+        //    - STRUCTURED: Element contains OTHER ELEMENTS (has child tags inside)
+        //
+        // RULE 4: DO NOT extract SIBLING elements as attributes
+        //    - Only extract elements nested INSIDE this child
+        //
+        // For this child: extract ONLY simple leaf elements as attributes
       }},
       "children": [
         // **NEW**: If this child contains STRUCTURED nested elements (elements with their own children),
@@ -87,8 +121,15 @@ Each child's node_type should be: "{repeating_tag}"
       "node_type": "ACTUAL_XML_TAG_NAME_OF_THIS_CHILD",  // Each child gets its own ACTUAL XML tag name (can differ from other children)
       "ordinal": 2,
       "attributes": {{
-        // Same rules as above: sub-children OR {{"value": "text"}} for leaf elements
+        // SAME CRITICAL RULES APPLY:
+        // - Extract ONLY leaf elements (text-only) as attributes
+        // - DO NOT flatten structured nested elements
+        // - DO NOT combine fields from nested structures
+        // - Structured elements go in "children" array below
       }},
+      "children": [
+        // If this child has STRUCTURED nested elements, extract them here
+      ],
       "references": {{"similar structure"}},
       "snippet": "brief XML snippet"
     }}
@@ -129,7 +170,8 @@ IMPORTANT RULES:
 8. Handle version differences:
    - 17.2/18.1: PassengerList, Passenger, InfantRef, ContactInfoRef
    - 21.3: PaxList, Pax, PaxRefID (infant→adult reference)
-9. Mask PII in attributes: "****@****.com" for emails, "****-**-**" for dates, "****" for names
+9. Mask PII in attributes: "****@****.com" for emails, "****-**-**" for dates, "****" for GivenName/Surname fields
+   - DO NOT combine GivenName + Surname - keep them separate or in nested structure
 10. Include confidence score (0.0-1.0)
 11. Return ONLY valid JSON array with ONE container fact: [{{container_fact}}]
 12. Be thorough - include all children, don't truncate
@@ -147,10 +189,16 @@ IMPORTANT RULES:
 SPECIAL EXTRACTION PATTERNS:
 - PassengerID / PaxID → extract to attributes (keep exact XML tag name)
 - PTC → extract to attributes (keep exact XML tag name)
-- **IMPORTANT**: DO NOT flatten or combine GivenName + Surname!
-  * If GivenName/Surname are inside a structured element like <Individual>, preserve the structure:
-    → Individual becomes a nested child with its own attributes: {{Birthdate, GivenName, Surname}}
-  * If GivenName/Surname are direct leaf children: extract as individual attributes
+- **CRITICAL - READ CAREFULLY**: Individual/Birthdate/GivenName/Surname handling:
+  * If you see <Pax><Individual><Birthdate>...<GivenName>...<Surname>...</Individual></Pax>:
+    ✅ CORRECT: Individual is a NESTED CHILD in Pax's children array
+    ✅ Individual has attributes: {{"Birthdate": "...", "GivenName": "...", "Surname": "..."}}
+    ❌ WRONG: DO NOT extract {{"birthdate": "...", "name": "..."}} as Pax attributes
+    ❌ WRONG: DO NOT combine GivenName + Surname into a single "name" field
+    ❌ WRONG: DO NOT flatten Individual's children into Pax's attributes
+  * If GivenName/Surname are DIRECT children of Pax (no Individual wrapper):
+    → Extract as individual Pax attributes: {{"GivenName": "...", "Surname": "..."}}
+    → Still DO NOT combine them!
 - InfantRef / PaxRefID → extract to references.infant or references.parent
 - ContactInfoRef → extract to references.contact_info
 - All *Ref / *RefID elements → extract to references.other
@@ -271,5 +319,32 @@ XML:
      → DO NOT flatten to attributes: {{"birthdate": "..."}}
    - Only flatten LEAF elements (text-only, no nested children) into attributes
 6. For LEAF elements (elements with just text, no sub-children), use {{"value": "text content"}}
+
+═══════════════════════════════════════════════════════════════════════════════
+🚨🚨🚨 FINAL CHECK BEFORE RESPONDING - NESTED STRUCTURE VERIFICATION 🚨🚨🚨
+═══════════════════════════════════════════════════════════════════════════════
+
+Before you output your JSON response, verify:
+
+1. Did you check if ANY child contains NESTED ELEMENTS (elements with child tags)?
+2. For EACH nested element found:
+   ✅ Is it in the "children" array (NOT in "attributes")?
+   ✅ Does it have its own "node_type" matching the XML tag name?
+   ✅ Does it have its own "attributes" with the nested leaf values?
+
+3. Specifically for Pax/Individual:
+   ❓ Does the XML have <Pax><Individual>...?
+   ✅ If YES: Pax MUST have a "children" array containing Individual
+   ✅ Individual node_type = "Individual"
+   ✅ Individual attributes = {{"Birthdate": "...", "GivenName": "...", "Surname": "..."}}
+   ❌ Pax attributes should NOT contain birthdate, name, or any Individual fields
+
+4. If you extracted ANY of these as Pax attributes, YOU MADE A MISTAKE:
+   ❌ "birthdate" (this belongs in Individual, not Pax)
+   ❌ "name" (this belongs in Individual as GivenName + Surname, not combined)
+   ❌ Any field that came from a NESTED element
+
+DOUBLE-CHECK YOUR JSON NOW before responding!
+═══════════════════════════════════════════════════════════════════════════════
 
 Response must be valid JSON array: [{{container_fact}}]
