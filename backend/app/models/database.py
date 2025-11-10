@@ -68,26 +68,6 @@ class NdcTargetPath(Base):
         return f"<NdcTargetPath({self.spec_version}/{self.message_root}: {self.path_local})>"
 
 
-class NdcPathAlias(Base):
-    """Path aliases for cross-version compatibility."""
-
-    __tablename__ = "ndc_path_aliases"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    from_spec_version = Column(String(10), nullable=False, comment="Source NDC version")
-    from_message_root = Column(String(100), nullable=False, comment="Source message type")
-    from_path_local = Column(Text, nullable=False, comment="Source path")
-    to_spec_version = Column(String(10), nullable=False, comment="Target NDC version")
-    to_message_root = Column(String(100), nullable=False, comment="Target message type")
-    to_path_local = Column(Text, nullable=False, comment="Target path")
-    is_bidirectional = Column(Boolean, default=False, comment="Whether alias works both ways")
-    reason = Column(String(255), comment="Reason for the alias")
-    created_at = Column(DateTime, default=func.now())
-
-    def __repr__(self):
-        return f"<NdcPathAlias({self.from_spec_version} -> {self.to_spec_version}: {self.from_path_local})>"
-
-
 class Run(Base):
     """Tracking table for all processing runs."""
 
@@ -111,7 +91,6 @@ class Run(Base):
 
     # Relationships
     node_facts = relationship("NodeFact", back_populates="run", cascade="all, delete-orphan")
-    association_facts = relationship("AssociationFact", back_populates="run", cascade="all, delete-orphan")
     node_relationships = relationship("NodeRelationship", back_populates="run", cascade="all, delete-orphan")
     pattern_matches = relationship("PatternMatch", back_populates="run", cascade="all, delete-orphan")
 
@@ -150,36 +129,10 @@ class NodeFact(Base):
 
     # Relationships
     run = relationship("Run", back_populates="node_facts")
-    from_associations = relationship("AssociationFact", foreign_keys="[AssociationFact.from_node_fact_id]", back_populates="from_node")
-    to_associations = relationship("AssociationFact", foreign_keys="[AssociationFact.to_node_fact_id]", back_populates="to_node")
     pattern_matches = relationship("PatternMatch", back_populates="node_fact")
 
     def __repr__(self):
         return f"<NodeFact({self.id}: {self.node_type} in {self.section_path})>"
-
-
-class AssociationFact(Base):
-    """Relationships and references between node facts."""
-
-    __tablename__ = "association_facts"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    run_id = Column(String(50), ForeignKey("runs.id", ondelete="CASCADE"), nullable=False)
-    rel_type = Column(String(50), nullable=False, comment="Type of relationship")
-    from_node_fact_id = Column(BigInteger, ForeignKey("node_facts.id", ondelete="CASCADE"), nullable=False)
-    to_node_fact_id = Column(BigInteger, ForeignKey("node_facts.id", ondelete="CASCADE"), nullable=False)
-    from_node_type = Column(String(100), nullable=False, comment="Source node type")
-    to_node_type = Column(String(100), nullable=False, comment="Target node type")
-    ref_key = Column(String(100), comment="Reference key/attribute name")
-    created_at = Column(DateTime, default=func.now())
-
-    # Relationships
-    run = relationship("Run", back_populates="association_facts")
-    from_node = relationship("NodeFact", foreign_keys=[from_node_fact_id], back_populates="from_associations")
-    to_node = relationship("NodeFact", foreign_keys=[to_node_fact_id], back_populates="to_associations")
-
-    def __repr__(self):
-        return f"<AssociationFact({self.rel_type}: {self.from_node_type} -> {self.to_node_type})>"
 
 
 class NodeRelationship(Base):

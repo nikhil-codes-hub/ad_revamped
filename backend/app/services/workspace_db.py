@@ -103,7 +103,6 @@ class WorkspaceSessionFactory:
             'node_facts',
             'patterns',
             'pattern_matches',
-            'association_facts',
             'node_relationships'
             # Add other tables with BigInteger PKs as needed
         ]
