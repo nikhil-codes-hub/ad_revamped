@@ -50,8 +50,6 @@ sequenceDiagram
 
     DW->>DW: detect_ndc_version_fast()
     DW->>WSDb: _create_run_record(STARTED)
-    DW->>WSDb: Query NdcTargetPath for version
-    WSDb-->>DW: Return target paths
     DW->>WSDb: Query NodeConfiguration (BA rules)
     WSDb-->>DW: Return BA configs
 
@@ -219,7 +217,6 @@ flowchart TB
             NodeFactsAPI["NodeFacts API<br/>/api/v1/node_facts"]
             IdentifyAPI["Identify API<br/>/api/v1/identify"]
             NodeConfigsAPI["NodeConfigs API<br/>/api/v1/node-configs"]
-            RefTypesAPI["ReferenceTypes API<br/>/api/v1/reference-types"]
             RelationsAPI["Relationships API<br/>/api/v1/relationships"]
             LLMConfigAPI["LLM Config API<br/>/api/v1/llm-config"]
         end
@@ -269,7 +266,6 @@ flowchart TB
     CORS --> NodeFactsAPI
     CORS --> IdentifyAPI
     CORS --> NodeConfigsAPI
-    CORS --> RefTypesAPI
     CORS --> RelationsAPI
     CORS --> LLMConfigAPI
 
@@ -357,7 +353,7 @@ graph TB
         end
 
         subgraph "models/"
-            Database[database.py<br/>SQLAlchemy Models:<br/>- Run<br/>- NodeFact<br/>- Pattern<br/>- PatternMatch<br/>- NodeConfiguration<br/>- NdcTargetPath<br/>- NdcPathAlias<br/>- AssociationFact<br/>- NodeRelationship]
+            Database[database.py<br/>SQLAlchemy Models:<br/>- Run<br/>- NodeFact<br/>- Pattern<br/>- PatternMatch<br/>- NodeConfiguration<br/>- NodeRelationship]
             Schemas[schemas.py<br/>Pydantic Models:<br/>Request/Response DTOs]
         end
 
@@ -494,36 +490,32 @@ classDiagram
         +DateTime created_at
     }
 
-    class AssociationFact {
-        +BigInteger id PK
-        +String run_id FK
-        +String spec_version
-        +String from_node_type
-        +String to_node_type
-        +String from_node_id
-        +String to_node_id
-        +String association_type
-        +JSON metadata_json
-        +DateTime created_at
-    }
-
     class NodeRelationship {
         +BigInteger id PK
         +String run_id FK
-        +String relationship_type
-        +String parent_node_type
-        +String child_node_type
-        +String parent_node_id
-        +String child_node_id
-        +JSON metadata_json
+        +BigInteger source_node_fact_id FK
+        +String source_node_type
+        +String source_section_path
+        +BigInteger target_node_fact_id FK (nullable)
+        +String target_node_type
+        +String target_section_path
+        +String reference_type
+        +String reference_field
+        +String reference_value
+        +Boolean is_valid
+        +Boolean was_expected
+        +Decimal confidence
+        +String discovered_by
+        +String model_used
         +DateTime created_at
     }
 
     Run "1" --> "*" NodeFact : contains
     Run "1" --> "*" PatternMatch : has
-    Run "1" --> "*" AssociationFact : tracks
     Run "1" --> "*" NodeRelationship : defines
     NodeFact "1" --> "0..1" PatternMatch : matched_by
+    NodeFact "1" --> "*" NodeRelationship : source_node
+    NodeFact "1" --> "*" NodeRelationship : target_node
     Pattern "1" --> "*" PatternMatch : used_in
     Pattern "1" --> "*" Pattern : similar_to
 
@@ -574,48 +566,7 @@ classDiagram
         +DateTime updated_at
     }
 
-    class NdcTargetPath {
-        +Integer id PK
-        +String spec_version
-        +String message_root
-        +Text path_local
-        +String extractor_key
-        +Boolean is_required
-        +String importance
-        +JSON constraints_json
-        +Text notes
-        +DateTime created_at
-        +DateTime updated_at
-    }
-
-    class NdcPathAlias {
-        +Integer id PK
-        +String from_spec_version
-        +String from_message_root
-        +Text from_path_local
-        +String to_spec_version
-        +String to_message_root
-        +Text to_path_local
-        +Boolean is_bidirectional
-        +String reason
-        +DateTime created_at
-    }
-
-    class ImportanceLevel {
-        <<enumeration>>
-        CRITICAL
-        HIGH
-        MEDIUM
-        LOW
-    }
-
-    NdcTargetPath --> ImportanceLevel
-
-    note for NodeConfiguration "✅ ACTIVELY USED: 97 configurations\nQueried by DiscoveryWorkflow\nPriority 1 for target path resolution"
-
-    note for NdcTargetPath "⚠️ DESIGNED BUT UNUSED\nPriority 2 fallback (0 rows)\nNever reached - NodeConfigs always used\nFalls through to hardcoded paths"
-
-    note for NdcPathAlias "❌ DEAD CODE: Not used anywhere\n0 rows, no service references\nModel exists but never queried"
+    note for NodeConfiguration "✅ ACTIVELY USED: 97 configurations\nQueried by DiscoveryWorkflow\nDefines which nodes to extract and how"
 ```
 
 ### Service Layer Classes
@@ -748,11 +699,12 @@ classDiagram
 erDiagram
     Run ||--o{ NodeFact : "contains"
     Run ||--o{ PatternMatch : "has"
-    Run ||--o{ AssociationFact : "tracks"
     Run ||--o{ NodeRelationship : "defines"
 
     Pattern ||--o{ PatternMatch : "used_in"
     NodeFact ||--o| PatternMatch : "matched_by"
+    NodeFact ||--o{ NodeRelationship : "source"
+    NodeFact ||--o{ NodeRelationship : "target"
 
     Run {
         string id PK
@@ -811,28 +763,23 @@ erDiagram
         datetime created_at
     }
 
-    AssociationFact {
-        bigint id PK
-        string run_id FK
-        string spec_version
-        string from_node_type
-        string to_node_type
-        string from_node_id
-        string to_node_id
-        string association_type "reference|link"
-        json metadata_json
-        datetime created_at
-    }
-
     NodeRelationship {
         bigint id PK
         string run_id FK
-        string relationship_type "adult_infant|pax_contact"
-        string parent_node_type
-        string child_node_type
-        string parent_node_id
-        string child_node_id
-        json metadata_json
+        bigint source_node_fact_id FK
+        string source_node_type
+        string source_section_path
+        bigint target_node_fact_id FK "nullable"
+        string target_node_type
+        string target_section_path
+        string reference_type "pax_reference, segment_reference, etc."
+        string reference_field
+        string reference_value
+        bool is_valid
+        bool was_expected
+        decimal confidence
+        string discovered_by
+        string model_used
         datetime created_at
     }
 ```
@@ -856,54 +803,12 @@ erDiagram
         datetime created_at
         datetime updated_at
     }
-
-    NdcTargetPath {
-        int id PK
-        string spec_version
-        string message_root
-        text path_local "XPath pattern"
-        string extractor_key "template or generic_llm"
-        bool is_required
-        string importance "critical, high, medium, low"
-        json constraints_json
-        text notes
-        datetime created_at
-        datetime updated_at
-    }
-
-    NdcPathAlias {
-        int id PK
-        string from_spec_version
-        string from_message_root
-        text from_path_local
-        string to_spec_version
-        string to_message_root
-        text to_path_local
-        bool is_bidirectional
-        string reason "Version migration mapping"
-        datetime created_at
-    }
-
-    ReferenceType {
-        bigint id PK
-        string type_name UK "e.g., pax_reference"
-        string description
-        json metadata_json
-        datetime created_at
-    }
 ```
 
 **Usage Status & Notes**:
 
 **✅ ACTIVELY USED**:
-- **NodeConfiguration** (97 rows): Queried by `DiscoveryWorkflow._should_extract_node()` and `_get_node_configurations()` to control node extraction. Priority 1 in target path resolution strategy. Has API: `/api/v1/node-configs`.
-- **ReferenceType**: Lookup table for relationship types used by `NodeRelationship` and relationship analysis services.
-
-**⚠️ DESIGNED BUT UNUSED**:
-- **NdcTargetPath** (0 rows): Priority 2 fallback in `DiscoveryWorkflow._get_target_paths_from_db()`. Never reached because NodeConfigurations (Priority 1) always has data. When both are empty, falls through to hardcoded paths (Priority 3). Code exists but not actively used.
-
-**❌ DEAD CODE**:
-- **NdcPathAlias** (0 rows): Model defined in `database.py` but never imported or queried by any service. Originally designed for cross-version path mapping but not implemented. Can be removed or kept for future use.
+- **NodeConfiguration** (97 rows): Queried by `DiscoveryWorkflow._should_extract_node()` and `_get_node_configurations()` to control node extraction. Defines which nodes to extract and how. Has API: `/api/v1/node-configs`.
 
 ---
 
@@ -915,7 +820,7 @@ erDiagram
 flowchart LR
     subgraph "Input"
         XML["NDC XML File<br/>17.2/19.2/21.3"]
-        ConfigDB[(Configuration DB<br/>NdcTargetPath<br/>NodeConfiguration)]
+        ConfigDB[(Configuration DB<br/>NodeConfiguration)]
     end
 
     subgraph "XML Processing"
@@ -1201,7 +1106,7 @@ flowchart TB
     end
 
     subgraph "Database Schema (Each Workspace)"
-        Tables[Tables per Workspace:<br/>- runs<br/>- node_facts<br/>- patterns<br/>- pattern_matches<br/>- node_configurations<br/>- ndc_target_paths<br/>- ndc_path_aliases<br/>- association_facts<br/>- node_relationships]
+        Tables[Tables per Workspace:<br/>- runs<br/>- node_facts<br/>- patterns<br/>- pattern_matches<br/>- node_configurations<br/>- node_relationships]
     end
 
     UI --> WSSelector
@@ -1318,10 +1223,7 @@ workspace.db (SQLite)
 ├── patterns                # Learned patterns (signature_hash unique)
 ├── pattern_matches         # Pattern matching results
 ├── node_configurations     # BA-configured extraction rules
-├── ndc_target_paths        # NDC version target paths
-├── ndc_path_aliases        # Cross-version path aliases
-├── association_facts       # Cross-references between nodes
-└── node_relationships      # Business relationships (e.g., adult-infant)
+└── node_relationships      # LLM-discovered relationships between nodes
 ```
 
 **File Sizes** (typical):

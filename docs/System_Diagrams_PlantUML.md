@@ -251,7 +251,6 @@ package "API Layer" {
         [NodeFacts API\n/api/v1/node_facts] as NodeFactsAPI
         [Identify API\n/api/v1/identify] as IdentifyAPI
         [NodeConfigs API\n/api/v1/node-configs] as NodeConfigsAPI
-        [ReferenceTypes API\n/api/v1/reference-types] as RefTypesAPI
         [Relationships API\n/api/v1/relationships] as RelationsAPI
         [LLM Config API\n/api/v1/llm-config] as LLMConfigAPI
     }
@@ -301,7 +300,6 @@ CORS --> PatternsAPI
 CORS --> NodeFactsAPI
 CORS --> IdentifyAPI
 CORS --> NodeConfigsAPI
-CORS --> RefTypesAPI
 CORS --> RelationsAPI
 CORS --> LLMConfigAPI
 
@@ -417,28 +415,23 @@ class PatternMatch {
     +DateTime created_at
 }
 
-class AssociationFact {
-    +BigInteger id <<PK>>
-    +String run_id <<FK>>
-    +String spec_version
-    +String from_node_type
-    +String to_node_type
-    +String from_node_id
-    +String to_node_id
-    +String association_type
-    +JSON metadata_json
-    +DateTime created_at
-}
-
 class NodeRelationship {
     +BigInteger id <<PK>>
     +String run_id <<FK>>
-    +String relationship_type
-    +String parent_node_type
-    +String child_node_type
-    +String parent_node_id
-    +String child_node_id
-    +JSON metadata_json
+    +BigInteger source_node_fact_id <<FK>>
+    +String source_node_type
+    +String source_section_path
+    +BigInteger target_node_fact_id <<FK>> (nullable)
+    +String target_node_type
+    +String target_section_path
+    +String reference_type
+    +String reference_field
+    +String reference_value
+    +Boolean is_valid
+    +Boolean was_expected
+    +Decimal confidence
+    +String discovered_by
+    +String model_used
     +DateTime created_at
 }
 
@@ -464,9 +457,10 @@ enum ImportanceLevel {
 
 Run "1" --> "*" NodeFact : contains
 Run "1" --> "*" PatternMatch : has
-Run "1" --> "*" AssociationFact : tracks
 Run "1" --> "*" NodeRelationship : defines
 NodeFact "1" --> "0..1" PatternMatch : matched_by
+NodeFact "1" --> "*" NodeRelationship : source_node
+NodeFact "1" --> "*" NodeRelationship : target_node
 Pattern "1" --> "*" PatternMatch : used_in
 
 Run ..> RunKind
@@ -548,39 +542,34 @@ entity "PatternMatch" as pattern_match {
     created_at : datetime
 }
 
-entity "AssociationFact" as association_fact {
-    * id : bigint <<PK>>
-    --
-    * run_id : string <<FK>>
-    spec_version : string
-    from_node_type : string
-    to_node_type : string
-    from_node_id : string
-    to_node_id : string
-    association_type : string (reference|link)
-    metadata_json : json
-    created_at : datetime
-}
-
 entity "NodeRelationship" as node_relationship {
     * id : bigint <<PK>>
     --
     * run_id : string <<FK>>
-    * relationship_type : string (adult_infant|pax_contact)
-    parent_node_type : string
-    child_node_type : string
-    parent_node_id : string
-    child_node_id : string
-    metadata_json : json
+    * source_node_fact_id : bigint <<FK>>
+    source_node_type : string
+    source_section_path : string
+    target_node_fact_id : bigint <<FK>> (nullable)
+    target_node_type : string
+    target_section_path : string
+    * reference_type : string (pax_reference, segment_reference, etc.)
+    reference_field : string
+    reference_value : string
+    is_valid : bool
+    was_expected : bool
+    confidence : decimal
+    discovered_by : string
+    model_used : string
     created_at : datetime
 }
 
 run ||--o{ node_fact : "contains"
 run ||--o{ pattern_match : "has"
-run ||--o{ association_fact : "tracks"
 run ||--o{ node_relationship : "defines"
 pattern ||--o{ pattern_match : "used_in"
 node_fact ||--o| pattern_match : "matched_by"
+node_fact ||--o{ node_relationship : "source"
+node_fact ||--o{ node_relationship : "target"
 
 @enduml
 {plantuml}
@@ -638,9 +627,6 @@ note right of WSFactory
     - patterns
     - pattern_matches
     - node_configurations
-    - ndc_target_paths
-    - ndc_path_aliases
-    - association_facts
     - node_relationships
 end note
 
