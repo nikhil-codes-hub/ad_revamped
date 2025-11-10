@@ -1,8 +1,9 @@
 # AssistedDiscovery - PlantUML Diagrams for Confluence
 
-**Generated**: 2025-10-31
+**Generated**: 2025-11-10
 **Source**: System_Diagrams.md
 **Purpose**: PlantUML macros for Confluence publishing
+**Updates**: Added nested children support (recursive extraction, validation, UI display)
 
 ---
 
@@ -76,6 +77,11 @@ alt skip_pattern_generation=False
 
     loop For each NodeFact group
         PatGen -> PatGen: _extract_decision_rule()
+        PatGen -> PatGen: _get_child_structure_fingerprint()\n(recursive)
+        note right
+            Recursively extracts nested children
+            e.g., Pax > Individual > {Birthdate, GivenName}
+        end note
         PatGen -> PatGen: _normalize_child_structure_for_hash()
         PatGen -> PatGen: _generate_signature_hash(SHA-256)
         PatGen -> WSDb: find_or_create_pattern\n(dedup by signature)
@@ -151,6 +157,11 @@ loop For each NodeFact
             2. Must-have attrs (30%)
             3. Child structure (25%)
             4. References (15%)
+        end note
+        IW -> IW: validate_nested_children()\n(recursive)
+        note right
+            Recursively validates nested child structures
+            e.g., validates Pax > Individual > Birthdate
         end note
     end
 
@@ -848,4 +859,5 @@ scale 1.5
 **End of PlantUML Diagrams**
 
 *Generated from System_Diagrams.md for Confluence publishing*
-*Last Updated: 2025-10-31*
+*Last Updated: 2025-11-10*
+*Includes: Nested children support (recursive extraction, validation, UI display)*

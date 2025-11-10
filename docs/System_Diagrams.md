@@ -71,6 +71,9 @@ sequenceDiagram
         Note over LLMExt,Azure: Model: gpt-4o<br/>Max tokens: 4096<br/>Temperature: 0.0
         Azure-->>LLMExt: Structured NodeFacts JSON
 
+        LLMExt->>LLMExt: _clean_fact() - recursive
+        Note over LLMExt: Preserves nested children hierarchy<br/>e.g., Pax > Individual > attributes
+
         LLMExt->>BI: enrich_fact(node_fact)
         BI->>BI: enrich_passenger_list()
         BI->>BI: Add PTC breakdown, relationships
@@ -91,6 +94,8 @@ sequenceDiagram
 
         loop For each NodeFact group
             PatGen->>PatGen: _extract_decision_rule()
+            PatGen->>PatGen: _get_child_structure_fingerprint() (recursive)
+            Note over PatGen: Recursively extracts nested children<br/>e.g., Pax > Individual > {Birthdate, GivenName}
             PatGen->>PatGen: _generate_signature_hash(SHA-256)
             PatGen->>WSDb: find_or_create_pattern(dedup by signature)
             WSDb-->>PatGen: Pattern created/updated
@@ -147,6 +152,8 @@ sequenceDiagram
         loop For each candidate Pattern
             IW->>IW: calculate_pattern_similarity()
             Note over IW: 4-Factor Scoring:<br/>1. Node type (30%)<br/>2. Must-have attrs (30%)<br/>3. Child structure (25%)<br/>4. References (15%)
+            IW->>IW: validate_nested_children() (recursive)
+            Note over IW: Recursively validates nested child structures<br/>e.g., validates Pax > Individual > Birthdate
         end
 
         IW->>IW: Select best match (highest confidence)
@@ -1382,6 +1389,98 @@ workspace.db (SQLite)
 
 ---
 
+## Nested Children Handling
+
+**Feature Added**: 2025-11-10
+
+### Overview
+
+AssistedDiscovery now fully supports **recursive nested child structures** in XML patterns. This allows the system to correctly extract, store, validate, and display deeply nested XML hierarchies like `Pax > Individual > Birthdate`.
+
+### Key Components Updated
+
+1. **LLM Extraction Prompts** (`backend/app/prompts/container_extraction.txt`)
+   - Added explicit rules to distinguish LEAF vs STRUCTURED elements
+   - Prevents flattening of nested structures
+   - Includes verification checklist for LLM before responding
+
+2. **Fact Cleaning** (`backend/app/services/llm_extractor.py`)
+   - `_clean_fact()` function now recursively preserves nested children
+   - Before: Nested children were dropped during cleaning
+   - After: Full hierarchy preserved (e.g., Pax → children: [Individual → attributes: {Birthdate, GivenName}])
+
+3. **Pattern Generation** (`backend/app/services/pattern_generator.py`)
+   - `_get_child_structure_fingerprint()` now recursively extracts nested child structures
+   - Patterns include `child_structure.child_structures` for nested hierarchies
+   - Example pattern structure:
+     ```json
+     {
+       "node_type": "Pax",
+       "required_attributes": ["PaxID", "PTC"],
+       "child_structure": {
+         "has_children": true,
+         "child_structures": [
+           {
+             "node_type": "Individual",
+             "required_attributes": ["Birthdate", "GivenName", "Surname"]
+           }
+         ]
+       }
+     }
+     ```
+
+4. **Pattern Validation** (`backend/app/services/discovery_workflow.py`)
+   - Recursive nested children validation during Discovery
+   - Checks nested attributes at all levels of hierarchy
+   - Reports missing elements with full path (e.g., `PaxList[1]/Pax[1]/Individual/Birthdate`)
+
+5. **UI Comparison View** (`backend/app/api/v1/endpoints/discovery.py` + `frontend/streamlit_ui/app_core.py`)
+   - `build_structured_comparison()` extracts nested children from patterns
+   - UI displays nested children with tree structure:
+     ```
+     Expected Children:
+     - Pax
+       Required child attributes: PaxID, PTC
+         └─ Individual (nested)
+             Required attributes: Birthdate, GivenName, Surname
+     ```
+
+### Data Flow
+
+```mermaid
+flowchart LR
+    XML[XML with nested structure<br/>Pax > Individual > Birthdate]
+    LLM[LLM Extraction]
+    Clean[_clean_fact recursive]
+    DB[(Database<br/>NodeFact with children)]
+    PatGen[Pattern Generator<br/>recursive fingerprint]
+    Pattern[(Pattern with<br/>child_structure)]
+    Validation[Nested Validation]
+    UI[UI Display<br/>with tree structure]
+
+    XML --> LLM
+    LLM --> Clean
+    Clean -->|Preserves hierarchy| DB
+    DB --> PatGen
+    PatGen -->|Recursive extraction| Pattern
+    Pattern --> Validation
+    Validation -->|Quality checks| UI
+```
+
+### Bug Fixes
+
+**Issue**: Individual element missing from patterns despite being present in XML
+
+**Root Causes Fixed**:
+1. ✅ LLM extraction prompt was telling AI to flatten nested structures
+2. ✅ `_clean_fact()` was dropping children's own `children` arrays
+3. ✅ Pattern generator wasn't recursively extracting child structures
+4. ✅ UI comparison wasn't showing nested children
+
+**Result**: Full nested hierarchy now preserved end-to-end through the entire pipeline.
+
+---
+
 ## Summary
 
 This document provides comprehensive architectural diagrams for the AssistedDiscovery system, including:
@@ -1403,5 +1502,5 @@ This document provides comprehensive architectural diagrams for the AssistedDisc
 - **LLM**: Azure OpenAI GPT-4o (not OpenAI)
 - **Logging**: structlog
 
-**Last Updated**: 2025-10-29
-**Reflects**: Current implementation in `ad/` codebase
+**Last Updated**: 2025-11-10
+**Reflects**: Current implementation in `ad/` codebase including nested children support
