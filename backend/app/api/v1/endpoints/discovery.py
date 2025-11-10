@@ -973,7 +973,7 @@ Action: No action required - continue processing as normal. The data meets all q
                     # Build context about pattern completeness
                     pattern_context = ""
                     if is_permissive:
-                        pattern_context = f"Note: The expected pattern is minimal (completeness: {completeness}%) and accepts most structures. "
+                        pattern_context = f"Note: The expected pattern is minimal (completeness: {completeness}% - calculated from pattern requirements) and accepts most structures. "
 
                     # Adjust prompt based on what's actually wrong
                     if has_missing:
