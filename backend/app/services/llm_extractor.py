@@ -639,6 +639,30 @@ class LLMNodeFactsExtractor:
                         'snippet': child.get('snippet', ''),
                         'confidence': float(child.get('confidence', 0.8))
                     }
+
+                    # **CRITICAL**: Recursively handle nested children (e.g., Individual within Pax)
+                    # If this child has its own children, recursively clean them
+                    nested_children = child.get('children', [])
+                    if nested_children:
+                        cleaned_nested = []
+                        for nested in nested_children:
+                            if isinstance(nested, dict):
+                                # Recursively call _clean_fact to handle deeply nested structures
+                                cleaned_nested_child = self._clean_fact(nested)
+                                # Extract just the child info (not the full fact wrapper)
+                                cleaned_nested.append({
+                                    'node_type': cleaned_nested_child.get('node_type'),
+                                    'ordinal': cleaned_nested_child.get('node_ordinal', 1),
+                                    'attributes': cleaned_nested_child.get('attributes', {}),
+                                    'references': cleaned_nested_child.get('references', {}),
+                                    'children': cleaned_nested_child.get('children', []),
+                                    'snippet': cleaned_nested_child.get('snippet', ''),
+                                    'confidence': cleaned_nested_child.get('confidence', 0.8)
+                                })
+                            else:
+                                cleaned_nested.append(nested)
+                        cleaned_child['children'] = cleaned_nested
+
                     # Apply PII masking to child attributes
                     if settings.PII_MASKING_ENABLED:
                         cleaned_child['attributes'] = pii_engine.mask_dictionary(cleaned_child['attributes'])
