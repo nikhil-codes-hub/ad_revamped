@@ -149,7 +149,7 @@ async def get_node_fact_associations(node_fact_id: int):
     logger.info("Getting node fact associations", node_fact_id=node_fact_id)
 
     # TODO: Implement association retrieval
-    # 1. Query association_facts table for relationships
+    # 1. Query node_relationships table for relationships
     # 2. Include both incoming and outgoing relationships
     # 3. Show relationship types and reference keys
 

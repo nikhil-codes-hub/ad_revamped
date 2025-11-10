@@ -4,47 +4,9 @@
 
 -- Drop tables if they exist (for clean setup)
 DROP TABLE IF EXISTS pattern_matches;
-DROP TABLE IF EXISTS association_facts;
 DROP TABLE IF EXISTS node_facts;
 DROP TABLE IF EXISTS patterns;
 DROP TABLE IF EXISTS runs;
-DROP TABLE IF EXISTS ndc_path_aliases;
-DROP TABLE IF EXISTS ndc_target_paths;
-
--- Table: ndc_target_paths
--- Configuration for target XML paths per NDC version
-CREATE TABLE ndc_target_paths (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    spec_version VARCHAR(10) NOT NULL COMMENT 'NDC specification version',
-    message_root VARCHAR(100) NOT NULL COMMENT 'Root element name',
-    path_local TEXT NOT NULL COMMENT 'Local-name path for targeting',
-    extractor_key VARCHAR(50) NOT NULL COMMENT 'template or generic_llm',
-    is_required BOOLEAN DEFAULT FALSE COMMENT 'Whether this section is required',
-    importance VARCHAR(20) DEFAULT 'medium' COMMENT 'Section importance level',
-    constraints_json JSON COMMENT 'Validation constraints and rules',
-    notes TEXT COMMENT 'Human-readable description and notes',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    INDEX idx_version_message (spec_version, message_root)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-COMMENT='Configuration for target XML paths per NDC version';
-
--- Table: ndc_path_aliases
--- Path aliases for cross-version compatibility
-CREATE TABLE ndc_path_aliases (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    from_spec_version VARCHAR(10) NOT NULL COMMENT 'Source NDC version',
-    from_message_root VARCHAR(100) NOT NULL COMMENT 'Source message type',
-    from_path_local TEXT NOT NULL COMMENT 'Source path',
-    to_spec_version VARCHAR(10) NOT NULL COMMENT 'Target NDC version',
-    to_message_root VARCHAR(100) NOT NULL COMMENT 'Target message type',
-    to_path_local TEXT NOT NULL COMMENT 'Target path',
-    is_bidirectional BOOLEAN DEFAULT FALSE COMMENT 'Whether alias works both ways',
-    reason VARCHAR(255) COMMENT 'Reason for the alias',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-COMMENT='Path aliases for cross-version compatibility';
 
 -- Table: runs
 -- Tracking table for all processing runs
@@ -90,29 +52,6 @@ CREATE TABLE node_facts (
     INDEX idx_section_path (section_path(255))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Extracted and masked node facts from XML processing';
-
--- Table: association_facts
--- Relationships and references between node facts
-CREATE TABLE association_facts (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    run_id VARCHAR(50) NOT NULL,
-    rel_type VARCHAR(50) NOT NULL COMMENT 'Type of relationship',
-    from_node_fact_id BIGINT NOT NULL,
-    to_node_fact_id BIGINT NOT NULL,
-    from_node_type VARCHAR(100) NOT NULL COMMENT 'Source node type',
-    to_node_type VARCHAR(100) NOT NULL COMMENT 'Target node type',
-    ref_key VARCHAR(100) COMMENT 'Reference key/attribute name',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (run_id) REFERENCES runs(id) ON DELETE CASCADE,
-    FOREIGN KEY (from_node_fact_id) REFERENCES node_facts(id) ON DELETE CASCADE,
-    FOREIGN KEY (to_node_fact_id) REFERENCES node_facts(id) ON DELETE CASCADE,
-    INDEX idx_run (run_id),
-    INDEX idx_rel_type (rel_type),
-    INDEX idx_from_node (from_node_fact_id),
-    INDEX idx_to_node (to_node_fact_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-COMMENT='Relationships and references between node facts';
 
 -- Table: patterns
 -- Discovered patterns for XML node classification
