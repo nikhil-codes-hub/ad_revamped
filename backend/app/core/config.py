@@ -47,11 +47,19 @@ class Settings(BaseSettings):
     REDIS_DB: int = Field(default=0, description="Redis database number")
 
     # LLM Configuration - Azure OpenAI
-    AZURE_OPENAI_KEY: str = Field(default="", description="Azure OpenAI API key")
+    AZURE_OPENAI_KEY: str = Field(default="", description="Azure OpenAI API key (for api_key auth method)")
     AZURE_OPENAI_ENDPOINT: str = Field(default="", description="Azure OpenAI endpoint URL")
     AZURE_API_VERSION: str = Field(default="2025-01-01-preview", description="Azure OpenAI API version")
     MODEL_DEPLOYMENT_NAME: str = Field(default="gpt-4o", description="Primary model deployment name")
     FALLBACK_MODEL_DEPLOYMENT_NAME: str = Field(default="gpt-4o-mini", description="Fallback model deployment name")
+
+    # Azure Authentication Method
+    AZURE_AUTH_METHOD: str = Field(default="api_key", description="Azure auth method: api_key or bdp")
+
+    # BDP (Azure AD) Authentication
+    AZURE_TENANT_ID: str = Field(default="", description="Azure AD tenant ID (for BDP auth)")
+    AZURE_CLIENT_ID: str = Field(default="", description="Azure AD client ID (for BDP auth)")
+    AZURE_CLIENT_SECRET: str = Field(default="", description="Azure AD client secret (for BDP auth)")
 
     # LLM Configuration - OpenAI (fallback)
     OPENAI_API_KEY: str = Field(default="", description="OpenAI API key")
@@ -114,6 +122,14 @@ class Settings(BaseSettings):
         if v not in valid_environments:
             raise ValueError(f"Environment must be one of: {valid_environments}")
         return v
+
+    @validator("AZURE_AUTH_METHOD")
+    def validate_azure_auth_method(cls, v):
+        """Validate Azure authentication method."""
+        valid_methods = {"api_key", "bdp"}
+        if v.lower() not in valid_methods:
+            raise ValueError(f"Azure auth method must be one of: {valid_methods}")
+        return v.lower()
 
     @validator("LOG_LEVEL")
     def validate_log_level(cls, v):
