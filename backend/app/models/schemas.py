@@ -178,21 +178,7 @@ class IdentifyReport(BaseModel):
 
 
 # Configuration Models
-class NdcTargetPathResponse(BaseModel):
-    """Response model for target path configuration."""
-    id: int = Field(..., description="Unique identifier")
-    spec_version: str = Field(..., description="NDC version")
-    message_root: str = Field(..., description="Message root element")
-    path_local: str = Field(..., description="Local path")
-    extractor_key: str = Field(..., description="Extractor type")
-    is_required: bool = Field(..., description="Whether section is required")
-    importance: ImportanceLevel = Field(..., description="Section importance")
-    constraints_json: Optional[Dict[str, Any]] = Field(None, description="Validation constraints")
-    notes: Optional[str] = Field(None, description="Description and notes")
-
-    class Config:
-        from_attributes = True
-
+# (NdcTargetPathResponse removed - table is unused, superseded by NodeConfiguration)
 
 # Utility Models
 class HealthResponse(BaseModel):

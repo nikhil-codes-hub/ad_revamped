@@ -17,7 +17,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy import create_engine
 
 from app.core.config import settings
-from app.models.database import Run, RunKind, RunStatus, NodeFact, NdcTargetPath, NodeConfiguration, Pattern
+from app.models.database import Run, RunKind, RunStatus, NodeFact, NodeConfiguration, Pattern
 from app.services.xml_parser import XmlStreamingParser, create_parser_for_version, XmlSubtree, detect_ndc_version_fast
 from app.services.template_extractor import template_extractor
 from app.services.llm_extractor import get_llm_extractor
@@ -47,31 +47,6 @@ class PatternExtractorWorkflow:
             for chunk in iter(lambda: f.read(4096), b""):
                 hash_sha256.update(chunk)
         return hash_sha256.hexdigest()
-
-    def _get_target_paths_from_db(self, spec_version: str = None,
-                                 message_root: str = None) -> List[Dict]:
-        """Get target paths from database."""
-        query = self.db_session.query(NdcTargetPath)
-
-        if spec_version:
-            query = query.filter(NdcTargetPath.spec_version == spec_version)
-        if message_root:
-            query = query.filter(NdcTargetPath.message_root == message_root)
-
-        target_paths = []
-        for target in query.all():
-            target_paths.append({
-                'id': target.id,
-                'spec_version': target.spec_version,
-                'message_root': target.message_root,
-                'path_local': target.path_local,
-                'extractor_key': target.extractor_key,
-                'is_required': target.is_required,
-                'importance': target.importance,
-                'notes': target.notes
-            })
-
-        return target_paths
 
     def _get_node_configurations(self, spec_version: str = None,
                                  message_root: str = None,
@@ -374,13 +349,10 @@ class PatternExtractorWorkflow:
         }
 
         try:
-            # PHASE 1: Fast version detection
-            logger.info("Phase 1: Fast version detection")
             version_info = detect_ndc_version_fast(xml_file_path)
 
             target_paths = []
             node_configs = {}
-            optimization_strategy = None
 
             if version_info and version_info.spec_version and version_info.message_root:
                 # SUCCESS: Version detected, use optimized approach
@@ -408,7 +380,6 @@ class PatternExtractorWorkflow:
                 if node_configs:
                     # Use node configurations as target paths
                     target_paths = self._convert_node_configs_to_target_paths(node_configs)
-                    optimization_strategy = "node_configurations"
                     logger.info(f"Using {len(target_paths)} configured target paths")
                 else:
                     # No node configurations found - cannot proceed
@@ -429,8 +400,6 @@ class PatternExtractorWorkflow:
                     "in the root element or PayloadAttributes section."
                 )
 
-            # PHASE 2: Targeted XML processing
-            logger.info(f"Phase 2: XML processing with {optimization_strategy}")
             parser = XmlStreamingParser(target_paths)
 
             # Initialize variables
@@ -481,14 +450,7 @@ class PatternExtractorWorkflow:
 
                 if matching_target:
                     # Only collect nodes that should be extracted
-                    if optimization_strategy == "ndc_target_paths":
-                        if self._should_extract_node(subtree.path, node_configs):
-                            subtrees_to_process.append(subtree)
-                        else:
-                            logger.debug(f"Skipping node {subtree.path} - disabled by NodeConfiguration")
-                            nodes_skipped_by_config += 1
-                    else:
-                        subtrees_to_process.append(subtree)
+                    subtrees_to_process.append(subtree)
                 else:
                     logger.warning(f"No matching target path found for subtree: {subtree.path}")
 
@@ -501,7 +463,7 @@ class PatternExtractorWorkflow:
             # Process nodes - Parallel or Sequential based on configuration
             if use_parallel and len(subtrees_to_process) > 0:
                 # PARALLEL PROCESSING
-                logger.info(f"🚀 Starting PARALLEL processing with {settings.MAX_PARALLEL_NODES} workers")
+                logger.info(f"Starting PARALLEL processing with {settings.MAX_PARALLEL_NODES} workers")
 
                 # Initialize thread-safe database manager
                 db_manager = ThreadSafeDatabaseManager(self.db_session.bind)
@@ -515,7 +477,6 @@ class PatternExtractorWorkflow:
                         message_root=version_info.message_root if version_info else None,
                         llm_extractor=llm_extractor,
                         db_manager=db_manager,
-                        optimization_strategy=optimization_strategy,
                         node_configs=node_configs,
                         max_workers=min(settings.MAX_PARALLEL_NODES, len(subtrees_to_process)),
                         should_extract_func=self._should_extract_node
@@ -619,7 +580,6 @@ class PatternExtractorWorkflow:
                 'nodes_skipped_by_config': nodes_skipped_by_config,
                 'node_configs_loaded': len(node_configs),
                 'status': 'in_progress',  # Still processing - relationship analysis and pattern generation pending
-                'optimization_used': optimization_strategy,
                 'target_paths_loaded': len(target_paths),
                 'version_info': {
                     'spec_version': version_info.spec_version if version_info else None,
@@ -640,17 +600,13 @@ class PatternExtractorWorkflow:
                         f"See error details for more information."
                     )
 
-            # DON'T update run status to completed yet - relationship analysis and pattern generation still pending
-
             logger.info(f"Optimized discovery workflow completed: {run_id} - "
-                       f"Strategy: {optimization_strategy}, "
                        f"Paths loaded: {len(target_paths)}, "
                        f"Node configs: {len(node_configs)}, "
                        f"Subtrees: {subtrees_processed}, "
                        f"Facts: {total_facts_extracted}, "
                        f"Skipped by config: {nodes_skipped_by_config}")
 
-            # PHASE 2.5: Relationship Analysis (if NodeFacts were extracted)
             logger.info(f"DEBUG: About to check Phase 2.5 condition - total_facts_extracted = {total_facts_extracted}")
             if total_facts_extracted > 0:
                 logger.info(f"DEBUG: Phase 2.5 condition TRUE - entering relationship analysis")

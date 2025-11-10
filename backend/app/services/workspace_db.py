@@ -99,7 +99,6 @@ class WorkspaceSessionFactory:
         inspector = inspect(self.engine)
         tables_to_fix = [
             'node_configurations',
-            'reference_types',
             'node_facts',
             'patterns',
             'pattern_matches',

@@ -139,7 +139,6 @@ def process_single_node(
     version_info: VersionInfo,
     llm_extractor: LLMNodeFactsExtractor,
     db_manager: ThreadSafeDatabaseManager,
-    optimization_strategy: str,
     node_configs: Dict
 ) -> Dict[str, Any]:
     """
@@ -153,15 +152,14 @@ def process_single_node(
     """
     try:
         # Apply node config filtering (if applicable)
-        if optimization_strategy == "ndc_target_paths":
-            if not self._should_extract_node(subtree.path, node_configs):
-                logger.info(f"Skipping node {subtree.path} - disabled by NodeConfiguration")
-                return {
-                    'subtree_path': subtree.path,
-                    'status': 'skipped',
-                    'facts_stored': 0,
-                    'reason': 'disabled_by_config'
-                }
+        if not _should_extract_node(subtree.path, node_configs):
+            logger.info(f"Skipping node {subtree.path} - disabled by NodeConfiguration")
+            return {
+                'subtree_path': subtree.path,
+                'status': 'skipped',
+                'facts_stored': 0,
+                'reason': 'disabled_by_config'
+            }
 
         # LLM Extraction
         logger.debug(f"Processing node: {subtree.path}")
@@ -278,7 +276,6 @@ with ThreadPoolExecutor(max_workers=max_workers) as executor:
             version_info=version_info,
             llm_extractor=get_llm_extractor(),
             db_manager=db_manager,
-            optimization_strategy=optimization_strategy,
             node_configs=node_configs
         ): subtree
         for subtree in subtrees_to_process

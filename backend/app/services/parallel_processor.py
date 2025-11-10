@@ -150,7 +150,6 @@ def process_single_node(
     message_root: str,
     llm_extractor: LLMNodeFactsExtractor,
     db_manager: ThreadSafeDatabaseManager,
-    optimization_strategy: str,
     node_configs: Dict,
     should_extract_func: Optional[Callable] = None
 ) -> NodeProcessingResult:
@@ -167,7 +166,6 @@ def process_single_node(
         message_root: Message root (e.g., OrderViewRS)
         llm_extractor: LLM extractor instance
         db_manager: Thread-safe database manager
-        optimization_strategy: Strategy being used (for filtering logic)
         node_configs: Node configurations for filtering
         should_extract_func: Optional function to check if node should be extracted
 
@@ -177,15 +175,6 @@ def process_single_node(
     start_time = datetime.now()
 
     try:
-        # Apply node config filtering (if applicable)
-        if optimization_strategy == "ndc_target_paths" and should_extract_func:
-            if not should_extract_func(subtree.path, node_configs):
-                logger.info(f"Skipping node {subtree.path} - disabled by NodeConfiguration")
-                return NodeProcessingResult(
-                    subtree_path=subtree.path,
-                    status='skipped',
-                    facts_stored=0
-                )
 
         # LLM Extraction
         logger.debug(f"[Thread-{threading.current_thread().name}] Processing node: {subtree.path}")
@@ -266,7 +255,6 @@ def process_nodes_parallel(
     message_root: str,
     llm_extractor: LLMNodeFactsExtractor,
     db_manager: ThreadSafeDatabaseManager,
-    optimization_strategy: str,
     node_configs: Dict,
     max_workers: int,
     should_extract_func: Optional[Callable] = None
@@ -281,7 +269,6 @@ def process_nodes_parallel(
         message_root: Message root
         llm_extractor: LLM extractor instance
         db_manager: Thread-safe database manager
-        optimization_strategy: Strategy being used
         node_configs: Node configurations
         max_workers: Maximum number of parallel workers
         should_extract_func: Optional function to check if node should be extracted
@@ -308,7 +295,6 @@ def process_nodes_parallel(
                 message_root=message_root,
                 llm_extractor=llm_extractor,
                 db_manager=db_manager,
-                optimization_strategy=optimization_strategy,
                 node_configs=node_configs,
                 should_extract_func=should_extract_func
             ): subtree

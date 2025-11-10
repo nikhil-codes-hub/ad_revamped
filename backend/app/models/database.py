@@ -47,27 +47,6 @@ class Verdict(str, Enum):
     UNCERTAIN = "uncertain"
 
 
-class NdcTargetPath(Base):
-    """Configuration for target XML paths per NDC version."""
-
-    __tablename__ = "ndc_target_paths"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    spec_version = Column(String(10), nullable=False, comment="NDC specification version")
-    message_root = Column(String(100), nullable=False, comment="Root element name")
-    path_local = Column(Text, nullable=False, comment="Local-name path for targeting")
-    extractor_key = Column(String(50), nullable=False, comment="template or generic_llm")
-    is_required = Column(Boolean, default=False, comment="Whether this section is required")
-    importance = Column(String(20), default=ImportanceLevel.MEDIUM, comment="Section importance level")
-    constraints_json = Column(JSON, comment="Validation constraints and rules")
-    notes = Column(Text, comment="Human-readable description and notes")
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
-
-    def __repr__(self):
-        return f"<NdcTargetPath({self.spec_version}/{self.message_root}: {self.path_local})>"
-
-
 class Run(Base):
     """Tracking table for all processing runs."""
 
@@ -280,33 +259,6 @@ class NodeConfiguration(Base):
         return self.airline_code if self.airline_code else "All airlines"
 
 
-class ReferenceType(Base):
-    """
-    DEPRECATED: Glossary of reference types - no longer used.
-    LLM auto-discovers all relationship types during analysis.
-    Table kept for backward compatibility only.
-    """
-
-    __tablename__ = "reference_types"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    reference_type = Column(String(100), nullable=False, unique=True, comment="Unique reference type identifier")
-    display_name = Column(String(200), nullable=False, comment="Human-readable display name")
-    description = Column(Text, nullable=False, comment="Description of what this reference represents")
-    example = Column(String(500), comment="Example of this reference type")
-    category = Column(String(50), comment="Category: passenger, segment, journey, baggage, price, service")
-    is_active = Column(Boolean, default=True, comment="Whether this reference type is active")
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
-    created_by = Column(String(100), comment="User who created this reference type")
-
-    def __repr__(self):
-        return f"<ReferenceType({self.reference_type}: {self.display_name})>"
-
-    @property
-    def full_description(self) -> str:
-        """Get full description with example."""
-        desc = self.description
-        if self.example:
-            desc += f"\n\nExample: {self.example}"
-        return desc
+# ReferenceType model removed - table deprecated and unused.
+# LLM auto-discovers all relationship types during analysis.
+# API endpoint also removed from backend/app/api/v1/endpoints/reference_types.py
