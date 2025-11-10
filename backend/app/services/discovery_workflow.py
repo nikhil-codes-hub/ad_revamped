@@ -827,16 +827,18 @@ class DiscoveryWorkflow:
     
                                     return False
     
+                                # Get child info (needed for both attribute checking and nested children checking)
+                                child_node_type = child.get('node_type', 'Unknown')
+                                child_ordinal = child.get('ordinal', idx + 1)
+
                                 # Find missing required attributes (with fuzzy matching to handle LLM normalization)
                                 missing_attrs = set()
                                 for required_attr in required_child_attrs - METADATA_FIELDS:
                                     if not attrs_match_fuzzy(required_attr, actual_child_attrs):
                                         missing_attrs.add(required_attr)
-    
+
                                 if missing_attrs:
                                     # Add to missing_elements
-                                    child_node_type = child.get('node_type', 'Unknown')
-                                    child_ordinal = child.get('ordinal', idx + 1)
                                     child_path = f"{nf.node_type}[1]/{child_node_type}[{child_ordinal}]"
     
                                     for missing_attr in missing_attrs:
