@@ -149,7 +149,7 @@ SPECIAL EXTRACTION PATTERNS:
 - PTC → extract to attributes (keep exact XML tag name)
 - **IMPORTANT**: DO NOT flatten or combine GivenName + Surname!
   * If GivenName/Surname are inside a structured element like <Individual>, preserve the structure:
-    → Individual becomes a nested child with its own attributes: {Birthdate, GivenName, Surname}
+    → Individual becomes a nested child with its own attributes: {{Birthdate, GivenName, Surname}}
   * If GivenName/Surname are direct leaf children: extract as individual attributes
 - InfantRef / PaxRefID → extract to references.infant or references.parent
 - ContactInfoRef → extract to references.contact_info
