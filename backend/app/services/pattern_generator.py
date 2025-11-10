@@ -124,11 +124,23 @@ class PatternGenerator:
                 child_attrs = self._extract_required_attributes(child)
                 child_refs = list(child.get('references', {}).keys())
 
-                child_structures.append({
+                # Build child structure
+                child_structure = {
                     'node_type': node_type,
                     'required_attributes': sorted(child_attrs),
                     'reference_fields': sorted(child_refs)
-                })
+                }
+
+                # **NEW**: Recursively handle nested children (e.g., Pax > Individual > Birthdate)
+                # Check if this child has its own children
+                child_children = child.get('children', [])
+                if child_children:
+                    # Recursively extract child structure
+                    nested_structure = self._get_child_structure_fingerprint(child_children)
+                    if nested_structure.get('has_children'):
+                        child_structure['child_structure'] = nested_structure
+
+                child_structures.append(child_structure)
 
             return {
                 "has_children": True,

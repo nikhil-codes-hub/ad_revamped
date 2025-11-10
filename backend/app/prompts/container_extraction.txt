@@ -49,13 +49,30 @@ Each child's node_type should be: "{repeating_tag}"
       "node_type": "ACTUAL_XML_TAG_NAME_OF_THIS_CHILD",  // CRITICAL: Use THIS child's actual XML tag name (e.g., if XML is <CorrelationID>, use "CorrelationID")
       "ordinal": 1,
       "attributes": {{
-        // **CRITICAL**: Extract this child's sub-children (elements nested INSIDE this child) as attributes
-        // - If this child HAS sub-children: extract them with their exact XML tag names as keys
-        //   Example: <Pax><PaxID>123</PaxID><PTC>ADT</PTC></Pax> → {{"PaxID": "123", "PTC": "ADT"}}
-        // - If this child is a LEAF (just text, no sub-children): extract as {{"value": "the text content"}}
-        //   Example: <CorrelationID>abc123</CorrelationID> → {{"value": "abc123"}}
-        // - DO NOT extract SIBLING elements as attributes - only elements nested INSIDE this child
+        // **CRITICAL EXTRACTION RULES**:
+        // 1. SIMPLE LEAF ELEMENTS (text-only, no nested children): Extract as attributes
+        //    Example: <Pax><PaxID>123</PaxID><PTC>ADT</PTC></Pax> → {{"PaxID": "123", "PTC": "ADT"}}
+        //    Example: <CorrelationID>abc123</CorrelationID> → {{"value": "abc123"}}
+        //
+        // 2. STRUCTURED NESTED ELEMENTS (have their own nested children): DO NOT FLATTEN!
+        //    - DO NOT extract these as attributes
+        //    - Instead, extract them as nested children in a "children" array within this child
+        //    Example: <Pax><Individual><Birthdate>1980-01-01</Birthdate></Individual></Pax>
+        //    → Pax should have a "children" array containing Individual as a child
+        //    → DO NOT flatten to {{"birthdate": "1980-01-01"}}
+        //
+        // 3. How to distinguish:
+        //    - LEAF: Element contains ONLY text → Extract as attribute
+        //    - STRUCTURED: Element contains OTHER ELEMENTS → Extract as nested child, NOT attribute
+        //
+        // 4. DO NOT extract SIBLING elements as attributes - only elements nested INSIDE this child
       }},
+      "children": [
+        // **NEW**: If this child contains STRUCTURED nested elements (elements with their own children),
+        // extract them here as nested children, NOT as attributes above
+        // Example: <Pax><Individual><Birthdate>...</Birthdate></Individual></Pax>
+        // → Individual should appear here in Pax's children array
+      ],
       "references": {{
         // Extract ALL reference elements (InfantRef, ContactInfoRef, PassengerRef, etc.)
         "contact_info": ["CI1PAX1"],
@@ -128,9 +145,12 @@ IMPORTANT RULES:
       * Example: "snippet": "<PaxList><Pax><PaxID>PAX1</PaxID><PTC>ADT</PTC></Pax></PaxList>"
 
 SPECIAL EXTRACTION PATTERNS:
-- PassengerID / PaxID → extract to attributes.id
-- PTC → extract to attributes.type (ADT/CHD/INF)
-- GivenName + Surname → combine to attributes.name
+- PassengerID / PaxID → extract to attributes (keep exact XML tag name)
+- PTC → extract to attributes (keep exact XML tag name)
+- **IMPORTANT**: DO NOT flatten or combine GivenName + Surname!
+  * If GivenName/Surname are inside a structured element like <Individual>, preserve the structure:
+    → Individual becomes a nested child with its own attributes: {Birthdate, GivenName, Surname}
+  * If GivenName/Surname are direct leaf children: extract as individual attributes
 - InfantRef / PaxRefID → extract to references.infant or references.parent
 - ContactInfoRef → extract to references.contact_info
 - All *Ref / *RefID elements → extract to references.other
@@ -175,6 +195,66 @@ XML: <Container><ItemA><SubX>1</SubX></ItemA><ItemB><SubY>2</SubY></ItemB></Cont
   ]
 }}
 
+EXAMPLE 3 - Pax with nested Individual structure (CRITICAL - DO NOT FLATTEN):
+XML:
+<PaxList>
+  <Pax>
+    <Individual>
+      <Birthdate>1980-01-01</Birthdate>
+      <GivenName>JOHN</GivenName>
+      <Surname>DOE</Surname>
+    </Individual>
+    <PaxID>PAX1</PaxID>
+    <PTC>ADT</PTC>
+  </Pax>
+</PaxList>
+
+✅ CORRECT extraction (preserve Individual as nested child):
+{{
+  "node_type": "PaxList",
+  "children": [
+    {{
+      "node_type": "Pax",
+      "ordinal": 1,
+      "attributes": {{
+        "PaxID": "PAX1",
+        "PTC": "ADT"
+      }},
+      "children": [
+        {{
+          "node_type": "Individual",
+          "ordinal": 1,
+          "attributes": {{
+            "Birthdate": "1980-01-01",
+            "GivenName": "JOHN",
+            "Surname": "DOE"
+          }},
+          "references": {{}}
+        }}
+      ],
+      "references": {{}}
+    }}
+  ]
+}}
+
+❌ WRONG extraction (DO NOT flatten Individual):
+{{
+  "node_type": "PaxList",
+  "children": [
+    {{
+      "node_type": "Pax",
+      "ordinal": 1,
+      "attributes": {{
+        "PaxID": "PAX1",
+        "PTC": "ADT",
+        "birthdate": "1980-01-01",  // ❌ WRONG! Flattened from Individual/Birthdate
+        "name": "JOHN DOE"           // ❌ WRONG! Flattened and combined from Individual/GivenName+Surname
+      }},
+      "references": {{}}
+    }}
+  ]
+}}
+
 ⚠️ COMMON MISTAKES TO AVOID:
 1. DO NOT set the container's node_type to a child element name - it must be "{element_name}"
 2. DO NOT force all children to have node_type "{repeating_tag}" - use each child's ACTUAL XML tag name
@@ -183,6 +263,13 @@ XML: <Container><ItemA><SubX>1</SubX></ItemA><ItemB><SubY>2</SubY></ItemB></Cont
    - Only extract elements that are nested INSIDE a child as that child's attributes
    - If <Container> has children <A> and <B>, do NOT put "B" in <A>'s attributes
    - Siblings are separate entries in the children array, not attributes of each other
-5. For LEAF elements (elements with just text, no sub-children), use {{"value": "text content"}}
+5. **CRITICAL**: DO NOT FLATTEN structured nested elements into attributes!
+   - If an element contains OTHER ELEMENTS (not just text), it's a STRUCTURED element
+   - Extract structured elements as nested children in the "children" array, NOT as flattened attributes
+   - Example: <Pax><Individual><Birthdate>...</Birthdate></Individual></Pax>
+     → "Individual" is structured (has child elements), so keep it as a nested child
+     → DO NOT flatten to attributes: {{"birthdate": "..."}}
+   - Only flatten LEAF elements (text-only, no nested children) into attributes
+6. For LEAF elements (elements with just text, no sub-children), use {{"value": "text content"}}
 
 Response must be valid JSON array: [{{container_fact}}]

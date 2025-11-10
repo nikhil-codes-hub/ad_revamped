@@ -860,7 +860,54 @@ class DiscoveryWorkflow:
                                     match_percentage = ((total_children - children_with_issues) / total_children * 100) if total_children > 0 else 0
                                     quality_checks['match_percentage'] = match_percentage
                                     quality_status = 'error'
-    
+
+                                # **NEW**: Check for nested children (e.g., Pax > Individual > Birthdate)
+                                # If the pattern defines child_structure for this child, recursively check it
+                                nested_pattern_structure = child_struct_pattern.get('child_structure', {})
+                                if nested_pattern_structure.get('has_children') and child.get('children'):
+                                    nested_child_structures = nested_pattern_structure.get('child_structures', [])
+                                    actual_nested_children = child.get('children', [])
+
+                                    for nested_pattern in nested_child_structures:
+                                        nested_required_attrs = set(nested_pattern.get('required_attributes', []))
+                                        nested_node_type = nested_pattern.get('node_type', 'Unknown')
+
+                                        # Find matching nested children by node_type
+                                        matching_nested = [nc for nc in actual_nested_children
+                                                          if isinstance(nc, dict) and nc.get('node_type') == nested_node_type]
+
+                                        if not matching_nested and nested_required_attrs:
+                                            # Nested child type is missing entirely
+                                            child_path = f"{nf.node_type}[1]/{child_node_type}[{child_ordinal}]"
+                                            missing_elements.append({
+                                                'path': f"{child_path}/{nested_node_type}",
+                                                'reason': f"Expected nested child '{nested_node_type}' not found in {child_node_type}"
+                                            })
+                                            quality_checks['status'] = 'error'
+                                        else:
+                                            # Check nested child attributes
+                                            for nested_idx, nested_child in enumerate(matching_nested):
+                                                nested_attrs = nested_child.get('attributes', {})
+                                                actual_nested_attrs = set(nested_attrs.keys()) - METADATA_FIELDS
+
+                                                # Check for missing attributes in nested child
+                                                missing_nested_attrs = set()
+                                                for req_attr in nested_required_attrs - METADATA_FIELDS:
+                                                    if not attrs_match_fuzzy(req_attr, actual_nested_attrs):
+                                                        missing_nested_attrs.add(req_attr)
+
+                                                if missing_nested_attrs:
+                                                    child_path = f"{nf.node_type}[1]/{child_node_type}[{child_ordinal}]/{nested_node_type}[{nested_idx + 1}]"
+                                                    for missing_attr in missing_nested_attrs:
+                                                        missing_elements.append({
+                                                            'path': f"{child_path}/{missing_attr}",
+                                                            'reason': f"Required attribute '{missing_attr}' not found in {nested_node_type}"
+                                                        })
+                                                    quality_checks['status'] = 'error'
+
+                                    if missing_elements:
+                                        quality_checks['missing_elements'].extend(missing_elements)
+
                     # Generate quick explanation
                     quick_explanation = self.get_quick_explanation(
                         node_fact=nf,
