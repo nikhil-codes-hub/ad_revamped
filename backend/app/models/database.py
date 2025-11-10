@@ -107,6 +107,7 @@ class Run(Base):
     finished_at = Column(DateTime, comment="When run completed")
     metadata_json = Column(JSON, comment="Additional run metadata and configuration")
     error_details = Column(Text, comment="Error information if run failed")
+    warning = Column(Text, comment="Warning message (e.g., no patterns available for message type)")
 
     # Relationships
     node_facts = relationship("NodeFact", back_populates="run", cascade="all, delete-orphan")
