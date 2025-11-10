@@ -122,20 +122,55 @@ def build_structured_comparison(pattern_rule: dict, node_structure: dict, qualit
         node_type = child_struct.get('node_type', 'Unknown')
         required_attrs = set(child_struct.get('required_attributes', []))
 
+        # **NEW**: Check if this child has nested children (e.g., Pax > Individual)
+        nested_child_structure = child_struct.get('child_structure', {})
+        nested_requirements = []
+        if nested_child_structure.get('has_children'):
+            nested_child_structures = nested_child_structure.get('child_structures', [])
+            for nested_struct in nested_child_structures:
+                nested_type = nested_struct.get('node_type', 'Unknown')
+                nested_attrs = nested_struct.get('required_attributes', [])
+                nested_requirements.append({
+                    "node_type": nested_type,
+                    "required_attributes": nested_attrs
+                })
+
         # If we've seen this node_type before, intersect the attributes
         # (only attributes required in ALL instances are truly required)
         if node_type in children_requirements_map:
-            children_requirements_map[node_type] &= required_attrs
+            children_requirements_map[node_type]['required_attributes'] &= required_attrs
+            # Also merge nested requirements (keep union of all nested types seen)
+            if nested_requirements:
+                existing_nested = children_requirements_map[node_type].get('nested_children', [])
+                # Merge nested requirements
+                for nested in nested_requirements:
+                    # Check if this nested type already exists
+                    found = False
+                    for existing in existing_nested:
+                        if existing['node_type'] == nested['node_type']:
+                            # Intersect attributes
+                            existing['required_attributes'] = list(
+                                set(existing['required_attributes']) & set(nested['required_attributes'])
+                            )
+                            found = True
+                            break
+                    if not found:
+                        existing_nested.append(nested)
+                children_requirements_map[node_type]['nested_children'] = existing_nested
         else:
-            children_requirements_map[node_type] = required_attrs
+            children_requirements_map[node_type] = {
+                'required_attributes': required_attrs,
+                'nested_children': nested_requirements
+            }
 
     # Convert to list format
     children_requirements = [
         {
             "node_type": node_type,
-            "required_attributes": sorted(list(attrs))
+            "required_attributes": sorted(list(data['required_attributes'])),
+            "nested_children": data.get('nested_children', [])
         }
-        for node_type, attrs in children_requirements_map.items()
+        for node_type, data in children_requirements_map.items()
     ]
 
     # Build expected structure

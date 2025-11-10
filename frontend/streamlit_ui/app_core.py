@@ -2129,10 +2129,19 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                                     for req in child_requirements:
                                         child_type = req.get('node_type', 'Unknown')
                                         required_attrs = req.get('required_attributes', [])
+                                        nested_children = req.get('nested_children', [])
                                         repeat_marker = " (repeatable)" if repeatable else ""
                                         st.write(f"- `{child_type}`{repeat_marker}")
                                         if required_attrs:
                                             st.write(f"  **Required child attributes:** {', '.join(f'`{attr}`' for attr in required_attrs)}")
+                                        # **NEW**: Show nested children (e.g., Individual within Pax)
+                                        if nested_children:
+                                            for nested in nested_children:
+                                                nested_type = nested.get('node_type', 'Unknown')
+                                                nested_attrs = nested.get('required_attributes', [])
+                                                st.write(f"    └─ `{nested_type}` (nested)")
+                                                if nested_attrs:
+                                                    st.write(f"        **Required attributes:** {', '.join(f'`{attr}`' for attr in nested_attrs)}")
 
                             with right_col:
                                 st.markdown("### 📄 Your XML")
