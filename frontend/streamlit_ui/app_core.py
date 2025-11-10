@@ -2032,6 +2032,46 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                         # Show side-by-side comparison if available
                         if structured_comparison:
                             st.divider()
+
+                            # Show pattern metadata (completeness and strictness)
+                            pattern_metadata = structured_comparison.get('pattern_metadata', {})
+                            if pattern_metadata:
+                                completeness_score = pattern_metadata.get('completeness_score', 0)
+                                strictness_level = pattern_metadata.get('strictness_level', 'unknown')
+                                strictness_desc = pattern_metadata.get('strictness_description', '')
+
+                                # Display pattern completeness
+                                if completeness_score >= 80:
+                                    completeness_color = "🟢"
+                                    completeness_label = "High"
+                                elif completeness_score >= 40:
+                                    completeness_color = "🟡"
+                                    completeness_label = "Moderate"
+                                else:
+                                    completeness_color = "🟠"
+                                    completeness_label = "Low"
+
+                                st.write(f"**Pattern Completeness:** {completeness_color} {completeness_label} ({completeness_score}%)")
+                                st.caption(f"_{strictness_desc}_")
+
+                            # Show actionable suggestions
+                            suggestions = structured_comparison.get('suggestions', [])
+                            if suggestions:
+                                st.write("**💡 Suggestions:**")
+                                for suggestion in suggestions:
+                                    priority = suggestion.get('priority', 'low')
+                                    message = suggestion.get('message', '')
+                                    action = suggestion.get('action', '')
+
+                                    if priority == 'high':
+                                        st.warning(f"**{message}**\n\n→ {action}")
+                                    elif priority == 'medium':
+                                        st.info(f"**{message}**\n\n→ {action}")
+                                    else:
+                                        st.caption(f"💡 {message}\n\n→ {action}")
+
+                            st.divider()
+
                             summary = structured_comparison.get('summary', {})
                             expected = structured_comparison.get('expected', {})
                             actual = structured_comparison.get('actual', {})
@@ -2112,8 +2152,10 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                                             icon = "❌"
                                             if missing_count > 0:
                                                 name += f" (missing in {missing_count} instances)"
-                                        elif status == 'extra':
-                                            icon = "⚠️"
+                                        elif status == 'additional':
+                                            icon = "ℹ️"
+                                        elif status == 'extra':  # Backward compatibility
+                                            icon = "ℹ️"
                                         else:
                                             icon = "•"
 
@@ -2143,10 +2185,14 @@ def show_discovery_run_details(run_id: str, workspace: str = "default"):
                                                 elif status == 'missing':
                                                     icon = "❌"
                                                     st.write(f"  {icon} `{name}` (missing)")
-                                                elif status == 'extra':
-                                                    icon = "⚠️"
+                                                elif status == 'additional':
+                                                    icon = "ℹ️"
                                                     v_str = str(value)[:30] + "..." if len(str(value)) > 30 else str(value)
-                                                    st.write(f"  {icon} `{name}`: {v_str} (extra)")
+                                                    st.write(f"  {icon} `{name}`: {v_str} (additional)")
+                                                elif status == 'extra':  # Backward compatibility
+                                                    icon = "ℹ️"
+                                                    v_str = str(value)[:30] + "..." if len(str(value)) > 30 else str(value)
+                                                    st.write(f"  {icon} `{name}`: {v_str} (additional)")
 
                                     more = actual_children.get('more_count', 0)
                                     if more > 0:

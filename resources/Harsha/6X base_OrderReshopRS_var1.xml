@@ -1,0 +1,547 @@
+<easd:IATA_OrderReshopRS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:easd="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage" xmlns="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersCommonTypes" xsi:schemaLocation="http://www.iata.org/IATA/2015/EASD/00/IATA_OffersAndOrdersMessage https://airtechzone.iata.org/xsd/2135/IATA_OrderReshopRS.xsd">
+	<easd:Response>
+		<DataLists>
+			<PaxList>
+				<Pax>
+					<Individual>
+						<Birthdate>1986-12-08</Birthdate>
+						<GivenName>THOMAS</GivenName>
+						<IndividualID>PAX2</IndividualID>
+						<Surname>WAYNE</Surname>
+						<TitleName>MR</TitleName>
+					</Individual>
+					<PaxID>PAX2</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+				<Pax>
+					<Individual>
+						<Birthdate>1986-12-08</Birthdate>
+						<GivenName>THOMAS</GivenName>
+						<IndividualID>PAX2</IndividualID>
+						<Surname>WAYNE</Surname>
+						<TitleName>MR</TitleName>
+					</Individual>
+					<PaxID>PAX2</PaxID>
+					<PTC>ADT</PTC>
+					<PassPortInfo>P</PassPortInfo>
+				</Pax>
+				<Pax>
+					<Individual>
+						<Birthdate>2024-12-11</Birthdate>
+						<GivenName>ROBIN</GivenName>
+						<IndividualID>PAX3</IndividualID>
+						<Surname>WAYNE</Surname>
+						<TitleName>MR</TitleName>
+					</Individual>
+					<PaxID>PAX3</PaxID>
+					<PaxRefID>PAX2</PaxRefID>
+					<PTC>INF</PTC>
+				</Pax>
+				<Pax>
+					<Individual>
+						<Birthdate>1990-12-09</Birthdate>
+						<GivenName>MARTHA</GivenName>
+						<IndividualID>PAX4</IndividualID>
+						<Surname>WAYNE</Surname>
+						<TitleName>MRS</TitleName>
+					</Individual>
+					<PaxID>PAX4</PaxID>
+					<PTC>ADT</PTC>
+				</Pax>
+				<Pax>
+					<Individual>
+						<Birthdate>2019-12-10</Birthdate>
+						<GivenName>BRUCE</GivenName>
+						<IndividualID>PAX5</IndividualID>
+						<Surname>WAYNE</Surname>
+						<TitleName>MR</TitleName>
+					</Individual>
+					<PaxID>PAX5</PaxID>
+					<PTC>CHD</PTC>
+				</Pax>
+			</PaxList>
+			<PenaltyList>
+				<Penalty>
+					<DescText>Penalty for all ADT</DescText>
+					<PenaltyID>PEN1</PenaltyID>
+					<Price>
+						<TotalAmount CurCode="EUR">104.00</TotalAmount>
+					</Price>
+					<TypeCode>Cancellation</TypeCode>
+				</Penalty>
+				<Penalty>
+					<DescText>Penalty for all CHD</DescText>
+					<PenaltyID>PEN2</PenaltyID>
+					<Price>
+						<TotalAmount CurCode="EUR">40.00</TotalAmount>
+					</Price>
+					<TypeCode>Cancellation</TypeCode>
+				</Penalty>
+				<Penalty>
+					<DescText>Penalty for all INF</DescText>
+					<PenaltyID>PEN3</PenaltyID>
+					<Price>
+						<TotalAmount CurCode="EUR">10.00</TotalAmount>
+					</Price>
+					<TypeCode>Cancellation</TypeCode>
+				</Penalty>
+			</PenaltyList>
+		</DataLists>
+		<Order>
+			<OrderID>6X6079F7LVE00</OrderID>
+			<OwnerCode>6X</OwnerCode>
+		</Order>
+		<ReshopResults>
+			<ReshopOffers>
+				<Offer>
+					<DeleteOrderItem>
+						<ExistingOrderItem>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG1_PAX3</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG2_PAX3</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG1_PAX3_BAG1</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG2_PAX3_BAG1</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG1_PAX2</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG1_PAX4</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG2_PAX2</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG2_PAX4</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG1_PAX4_BAG1</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG2_PAX4_BAG1</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG1_PAX2_BAG1</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG2_PAX2_BAG1</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG1_PAX5</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG2_PAX5</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG1_PAX5_BAG1</ServiceRefID>
+							</ExistingService>
+							<ExistingService>
+								<FutureStatusCode>CANCELLED</FutureStatusCode>
+								<ServiceRefID>SEG2_PAX5_BAG1</ServiceRefID>
+							</ExistingService>
+							<OrderItemRefID>6X6079F7LVE00_AIR-1-2</OrderItemRefID>
+						</ExistingOrderItem>
+						<MandatoryInd>true</MandatoryInd>
+						<OfferItemID>6X6079F7LVE00-REFD-1</OfferItemID>
+						<PriceDifferential>
+							<DifferentialTypeCode>Refund</DifferentialTypeCode>
+							<DiffPrice>
+								<FareDetail>
+									<PaxRefID>PAX3</PaxRefID>
+									<PenaltyRefID>PEN3</PenaltyRefID>
+									<Price>
+										<BaseAmount CurCode="EUR">-118.00</BaseAmount>
+										<DueByAirlineAmount CurCode="EUR">165.40</DueByAirlineAmount>
+										<DueToAirlineAmount CurCode="EUR">0.00</DueToAirlineAmount>
+										<TaxSummary>
+											<Tax>
+												<AddlTaxCode>AC</AddlTaxCode>
+												<Amount CurCode="EUR">-57.40</Amount>
+												<TaxCode>YQ</TaxCode>
+											</Tax>
+											<TotalTaxAmount CurCode="EUR">-57.40</TotalTaxAmount>
+										</TaxSummary>
+										<TotalAmount CurCode="EUR">-175.40</TotalAmount>
+									</Price>
+								</FareDetail>
+								<FareDetail>
+									<PaxRefID>PAX2</PaxRefID>
+									<PaxRefID>PAX4</PaxRefID>
+									<PenaltyRefID>PEN1</PenaltyRefID>
+									<Price>
+										<BaseAmount CurCode="EUR">-646.00</BaseAmount>
+										<DueByAirlineAmount CurCode="EUR">896.27</DueByAirlineAmount>
+										<DueToAirlineAmount CurCode="EUR">0.00</DueToAirlineAmount>
+										<TaxSummary>
+											<Tax>
+												<AddlTaxCode>AC</AddlTaxCode>
+												<Amount CurCode="EUR">-172.18</Amount>
+												<TaxCode>YQ</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>AD</AddlTaxCode>
+												<Amount CurCode="EUR">-19.54</Amount>
+												<TaxCode>AE</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>TO</AddlTaxCode>
+												<Amount CurCode="EUR">-11.72</Amount>
+												<TaxCode>F6</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>SE</AddlTaxCode>
+												<Amount CurCode="EUR">-1.31</Amount>
+												<TaxCode>TP</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>AP</AddlTaxCode>
+												<Amount CurCode="EUR">-2.62</Amount>
+												<TaxCode>ZR</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>SE</AddlTaxCode>
+												<Amount CurCode="EUR">-11.86</Amount>
+												<TaxCode>DE</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>CB</AddlTaxCode>
+												<Amount CurCode="EUR">-39.34</Amount>
+												<TaxCode>OY</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>EB</AddlTaxCode>
+												<Amount CurCode="EUR">-43.70</Amount>
+												<TaxCode>RA</TaxCode>
+											</Tax>
+											<TotalTaxAmount CurCode="EUR">-302.27</TotalTaxAmount>
+										</TaxSummary>
+										<TotalAmount CurCode="EUR">-948.27</TotalAmount>
+									</Price>
+								</FareDetail>
+								<FareDetail>
+									<PaxRefID>PAX5</PaxRefID>
+									<PenaltyRefID>PEN2</PenaltyRefID>
+									<Price>
+										<BaseAmount CurCode="EUR">-490.00</BaseAmount>
+										<DueByAirlineAmount CurCode="EUR">752.27</DueByAirlineAmount>
+										<DueToAirlineAmount CurCode="EUR">0.00</DueToAirlineAmount>
+										<TaxSummary>
+											<Tax>
+												<AddlTaxCode>AC</AddlTaxCode>
+												<Amount CurCode="EUR">-172.18</Amount>
+												<TaxCode>YQ</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>AD</AddlTaxCode>
+												<Amount CurCode="EUR">-19.54</Amount>
+												<TaxCode>AE</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>TO</AddlTaxCode>
+												<Amount CurCode="EUR">-11.72</Amount>
+												<TaxCode>F6</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>SE</AddlTaxCode>
+												<Amount CurCode="EUR">-1.31</Amount>
+												<TaxCode>TP</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>AP</AddlTaxCode>
+												<Amount CurCode="EUR">-2.62</Amount>
+												<TaxCode>ZR</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>SE</AddlTaxCode>
+												<Amount CurCode="EUR">-11.86</Amount>
+												<TaxCode>DE</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>CB</AddlTaxCode>
+												<Amount CurCode="EUR">-39.34</Amount>
+												<TaxCode>OY</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>EB</AddlTaxCode>
+												<Amount CurCode="EUR">-43.70</Amount>
+												<TaxCode>RA</TaxCode>
+											</Tax>
+											<TotalTaxAmount CurCode="EUR">-302.27</TotalTaxAmount>
+										</TaxSummary>
+										<TotalAmount CurCode="EUR">-792.27</TotalAmount>
+									</Price>
+								</FareDetail>
+								<Price>
+									<BaseAmount CurCode="EUR">-1900.00</BaseAmount>
+									<DueByAirlineAmount CurCode="EUR">2710.21</DueByAirlineAmount>
+									<DueToAirlineAmount CurCode="EUR">0.00</DueToAirlineAmount>
+									<TaxSummary>
+										<Tax>
+											<Amount CurCode="EUR">-35.16</Amount>
+											<TaxCode>F6</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">-35.58</Amount>
+											<TaxCode>DE</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">-58.62</Amount>
+											<TaxCode>AE</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">-7.86</Amount>
+											<TaxCode>ZR</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">-573.94</Amount>
+											<TaxCode>YQ</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">-118.02</Amount>
+											<TaxCode>OY</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">-3.93</Amount>
+											<TaxCode>TP</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">-131.10</Amount>
+											<TaxCode>RA</TaxCode>
+										</Tax>
+										<TotalTaxAmount CurCode="EUR">-964.21</TotalTaxAmount>
+									</TaxSummary>
+									<TotalAmount CurCode="EUR">-2864.21</TotalAmount>
+								</Price>
+							</DiffPrice>
+							<NewPrice>
+								<Price>
+									<BaseAmount CurCode="EUR">0.00</BaseAmount>
+									<TaxSummary>
+										<Tax>
+											<Amount CurCode="EUR">0.00</Amount>
+											<TaxCode>F6</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">0.00</Amount>
+											<TaxCode>DE</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">0.00</Amount>
+											<TaxCode>AE</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">0.00</Amount>
+											<TaxCode>ZR</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">0.00</Amount>
+											<TaxCode>YQ</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">0.00</Amount>
+											<TaxCode>OY</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">0.00</Amount>
+											<TaxCode>TP</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">0.00</Amount>
+											<TaxCode>RA</TaxCode>
+										</Tax>
+										<TotalTaxAmount CurCode="EUR">0.00</TotalTaxAmount>
+									</TaxSummary>
+									<TotalAmount CurCode="EUR">0.00</TotalAmount>
+								</Price>
+							</NewPrice>
+							<OldPrice>
+								<FareDetail>
+									<PaxRefID>PAX3</PaxRefID>
+									<Price>
+										<BaseAmount CurCode="EUR">118.00</BaseAmount>
+										<TaxSummary>
+											<Tax>
+												<AddlTaxCode>AC</AddlTaxCode>
+												<Amount CurCode="EUR">57.40</Amount>
+												<TaxCode>YQ</TaxCode>
+											</Tax>
+											<TotalTaxAmount CurCode="EUR">57.40</TotalTaxAmount>
+										</TaxSummary>
+										<TotalAmount CurCode="EUR">175.40</TotalAmount>
+									</Price>
+								</FareDetail>
+								<FareDetail>
+									<PaxRefID>PAX2</PaxRefID>
+									<PaxRefID>PAX4</PaxRefID>
+									<Price>
+										<BaseAmount CurCode="EUR">646.00</BaseAmount>
+										<TaxSummary>
+											<Tax>
+												<AddlTaxCode>AC</AddlTaxCode>
+												<Amount CurCode="EUR">172.18</Amount>
+												<TaxCode>YQ</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>AD</AddlTaxCode>
+												<Amount CurCode="EUR">19.54</Amount>
+												<TaxCode>AE</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>TO</AddlTaxCode>
+												<Amount CurCode="EUR">11.72</Amount>
+												<TaxCode>F6</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>SE</AddlTaxCode>
+												<Amount CurCode="EUR">1.31</Amount>
+												<TaxCode>TP</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>AP</AddlTaxCode>
+												<Amount CurCode="EUR">2.62</Amount>
+												<TaxCode>ZR</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>SE</AddlTaxCode>
+												<Amount CurCode="EUR">11.86</Amount>
+												<TaxCode>DE</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>CB</AddlTaxCode>
+												<Amount CurCode="EUR">39.34</Amount>
+												<TaxCode>OY</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>EB</AddlTaxCode>
+												<Amount CurCode="EUR">43.70</Amount>
+												<TaxCode>RA</TaxCode>
+											</Tax>
+											<TotalTaxAmount CurCode="EUR">302.27</TotalTaxAmount>
+										</TaxSummary>
+										<TotalAmount CurCode="EUR">948.27</TotalAmount>
+									</Price>
+								</FareDetail>
+								<FareDetail>
+									<PaxRefID>PAX5</PaxRefID>
+									<Price>
+										<BaseAmount CurCode="EUR">490.00</BaseAmount>
+										<TaxSummary>
+											<Tax>
+												<AddlTaxCode>AC</AddlTaxCode>
+												<Amount CurCode="EUR">172.18</Amount>
+												<TaxCode>YQ</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>AD</AddlTaxCode>
+												<Amount CurCode="EUR">19.54</Amount>
+												<TaxCode>AE</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>TO</AddlTaxCode>
+												<Amount CurCode="EUR">11.72</Amount>
+												<TaxCode>F6</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>SE</AddlTaxCode>
+												<Amount CurCode="EUR">1.31</Amount>
+												<TaxCode>TP</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>AP</AddlTaxCode>
+												<Amount CurCode="EUR">2.62</Amount>
+												<TaxCode>ZR</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>SE</AddlTaxCode>
+												<Amount CurCode="EUR">11.86</Amount>
+												<TaxCode>DE</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>CB</AddlTaxCode>
+												<Amount CurCode="EUR">39.34</Amount>
+												<TaxCode>OY</TaxCode>
+											</Tax>
+											<Tax>
+												<AddlTaxCode>EB</AddlTaxCode>
+												<Amount CurCode="EUR">43.70</Amount>
+												<TaxCode>RA</TaxCode>
+											</Tax>
+											<TotalTaxAmount CurCode="EUR">302.27</TotalTaxAmount>
+										</TaxSummary>
+										<TotalAmount CurCode="EUR">792.27</TotalAmount>
+									</Price>
+								</FareDetail>
+								<Price>
+									<BaseAmount CurCode="EUR">1900.00</BaseAmount>
+									<TaxSummary>
+										<Tax>
+											<Amount CurCode="EUR">35.16</Amount>
+											<TaxCode>F6</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">35.58</Amount>
+											<TaxCode>DE</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">58.62</Amount>
+											<TaxCode>AE</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">7.86</Amount>
+											<TaxCode>ZR</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">573.94</Amount>
+											<TaxCode>YQ</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">118.02</Amount>
+											<TaxCode>OY</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">3.93</Amount>
+											<TaxCode>TP</TaxCode>
+										</Tax>
+										<Tax>
+											<Amount CurCode="EUR">131.10</Amount>
+											<TaxCode>RA</TaxCode>
+										</Tax>
+										<TotalTaxAmount CurCode="EUR">964.21</TotalTaxAmount>
+									</TaxSummary>
+									<TotalAmount CurCode="EUR">2864.21</TotalAmount>
+								</Price>
+							</OldPrice>
+						</PriceDifferential>
+					</DeleteOrderItem>
+					<OfferExpirationTimeLimitDateTime>2025-03-05T23:59:59Z</OfferExpirationTimeLimitDateTime>
+					<OfferID>6X6079F7LVE00-REFD</OfferID>
+					<OwnerCode>6X</OwnerCode>
+				</Offer>
+			</ReshopOffers>
+		</ReshopResults>
+	</easd:Response>
+	<easd:PayloadAttributes>
+		<VersionNumber>21.3</VersionNumber>
+	</easd:PayloadAttributes>
+</easd:IATA_OrderReshopRS>

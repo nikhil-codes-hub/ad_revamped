@@ -21,6 +21,7 @@ def build_structured_comparison(pattern_rule: dict, node_structure: dict, qualit
     Build a structured side-by-side comparison for visualization.
 
     Returns a dict with 'expected' and 'actual' structures for side-by-side display.
+    Includes pattern completeness score and actionable suggestions.
     """
     from collections import Counter
 
@@ -33,6 +34,37 @@ def build_structured_comparison(pattern_rule: dict, node_structure: dict, qualit
     expected_children_spec = pattern_rule.get('child_structure', {})
     expected_child_types = set(expected_children_spec.get('child_types', []))
     expected_child_structures = expected_children_spec.get('child_structures', [])
+
+    # Calculate pattern completeness score
+    # A pattern is "complete" if it defines: attributes, child types, and child attributes
+    completeness_factors = []
+    if expected_attrs:
+        completeness_factors.append(40)  # Has required attributes
+    if optional_attrs:
+        completeness_factors.append(10)  # Has optional attributes
+    if expected_child_types:
+        completeness_factors.append(20)  # Defines child types
+    if expected_child_structures:
+        # Check if child structures have attribute requirements
+        has_child_attrs = any(
+            child.get('required_attributes')
+            for child in expected_child_structures
+        )
+        if has_child_attrs:
+            completeness_factors.append(30)  # Defines child attribute requirements
+
+    completeness_score = sum(completeness_factors)
+
+    # Determine pattern strictness level
+    if completeness_score >= 80:
+        strictness_level = "strict"
+        strictness_description = "Detailed pattern with specific requirements"
+    elif completeness_score >= 40:
+        strictness_level = "moderate"
+        strictness_description = "Pattern with some requirements defined"
+    else:
+        strictness_level = "permissive"
+        strictness_description = "Minimal pattern - accepts most structures"
 
     # Extract data from actual node
     actual_type = node_structure.get('node_type', 'Unknown')
@@ -136,7 +168,7 @@ def build_structured_comparison(pattern_rule: dict, node_structure: dict, qualit
             actual_attrs_status.append({"name": attr, "status": "missing", "required": False})
 
     for attr in sorted(extra_attrs):
-        actual_attrs_status.append({"name": attr, "status": "extra", "required": False})
+        actual_attrs_status.append({"name": attr, "status": "additional", "required": False})
 
     # Build children summary with attribute status
     children_summary = {
@@ -174,13 +206,13 @@ def build_structured_comparison(pattern_rule: dict, node_structure: dict, qualit
                     "status": "missing"
                 })
 
-        # Add any extra attributes
-        extra_child_attrs = set(child_attrs_filtered.keys()) - required_child_attrs
-        for extra_attr in sorted(extra_child_attrs):
+        # Add any additional attributes (not defined in pattern)
+        additional_child_attrs = set(child_attrs_filtered.keys()) - required_child_attrs
+        for additional_attr in sorted(additional_child_attrs):
             child_attrs_status.append({
-                "name": extra_attr,
-                "status": "extra",
-                "value": child_attrs_filtered[extra_attr]
+                "name": additional_attr,
+                "status": "additional",
+                "value": child_attrs_filtered[additional_attr]
             })
 
         children_summary["sample_instances"].append({
@@ -222,7 +254,7 @@ def build_structured_comparison(pattern_rule: dict, node_structure: dict, qualit
             "required_attrs_match": f"{child_attr_match_count}/{child_attr_total_count}",
             "required_attrs_percentage": int((child_attr_match_count / child_attr_total_count * 100) if child_attr_total_count > 0 else 100),
             "missing_attrs_count": child_attr_total_count - child_attr_match_count,
-            "extra_attrs_count": len(extra_attrs),
+            "additional_attrs_count": len(extra_attrs),
             "children_with_issues": sum(1 for item in missing_elements if isinstance(item, dict)),
             "coverage_percentage": quality_checks.get('match_percentage', 100),
             "using_child_stats": True  # Flag to indicate we're showing child attribute stats
@@ -233,16 +265,68 @@ def build_structured_comparison(pattern_rule: dict, node_structure: dict, qualit
             "required_attrs_match": f"{matched_required_attrs}/{total_required_attrs}",
             "required_attrs_percentage": int((matched_required_attrs / total_required_attrs * 100) if total_required_attrs > 0 else 100),
             "missing_attrs_count": len(missing_attrs),
-            "extra_attrs_count": len(extra_attrs),
+            "additional_attrs_count": len(extra_attrs),
             "children_with_issues": sum(1 for item in missing_elements if isinstance(item, dict)),
             "coverage_percentage": quality_checks.get('match_percentage', 100),
             "using_child_stats": False
         }
 
+    # Generate actionable suggestions based on match quality and pattern completeness
+    suggestions = []
+
+    # Check if this is a structural variation
+    has_additional_elements = len(extra_attrs) > 0 or any(
+        attr.get("status") == "additional"
+        for sample in children_summary.get("sample_instances", [])
+        for attr in sample.get("attributes_status", [])
+    )
+
+    if has_additional_elements and strictness_level == "permissive":
+        suggestions.append({
+            "type": "enhance_pattern",
+            "priority": "high",
+            "message": "This XML has additional fields not defined in the pattern. Consider using Pattern Extractor with 'Enhance' mode to add this as a new variation.",
+            "action": "Use Pattern Extractor → Upload this XML → Select 'Enhance' when conflict detected"
+        })
+    elif has_additional_elements and summary.get("missing_attrs_count", 0) == 0:
+        suggestions.append({
+            "type": "structural_variation",
+            "priority": "medium",
+            "message": "This appears to be a structural variation of the expected pattern. All required elements are present, plus additional fields.",
+            "action": "Consider enhancing the pattern to recognize both structures in future"
+        })
+
+    if summary.get("missing_attrs_count", 0) > 0:
+        suggestions.append({
+            "type": "missing_required",
+            "priority": "high",
+            "message": f"Missing {summary['missing_attrs_count']} required element(s). This may indicate incomplete data or a different structure.",
+            "action": "Review the missing elements and verify your XML source"
+        })
+
+    if strictness_level == "permissive" and not has_additional_elements:
+        suggestions.append({
+            "type": "pattern_improvement",
+            "priority": "low",
+            "message": "This pattern is minimal and accepts most structures. Consider adding more requirements for stricter validation.",
+            "action": "Run Pattern Extractor with more XML samples to build a detailed pattern"
+        })
+
+    # Add pattern metadata
+    pattern_metadata = {
+        "completeness_score": completeness_score,
+        "strictness_level": strictness_level,
+        "strictness_description": strictness_description,
+        "has_required_attrs": len(expected_attrs) > 0,
+        "has_child_requirements": len(expected_child_structures) > 0
+    }
+
     return {
         "expected": expected_structure,
         "actual": actual_structure,
-        "summary": summary
+        "summary": summary,
+        "pattern_metadata": pattern_metadata,
+        "suggestions": suggestions
     }
 
 
@@ -871,17 +955,52 @@ Action: No action required - continue processing as normal. The data meets all q
 
                     issues_text = '; '.join(issue_summary) if issue_summary else 'None'
 
+                    # Build structured comparison to get pattern metadata
+                    comparison = build_structured_comparison(
+                        pattern_rule,
+                        node_structure,
+                        match_metadata.get('quality_checks', {})
+                    )
+                    pattern_meta = comparison.get('pattern_metadata', {})
+                    completeness = pattern_meta.get('completeness_score', 50)
+                    strictness = pattern_meta.get('strictness_level', 'unknown')
+
+                    # Determine if additional elements are problematic or expected
+                    has_missing = bool(missing_attrs or missing_elements)
+                    has_additional = bool(extra_attrs)
+                    is_permissive = strictness == 'permissive'
+
+                    # Build context about pattern completeness
+                    pattern_context = ""
+                    if is_permissive:
+                        pattern_context = f"Note: The expected pattern is minimal (completeness: {completeness}%) and accepts most structures. "
+
+                    # Adjust prompt based on what's actually wrong
+                    if has_missing:
+                        focus = "Focus on missing required elements and their impact."
+                    elif has_additional and not is_permissive:
+                        focus = "Explain the additional elements found and whether they're expected."
+                    elif has_additional and is_permissive:
+                        focus = "Explain this appears to be a valid structural variation with additional fields not yet defined in the pattern."
+                    else:
+                        focus = "Explain what the partial match confidence indicates."
+
                     prompt = f"""You are analyzing airline XML data for {pattern.airline_code or 'N/A'}.
 
 Element: {actual_type}
+Pattern Completeness: {completeness}% ({strictness})
+Match Confidence: {float(match.confidence or 0):.1%}
 Coverage: {match_percentage:.1f}%
 Issues Found: {issues_text}
 
-Write a 2-3 sentence summary explaining:
-1. What specific data is missing or wrong (mention the actual field names)
-2. Why it matters for airline operations
+{pattern_context}
 
-Be direct and specific. No bullet points, no headers, just a brief paragraph.
+Write a 2-3 sentence summary explaining:
+1. What the match confidence really means (is data missing, additional, or just different?)
+2. {focus}
+
+Be honest and specific. If additional elements are present but no required elements are missing, clarify that this is NOT necessarily a problem.
+No bullet points, no headers, just a brief paragraph.
 """
                 else:
                     # Perfect match - keep it simple
@@ -909,14 +1028,16 @@ Be factual and concise. Format as a paragraph, NOT bullet points.
             # Call LLM (async)
             detailed_explanation = await llm.generate_explanation_async(prompt)
 
-            # Build structured comparison for side-by-side visualization
-            structured_comparison = None
-            if pattern and is_mismatch:
-                structured_comparison = build_structured_comparison(
+            # Build structured comparison for side-by-side visualization (if not already built)
+            if pattern and is_mismatch and 'comparison' not in locals():
+                comparison = build_structured_comparison(
                     pattern_rule,
                     node_structure,
                     match_metadata.get('quality_checks', {})
                 )
+
+            # Use comparison as structured_comparison for response
+            structured_comparison = comparison if (pattern and is_mismatch) else None
 
             # Store in match_metadata (cache for future requests)
             match_metadata['detailed_explanation'] = detailed_explanation
