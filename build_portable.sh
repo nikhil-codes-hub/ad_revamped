@@ -107,19 +107,34 @@ if [ ! -f ".env" ]; then
 LLM_PROVIDER=azure
 
 # Azure OpenAI Configuration
+# Authentication Method: REQUIRED - Choose 'api_key' or 'bdp'
+AZURE_AUTH_METHOD=api_key
 AZURE_OPENAI_ENDPOINT=your-endpoint-here
 AZURE_OPENAI_KEY=your-api-key-here
 AZURE_API_VERSION=2025-01-01-preview
 MODEL_DEPLOYMENT_NAME=gpt-4o
+
+# Azure BDP (Azure AD) Authentication (for production)
+# Uncomment and set these if using AZURE_AUTH_METHOD=bdp
+# AZURE_TENANT_ID=your-tenant-id-here
+# AZURE_CLIENT_ID=your-client-id-here
+# AZURE_CLIENT_SECRET=your-client-secret-here
 
 # Google Gemini Configuration (if using gemini provider)
 GEMINI_API_KEY=your-gemini-api-key-here
 GEMINI_MODEL=gemini-1.5-pro
 
 # LLM Common Settings
-MAX_TOKENS_PER_REQUEST=4000
+MAX_TOKENS_PER_REQUEST=8000
 LLM_TEMPERATURE=0.1
 LLM_TOP_P=0.0
+
+# Retry Configuration
+MAX_LLM_RETRIES=3
+RETRY_BACKOFF_FACTOR=2.0
+
+# Parallel Processing
+MAX_PARALLEL_NODES=2
 
 # Application Settings
 LOG_LEVEL=INFO

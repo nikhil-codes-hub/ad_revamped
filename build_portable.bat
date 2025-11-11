@@ -104,19 +104,33 @@ echo         ^(echo # Supported providers  azure, gemini^) ^>^> .env >> portable
 echo         ^(echo LLM_PROVIDER=azure^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo.^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo # Azure OpenAI Configuration^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo # Authentication Method  REQUIRED - Choose api_key or bdp^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo AZURE_AUTH_METHOD=api_key^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo AZURE_OPENAI_ENDPOINT=your-endpoint-here^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo AZURE_OPENAI_KEY=your-api-key-here^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo AZURE_API_VERSION=2025-01-01-preview^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo MODEL_DEPLOYMENT_NAME=gpt-4o^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo.^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo # Azure BDP Authentication for production^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo # AZURE_TENANT_ID=your-tenant-id-here^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo # AZURE_CLIENT_ID=your-client-id-here^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo # AZURE_CLIENT_SECRET=your-client-secret-here^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo.^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo # Google Gemini Configuration^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo GEMINI_API_KEY=your-gemini-api-key-here^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo GEMINI_MODEL=gemini-1.5-pro^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo.^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo # LLM Common Settings^) ^>^> .env >> portable_dist\setup.bat
-echo         ^(echo MAX_TOKENS_PER_REQUEST=4000^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo MAX_TOKENS_PER_REQUEST=8000^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo LLM_TEMPERATURE=0.1^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo LLM_TOP_P=0.0^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo.^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo # Retry Configuration^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo MAX_LLM_RETRIES=3^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo RETRY_BACKOFF_FACTOR=2.0^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo.^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo # Parallel Processing^) ^>^> .env >> portable_dist\setup.bat
+echo         ^(echo MAX_PARALLEL_NODES=2^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo.^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo # Application Settings^) ^>^> .env >> portable_dist\setup.bat
 echo         ^(echo LOG_LEVEL=INFO^) ^>^> .env >> portable_dist\setup.bat

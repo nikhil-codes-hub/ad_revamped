@@ -11,13 +11,6 @@ sqlalchemy==2.0.23
 pymysql==1.1.0
 alembic==1.12.1
 
-# Future CouchDB support
-couchdb==1.2
-
-# Caching
-redis==5.0.1
-hiredis==2.2.3
-
 # XML Processing
 lxml>=6.0.0
 
