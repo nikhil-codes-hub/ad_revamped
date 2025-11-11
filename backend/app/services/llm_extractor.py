@@ -731,10 +731,15 @@ class LLMNodeFactsExtractor:
         """
         Annotate facts with quality check metadata without aborting extraction.
         Calculates a simple match percentage and logs warnings when breaks exist.
+
+        IMPORTANT: Always calculates match_percentage, even if LLM didn't return quality_checks.
+        This ensures the UI always shows coverage instead of "n/a".
         """
+        # Initialize quality_checks if not present or not a dict
         quality_checks = fact.get('quality_checks')
         if not isinstance(quality_checks, dict):
-            return
+            quality_checks = {}
+            fact['quality_checks'] = quality_checks
 
         status = str(quality_checks.get('status', 'ok')).lower()
         missing_items = quality_checks.get('missing_elements') or []
@@ -753,12 +758,17 @@ class LLMNodeFactsExtractor:
         missing_count = len(missing_items)
 
         if total_children == 0:
+            # No children: 100% if no missing elements, 0% if there are missing elements
             match_percentage = 0 if missing_count else 100
         else:
             matched = max(total_children - missing_count, 0)
             match_percentage = round((matched / total_children) * 100)
 
         quality_checks['match_percentage'] = match_percentage
+
+        # Set status to 'ok' if not already set
+        if 'status' not in quality_checks:
+            quality_checks['status'] = 'ok' if match_percentage == 100 else 'error'
 
         if status == 'error' and missing_count:
             missing_summary = '; '.join(
