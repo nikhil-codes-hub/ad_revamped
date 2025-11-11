@@ -56,16 +56,18 @@ def async_retry_with_backoff(max_retries: int = None, backoff_factor: float = No
 
                     if attempt >= max_retries:
                         logger.error(f"❌ LLM RATE LIMIT: Max retries ({max_retries}) exceeded")
-                        # Create user-friendly error message
+                        # Create user-friendly, non-technical error message
                         error_msg = (
-                            f"Azure OpenAI Rate Limit Exceeded\n\n"
-                            f"The system attempted {max_retries + 1} times but the rate limit persists.\n\n"
-                            f"Possible solutions:\n"
-                            f"1. Wait a few minutes and try again\n"
-                            f"2. Reduce MAX_PARALLEL_NODES in .env (currently: {settings.MAX_PARALLEL_NODES})\n"
-                            f"3. Contact your Azure admin to increase rate limits\n\n"
-                            f"Technical details: {str(e)}"
+                            f"The system is currently too busy to process your request.\n\n"
+                            f"What you can do:\n"
+                            f"• Wait 5-10 minutes and try uploading your file again\n"
+                            f"• Your file and data are safe - nothing was lost\n\n"
+                            f"This is a temporary issue that usually resolves on its own. "
+                            f"If the problem continues after 30 minutes, please contact your system administrator."
                         )
+                        # Log technical details for admins/debugging
+                        logger.error(f"Technical details: {str(e)}")
+                        logger.error(f"Retry attempts: {max_retries + 1}, Parallel nodes: {settings.MAX_PARALLEL_NODES}")
                         raise ValueError(error_msg)
 
                     # Parse wait time from error message (e.g., "Try again in 50 seconds")

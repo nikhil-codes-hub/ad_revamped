@@ -1132,19 +1132,27 @@ def show_pattern_extractor_page():
                         status_text.empty()
                         progress_bar.empty()
 
-                        st.error(f"❌ **Discovery Failed**")
-                        st.error(f"**Error:** {result['error_details']}")
+                        # Show simple, user-friendly error title
+                        error_detail = result['error_details']
+                        if "too busy" in error_detail:
+                            st.error(f"⚠️ **System Too Busy**")
+                        else:
+                            st.error(f"❌ **Processing Failed**")
+
+                        st.error(f"{result['error_details']}")
 
                         # Show helpful hints based on error content
                         error_detail = result['error_details']
-                        if "Rate Limit" in error_detail:
-                            st.warning("⚠️ **Rate Limit Exceeded**")
-                            st.info("💡 **Solutions:**\n"
-                                   "- **Wait a few minutes** and try again (Azure rate limits reset over time)\n"
-                                   "- **Reduce parallel processing**: Lower `MAX_PARALLEL_NODES` in `.env` (currently processing multiple nodes simultaneously)\n"
-                                   "- **Contact Azure admin**: Request higher rate limits for your deployment\n"
-                                   "- **Check retry settings**: Verify `MAX_LLM_RETRIES` in `.env`\n\n"
-                                   "The system automatically retries with backoff, but if all retries fail, you'll see this error.")
+                        if "too busy" in error_detail or "Rate Limit" in error_detail:
+                            # Simple, user-friendly message for rate limits
+                            st.info("**ℹ️ What this means:**\n\n"
+                                   "The system tried multiple times but is still too busy. "
+                                   "This happens when many people are using the system at the same time.\n\n"
+                                   "**What to do:**\n"
+                                   "1. Wait **5-10 minutes**\n"
+                                   "2. Upload your file again\n"
+                                   "3. Your file is safe - nothing was lost\n\n"
+                                   "💡 If the problem continues for more than 30 minutes, contact your system administrator.")
                         elif "LLM" in error_detail or "API" in error_detail:
                             st.info("💡 **LLM/API Error - Troubleshooting:**\n"
                                    "- Check backend logs for detailed error messages\n"
