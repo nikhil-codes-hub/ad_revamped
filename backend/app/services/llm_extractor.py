@@ -8,9 +8,12 @@ Replaces brittle template-based extraction with adaptive AI understanding.
 import json
 import logging
 import asyncio
+import time
+import re
 from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass
 from datetime import datetime
+from functools import wraps
 import openai
 from openai import AsyncOpenAI, AsyncAzureOpenAI
 import httpx
@@ -24,6 +27,61 @@ from app.services.llm_client_factory import LLMClientFactory
 from app.prompts import get_container_prompt, get_item_prompt, get_system_prompt
 
 logger = logging.getLogger(__name__)
+
+
+def async_retry_with_backoff(max_retries: int = None, backoff_factor: float = None):
+    """
+    Decorator for retrying async functions with exponential backoff on rate limit errors.
+
+    Args:
+        max_retries: Maximum number of retry attempts (defaults to settings.MAX_LLM_RETRIES)
+        backoff_factor: Multiplier for exponential backoff (defaults to settings.RETRY_BACKOFF_FACTOR)
+    """
+    if max_retries is None:
+        max_retries = settings.MAX_LLM_RETRIES
+    if backoff_factor is None:
+        backoff_factor = settings.RETRY_BACKOFF_FACTOR
+
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            last_exception = None
+
+            for attempt in range(max_retries + 1):  # +1 for initial attempt
+                try:
+                    return await func(*args, **kwargs)
+
+                except openai.RateLimitError as e:
+                    last_exception = e
+
+                    if attempt >= max_retries:
+                        logger.error(f"❌ LLM RATE LIMIT: Max retries ({max_retries}) exceeded")
+                        raise ValueError(f"LLM Rate Limit Exceeded after {max_retries} retries: Please try again later")
+
+                    # Parse wait time from error message (e.g., "Try again in 50 seconds")
+                    wait_time = backoff_factor ** attempt  # Default exponential backoff
+                    error_msg = str(e)
+                    match = re.search(r'try again in (\d+) seconds?', error_msg, re.IGNORECASE)
+                    if match:
+                        wait_time = int(match.group(1))
+
+                    logger.warning(f"⚠️ Rate limit hit (attempt {attempt + 1}/{max_retries + 1})")
+                    logger.warning(f"   Waiting {wait_time:.1f} seconds before retry...")
+                    logger.warning(f"   Error: {error_msg}")
+
+                    await asyncio.sleep(wait_time)
+                    continue
+
+                except Exception:
+                    # Don't retry on other exceptions
+                    raise
+
+            # Should never reach here, but just in case
+            if last_exception:
+                raise last_exception
+
+        return wrapper
+    return decorator
 
 
 @dataclass
@@ -154,8 +212,9 @@ class LLMNodeFactsExtractor:
         """Create prompt for extracting individual item elements."""
         return get_item_prompt(xml_content=xml_content, section_path=section_path)
 
+    @async_retry_with_backoff()
     async def _call_llm(self, prompt: str) -> Dict[str, Any]:
-        """Call LLM API for extraction."""
+        """Call LLM API for extraction with automatic retry on rate limits."""
         if not self.client:
             error_msg = "LLM client not initialized - check API keys in .env file"
             logger.error(f"❌ {error_msg}")
