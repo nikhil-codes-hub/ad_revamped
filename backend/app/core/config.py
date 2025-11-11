@@ -53,8 +53,8 @@ class Settings(BaseSettings):
     MODEL_DEPLOYMENT_NAME: str = Field(default="gpt-4o", description="Primary model deployment name")
     FALLBACK_MODEL_DEPLOYMENT_NAME: str = Field(default="gpt-4o-mini", description="Fallback model deployment name")
 
-    # Azure Authentication Method
-    AZURE_AUTH_METHOD: str = Field(default="api_key", description="Azure auth method: api_key or bdp")
+    # Azure Authentication Method (REQUIRED - must be set in .env)
+    AZURE_AUTH_METHOD: str = Field(..., description="Azure auth method: api_key or bdp (REQUIRED)")
 
     # BDP (Azure AD) Authentication
     AZURE_TENANT_ID: str = Field(default="", description="Azure AD tenant ID (for BDP auth)")

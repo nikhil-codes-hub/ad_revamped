@@ -41,8 +41,8 @@ try:
     print()
 
     # Check BDP credentials
-    print("4. Checking BDP credentials from settings:")
-    print(f"   AZURE_AUTH_METHOD: {settings.AZURE_AUTH_METHOD}")
+    print("4. Checking authentication configuration:")
+    print(f"   AZURE_AUTH_METHOD: {settings.AZURE_AUTH_METHOD} (REQUIRED in .env)")
     print(f"   AZURE_TENANT_ID: {'✅ SET' if settings.AZURE_TENANT_ID else '❌ NOT SET'}")
     print(f"   AZURE_CLIENT_ID: {'✅ SET' if settings.AZURE_CLIENT_ID else '❌ NOT SET'}")
     print(f"   AZURE_CLIENT_SECRET: {'✅ SET' if settings.AZURE_CLIENT_SECRET else '❌ NOT SET'}")
