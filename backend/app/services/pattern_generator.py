@@ -19,6 +19,7 @@ from app.models.database import NodeFact, Pattern, Run, NodeRelationship
 from app.core.config import settings
 from app.services.llm_extractor import get_llm_extractor
 from app.services.utils import normalize_iata_prefix
+from app.services.llm_client_factory import LLMClientFactory
 from app.prompts import get_pattern_description_prompt
 
 logger = logging.getLogger(__name__)
@@ -415,38 +416,14 @@ class PatternGenerator:
             Short description string (1-2 sentences) or None if LLM unavailable
         """
         try:
-            llm_extractor = get_llm_extractor()
-
-            sync_client = None
-            model_name = settings.LLM_MODEL
-
-            if settings.LLM_PROVIDER == "azure" and settings.AZURE_OPENAI_KEY:
-                # Create httpx client with increased timeouts
-                http_client = httpx.Client(
-                    timeout=httpx.Timeout(60.0, connect=10.0),
-                    limits=httpx.Limits(max_keepalive_connections=10, max_connections=20),
-                    follow_redirects=True,
-                    verify=False  # Disable SSL verification for corporate proxies
-                )
-
-                sync_client = AzureOpenAI(
-                    api_key=settings.AZURE_OPENAI_KEY,
-                    azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
-                    api_version=settings.AZURE_API_VERSION,
-                    http_client=http_client
-                )
-                model_name = settings.MODEL_DEPLOYMENT_NAME
-                logger.debug("Using Azure OpenAI for description generation")
-            elif settings.OPENAI_API_KEY:
-                sync_client = OpenAI(api_key=settings.OPENAI_API_KEY)
-                model_name = settings.LLM_MODEL
-                logger.debug("Using OpenAI for description generation")
-            elif llm_extractor.client:
-                sync_client = llm_extractor.client
+            # Use LLMClientFactory to create sync client
+            sync_client, model_name = LLMClientFactory.create_sync_client(timeout=60.0, verify_ssl=False)
 
             if not sync_client:
                 logger.debug("LLM client not available for description generation")
                 return None
+
+            logger.debug(f"Using {settings.LLM_PROVIDER} for description generation")
 
             node_type = decision_rule.get('node_type', 'Unknown')
             must_have = decision_rule.get('must_have_attributes', [])

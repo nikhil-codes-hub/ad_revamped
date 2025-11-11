@@ -20,7 +20,7 @@ from app.core.config import settings
 from app.services.xml_parser import XmlSubtree
 from app.services.pii_masking import pii_engine
 from app.services.business_intelligence import get_bi_enricher
-from app.services.bdp_authenticator import get_bdp_authenticator
+from app.services.llm_client_factory import LLMClientFactory
 from app.prompts import get_container_prompt, get_item_prompt, get_system_prompt
 
 logger = logging.getLogger(__name__)
@@ -50,86 +50,12 @@ class LLMNodeFactsExtractor:
         self._init_client()
 
     def _init_client(self):
-        """Initialize LLM client (Azure OpenAI with API Key or BDP, or OpenAI)."""
-        try:
-            if self.provider == "azure":
-                # Check authentication method
-                auth_method = getattr(settings, 'AZURE_AUTH_METHOD', 'api_key').lower()
-
-                if auth_method == "bdp":
-                    # Use BDP (Azure AD) authentication
-                    logger.info(f"Initializing Azure OpenAI client with BDP authentication...")
-                    logger.info(f"  Endpoint: {settings.AZURE_OPENAI_ENDPOINT}")
-                    logger.info(f"  API Version: {settings.AZURE_API_VERSION}")
-                    logger.info(f"  Model Deployment: {settings.MODEL_DEPLOYMENT_NAME}")
-                    logger.info(f"  Auth Method: BDP (Azure AD)")
-
-                    bdp_auth = get_bdp_authenticator()
-                    self.client = bdp_auth.create_async_client(
-                        azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
-                        api_version=settings.AZURE_API_VERSION,
-                        timeout=120.0,
-                        verify_ssl=False  # Disable SSL verification for corporate proxies
-                    )
-                    self.model = settings.MODEL_DEPLOYMENT_NAME
-                    logger.info(f"✅ LLM extractor initialized successfully with Azure OpenAI (BDP): {self.model}")
-
-                elif auth_method == "api_key" and settings.AZURE_OPENAI_KEY:
-                    # Use API Key authentication (legacy/testing)
-                    logger.info(f"Initializing Azure OpenAI client with API Key...")
-                    logger.info(f"  Endpoint: {settings.AZURE_OPENAI_ENDPOINT}")
-                    logger.info(f"  API Version: {settings.AZURE_API_VERSION}")
-                    logger.info(f"  Model Deployment: {settings.MODEL_DEPLOYMENT_NAME}")
-                    logger.info(f"  Auth Method: API Key")
-
-                    # Create httpx client with increased timeouts and retries
-                    http_client = httpx.AsyncClient(
-                        timeout=httpx.Timeout(120.0, connect=10.0),  # 120s total, 10s connect
-                        limits=httpx.Limits(max_keepalive_connections=10, max_connections=20),
-                        follow_redirects=True,
-                        verify=False  # Disable SSL verification for corporate proxies
-                    )
-
-                    self.client = AsyncAzureOpenAI(
-                        api_key=settings.AZURE_OPENAI_KEY,
-                        azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
-                        api_version=settings.AZURE_API_VERSION,
-                        http_client=http_client
-                    )
-                    self.model = settings.MODEL_DEPLOYMENT_NAME
-                    logger.info(f"✅ LLM extractor initialized successfully with Azure OpenAI (API Key): {self.model}")
-
-                else:
-                    logger.error("❌ Azure authentication not configured!")
-                    logger.error(f"  Auth method: {auth_method}")
-                    logger.error("  Please set either:")
-                    logger.error("    - AZURE_AUTH_METHOD=bdp with AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET")
-                    logger.error("    - AZURE_AUTH_METHOD=api_key with AZURE_OPENAI_KEY")
-                    logger.warning("⚠️ LLM extraction is DISABLED - Discovery will fail!")
-
-            elif settings.OPENAI_API_KEY:
-                # Fallback to OpenAI
-                logger.info(f"Initializing OpenAI client...")
-                logger.info(f"  Model: {settings.LLM_MODEL}")
-
-                self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-                self.model = settings.LLM_MODEL
-                logger.info(f"✅ LLM extractor initialized successfully with OpenAI: {self.model}")
-
-            else:
-                logger.error("❌ LLM INITIALIZATION FAILED: No API keys found!")
-                logger.error("  Please set either:")
-                logger.error("    - AZURE_AUTH_METHOD + credentials (for Azure)")
-                logger.error("    - OPENAI_API_KEY (for OpenAI)")
-                logger.warning("⚠️ LLM extraction is DISABLED - Discovery will fail!")
-
-        except Exception as e:
-            logger.error(f"❌ CRITICAL: Failed to initialize LLM client: {type(e).__name__}: {str(e)}")
-            logger.error(f"  Provider: {self.provider}")
-            logger.error(f"  Endpoint: {settings.AZURE_OPENAI_ENDPOINT if self.provider == 'azure' else 'N/A'}")
-            logger.error(f"  This will cause Discovery to fail!")
-            import traceback
-            logger.error(f"  Traceback:\n{traceback.format_exc()}")
+        """Initialize LLM client using LLMClientFactory."""
+        self.client, self.model = LLMClientFactory.create_async_client(timeout=120.0, verify_ssl=False)
+        if self.client:
+            logger.info(f"✅ LLM extractor initialized successfully with {self.provider}: {self.model}")
+        else:
+            logger.warning("⚠️ LLM extraction is DISABLED - Discovery will fail!")
 
     def _analyze_xml_structure(self, xml_content: str, section_path: str) -> Dict[str, Any]:
         """

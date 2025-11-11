@@ -15,7 +15,7 @@ import httpx
 from app.models.database import NodeFact, NodeRelationship, NodeConfiguration
 from app.core.config import settings
 from app.prompts import get_relationship_discovery_prompt, get_relationship_system_prompt
-from app.services.bdp_authenticator import get_bdp_authenticator
+from app.services.llm_client_factory import LLMClientFactory
 
 logger = structlog.get_logger(__name__)
 
@@ -46,86 +46,12 @@ class RelationshipAnalyzer:
         return str(value)
 
     def _init_sync_client(self):
-        """Initialize synchronous LLM client with BDP or API key authentication."""
-        try:
-            if settings.LLM_PROVIDER == "azure":
-                # Check authentication method
-                auth_method = getattr(settings, 'AZURE_AUTH_METHOD', 'api_key').lower()
-
-                if auth_method == "bdp":
-                    # Use BDP (Azure AD) authentication
-                    logger.info("Initializing Azure OpenAI (sync) client with BDP authentication...")
-                    logger.info(f"  Endpoint: {settings.AZURE_OPENAI_ENDPOINT}")
-                    logger.info(f"  API Version: {settings.AZURE_API_VERSION}")
-                    logger.info(f"  Model Deployment: {settings.MODEL_DEPLOYMENT_NAME}")
-                    logger.info(f"  Auth Method: BDP (Azure AD)")
-
-                    bdp_auth = get_bdp_authenticator()
-                    self.llm_client = bdp_auth.create_sync_client(
-                        azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
-                        api_version=settings.AZURE_API_VERSION,
-                        timeout=60.0,
-                        verify_ssl=False  # Disable SSL verification for corporate proxies
-                    )
-                    self.model = settings.MODEL_DEPLOYMENT_NAME
-                    logger.info(f"✅ Relationship analyzer initialized successfully with Azure OpenAI (BDP): {self.model}")
-
-                elif auth_method == "api_key" and settings.AZURE_OPENAI_KEY:
-                    # Use API Key authentication (legacy/testing)
-                    logger.info("Initializing Azure OpenAI (sync) client with API Key...")
-                    logger.info(f"  Endpoint: {settings.AZURE_OPENAI_ENDPOINT}")
-                    logger.info(f"  API Version: {settings.AZURE_API_VERSION}")
-                    logger.info(f"  Model Deployment: {settings.MODEL_DEPLOYMENT_NAME}")
-                    logger.info(f"  Auth Method: API Key")
-
-                    # Create httpx client with increased timeouts
-                    http_client = httpx.Client(
-                        timeout=httpx.Timeout(60.0, connect=10.0),
-                        limits=httpx.Limits(max_keepalive_connections=10, max_connections=20),
-                        follow_redirects=True,
-                        verify=False  # Disable SSL verification for corporate proxies
-                    )
-
-                    self.llm_client = AzureOpenAI(
-                        api_key=settings.AZURE_OPENAI_KEY,
-                        azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
-                        api_version=settings.AZURE_API_VERSION,
-                        http_client=http_client
-                    )
-                    self.model = settings.MODEL_DEPLOYMENT_NAME
-                    logger.info(f"✅ Relationship analyzer initialized successfully with Azure OpenAI (API Key): {self.model}")
-
-                else:
-                    logger.error("❌ Azure authentication not configured!")
-                    logger.error(f"  Auth method: {auth_method}")
-                    logger.error("  Please set either:")
-                    logger.error("    - AZURE_AUTH_METHOD=bdp with AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET")
-                    logger.error("    - AZURE_AUTH_METHOD=api_key with AZURE_OPENAI_KEY")
-                    logger.warning("⚠️ Relationship analysis is DISABLED!")
-
-            elif settings.OPENAI_API_KEY:
-                # Fallback to OpenAI
-                logger.info("Initializing OpenAI (sync) client...")
-                logger.info(f"  Model: {settings.LLM_MODEL}")
-
-                self.llm_client = OpenAI(api_key=settings.OPENAI_API_KEY)
-                self.model = settings.LLM_MODEL
-                logger.info(f"✅ Relationship analyzer initialized successfully with OpenAI: {self.model}")
-
-            else:
-                logger.error("❌ LLM INITIALIZATION FAILED: No API keys found!")
-                logger.error("  Please set either:")
-                logger.error("    - AZURE_AUTH_METHOD + credentials (for Azure)")
-                logger.error("    - OPENAI_API_KEY (for OpenAI)")
-                logger.warning("⚠️ Relationship analysis is DISABLED!")
-
-        except Exception as e:
-            logger.error(f"❌ CRITICAL: Failed to initialize LLM client: {type(e).__name__}: {str(e)}")
-            logger.error(f"  Provider: {settings.LLM_PROVIDER}")
-            logger.error(f"  Endpoint: {settings.AZURE_OPENAI_ENDPOINT if settings.LLM_PROVIDER == 'azure' else 'N/A'}")
-            logger.error(f"  This will cause relationship analysis to fail!")
-            import traceback
-            logger.error(f"  Traceback:\n{traceback.format_exc()}")
+        """Initialize synchronous LLM client using LLMClientFactory."""
+        self.llm_client, self.model = LLMClientFactory.create_sync_client(timeout=60.0, verify_ssl=False)
+        if self.llm_client:
+            logger.info(f"✅ Relationship analyzer initialized successfully: {self.model}")
+        else:
+            logger.warning("⚠️ Relationship analysis is DISABLED!")
 
     def analyze_relationships(self, run_id: str, node_facts: List[NodeFact]) -> Dict[str, Any]:
         """
