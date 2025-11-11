@@ -1137,7 +1137,15 @@ def show_pattern_extractor_page():
 
                         # Show helpful hints based on error content
                         error_detail = result['error_details']
-                        if "LLM" in error_detail or "API" in error_detail:
+                        if "Rate Limit" in error_detail:
+                            st.warning("⚠️ **Rate Limit Exceeded**")
+                            st.info("💡 **Solutions:**\n"
+                                   "- **Wait a few minutes** and try again (Azure rate limits reset over time)\n"
+                                   "- **Reduce parallel processing**: Lower `MAX_PARALLEL_NODES` in `.env` (currently processing multiple nodes simultaneously)\n"
+                                   "- **Contact Azure admin**: Request higher rate limits for your deployment\n"
+                                   "- **Check retry settings**: Verify `MAX_LLM_RETRIES` in `.env`\n\n"
+                                   "The system automatically retries with backoff, but if all retries fail, you'll see this error.")
+                        elif "LLM" in error_detail or "API" in error_detail:
                             st.info("💡 **LLM/API Error - Troubleshooting:**\n"
                                    "- Check backend logs for detailed error messages\n"
                                    "- Verify `.env` file has correct API keys:\n"

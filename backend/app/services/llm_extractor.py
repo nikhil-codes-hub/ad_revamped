@@ -56,7 +56,17 @@ def async_retry_with_backoff(max_retries: int = None, backoff_factor: float = No
 
                     if attempt >= max_retries:
                         logger.error(f"❌ LLM RATE LIMIT: Max retries ({max_retries}) exceeded")
-                        raise ValueError(f"LLM Rate Limit Exceeded after {max_retries} retries: Please try again later")
+                        # Create user-friendly error message
+                        error_msg = (
+                            f"Azure OpenAI Rate Limit Exceeded\n\n"
+                            f"The system attempted {max_retries + 1} times but the rate limit persists.\n\n"
+                            f"Possible solutions:\n"
+                            f"1. Wait a few minutes and try again\n"
+                            f"2. Reduce MAX_PARALLEL_NODES in .env (currently: {settings.MAX_PARALLEL_NODES})\n"
+                            f"3. Contact your Azure admin to increase rate limits\n\n"
+                            f"Technical details: {str(e)}"
+                        )
+                        raise ValueError(error_msg)
 
                     # Parse wait time from error message (e.g., "Try again in 50 seconds")
                     wait_time = backoff_factor ** attempt  # Default exponential backoff
