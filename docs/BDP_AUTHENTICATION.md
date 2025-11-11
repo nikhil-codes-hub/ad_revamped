@@ -147,6 +147,84 @@ INFO  - ✅ LLM extractor initialized successfully with Azure OpenAI (API Key): 
 
 ## Troubleshooting
 
+### Environment Variables Not Loading on Another Machine
+
+**Problem**: You've copied the .env file to another machine but credentials aren't being loaded.
+
+**Symptoms**:
+- Error: "BDP authentication requires AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET"
+- Even though these values are in your .env file
+
+**Common Causes & Solutions**:
+
+1. **.env file location**:
+   ```bash
+   # .env MUST be in one of these locations:
+   backend/.env                    # ✅ Recommended
+   ad/.env                         # ✅ Works (project root)
+   ad/backend/.env                 # ✅ Works (backend dir)
+   ```
+
+2. **File encoding issues**:
+   - Save .env file with UTF-8 encoding
+   - No BOM (Byte Order Mark)
+   - Unix-style line endings (LF, not CRLF)
+
+3. **Hidden characters**:
+   ```bash
+   # BAD - has quotes
+   AZURE_TENANT_ID="12345-67890"  ❌
+
+   # GOOD - no quotes
+   AZURE_TENANT_ID=12345-67890   ✅
+   ```
+
+4. **Spaces around equals sign**:
+   ```bash
+   # BAD - has spaces
+   AZURE_TENANT_ID = 12345   ❌
+
+   # GOOD - no spaces
+   AZURE_TENANT_ID=12345     ✅
+   ```
+
+5. **Virtual environment not activated**:
+   ```bash
+   # Activate the virtual environment first
+   cd ad
+   source assisted_discovery_env/bin/activate  # Mac/Linux
+   # OR
+   assisted_discovery_env\Scripts\activate     # Windows
+   ```
+
+**Diagnostic Steps**:
+
+1. **Run the diagnostic script** (see Testing section below):
+   ```bash
+   cd backend
+   python test_env_loading.py
+   ```
+   This will show exactly which variables are loaded and which are missing.
+
+2. **Check file permissions**:
+   ```bash
+   ls -la .env
+   # Should be readable (at least -rw-r--r--)
+   ```
+
+3. **Verify file content**:
+   ```bash
+   cat .env | grep AZURE_
+   # Should show your BDP credentials
+   ```
+
+4. **Check if Python can read the file**:
+   ```python
+   from pathlib import Path
+   print(Path(".env").exists())  # Should print True
+   print(Path(".env").read_text())  # Should show your .env content
+   ```
+
 ### Error: "Azure AD authentication requires AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET"
 
 **Solution**: Ensure all three BDP credentials are set in your `.env` file.
@@ -233,6 +311,27 @@ The authenticator creates a token provider function that:
 ---
 
 ## Testing
+
+### Diagnostic Script
+
+**NEW**: Use the diagnostic script to verify environment variable loading:
+
+```bash
+cd backend
+python test_env_loading.py
+```
+
+This script will:
+- Check for `.env` file in all possible locations
+- Verify that settings are loading correctly
+- Show which BDP credentials are set/missing
+- Test BDP authenticator initialization
+
+**Expected output when configured correctly:**
+```
+✅ All BDP credentials are configured correctly!
+   You can now use BDP authentication.
+```
 
 ### Test with API Key
 

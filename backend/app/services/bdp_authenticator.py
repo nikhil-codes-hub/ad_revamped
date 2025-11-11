@@ -5,7 +5,6 @@ Provides ClientSecretCredential-based authentication for corporate Azure OpenAI 
 Supports both synchronous and asynchronous Azure OpenAI clients.
 """
 
-import os
 import logging
 from typing import Callable, Optional
 from azure.identity import ClientSecretCredential
@@ -31,20 +30,35 @@ class BdpAuthenticator:
         Initialize BDP authenticator.
 
         Args:
-            tenant_id: Azure AD tenant ID (defaults to env var AZURE_TENANT_ID)
-            client_id: Azure AD client ID (defaults to env var AZURE_CLIENT_ID)
-            client_secret: Azure AD client secret (defaults to env var AZURE_CLIENT_SECRET)
+            tenant_id: Azure AD tenant ID (defaults to settings.AZURE_TENANT_ID from .env)
+            client_id: Azure AD client ID (defaults to settings.AZURE_CLIENT_ID from .env)
+            client_secret: Azure AD client secret (defaults to settings.AZURE_CLIENT_SECRET from .env)
         """
-        self.tenant_id = tenant_id or os.getenv("AZURE_TENANT_ID")
-        self.client_id = client_id or os.getenv("AZURE_CLIENT_ID")
-        self.client_secret = client_secret or os.getenv("AZURE_CLIENT_SECRET")
+        # Import settings here to avoid circular imports
+        from app.core.config import settings
+
+        self.tenant_id = tenant_id or settings.AZURE_TENANT_ID
+        self.client_id = client_id or settings.AZURE_CLIENT_ID
+        self.client_secret = client_secret or settings.AZURE_CLIENT_SECRET
 
         # Validate credentials
-        if not all([self.tenant_id, self.client_id, self.client_secret]):
-            raise ValueError(
-                "BDP authentication requires AZURE_TENANT_ID, AZURE_CLIENT_ID, "
-                "and AZURE_CLIENT_SECRET environment variables to be set."
+        missing_creds = []
+        if not self.tenant_id:
+            missing_creds.append("AZURE_TENANT_ID")
+        if not self.client_id:
+            missing_creds.append("AZURE_CLIENT_ID")
+        if not self.client_secret:
+            missing_creds.append("AZURE_CLIENT_SECRET")
+
+        if missing_creds:
+            error_msg = (
+                f"BDP authentication requires the following environment variables in .env file: "
+                f"{', '.join(missing_creds)}. "
+                f"Please ensure your .env file is in the project root and contains these values."
             )
+            logger.error(f"❌ {error_msg}")
+            logger.error(f"   Current .env location checked: backend/.env, ../.env, ../../.env, ../../../.env")
+            raise ValueError(error_msg)
 
         # Create credential object
         self.credential = ClientSecretCredential(
@@ -55,7 +69,7 @@ class BdpAuthenticator:
 
         logger.info("✅ BDP authenticator initialized successfully")
         logger.info(f"   Tenant ID: {self.tenant_id}")
-        logger.info(f"   Client ID: {self.client_id[:8]}...")
+        logger.info(f"   Client ID: {self.client_id[:8] if len(self.client_id) >= 8 else self.client_id}...")
 
     def get_token_provider(self) -> Callable[[], str]:
         """
