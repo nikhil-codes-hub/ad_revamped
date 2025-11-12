@@ -14,8 +14,9 @@ from pathlib import Path
 import sys
 import sqlite3
 
-# Add utils to path
-sys.path.insert(0, str(Path(__file__).parent / "utils"))
+# Add backend to path for service imports
+backend_path = Path(__file__).parent.parent.parent / "backend"
+sys.path.insert(0, str(backend_path))
 
 # API Configuration
 API_BASE_URL = (
@@ -692,7 +693,7 @@ class PatternManager:
 
             try:
                 # Import and initialize verifier
-                from utils.pattern_llm_verifier import get_verifier
+                from app.services.pattern_verifier import get_verifier
 
                 verifier = get_verifier()
                 st.write("🤖 Analyzing XML against pattern...")
